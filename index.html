@@ -10728,11 +10728,11 @@ body:has(#chatScreen.private-as-all) #waDownCount{
 })();
 </script>
 
-<!-- PV-AUTH-V2 - ID + PASSWORD - Pure English, Hidden ID, Disabled Continue, Green Spinner -->
+<!-- PV-AUTH-V3 - ID + PASSWORD - FIXED BYPASS - Pure English, Hidden ID, Disabled Continue, Green Spinner -->
 <style id="PV-AUTH-V2-CSS">
 #continueBtn:disabled { opacity:0.45 !important; cursor:not-allowed !important; }
 #pvPassword:focus, #pvPasswordConfirm:focus, #pvLoginPassword:focus { border-color:#00e676 !important; outline:none; }
-#continueBtn.pv-saving { opacity:1 !important; }
+#continueBtn.pv-saving { opacity:1 !important; } #pvContinueReal:disabled { opacity:0.45 !important; cursor:not-allowed !important; pointer-events:none !important; } #pvContinueReal { pointer-events:auto !important; } #continueBtnHiddenOld { display:none !important; pointer-events:none !important; }
 .pv-save-spinner{ width:16px;height:16px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:8px;animation:pvSpin 0.7s linear infinite; }
 @keyframes pvSpin{ to{ transform:rotate(360deg); } }
 </style>
@@ -10756,7 +10756,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   var mode = 'setup';
   var cloudCandidates = [];
   var checkingCloud = false;
-  function getEls(){ return { name: document.getElementById('uName'), pass: document.getElementById('pvPassword'), confirm: document.getElementById('pvPasswordConfirm'), loginPass: document.getElementById('pvLoginPassword'), setupBlock: document.getElementById('pvSetupBlock'), loginBlock: document.getElementById('pvLoginPassBlock'), btn: document.getElementById('continueBtn') }; }
+  function getEls(){ return { name: document.getElementById('uName'), pass: document.getElementById('pvPassword'), confirm: document.getElementById('pvPasswordConfirm'), loginPass: document.getElementById('pvLoginPassword'), setupBlock: document.getElementById('pvSetupBlock'), loginBlock: document.getElementById('pvLoginPassBlock'), btn: document.getElementById('pvContinueReal') || document.getElementById('continueBtn') }; }
   function setMode(newMode){ mode=newMode; var els=getEls(); if(els.setupBlock) els.setupBlock.style.display=(mode==='setup'?'block':'none'); if(els.loginBlock) els.loginBlock.style.display=(mode==='verify'?'block':'none'); if(els.btn){ if(mode==='setup') els.btn.textContent='Create Account and Continue'; else if(mode==='verify') els.btn.textContent='Enter Password and Continue'; else els.btn.textContent='Continue'; } updateContinueState(); }
   function updateContinueState(){ var els=getEls(); if(!els.name||!els.btn) return; var name=els.name.value.trim(); var enabled=false; if(name.length<2){ enabled=false; } else if(mode==='setup'){ var pw=els.pass?els.pass.value:''; var cf=els.confirm?els.confirm.value:''; enabled=(pw.length>=4&&cf.length>=4&&pw===cf); } else if(mode==='verify'){ var lp=els.loginPass?els.loginPass.value:''; enabled=(lp.length>=4); } else if(mode==='trusted'){ enabled=true; } els.btn.disabled=!enabled; els.btn.style.opacity=enabled?'1':'0.45'; if(mode==='setup'&&name.length>=2){ var pw2=els.pass?els.pass.value:''; var cf2=els.confirm?els.confirm.value:''; if(pw2.length>0&&pw2.length<4){ showMsg('Your password must be at least 4 characters.', 'err'); } else if(cf2.length>0&&pw2!==cf2){ showMsg('The two passwords do not match. Please type them again.', 'err'); } else if(pw2.length>=4&&cf2.length>=4&&pw2===cf2){ hideMsg(); } else { hideMsg(); } } }
   async function fetchAccountsByName(name){ try{ var key=safeName(name); var res=await fetch(FIREBASE_URL+'/pv_accounts_by_name/'+encodeURIComponent(key)+'.json'); var data=await res.json(); if(!data) return []; var list=[]; if(Array.isArray(data)){ list=data; } else if(data.userId){ list=[data]; } else { Object.keys(data).forEach(function(k){ var v=data[k]; if(v&&v.userId) list.push(v); else if(typeof v==='string') list.push({userId:v, shortId:k}); }); } return list; }catch(e){ return []; } }
@@ -10784,12 +10784,56 @@ body:has(#chatScreen.private-as-all) #waDownCount{
       if(els.name){ els.name.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); handleContinue(); } }); }
       var showBtn=document.getElementById('pvShowPassBtn'); if(showBtn){ showBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var inputs=[els.pass, els.confirm, els.loginPass]; var anyHidden=inputs.some(function(inp){ return inp&&inp.type==='password'&&inp.offsetParent!==null; }); inputs.forEach(function(inp){ if(inp) inp.type=(anyHidden?'text':'password'); }); showBtn.textContent=anyHidden?'Hide Password':'Show Password'; }); }
       var btn=els.btn; if(btn&&!btn.dataset.pvAuthWired){ var clone=btn.cloneNode(true); clone.dataset.pvAuthWired='1'; btn.parentNode.replaceChild(clone, btn); btn=clone; var nameClone=els.name.cloneNode(true); els.name.parentNode.replaceChild(nameClone, els.name); nameClone.addEventListener('input', function(){ hideMsg(); updateContinueState(); }); nameClone.addEventListener('change', function(){ checkNameInCloud(); }); nameClone.addEventListener('blur', function(){ checkNameInCloud(); }); nameClone.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); handleContinue(); } }); clone.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); handleContinue(); }); clone.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); handleContinue(); }); els.name=nameClone; els.btn=clone; }
+      // V3 FIX: Old PV-LOGIN-FORCE code has a document-level capture handler that calls forceContinue() with NAME ONLY,
+      // even if button is disabled. It listens for #continueBtn. To stop it, we hide the old button,
+      // rename it so it is no longer #continueBtn, and create a NEW safe button with a different id.
+      // The old handler will never match the new button, so it can never bypass the password.
+      try{
+        var oldBtn = document.getElementById('continueBtn');
+        if(oldBtn && !document.getElementById('pvContinueReal')){
+          var safeBtn = document.createElement('button');
+          safeBtn.id = 'pvContinueReal';
+          safeBtn.className = oldBtn.className || 'pv-continue';
+          safeBtn.type = 'button';
+          safeBtn.textContent = oldBtn.textContent || 'Continue';
+          safeBtn.disabled = true;
+          safeBtn.style.opacity = '0.45';
+          // Copy inline style essentials
+          safeBtn.style.width = '100%';
+          oldBtn.parentNode.insertBefore(safeBtn, oldBtn);
+          oldBtn.style.display = 'none';
+          oldBtn.id = 'continueBtnHiddenOld';
+          oldBtn.disabled = true;
+          // New safe button - ONLY our handleContinue can log in
+          safeBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); handleContinue(); });
+          safeBtn.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); handleContinue(); });
+          els.btn = safeBtn;
+          // Also block any click on the hidden old button if it is ever shown again
+          document.addEventListener('click', function(e){
+            try{
+              var ht = e.target && e.target.closest ? e.target.closest('#continueBtnHiddenOld') : null;
+              if(ht){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
+            }catch(err){}
+          }, true);
+        } else if(document.getElementById('pvContinueReal')){
+          els.btn = document.getElementById('pvContinueReal');
+          // Re-wire safe button to handleContinue only (remove old listeners by cloning safe button once)
+          if(!els.btn.dataset.pvSafeWired){
+            var sc = els.btn.cloneNode(true);
+            sc.dataset.pvSafeWired = '1';
+            els.btn.parentNode.replaceChild(sc, els.btn);
+            els.btn = sc;
+            sc.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); handleContinue(); });
+            sc.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); handleContinue(); });
+          }
+        }
+      }catch(e){ console.log('V3 safe button fail', e); }
       var origForce=window._pvForceContinue;
       window._pvForceContinue=async function(){ if(window.__pvAuthPassed){ if(typeof origForce==='function') return origForce(); return; } var ok=await handleContinue(true); if(ok&&typeof origForce==='function') return origForce(); };
       setTimeout(function(){ if(window._pvForceContinue&&!window._pvForceContinue.__pvWrapped){ var orig2=window._pvForceContinue; if(orig2!==window._pvForceContinue){ var w2=async function(){ if(window.__pvAuthPassed) return orig2(); var ok=await handleContinue(true); if(ok) return orig2(); }; w2.__pvWrapped=true; window._pvForceContinue=w2; } } }, 1200);
       async function handleContinue(fromWrapper){
         if(window.__pvAuthPassed){ if(!fromWrapper&&typeof origForce==='function') return origForce(); return true; }
-        var btnEl=document.getElementById('continueBtn'); if(btnEl&&btnEl.disabled){ return false; }
+        var btnEl=document.getElementById('pvContinueReal') || document.getElementById('continueBtn'); if(btnEl&&btnEl.disabled){ return false; }
         var originalBtnHtml=btnEl?btnEl.innerHTML:''; if(btnEl){ btnEl.disabled=true; btnEl.classList.add('pv-saving'); btnEl.innerHTML='<span class="pv-save-spinner"></span> Saving...'; btnEl.style.opacity='1'; }
         var ok=false; try{ ok=await doAuth(); }catch(e){ console.log('auth fail', e); showMsg('An error occurred. Please try again.', 'err'); ok=false; }
         if(btnEl){ btnEl.classList.remove('pv-saving'); btnEl.innerHTML=originalBtnHtml; btnEl.disabled=false; updateContinueState(); }
