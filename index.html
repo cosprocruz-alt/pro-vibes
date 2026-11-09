@@ -11606,7 +11606,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
     if(!id && !inline) return Promise.resolve(null);
     if(inline && isDataUrl(inline)) return Promise.resolve(inline);
     if(inline && typeof inline==='string' && inline.length>100){
-      try{ var b0=b64ToBlob(inline, 'audio/webm'); return Promise.resolve(blobUrl(id||('inline_'+Date.now()), b0)); }catch(e){}
+      try{ var b0=b64ToBlob(inline, 'audio/webm;codecs=opus'); return Promise.resolve(blobUrl(id||('inline_'+Date.now()), b0)); }catch(e){}
     }
     if(id && inlineMap[id] && isDataUrl(inlineMap[id])) return Promise.resolve(inlineMap[id]);
     if(id && mem[id]) return Promise.resolve(mem[id]);
@@ -11623,7 +11623,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
           }
           return batch(idx, []).then(function(parts){
             var b64=parts.join(''); if(!b64) return null;
-            var blob=b64ToBlob(b64, meta.type||'audio/webm');
+            var blob=b64ToBlob(b64, meta.type||'audio/webm;codecs=opus');
             idbPut(id, blob); return blobUrl(id, blob);
           });
         }
@@ -11641,7 +11641,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
         else if(d.data) b64=String(d.data);
         else { var keys=Object.keys(d).filter(function(k){ return k!=='meta'; }).sort(function(a,b){ var na=parseInt(String(a).replace(/\D/g,''),10)||0; var nb=parseInt(String(b).replace(/\D/g,''),10)||0; return na-nb; }); keys.forEach(function(k){ if(typeof d[k]==='string') b64+=d[k]; }); }
         if(!b64) return null;
-        var blob=b64ToBlob(b64, (d && d.meta && d.meta.type) || 'audio/webm');
+        var blob=b64ToBlob(b64, (d && d.meta && d.meta.type) || 'audio/webm;codecs=opus');
         idbPut(id, blob); return blobUrl(id, blob);
       }).catch(function(){ return null; });
     });
@@ -11660,11 +11660,11 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   /* ---------- Playback: one global audio, WhatsApp style ---------- */
   var audio=null;
   var cur=null;
-  function getAudio(){ if(audio) return audio; audio=new Audio(); audio.preload='auto'; audio.setAttribute('playsinline',''); audio.addEventListener('timeupdate', function(){ syncProgress(); }); audio.addEventListener('ended', function(){ finishPlay(); }); audio.addEventListener('pause', function(){ if(cur && cur.bubble) syncPlayIcon(); }); audio.addEventListener('play', function(){ if(cur && cur.bubble) syncPlayIcon(); }); audio.addEventListener('loadedmetadata', function(){ try{ if(cur && cur.bubble && (!cur.dur || cur.dur<=0) && audio.duration){ cur.dur=Math.round(audio.duration); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(cur.dur); } }catch(e){} }); audio.addEventListener('error', function(){ try{ if(audio._pvStopping) return; if(!audio.src) return; }catch(e){} if(cur){ toast('Voice failed to play, tap again'); cur=null; } }); return audio; }
+  function getAudio(){ if(audio) return audio; audio=new Audio(); try{ audio._pvStopping=false; audio._pvHadError=false; }catch(e){} audio.preload='auto'; audio.setAttribute('playsinline',''); audio.addEventListener('timeupdate', function(){ syncProgress(); }); audio.addEventListener('ended', function(){ finishPlay(); }); audio.addEventListener('pause', function(){ if(cur && cur.bubble) syncPlayIcon(); }); audio.addEventListener('play', function(){ if(cur && cur.bubble) syncPlayIcon(); }); audio.addEventListener('loadedmetadata', function(){ try{ if(cur && cur.bubble && (!cur.dur || cur.dur<=0) && audio.duration){ cur.dur=Math.round(audio.duration); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(cur.dur); } }catch(e){} }); audio.addEventListener('error', function(){ try{ if(audio._pvStopping) return; if(!audio.src) return; }catch(e){} try{ audio._pvHadError=true; }catch(e){} if(cur){ try{ var _b=cur.bubble?cur.bubble.querySelector('.pv-voice-sent-play'):null; if(_b) _b.removeAttribute('data-voice-url'); if(cur.id && mem[cur.id]){ try{ URL.revokeObjectURL(mem[cur.id]); }catch(e){} delete mem[cur.id]; } }catch(e){} var _code=''; try{ _code=audio.error?(' (err '+audio.error.code+')'):''; }catch(e){} toast('Voice failed to play, tap again'+_code); cur=null; } }); return audio; }
   function syncPlayIcon(){ try{ if(!cur || !cur.bubble) return; var btn=cur.bubble.querySelector('.pv-voice-sent-play'); if(!btn) return; btn.textContent = (audio && !audio.paused) ? '❚❚' : '▶'; }catch(e){} }
   function syncProgress(){ try{ if(!cur || !cur.bubble || !audio) return; var dur=cur.dur||audio.duration||0; if(!dur) return; var p=Math.min(1, audio.currentTime/dur); var spans=cur.bubble.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp, i){ if(i/spans.length <= p) sp.classList.add('played'); else sp.classList.remove('played'); }); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(audio.currentTime); var wrap=cur.bubble.querySelector('.pv-voice-sent'); if(wrap) wrap.classList.add('playing'); }catch(e){} }
   function finishPlay(){ try{ if(!cur) return; var b=cur.bubble; var dur=cur.dur||0; if(b){ var spans=b.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp){ sp.classList.remove('played'); }); var dEl=b.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(dur); var wrap=b.querySelector('.pv-voice-sent'); if(wrap){ wrap.classList.remove('playing'); wrap.classList.add('played'); } var btn=b.querySelector('.pv-voice-sent-play'); if(btn) btn.textContent='▶'; } }catch(e){} cur=null; }
-  function stopPlayback(){ try{ if(audio){ try{ audio._pvStopping=true; }catch(e){} audio.pause(); audio.removeAttribute('src'); try{ audio.load(); }catch(e){} setTimeout(function(){ try{ audio._pvStopping=false; }catch(e){} }, 120); } }catch(e){} try{ if(cur && cur.bubble){ var spans=cur.bubble.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp){ sp.classList.remove('played'); }); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl && cur.dur) dEl.textContent=fmt(cur.dur); var wrap=cur.bubble.querySelector('.pv-voice-sent'); if(wrap) wrap.classList.remove('playing'); var btn=cur.bubble.querySelector('.pv-voice-sent-play'); if(btn) btn.textContent='▶'; } }catch(e){} cur=null; }
+  function stopPlayback(){ try{ if(audio){ try{ audio._pvStopping=true; }catch(e){} try{ audio.pause(); }catch(e){} try{ audio.currentTime=0; }catch(e){} /* V2: DO NOT remove src + load() - that fires error later and kills next play */ } }catch(e){} try{ if(cur && cur.bubble){ var spans=cur.bubble.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp){ sp.classList.remove('played'); }); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl && cur.dur) dEl.textContent=fmt(cur.dur); var wrap=cur.bubble.querySelector('.pv-voice-sent'); if(wrap) wrap.classList.remove('playing'); var btn=cur.bubble.querySelector('.pv-voice-sent-play'); if(btn) btn.textContent='▶'; } }catch(e){} cur=null; }
   function togglePlay(container){
     var fid=container.getAttribute('data-pv-voice-file')||'';
     var inline=container.getAttribute('data-pv-voice-inline')||inlineMap[fid]||'';
@@ -11691,11 +11691,13 @@ body:has(#chatScreen.private-as-all) #waDownCount{
     else if(fid && mem[fid]) syncUrl=mem[fid];
     else if(inline && inline.indexOf('data:audio')===0) syncUrl=inline;
     else if(inline && typeof inline==='string' && inline.length>100 && inline.indexOf('blob:')!==0 && inline.indexOf('http')!==0){
-      try{ var _b=b64ToBlob(inline, 'audio/webm'); syncUrl=blobUrl(fid||('inline_'+Date.now()), _b); }catch(e){}
+      try{ var _b=b64ToBlob(inline, 'audio/webm;codecs=opus'); syncUrl=blobUrl(fid||('inline_'+Date.now()), _b); }catch(e){}
     }
     if(syncUrl){
+      // V2: if last audio errored, throw it away - a poisoned Audio element never plays again
+      try{ if(a && a._pvHadError){ try{ a.pause(); }catch(e){} audio=null; a=getAudio(); } }catch(e){}
       cur={id:fid, bubble:container, dur:dur, speed:1};
-      try{ a.src=syncUrl; a.playbackRate=1; if(btn && syncUrl.indexOf('blob:')===0) btn.setAttribute('data-voice-url', syncUrl); var pr2=a.play(); if(pr2 && pr2.catch) pr2.catch(function(err){ if(err && err.name==='NotAllowedError') toast('Tap play again to listen'); }); }catch(e){ toast('Tap play again to listen'); }
+      try{ try{ a._pvStopping=false; a._pvHadError=false; }catch(e){} a.src=syncUrl; a.playbackRate=1; if(btn && syncUrl.indexOf('blob:')===0) btn.setAttribute('data-voice-url', syncUrl); try{ a.load(); }catch(e){} var pr2=a.play(); if(pr2 && pr2.catch) pr2.catch(function(err){ if(err && err.name==='NotAllowedError') toast('Tap play again to listen'); else if(err) toast('Tap play again to listen'); }); }catch(e){ toast('Tap play again to listen'); }
       return;
     }
     // SLOW PATH - need to download from Firebase/IDB. Keep cur as PENDING, do NOT set cur yet.
@@ -11708,9 +11710,9 @@ body:has(#chatScreen.private-as-all) #waDownCount{
       }
       // Cache for instant next tap
       try{ if(u.indexOf('blob:')===0 && btn) btn.setAttribute('data-voice-url', u); }catch(e){}
+      try{ if(a && a._pvHadError){ try{ a.pause(); }catch(e){} audio=null; a=getAudio(); } }catch(e){}
       cur={id:fid, bubble:container, dur:dur, speed:1};
-      a.src=u; a.playbackRate=1;
-      var pr3=a.play();
+      try{ a._pvStopping=false; a._pvHadError=false; }catch(e){} a.src=u; a.playbackRate=1; try{ a.load(); }catch(e){} var pr3=a.play();
       if(pr3 && pr3.catch) pr3.catch(function(err){ if(err && err.name==='NotAllowedError') toast('Tap play again to listen'); else if(err) toast('Tap play again to listen'); });
     });
   }
