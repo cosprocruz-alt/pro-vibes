@@ -7173,6 +7173,24 @@ window.pvSendFromNotif = async function(chatTarget, txt){
       }catch(e){}
       return true;
     }
+    // FIX - ID private chats from notifications. Old code treated every private_ target as a NAME and wrote to old
+    // prochat_private_chats, so a reply to a new ID chat went nowhere. private_id_priv_<uid>__<uid> must go to the ID room.
+    if(chatTarget && chatTarget.indexOf('private_id_')===0){
+      try{
+        var idRoom=chatTarget.slice('private_id_'.length);
+        var idParts=idRoom.replace(/^priv_/,'').split('__');
+        var myIdN=localStorage.getItem('pv_user_id')||'';
+        var otherN=(idParts[0]===myIdN ? idParts[1] : idParts[0])||'';
+        if(!otherN || otherN===myIdN) return true;
+        var dispN=otherN;
+        try{ var ar=await fetch(URL_BASE+'/pv_accounts.json'); var aj=await ar.json(); if(aj && aj[otherN] && aj[otherN].name) dispN=aj[otherN].name; else if(aj){ var vv=Object.values(aj); for(var vi=0;vi<vv.length;vi++){ if(vv[vi] && String(vv[vi].userId)===String(otherN)){ dispN=vv[vi].name; break; } } } }catch(e){}
+        var payloadN={uid:localStorage.getItem('pv_user_id')||'', n:myName, m:txt, time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), t:Date.now()};
+        try{ var lc=JSON.parse(localStorage.getItem('pv_id_private_chats')||'{}'); if(!lc[idRoom]) lc[idRoom]=[]; lc[idRoom].push(payloadN); localStorage.setItem('pv_id_private_chats', JSON.stringify(lc)); }catch(e){}
+        try{ await fetch(URL_BASE+'/private_chats/'+encodeURIComponent(idRoom)+'/msgs.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payloadN)}); }catch(e){}
+        try{ var myIdN2=localStorage.getItem('pv_device_id')||''; var topicN='pro-vibes-private-'+idRoom.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase(); await fetch('https://ntfy.sh/'+topicN,{method:'POST',headers:{'Title':myName+' (Private)','Tags':'speech_balloon','Priority':'high'},body:txt+' |from:'+myIdN2}); }catch(e){}
+      }catch(e){}
+      return true;
+    }
     if(chatTarget && chatTarget.indexOf('private_')===0){
       var name=chatTarget.replace('private_','');
       try{
@@ -7194,6 +7212,7 @@ window.pvViewNotifChat = function(chatTarget){
   try{
     if(chatTarget==='all'){ if(typeof openChat==='function') openChat('all'); else if(window.tabNav) window.tabNav('chats'); }
     else if(chatTarget==='ai'){ if(typeof openChat==='function') openChat('ai'); else if(window.tabNav) window.tabNav('chats'); }
+    else if(chatTarget && chatTarget.indexOf('private_id_')===0){ try{ var r2=chatTarget.slice('private_id_'.length); var p2=r2.replace(/^priv_/,'').split('__'); var myI2=''; try{ myI2=localStorage.getItem('pv_user_id')||''; }catch(e){} var o2=(p2[0]===myI2 ? p2[1] : p2[0])||''; if(o2 && o2!==myI2){ if(window.openIdPrivate) window.openIdPrivate(o2, o2); else if(window.openPrivateChat) window.openPrivateChat(o2, o2); } }catch(e){} }
     else if(chatTarget && chatTarget.indexOf('private_')===0){ var n=chatTarget.replace('private_',''); if(window.openPrivateChat) window.openPrivateChat(n); }
   }catch(e){}
 };
@@ -7566,8 +7585,10 @@ window.pvViewNotifChat = function(chatTarget){
       try{ localStorage.setItem('pv_id_private_chats','{}'); }catch(e){}
       try{ localStorage.setItem('pv_id_friends','[]'); }catch(e){}
       localStorage.setItem('pv_id_cleared','1');
-      // Try clear old Firebase private path once (old name rooms). New rooms are in /private_chats/priv_... so this no go touch new.
-      try{ fetch(URL_BASE+'/private_chats.json',{method:'DELETE'}).catch(function(){}); }catch(e){}
+      // FIX 1 - NEVER DELETE /private_chats.json. DELETE on that path deletes the WHOLE node,
+      // including NEW priv_ ID rooms. Comment before said 'this no go touch new' but it did.
+      // Old name rooms are simply ignored by ID code now. Only local storage is cleared here.
+      // No Firebase delete happens here, so one phone's first load can never wipe another phone's new chats.
       // Remove old private rows from main list if any
       try{ document.querySelectorAll('[data-private], .private-row').forEach(function(n){ n.remove(); }); }catch(e){}
     }
@@ -7638,7 +7659,7 @@ window.pvViewNotifChat = function(chatTarget){
     myselfRow.className='exact-contact';
     var myColor = colorForId(myUserId()||myN);
     myselfRow.innerHTML = '<div class="exact-contact-avatar" style="background:'+myColor+' !important;">'+(myN[0]||'Y').toUpperCase()+'</div><div class="exact-contact-name"><b>Myself (You)</b></div><button class="sleek-msg-btn" data-self="1">Message</button>';
-    myselfRow.querySelector('.sleek-msg-btn').addEventListener('click', function(e){ e.stopPropagation(); openIdPrivate(myN, myUserId()); closeIdSheet(); });
+    myselfRow.querySelector('.sleek-msg-btn').addEventListener('click', function(e){ e.stopPropagation(); /* FIX: Myself is not a chat - no priv_<me>__<me> room. Tapping Myself does nothing. */ });
     listEl.appendChild(myselfRow);
     if(!contacts.length){
       var empty=document.createElement('div'); empty.style.cssText='padding:24px 16px;color:#8696a0;font-size:13px;text-align:center;'; empty.innerHTML='No contacts yet.<br/>New person go show here after dem create account.';
@@ -7686,12 +7707,14 @@ window.pvViewNotifChat = function(chatTarget){
   window.__pvCurrentPrivateRoom = null;
 
   window.openIdPrivate = function(name, otherUid){
-    // If otherUid missing (old call with name only), try find by name in cache
-    if(!otherUid){
-      var found = accountsCache.find(function(x){ return x.name===name; });
-      if(found) otherUid = found.userId; else { // fallback: treat name as uid for old compat, but still use ID room with name hash
-        otherUid = 'name_' + sanitizeId(name);
-      }
+    // FIX - Never open a chat with yourself. Old code created priv_<me>__<me> and marked you as your own Friend.
+    if(otherUid && String(otherUid)===String(myUserId())){ return; }
+    // FIX - No name_ fallback room. A name_ room never matches the other phone's real ID room (priv_<uid>__<uid>),
+    // so the two phones would end in two different rooms and never see each other. No real UID = stop, no fake room.
+    if(!otherUid || String(otherUid).indexOf('name_')===0){
+      var found2 = accountsCache.find(function(x){ return x.name===name; });
+      if(found2){ otherUid = found2.userId; if(String(otherUid)===String(myUserId())) return; }
+      else { return; }
     }
     window.__pvCurrentPrivateUid = otherUid;
     var room = roomIdFor(otherUid);
@@ -7746,11 +7769,15 @@ window.pvViewNotifChat = function(chatTarget){
     if(window.currentChat && String(window.currentChat).startsWith('private_id_')){
       var inp=document.getElementById('mInput'); if(!inp) return;
       var txt=inp.value.trim(); if(!txt) return;
-      // Security: must have passed login (same rule as All Users)
-      if(window.__pvAuthPassed===false){ alert('Please login first.'); return; }
+      // FIX - Same rule as security patch: block if NOT logged in (false OR undefined). Old check only blocked ===false,
+      // so an undefined flag let the bubble show locally while Firebase rejected the POST with 403.
+      if(!window.__pvAuthPassed){ alert('Please login first.'); return; }
       var room=window.__pvCurrentPrivateRoom; var otherUid=window.__pvCurrentPrivateUid;
+      // FIX - Never send without a real room/uid, and never to yourself.
+      if(!room || !otherUid || String(otherUid)===String(myUserId())) return;
       var time=new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-      var msg={ uid: myUserId(), n: myName(), m: txt, time: time, t: Date.now(), passHash: myPassHash(), auth: myUserId()+':'+myPassHash() };
+      // FIX - No passHash / auth in the stored message. Those are secrets - anyone who can read /private_chats/ would see them.
+      var msg={ uid: myUserId(), n: myName(), m: txt, time: time, t: Date.now() };
       var chats=getIdChats(); if(!chats[room]) chats[room]=[];
       chats[room].push(msg); saveIdChats(chats);
       // Show
@@ -7760,7 +7787,10 @@ window.pvViewNotifChat = function(chatTarget){
       try{ if(window.onInputChange) window.onInputChange(); }catch(e){}
       markFriend(otherUid);
       // Firebase send to ID room — never to old name room
-      fetch(firebasePrivateUrl(room), {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(msg)}).catch(function(){});
+      // FIX - Check the POST result. Old code swallowed a 403 so the bubble stayed but receiver never got it.
+      // If Firebase rejects, remove the optimistic bubble + local copy so local and Firebase no diverge.
+      var sentDiv = messages ? messages.lastElementChild : null;
+      fetch(firebasePrivateUrl(room), {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(msg)}).then(function(r){ if(r && !r.ok){ try{ if(sentDiv && sentDiv.parentNode) sentDiv.remove(); }catch(e){} try{ var cc2=getIdChats(); if(cc2[room] && cc2[room].length) cc2[room].pop(); saveIdChats(cc2); }catch(e){} try{ alert('Message not sent - please login first.'); }catch(e){} } }).catch(function(){});
       return;
     }
     if(origSend) return origSend.apply(this, arguments);
@@ -7798,14 +7828,11 @@ window.pvViewNotifChat = function(chatTarget){
         if(parts.length!==2) return;
         if(parts[0]!==me && parts[1]!==me) return;
         var other = parts[0]===me ? parts[1] : parts[0];
-        // If this room has at least one message, mark as Friend so New shows Friends
-        var msgs = j[room] && j[room].msgs ? Object.values(j[room].msgs) : (j[room] ? Object.values(j[room]) : []);
-        // Also handle case where room value is directly {pushId: msg} (old shape) vs {msgs: {...}}
-        if(!msgs.length && j[room] && typeof j[room]==='object'){
-          // If room value has 'msgs', already handled. If not, try values
-          var vals = Object.values(j[room]);
-          if(vals.length && vals[0] && typeof vals[0]==='object' && vals[0].m) msgs = vals;
-        }
+        if(!other || other===me) return;
+        // FIX - Robust extraction. ID rooms store as {msgs:{pushId:msg}}, old merged rooms as {pushId:msg}.
+        // Old fallback checked vals[0].m on {msgs:{...}} which is wrong - vals[0] is the whole msgs object, not a message.
+        var msgs = [];
+        try{ var roomVal = j[room] || {}; if(roomVal.msgs && typeof roomVal.msgs==='object') msgs = Object.values(roomVal.msgs); else if(typeof roomVal==='object') msgs = Object.values(roomVal).filter(function(v){ return v && typeof v==='object' && typeof v.m==='string'; }); }catch(e){ msgs = []; }
         if(msgs.length) markFriend(other);
       });
     }catch(e){}
@@ -7845,7 +7872,8 @@ window.pvViewNotifChat = function(chatTarget){
   function getSavedName(uid, globalName){ var m=getSavedMap(); return m[uid] || globalName; }
   function isSaved(uid){ var m=getSavedMap(); return !!m[uid]; }
   function getFriends(){ try{ return JSON.parse(localStorage.getItem('pv_id_friends')||'[]'); }catch(e){ return []; } }
-  function isFriend(uid){ return getFriends().indexOf(uid)!==-1 || isSaved(uid); }
+  // FIX - Friends = don chat before ONLY. Saved alone must NOT show Friends - saving is not chatting.
+  function isFriend(uid){ return getFriends().indexOf(uid)!==-1; }
 
   var accountsCache=[];
   async function fetchAccounts(){
@@ -7974,10 +8002,9 @@ window.pvViewNotifChat = function(chatTarget){
     var accounts=await fetchAccounts();
     var matches=accounts.filter(function(a){ return String(a.name).toLowerCase()===String(globalName).toLowerCase(); });
     if(matches.length===0){
-      // No account with that name (old All Users message from before accounts) — show by name with temp id, but still allow save by name
-      var temp={userId:'name_'+String(globalName).toLowerCase().replace(/[^a-z0-9]/g,'_'), name:globalName, createdAt:0};
-      var last=await fetchLastAllMsgFor(null, globalName);
-      showSaveDialog(temp, last);
+      // FIX - No temp name_ account. A name_ ID would create a name_ room that never matches the other phone's real ID room,
+      // so messages would go nowhere. If no account exists, there is no real UID to chat with - stop here.
+      try{ alert('This person never create account yet, you no fit chat them for private.'); }catch(e){}
       return;
     }
     if(matches.length===1){
@@ -8009,7 +8036,7 @@ window.pvViewNotifChat = function(chatTarget){
     var prevScroll=listEl.scrollTop||0; listEl.innerHTML='';
     var myN=myName()||'You'; var myselfRow=document.createElement('div'); myselfRow.className='exact-contact';
     myselfRow.innerHTML='<div class="exact-contact-avatar" style="background:'+colorForId(myUid()||myN)+' !important;">'+(myN[0]||'Y').toUpperCase()+'</div><div class="exact-contact-name"><b>Myself (You)</b></div><button class="sleek-msg-btn" data-self="1">Message</button>';
-    myselfRow.querySelector('.sleek-msg-btn').addEventListener('click', function(e){ e.stopPropagation(); if(window.openIdPrivate) window.openIdPrivate(myN, myUid()); if(window.closeIdSheet) window.closeIdSheet(); });
+    myselfRow.querySelector('.sleek-msg-btn').addEventListener('click', function(e){ e.stopPropagation(); /* FIX: Myself is not a chat - no priv_<me>__<me> room. */ });
     listEl.appendChild(myselfRow);
     contacts.forEach(function(c){
       var display=getSavedName(c.userId, c.name);
@@ -8031,6 +8058,8 @@ window.pvViewNotifChat = function(chatTarget){
   if(window.openIdPrivate && !window.__pvOpenIdPrivateOrig){
     window.__pvOpenIdPrivateOrig = window.openIdPrivate;
     window.openIdPrivate = function(name, uid){
+      // FIX - Never open self chat.
+      if(uid && String(uid)===String(myUid())) return;
       if(!uid){
         // Old call with name only — go through save chooser
         handleTapName(name, null, null); return;
@@ -8071,6 +8100,31 @@ window.pvViewNotifChat = function(chatTarget){
   console.log('PV SAVE CONTACTS FINAL ready — save before chat, local only, All Users names tappable');
 })();
 </script>
+
+
+<style id="PV-VOICE-FIX-FINAL-2026">
+/* FIX 1 - Input bar: old hide rule lost because #chatScreen.all-mode #inputBar = 2 IDs beats body.pv-recording #inputBar = 1 ID. This wins. */
+html body.pv-recording #chatScreen.all-mode #inputBar,
+html body.pv-recording #chatScreen.private-mode #inputBar,
+html body.pv-recording #chatScreen.private-mode.private-as-all #inputBar,
+html body.pv-recording #chatScreen.ai-mode #inputBar,
+html body.pv-recording #chatScreen #inputBar,
+html body.pv-recording #inputBar{
+  display:none !important; visibility:hidden !important; pointer-events:none !important; opacity:0 !important;
+}
+/* FIX 2 - Recorder bar: WhatsApp way - fixed at bottom, above everything, never under the input bar */
+html body.pv-recording #pvVoiceRecBar,
+html body.pv-recording #chatScreen #pvVoiceRecBar{
+  position:fixed !important; left:0 !important; right:0 !important; bottom:0 !important;
+  margin:0 10px calc(10px + env(safe-area-inset-bottom)) !important;
+  z-index:1005 !important; display:flex !important; visibility:visible !important; opacity:1 !important;
+}
+/* FIX 3 - Recording waveform: never flat - keep bars alive */
+#pvVoiceRecBar .pv-rec-wave span{ transition:height .12s ease !important; min-height:6px !important; }
+#pvVoiceRecBar .pv-rec-wave{ align-items:center !important; }
+/* FIX 4 - Sent voice bubble: make play button big + tappable like WhatsApp */
+.pv-voice-sent-play{ min-width:38px !important; min-height:38px !important; }
+</style>
 
 </body>
 
@@ -11606,42 +11660,58 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   /* ---------- Playback: one global audio, WhatsApp style ---------- */
   var audio=null;
   var cur=null;
-  function getAudio(){ if(audio) return audio; audio=new Audio(); audio.preload='auto'; audio.setAttribute('playsinline',''); audio.addEventListener('timeupdate', function(){ syncProgress(); }); audio.addEventListener('ended', function(){ finishPlay(); }); audio.addEventListener('pause', function(){ if(cur && cur.bubble) syncPlayIcon(); }); audio.addEventListener('play', function(){ if(cur && cur.bubble) syncPlayIcon(); }); audio.addEventListener('loadedmetadata', function(){ try{ if(cur && cur.bubble && (!cur.dur || cur.dur<=0) && audio.duration){ cur.dur=Math.round(audio.duration); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(cur.dur); } }catch(e){} }); audio.addEventListener('error', function(){ if(cur){ toast('Voice failed to play, tap again'); cur=null; } }); return audio; }
+  function getAudio(){ if(audio) return audio; audio=new Audio(); audio.preload='auto'; audio.setAttribute('playsinline',''); audio.addEventListener('timeupdate', function(){ syncProgress(); }); audio.addEventListener('ended', function(){ finishPlay(); }); audio.addEventListener('pause', function(){ if(cur && cur.bubble) syncPlayIcon(); }); audio.addEventListener('play', function(){ if(cur && cur.bubble) syncPlayIcon(); }); audio.addEventListener('loadedmetadata', function(){ try{ if(cur && cur.bubble && (!cur.dur || cur.dur<=0) && audio.duration){ cur.dur=Math.round(audio.duration); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(cur.dur); } }catch(e){} }); audio.addEventListener('error', function(){ try{ if(audio._pvStopping) return; if(!audio.src) return; }catch(e){} if(cur){ toast('Voice failed to play, tap again'); cur=null; } }); return audio; }
   function syncPlayIcon(){ try{ if(!cur || !cur.bubble) return; var btn=cur.bubble.querySelector('.pv-voice-sent-play'); if(!btn) return; btn.textContent = (audio && !audio.paused) ? '❚❚' : '▶'; }catch(e){} }
   function syncProgress(){ try{ if(!cur || !cur.bubble || !audio) return; var dur=cur.dur||audio.duration||0; if(!dur) return; var p=Math.min(1, audio.currentTime/dur); var spans=cur.bubble.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp, i){ if(i/spans.length <= p) sp.classList.add('played'); else sp.classList.remove('played'); }); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(audio.currentTime); var wrap=cur.bubble.querySelector('.pv-voice-sent'); if(wrap) wrap.classList.add('playing'); }catch(e){} }
   function finishPlay(){ try{ if(!cur) return; var b=cur.bubble; var dur=cur.dur||0; if(b){ var spans=b.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp){ sp.classList.remove('played'); }); var dEl=b.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(dur); var wrap=b.querySelector('.pv-voice-sent'); if(wrap){ wrap.classList.remove('playing'); wrap.classList.add('played'); } var btn=b.querySelector('.pv-voice-sent-play'); if(btn) btn.textContent='▶'; } }catch(e){} cur=null; }
-  function stopPlayback(){ try{ if(audio){ audio.pause(); audio.removeAttribute('src'); audio.load(); } }catch(e){} try{ if(cur && cur.bubble){ var spans=cur.bubble.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp){ sp.classList.remove('played'); }); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl && cur.dur) dEl.textContent=fmt(cur.dur); var wrap=cur.bubble.querySelector('.pv-voice-sent'); if(wrap) wrap.classList.remove('playing'); var btn=cur.bubble.querySelector('.pv-voice-sent-play'); if(btn) btn.textContent='▶'; } }catch(e){} cur=null; }
+  function stopPlayback(){ try{ if(audio){ try{ audio._pvStopping=true; }catch(e){} audio.pause(); audio.removeAttribute('src'); try{ audio.load(); }catch(e){} setTimeout(function(){ try{ audio._pvStopping=false; }catch(e){} }, 120); } }catch(e){} try{ if(cur && cur.bubble){ var spans=cur.bubble.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp){ sp.classList.remove('played'); }); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl && cur.dur) dEl.textContent=fmt(cur.dur); var wrap=cur.bubble.querySelector('.pv-voice-sent'); if(wrap) wrap.classList.remove('playing'); var btn=cur.bubble.querySelector('.pv-voice-sent-play'); if(btn) btn.textContent='▶'; } }catch(e){} cur=null; }
   function togglePlay(container){
     var fid=container.getAttribute('data-pv-voice-file')||'';
     var inline=container.getAttribute('data-pv-voice-inline')||inlineMap[fid]||'';
     if(!fid && !inline) return;
+    // If same voice is already loaded, toggle SYNC inside the tap - this keeps the browser gesture
     if(cur && cur.id===fid){
-      try{ if(audio.paused){ audio.play(); } else { audio.pause(); } syncPlayIcon(); }catch(e){}
+      try{
+        if(!audio || !audio.src){ return; } // still fetching, let the pending fetch finish
+        if(audio.paused){ var pr=audio.play(); if(pr && pr.catch) pr.catch(function(){ toast('Tap play again to listen'); }); } else { audio.pause(); }
+        syncPlayIcon();
+      }catch(e){}
       return;
     }
+    // Stop previous voice WITHOUT firing the error toast (stopPlayback now suppresses it)
     stopPlayback();
     var durEl=container.querySelector('.pv-voice-sent-dur'); var dur=0;
-    var m=(durEl?durEl.textContent:'').split(':'); if(m.length===2) dur=(parseInt(m[0],10)||0)*60+(parseInt(m[1],10)||0);
+    var mm=(durEl?durEl.textContent:'').split(':'); if(mm.length===2) dur=(parseInt(mm[0],10)||0)*60+(parseInt(mm[1],10)||0);
     var a=getAudio();
-    cur={id:fid, bubble:container, dur:dur, speed:1};
     var btn=container.querySelector('.pv-voice-sent-play');
-    var url=(btn && btn.getAttribute('data-voice-url'))||'';
-    var p=url ? Promise.resolve(url) : fetchVoiceUrl(fid, inline);
-    p.then(function(u){
-      if(!u || !cur || cur.id!==fid){
-        if(!u){
-          return sleep(1500).then(function(){
-            if(!cur || cur.id!==fid) return;
-            return fetchVoiceUrl(fid, inline).then(function(u2){
-              if(!u2){ cur=null; toast('Voice still uploading, tap again in a moment'); return; }
-              a.src=u2; a.playbackRate=1; a.play().catch(function(){});
-            });
-          });
-        }
+    var cachedUrl=(btn && btn.getAttribute('data-voice-url'))||'';
+    // FAST PATH - WhatsApp way: if we already have the audio in memory / inline, play SYNC, no await
+    var syncUrl='';
+    if(cachedUrl && cachedUrl.indexOf('blob:')===0) syncUrl=cachedUrl;
+    else if(fid && mem[fid]) syncUrl=mem[fid];
+    else if(inline && inline.indexOf('data:audio')===0) syncUrl=inline;
+    else if(inline && typeof inline==='string' && inline.length>100 && inline.indexOf('blob:')!==0 && inline.indexOf('http')!==0){
+      try{ var _b=b64ToBlob(inline, 'audio/webm'); syncUrl=blobUrl(fid||('inline_'+Date.now()), _b); }catch(e){}
+    }
+    if(syncUrl){
+      cur={id:fid, bubble:container, dur:dur, speed:1};
+      try{ a.src=syncUrl; a.playbackRate=1; if(btn && syncUrl.indexOf('blob:')===0) btn.setAttribute('data-voice-url', syncUrl); var pr2=a.play(); if(pr2 && pr2.catch) pr2.catch(function(err){ if(err && err.name==='NotAllowedError') toast('Tap play again to listen'); }); }catch(e){ toast('Tap play again to listen'); }
+      return;
+    }
+    // SLOW PATH - need to download from Firebase/IDB. Keep cur as PENDING, do NOT set cur yet.
+    // When it finishes we cache it, so the NEXT tap plays instantly (sync path above).
+    var pendingId=fid;
+    fetchVoiceUrl(fid, inline).then(function(u){
+      if(!u || pendingId!==fid) {
+        if(!u){ toast('Voice still uploading, tap again in a moment'); }
         return;
       }
-      if(cur && cur.bubble){ var b2=cur.bubble.querySelector('.pv-voice-sent-play'); if(b2 && u && u.indexOf('blob:')===0) b2.setAttribute('data-voice-url', u); }
-      a.src=u; a.playbackRate=1; a.play().catch(function(){ toast('Tap play again to listen'); });
+      // Cache for instant next tap
+      try{ if(u.indexOf('blob:')===0 && btn) btn.setAttribute('data-voice-url', u); }catch(e){}
+      cur={id:fid, bubble:container, dur:dur, speed:1};
+      a.src=u; a.playbackRate=1;
+      var pr3=a.play();
+      if(pr3 && pr3.catch) pr3.catch(function(err){ if(err && err.name==='NotAllowedError') toast('Tap play again to listen'); else if(err) toast('Tap play again to listen'); });
     });
   }
   function cycleSpeed(container){
@@ -11797,10 +11867,10 @@ body:has(#chatScreen.private-as-all) #waDownCount{
     return out;
   }
   function showRecBar(){
-    try{ var bar=document.getElementById('pvVoiceRecBar'); if(bar){ bar.classList.add('show'); bar.style.display='flex'; } document.body.classList.add('pv-recording'); window._pvRecordingActive=true; }catch(e){}
+    try{ var bar=document.getElementById('pvVoiceRecBar'); if(bar){ bar.classList.add('show'); bar.style.display='flex'; } document.body.classList.add('pv-recording'); window._pvRecordingActive=true; try{ var ib=document.getElementById('inputBar'); if(ib){ ib.dataset.pvWasDisplay=ib.style.display||''; ib.style.setProperty('display','none','important'); ib.style.visibility='hidden'; ib.style.pointerEvents='none'; } }catch(e){} }catch(e){}
   }
   function hideRecBar(){
-    try{ var bar=document.getElementById('pvVoiceRecBar'); if(bar){ bar.classList.remove('show'); bar.style.display='none'; } document.body.classList.remove('pv-recording'); }catch(e){}
+    try{ var bar=document.getElementById('pvVoiceRecBar'); if(bar){ bar.classList.remove('show'); bar.style.display='none'; } document.body.classList.remove('pv-recording'); try{ var ib=document.getElementById('inputBar'); if(ib){ ib.style.removeProperty('display'); ib.style.visibility=''; ib.style.pointerEvents=''; } }catch(e){} }catch(e){}
   }
   function updatePauseBtn(){
     try{ var icon=document.querySelector('#pvRecPause .pv-rec-pause-icon'); var txt=document.getElementById('pvRecPauseTxt'); if(rec && rec.paused){ if(icon) icon.textContent='▶'; if(txt) txt.textContent='Resume'; } else { if(icon) icon.textContent='❚❚'; if(txt) txt.textContent='Pause'; } }catch(e){}
@@ -11841,11 +11911,12 @@ body:has(#chatScreen.private-as-all) #waDownCount{
         if(el>=600){ sendRecording(); }
       }, 200);
       rec.sampleTimer=setInterval(function(){
-        if(!rec || rec.paused || !rec.analyser) return;
+        if(!rec || rec.paused) return;
+        if(!rec.analyser){ try{ var wEl2=document.getElementById('pvRecWave'); if(wEl2){ var sp2=wEl2.querySelectorAll('span'); var tt=Date.now()/140; for(var j2=0;j2<sp2.length;j2++){ var vv=0.35+0.3*Math.sin(tt+j2*0.6)+Math.random()*0.15; sp2[j2].style.height=Math.round(6+vv*22)+'px'; } } }catch(e){} return; }
         try{
           var data=new Uint8Array(rec.analyser.fftSize); rec.analyser.getByteTimeDomainData(data);
           var sum=0; for(var i=0;i<data.length;i++){ var v=(data[i]-128)/128; sum+=v*v; }
-          var rms=Math.min(1, Math.sqrt(sum/data.length)*3);
+          var rms=Math.min(1, Math.sqrt(sum/data.length)*3); if(rms<0.02){ rms=0.12+0.08*Math.sin(Date.now()/150+rec.waveSamples.length); }
           rec.waveSamples.push(rms);
           var wEl=document.getElementById('pvRecWave'); if(wEl){ var spans=wEl.querySelectorAll('span'); var recent=rec.waveSamples.slice(-40); for(var j=0;j<spans.length;j++){ var val=recent[j]!==undefined?recent[j]:0.08; spans[j].style.height=Math.round(6+val*28)+'px'; } }
         }catch(e){}
@@ -12052,6 +12123,11 @@ body:has(#chatScreen.private-as-all) #waDownCount{
             var merged={};
             Object.keys(baseData).forEach(function(k){
               if(k.indexOf('priv_')===0){
+                // FIX - Two kinds of priv_ rooms share this prefix, do NOT treat them the same:
+                // (a) ID rooms: priv_<uid>__<uid> - they contain '__' and have NO secret entry. Keep them as-is.
+                //     Old code did if(!oldR) return; which DROPPED all ID rooms, so discoverPrivateChats() never saw them.
+                // (b) Secret rooms: priv_<24 random chars> - no '__', mapped via pv_priv_secrets.json to an old room.
+                if(k.indexOf('__')!==-1){ if(!merged[k]) merged[k]={}; var idMsgs=baseData[k]||{}; Object.keys(idMsgs).forEach(function(mk){ merged[k][mk]=idMsgs[mk]; }); return; }
                 var oldR=secretToOld[k];
                 if(!oldR) return;
                 if(!merged[oldR]) merged[oldR]={};
@@ -12104,9 +12180,11 @@ body:has(#chatScreen.private-as-all) #waDownCount{
             var bodyStr=(opts && opts.body) ? String(opts.body) : '';
             if(bodyStr && bodyStr.charAt(0)==='{'){
               var obj=JSON.parse(bodyStr);
-              var uid=getUid(); var ph=getPassHash();
+              var uid=getUid();
               if(uid && !obj.uid) obj.uid=uid;
-              if(ph && !obj.auth) obj.auth=ph;
+              // FIX - Never store secrets in Firebase. Old code added auth=passHash to the message body, which is then SAVED
+              // in /private_chats/ or /msgs.json for anyone who can read it to see. Strip any secret fields before sending.
+              try{ delete obj.passHash; delete obj.auth; delete obj.pass_hash; }catch(e){}
               var newOpts={}; if(opts){ Object.keys(opts).forEach(function(k){ newOpts[k]=opts[k]; }); }
               newOpts.body=JSON.stringify(obj);
               return _origFetch(newUrl, newOpts);
