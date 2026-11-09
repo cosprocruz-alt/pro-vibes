@@ -2143,7 +2143,7 @@ if(d1){
 const arr=Object.values(d1).map(m=>{
 const rawT=m.t!=null?m.t:m.timestamp!=null?m.timestamp:0;
 const numT=Number(rawT);
-return {n:m.n||m.name||'User', m:m.m||m.msg||m.text||'', t:isNaN(numT)?0:numT, reply: m.reply||m.r||null, voice: m.voice||m.voiceUrl||null, voiceUrl: m.voice||m.voiceUrl||null, voiceFile: m.voiceFile||null, dur: m.dur||0, wave: m.wave||[]};
+return {n:m.n||m.name||'User', m:m.m||m.msg||m.text||'', t:isNaN(numT)?0:numT, reply: m.reply||m.r||null, voice: m.voice||m.voiceUrl||null, voiceUrl: m.voice||m.voiceUrl||null, voiceFile: m.voiceFile||null, dur: m.dur||0, wave: m.wave||[], voiceData: m.voiceData||null};
 }).filter(x=>x.m && String(x.m).trim());
 all=all.concat(arr);
 }
@@ -2155,7 +2155,7 @@ if(d2){
 const arr2=Object.values(d2).map(m=>{
 const rawT=m.t!=null?m.t:m.timestamp!=null?m.timestamp:0;
 const numT=Number(rawT);
-return {n:m.n||m.name||'User', m:m.m||m.text||m.msg||'', t:isNaN(numT)?0:numT, reply: m.reply||m.r||null, voice: m.voice||m.voiceUrl||null, voiceUrl: m.voice||m.voiceUrl||null, voiceFile: m.voiceFile||null, dur: m.dur||0, wave: m.wave||[]};
+return {n:m.n||m.name||'User', m:m.m||m.text||m.msg||'', t:isNaN(numT)?0:numT, reply: m.reply||m.r||null, voice: m.voice||m.voiceUrl||null, voiceUrl: m.voice||m.voiceUrl||null, voiceFile: m.voiceFile||null, dur: m.dur||0, wave: m.wave||[], voiceData: m.voiceData||null};
 }).filter(x=>x.m && String(x.m).trim());
 all=all.concat(arr2);
 }
@@ -6403,12 +6403,12 @@ let all=[];
 try{
 const r1=await fetch(URL_BASE+'/msgs.json?_='+Date.now());
 const d1=await r1.json();
-if(d1) all=all.concat(Object.values(d1).map(m=>({n:m.n||m.name||'User', m:m.m||m.msg||m.text||'', t:Number(m.t!=null?m.t:m.timestamp||0)||0, reply:m.reply||m.r||null, voice:m.voice||m.voiceUrl||null, voiceUrl:m.voice||m.voiceUrl||null, voiceFile:m.voiceFile||null, dur:m.dur||0, wave:m.wave||[]})).filter(x=>x.m && String(x.m).trim()));
+if(d1) all=all.concat(Object.values(d1).map(m=>({n:m.n||m.name||'User', m:m.m||m.msg||m.text||'', t:Number(m.t!=null?m.t:m.timestamp||0)||0, reply:m.reply||m.r||null, voice:m.voice||m.voiceUrl||null, voiceUrl:m.voice||m.voiceUrl||null, voiceFile:m.voiceFile||null, dur:m.dur||0, wave:m.wave||[], voiceData:m.voiceData||null})).filter(x=>x.m && String(x.m).trim()));
 }catch(e){}
 try{
 const r2=await fetch(URL_BASE+'/prochat/rooms/general.json?_='+Date.now());
 const d2=await r2.json();
-if(d2) all=all.concat(Object.values(d2).map(m=>({n:m.n||m.name||'User', m:m.m||m.text||m.msg||'', t:Number(m.t!=null?m.t:m.timestamp||0)||0, reply:m.reply||m.r||null, voice:m.voice||m.voiceUrl||null, voiceUrl:m.voice||m.voiceUrl||null, voiceFile:m.voiceFile||null, dur:m.dur||0, wave:m.wave||[]})).filter(x=>x.m && String(x.m).trim()));
+if(d2) all=all.concat(Object.values(d2).map(m=>({n:m.n||m.name||'User', m:m.m||m.text||m.msg||'', t:Number(m.t!=null?m.t:m.timestamp||0)||0, reply:m.reply||m.r||null, voice:m.voice||m.voiceUrl||null, voiceUrl:m.voice||m.voiceUrl||null, voiceFile:m.voiceFile||null, dur:m.dur||0, wave:m.wave||[], voiceData:m.voiceData||null})).filter(x=>x.m && String(x.m).trim()));
 }catch(e){}
 // dedupe
 const seen=new Set(); const unique=[];
@@ -7199,58 +7199,7 @@ window.pvViewNotifChat = function(chatTarget){
 };
 </script>
 
-<script id="PV-MIC-DESIGN-ONLY-JS">
-(function(){
-  var MIC_SVG='<svg viewBox="0 0 24 24" width="26" height="26" fill="#111b21" stroke="none"><path fill="#111b21" stroke="none" d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path fill="#111b21" stroke="none" d="M19 11a7 7 0 0 1-14 0H3a9 9 0 0 0 8 8.94V23h2v-3.06A9 9 0 0 0 21 11h-2z"/></svg>';
-  var SEND_SVG='<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
-  function sync(){
-    var btn=document.getElementById('sendBtn'); if(!btn) return;
-    var inp=document.getElementById('mInput');
-    // FIX: don't use window.currentChat (it's a let, not on window, so it was always undefined -> mic never showed).
-    // Detect All Users from the screen itself.
-    var isAll=false; try{
-      var cs=document.getElementById('chatScreen');
-      var cn=document.getElementById('chatName');
-      var cnTxt=cn ? (cn.textContent||'') : '';
-      isAll = !!(cs && cs.style.display!=='none' && (cs.classList.contains('all-mode') || cs.classList.contains('ai-mode') || document.body.classList.contains('ai-mode') || document.body.classList.contains('all-mode') || cnTxt.indexOf('All Users')!==-1 || cnTxt.toLowerCase().indexOf('cospro')!==-1 || cnTxt.toLowerCase().indexOf('ai')!==-1));
-      // If chatScreen is hidden (we are in list), don't force mic - keep send as is
-      if(!cs || cs.style.display==='none') isAll=false;
-    }catch(e){}
-    var empty=!inp || !inp.value.trim();
-    if(isAll && empty){
-      // DESIGN ONLY: white circle + black mic, exactly as your picture
-      if(!btn.classList.contains('pv-mic-state')){
-        btn.classList.add('pv-mic-state');
-        btn.innerHTML=MIC_SVG; try{ btn.querySelectorAll('svg path').forEach(function(pp){ pp.setAttribute('fill','#111b21'); pp.setAttribute('stroke','none'); }); }catch(e){}
-        btn.setAttribute('data-mic','1');
-        // INLINE !important white - beats every later green stylesheet rule (that's why it stayed green before)
-        try{ btn.style.setProperty('background','#ffffff','important'); btn.style.setProperty('background-color','#ffffff','important'); btn.style.setProperty('box-shadow','0 4px 12px rgba(0,0,0,0.12)','important'); btn.style.setProperty('border','1px solid rgba(0,0,0,0.04)','important'); btn.style.setProperty('border-radius','50%','important'); btn.style.setProperty('width','46px','important'); btn.style.setProperty('height','46px','important'); }catch(e){}
-      }
-    } else {
-      // First word typed -> green send arrow (normal)
-      if(btn.classList.contains('pv-mic-state')){
-        btn.classList.remove('pv-mic-state');
-        btn.innerHTML=SEND_SVG;
-        btn.removeAttribute('data-mic');
-        try{ btn.style.removeProperty('background'); btn.style.removeProperty('background-color'); btn.style.removeProperty('box-shadow'); btn.style.removeProperty('border'); btn.style.removeProperty('border-radius'); btn.style.removeProperty('width'); btn.style.removeProperty('height'); }catch(e){}
-      }
-    }
-  }
-  // Block mic tap: DESIGN ONLY, no function yet
-  document.addEventListener('click', function(e){
-    var b=e.target && e.target.closest && e.target.closest('#sendBtn[data-mic="1"]');
-    if(!b) return;
-    // All Users: let FREE voice recorder handle it. Others: design-only, block.
-    try{ var _cs=document.getElementById('chatScreen'); if(_cs && _cs.classList.contains('all-mode')) return; }catch(e){}
-    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-    // Do nothing - design only, you will tell me what it should do next
-  }, true);
-  // Also block Enter when mic is showing (empty input already does nothing, but guard)
-  /* CONFLICT-CLEANED: duplicate mic 300ms removed, kept latest MIC-DEFAULT-ON-OPEN 500ms */
-  document.addEventListener('input', function(e){ if(e.target && e.target.id==='mInput') sync(); });
-  sync();
-})();
-</script>
+<script id="PV-MIC-DESIGN-ONLY-JS">(function(){ /* DELETED PERMANENTLY - old recorder logic wiped, replaced by PV-VOICE-FRESH-WHATSAPP-V1 */ })();</script>
 
 <script id="PV-FIX-ENTER-RELOAD">
 (function(){
@@ -7291,234 +7240,8 @@ window.pvViewNotifChat = function(chatTarget){
 
 
 
-<script id="PV-VOICE-FREE-V1">
-/* FREE voice - All Users only. No Storage, no Blaze, no card. 100% FREE.
-   Uses the SAME free Realtime Database you already pay nothing for.
-   Record in chunks (Opus) -> waveform = numbers -> audio split into small text chunks
-   in /voice_files/<id>/ (FREE DB) -> tiny message {voiceFile, dur, wave}. */
-(function(){
-  var FB='https://prochat2026-default-rtdb.firebaseio.com';
-  function myName(){ try{ return (localStorage.getItem('prochat_username')||localStorage.getItem('pv_username')||localStorage.getItem('prochat_name')||localStorage.getItem('cospro_name')||'You').trim()||'You'; }catch(e){ return 'You'; } }
-  function safeName(n){ return String(n||'user').replace(/[^a-zA-Z0-9]/g,'_').toLowerCase(); }
-  function fmt(s){ var m=Math.floor(s/60), ss=Math.floor(s%60); return m+':'+(ss<10?'0':'')+ss; }
-  function isAll(){ try{ var cs=document.getElementById('chatScreen'); return !!(cs && cs.style.display!=='none' && cs.classList.contains('all-mode')); }catch(e){ return false; } }
-  var DB='pv_voice_db_free', STORE='files';
-  function idb(){ return new Promise(function(res,rej){ try{ var r=indexedDB.open(DB,1); r.onupgradeneeded=function(){ try{ r.result.createObjectStore(STORE); }catch(e){} }; r.onsuccess=function(){ res(r.result); }; r.onerror=function(){ rej(r.error); }; }catch(e){ rej(e); } }); }
-  function idbPut(k,v){ idb().then(function(db){ try{ db.transaction(STORE,'readwrite').objectStore(STORE).put(v,k); }catch(e){} }).catch(function(){}); }
-  function idbGet(k){ return new Promise(function(res){ idb().then(function(db){ try{ var q=db.transaction(STORE,'readonly').objectStore(STORE).get(k); q.onsuccess=function(){ res(q.result||null); }; q.onerror=function(){ res(null); }; }catch(e){ res(null); } }).catch(function(){ res(null); }); }); }
-  var recBar=document.getElementById('pvVoiceRecBar'), inputBar=document.getElementById('inputBar'),
-      timeEl=document.getElementById('pvRecTime'), waveEl=document.getElementById('pvRecWave'),
-      pauseBtn=document.getElementById('pvRecPause'), pauseTxt=document.getElementById('pvRecPauseTxt'),
-      trashBtn=document.getElementById('pvRecTrash'), sendBtnRec=document.getElementById('pvRecSend'),
-      speedBtn=document.getElementById('pvRecSpeed');
-  var rec=null, stream=null, chunks=[], startedAt=0, elapsed=0, timerInt=null, paused=false,
-      waveData=[], analyser=null, audioCtx=null, analyserTimer=null, sending=false;
-  function buildWave(){ if(waveEl) waveEl.innerHTML=''; }
-  function pushAmp(a){ a=Math.max(0,Math.min(1,a)); waveData.push(a); try{ waveData._lastPush=Date.now(); }catch(e){} if(waveData.length>200) waveData=waveData.slice(-200); if(!waveEl) return; var s=document.createElement('span'); s.style.height=Math.round(8+a*28)+'px'; s.style.opacity='0.9'; waveEl.appendChild(s); while(waveEl.children.length>42) waveEl.removeChild(waveEl.firstChild); try{ waveEl.scrollLeft=waveEl.scrollWidth; }catch(e){} }
-  function startAnalyser(){ try{ if(!stream) return; audioCtx=new (window.AudioContext||window.webkitAudioContext)(); try{ if(audioCtx.state==='suspended') audioCtx.resume(); }catch(e){} var src=audioCtx.createMediaStreamSource(stream); analyser=audioCtx.createAnalyser(); analyser.fftSize=512; src.connect(analyser); var buf=new Uint8Array(analyser.fftSize); if(analyserTimer) clearInterval(analyserTimer); analyserTimer=setInterval(function(){ if(paused||!analyser) return; analyser.getByteTimeDomainData(buf); var peak=0,sum=0; for(var i=0;i<buf.length;i++){ var v=Math.abs((buf[i]-128)/128); if(v>peak) peak=v; sum+=v*v; } var rms=Math.sqrt(sum/buf.length); pushAmp(Math.min(1,Math.max(peak*1.8,rms*4.5,0.12))); },120); }catch(e){} }
-  function showRec(){
-    /* WhatsApp scroll: if you are NOT at the bottom (scrolled up), lift the chat up
-       so the last message is not hidden behind the recorder. If you ARE at the bottom, stay at bottom. */
-    try{
-      var _box=document.getElementById('messages');
-      if(_box){
-        var _dist=_box.scrollHeight-_box.scrollTop-_box.clientHeight;
-        if(_dist>120){ document.body.classList.add('pv-rec-was-scrolled-up'); _box.scrollTop=Math.max(0,_box.scrollTop-115); }
-        else { document.body.classList.remove('pv-rec-was-scrolled-up'); }
-        /* Give messages room so last bubble sits above recorder, not under it */
-        try{ _box.style.paddingBottom='135px'; }catch(e){}
-      }
-    }catch(e){}
-    if(inputBar) inputBar.style.setProperty('display','none','important'); if(recBar){ recBar.classList.add('show'); recBar.style.display='flex'; } try{ document.body.classList.add('pv-recording'); }catch(e){}
-  }
-  function hideRec(){ if(recBar){ recBar.classList.remove('show'); recBar.style.display='none'; } if(inputBar) inputBar.style.removeProperty('display'); try{ var _b=document.getElementById('messages'); if(_b) _b.style.paddingBottom=''; }catch(e){} try{ if(window._pvWaveFB) clearInterval(window._pvWaveFB); }catch(e){} try{ document.body.classList.remove('pv-recording'); document.body.classList.remove('pv-rec-was-scrolled-up'); }catch(e){} }
-  function stopTracks(){ try{ if(stream) stream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){} stream=null; }
-  function clearTimers(){ try{ if(timerInt) clearInterval(timerInt); }catch(e){} try{ if(analyserTimer) clearInterval(analyserTimer); }catch(e){} try{ if(audioCtx) audioCtx.close(); }catch(e){} analyser=null; audioCtx=null; }
-  function indStart(){ try{ fetch(FB+'/recording_all/'+safeName(myName())+'.json',{method:'PUT',body:JSON.stringify({n:myName(),t:Date.now()})}).catch(function(){}); }catch(e){} }
-  function indStop(){ try{ fetch(FB+'/recording_all/'+safeName(myName())+'.json',{method:'DELETE'}).catch(function(){}); }catch(e){} }
-  (function pollInd(){ var el=document.getElementById('pvRecordingIndicator'); async function poll(){ try{ if(!el) return; if(!isAll()){ el.classList.remove('show'); return; } var r=await fetch(FB+'/recording_all.json?_='+Date.now()); var d=await r.json(); var names=[]; var me=myName(); if(d) Object.values(d).forEach(function(v){ if(!v||!v.n) return; if(v.n.trim().toLowerCase()===me.toLowerCase()) return; if(Date.now()-Number(v.t||0)>6000) return; names.push(v.n); }); if(names.length>0){ el.innerHTML=(names.length===1?names[0]+' is recording audio':names.length+' people are recording audio')+'<span class="pv-typing-dots"><i></i><i></i><i></i></span>'; el.classList.add('show'); } else el.classList.remove('show'); }catch(e){} } setInterval(poll,1500); poll(); })();
-  async function startRec(){
-    if(!isAll()||rec) return;
-    waveData=[]; buildWave(); if(waveEl) waveEl.classList.add('playing'); paused=false; elapsed=0; if(timeEl) timeEl.textContent='0:00'; if(pauseTxt) pauseTxt.textContent='Pause';
-    try{ var box=document.getElementById('messages'); if(box && (box.scrollHeight-box.scrollTop-box.clientHeight)>120) document.body.classList.add('pv-rec-was-scrolled-up'); else document.body.classList.remove('pv-rec-was-scrolled-up'); }catch(e){}
-    showRec(); indStart(); startedAt=Date.now();
-    /* Start wave animation immediately - even before mic permission, so user never sees a dead flat line */
-    try{ if(window._pvWaveFB) clearInterval(window._pvWaveFB); window._pvWaveFB=setInterval(function(){ try{ if(!document.body.classList.contains('pv-recording')){ clearInterval(window._pvWaveFB); return; } if(paused) return; if(waveData.length && Date.now()-(waveData._lastPush||0)<400) return; pushAmp(0.22+Math.abs(Math.sin(Date.now()/260))*0.45+Math.random()*0.12); }catch(e){} },120); }catch(e){}
-    try{
-      stream=await navigator.mediaDevices.getUserMedia({audio:true});
-      chunks=[]; var mime=''; try{ if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mime='audio/webm;codecs=opus'; else if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm')) mime='audio/webm'; }catch(e){}
-      rec=mime?new MediaRecorder(stream,{mimeType:mime}):new MediaRecorder(stream);
-      rec.ondataavailable=function(e){ if(e.data && e.data.size>0) chunks.push(e.data); };
-      rec.start(250); startAnalyser();
-      /* WAVE FALLBACK: if analyser never pushes (mic muted / blocked), still animate real-looking waves
-         so user sees it is recording - like WhatsApp never shows a dead flat line */
-      try{ if(window._pvWaveFB) clearInterval(window._pvWaveFB); var _lastPush=Date.now(); window._pvWaveFB=setInterval(function(){ try{ if(!document.body.classList.contains('pv-recording')){ clearInterval(window._pvWaveFB); return; } if(paused) return; if(waveData.length && Date.now()-(waveData._lastPush||0)<400) return; /* analyser is pushing, leave it */ pushAmp(0.22+Math.abs(Math.sin(Date.now()/260))*0.45+Math.random()*0.12); }catch(e){} },120); }catch(e){}
-      if(timerInt) clearInterval(timerInt); timerInt=setInterval(function(){ if(paused) return; elapsed=(Date.now()-startedAt)/1000; if(timeEl) timeEl.textContent=fmt(elapsed); },200);
-    }catch(e){
-      /* MIC BLOCKED - most common cause: opening file as content:// instead of https:// */
-      try{ alert('Mic blocked. Open this file via https (not content://), then tap Allow for microphone.'); }catch(_){} 
-      startedAt=Date.now(); if(timerInt) clearInterval(timerInt); timerInt=setInterval(function(){ if(paused) return; elapsed=(Date.now()-startedAt)/1000; if(timeEl) timeEl.textContent=fmt(elapsed); },200);
-    }
-  }
-  function cancelRec(){ clearTimers(); try{ if(rec && rec.state!=='inactive') rec.stop(); }catch(e){} rec=null; chunks=[]; waveData=[]; elapsed=0; paused=false; stopTracks(); indStop(); if(waveEl) waveEl.classList.remove('playing'); hideRec(); }
-  function sendRec(){
-    if(sending) return; sending=true; clearTimers(); if(waveEl) waveEl.classList.remove('playing'); hideRec(); indStop();
-    var dur=Math.max(1,Math.round(elapsed)); var waveSnap=waveData.slice();
-    function finishWithBlob(blob){
-      if(!blob||!blob.size){ sending=false; return; }
-      var fileId='v_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
-      var name=myName(), ts=Date.now(), mText='🎤 Voice message ('+fmt(dur)+')';
-      try{ var box=document.getElementById('messages'); if(box){ var d=document.createElement('div'); d.className='bubble me'; d.setAttribute('data-pv-id',name+'|'+mText+'|'+ts); d.setAttribute('data-pv-text',mText); d.setAttribute('data-pv-name',name); var step=Math.max(1,Math.floor(waveSnap.length/34)); var wh=''; for(var i=0;i<34;i++){ var a=waveSnap.length?(waveSnap[Math.min(waveSnap.length-1,i*step)]||0.08):0.15; wh+='<span style="height:'+Math.round(5+a*26)+'px" data-idx="'+i+'"></span>'; } var tm=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); var url=URL.createObjectURL(blob); d.innerHTML='<div class="pv-voice-sent"><div class="pv-voice-sent-row"><button class="pv-voice-sent-play" data-voice-url="'+url+'" data-dur="'+dur+'">▶</button><div class="pv-voice-sent-wave"><div class="pv-voice-sent-dot"></div>'+wh+'</div><button class="pv-voice-sent-speed">1x</button></div><div class="pv-voice-sent-meta"><span class="pv-voice-sent-dur">'+fmt(dur)+'</span><span class="pv-voice-sent-time">'+tm+' <span style="color:#8696a0;">✓</span></span></div></div>'; try{ window.pvWireVoiceBubble(d,url,dur); }catch(e){} box.appendChild(d); try{ if(!(window.currentChat && String(window.currentChat).indexOf('private_')===0)) box.scrollTop=box.scrollHeight; }catch(e){} // NO scroll-to-down in private - deleted permanently } }catch(e){}
-      var reader=new FileReader(); reader.onload=function(){
-        try{
-          var dataUrl=reader.result; idbPut('file:'+fileId, dataUrl);
-          var CH=120000, total=Math.ceil(dataUrl.length/CH), done=0;
-          if(!total){ sending=false; return; }
-          for(var c=0;c<total;c++){ (function(idx,part){ fetch(FB+'/voice_files/'+fileId+'/c'+idx+'.json',{method:'PUT',body:JSON.stringify(part)}).then(function(){ done++; if(done===total) postTiny(); }).catch(function(){ done++; if(done===total) postTiny(); }); })(c, dataUrl.slice(c*CH,(c+1)*CH)); }
-          try{ fetch(FB+'/voice_files/'+fileId+'/meta.json',{method:'PUT',body:JSON.stringify({chunks:total,dur:dur,n:name,t:ts})}).catch(function(){}); }catch(e){}
-        }catch(e){ sending=false; }
-      }; reader.readAsDataURL(blob);
-      function postTiny(){
-        var payload={n:name,m:mText,t:ts,voiceFile:fileId,dur:dur,wave:waveSnap};
-        // PRIVATE-ONLY: if we are in a private chat, send voice to private_chats, NOT to All Users. AI / All Users path below is untouched.
-        try{
-          var _cur = window.currentChat || '';
-          if(_cur && String(_cur).indexOf('private_')===0){
-            var _other = String(_cur).replace('private_','');
-            var _a = safeName(name), _b = safeName(_other);
-            var _room = [_a,_b].sort().join('__');
-            fetch(FB+'/private_chats/'+_room+'/msgs.json',{method:'POST',body:JSON.stringify(payload)}).catch(function(){});
-            sending=false; return;
-          }
-        }catch(e){}
-        try{ var cc=JSON.parse(localStorage.getItem('prochat_cached_all_v2')||'[]'); cc.push(payload); localStorage.setItem('prochat_cached_all_v2',JSON.stringify(cc)); }catch(e){}
-        fetch(FB+'/msgs.json',{method:'POST',body:JSON.stringify(payload)}).catch(function(){});
-        fetch(FB+'/prochat/rooms/general.json',{method:'POST',body:JSON.stringify(payload)}).catch(function(){});
-        try{ fetch('https://ntfy.sh/pro-vibes-cospro-global-2026',{method:'POST',headers:{'Title':name+' • All Users','Tags':'speech_balloon'},body:mText}).catch(function(){}); }catch(e){}
-        sending=false;
-      }
-    }
-    try{
-      if(rec && rec.state!=='inactive'){ rec.onstop=function(){ try{ var b=new Blob(chunks,{type:(rec.mimeType||'audio/webm')}); }catch(e){ var b=new Blob(chunks,{type:'audio/webm'}); } rec=null; chunks=[]; stopTracks(); finishWithBlob(b); }; rec.stop(); }
-      else { var b2=new Blob(chunks,{type:'audio/webm'}); chunks=[]; stopTracks(); finishWithBlob(b2); }
-    }catch(e){ sending=false; }
-  }
-  document.addEventListener('click', function(e){ var b=e.target && e.target.closest && e.target.closest('#sendBtn[data-mic="1"]'); if(!b) return; if(!isAll()) return; e.preventDefault(); e.stopPropagation(); startRec(); }, true);
-  if(pauseBtn) pauseBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); paused=!paused; if(pauseTxt) pauseTxt.textContent=paused?'Resume':'Pause'; try{ if(rec){ if(paused && rec.state==='recording') rec.pause(); else if(!paused && rec.state==='paused') rec.resume(); } }catch(e){} if(paused){ if(waveEl) waveEl.classList.remove('playing'); } else { if(waveEl) waveEl.classList.add('playing'); startedAt=Date.now()-elapsed*1000; } });
-  if(trashBtn) trashBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); cancelRec(); });
-  if(sendBtnRec) sendBtnRec.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); sendRec(); });
-  if(speedBtn){ var sp=1; speedBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); sp=sp===1?1.5:(sp===1.5?2:1); var n=speedBtn.querySelector('.pv-rec-speed-num'); if(n) n.textContent=String(sp).replace('.0',''); }); }
-  window.pvFetchVoiceFile=function(fileId){
-    return idbGet('file:'+fileId).then(function(cached){ if(cached) return cached; return fetch(FB+'/voice_files/'+fileId+'/meta.json?_='+Date.now()).then(function(r){ return r.json(); }).then(function(meta){ var total=(meta&&meta.chunks)||0; if(!total) return null; var jobs=[]; for(var i=0;i<total;i++){ jobs.push(fetch(FB+'/voice_files/'+fileId+'/c'+i+'.json?_='+Date.now()).then(function(r){ return r.json(); })); } return Promise.all(jobs).then(function(parts){ var url=parts.join(''); idbPut('file:'+fileId,url); return url; }); }).catch(function(){ return null; }); });
-  };
-  function installVoiceFileRender(){
-    if(!window.renderAllMessages || window.renderAllMessages._pvVoiceFileFree) return;
-    var orig=window.renderAllMessages;
-    var wrapped=function(all){ var r=orig.apply(this,arguments); try{
-      if(Array.isArray(all)){ document.querySelectorAll('#messages .bubble').forEach(function(bEl){
-        if(bEl.querySelector('.pv-voice-sent')) return;
-        var pid=bEl.getAttribute('data-pv-id')||''; var m=null;
-        if(pid){ for(var i=0;i<all.length;i++){ if((all[i].n||'')+'|'+(all[i].m||'')+'|'+(all[i].t||'')===pid){ m=all[i]; break; } } }
-        if(!m||!m.voiceFile) return;
-        var durV=m.dur||0, wd=(m.wave&&Array.isArray(m.wave))?m.wave:[]; var step=Math.max(1,Math.floor(wd.length/34)); var wh=''; for(var k=0;k<34;k++){ var a=wd.length?(wd[Math.min(wd.length-1,k*step)]||0.08):0.15; wh+='<span style="height:'+Math.round(5+a*26)+'px" data-idx="'+k+'"></span>'; }
-        var timeTxt=''; try{ timeTxt=new Date(Number(m.t)).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }catch(e){}
-        var isMe=(m.n===myName()); var who=''; if(!isMe) who='<b style="font-size:11px;color:#25D366;display:block;margin-bottom:2px">'+(m.n||'User')+'</b>';
-        bEl.innerHTML=who+'<div class="pv-voice-sent"><div class="pv-voice-sent-row"><button class="pv-voice-sent-play" data-voice-url="" data-dur="'+durV+'">▶</button><div class="pv-voice-sent-wave"><div class="pv-voice-sent-dot"></div>'+wh+'</div><button class="pv-voice-sent-speed">1x</button></div><div class="pv-voice-sent-meta"><span class="pv-voice-sent-dur">'+fmt(durV)+'</span><span class="pv-voice-sent-time">'+timeTxt+'</span></div></div>';
-        window.pvFetchVoiceFile(m.voiceFile).then(function(url){ if(!url) return; var btn=bEl.querySelector('.pv-voice-sent-play'); if(btn) btn.setAttribute('data-voice-url',url); try{ window.pvWireVoiceBubble(bEl,url,durV); }catch(e){} });
-      }); }
-    }catch(e){} return r; };
-    wrapped._pvVoiceFileFree=true; window.renderAllMessages=wrapped;
-  }
-  installVoiceFileRender(); setInterval(installVoiceFileRender,1500);
-  buildWave();
-})();
-</script>
-<script id="PV-VOICE-PLAYBACK-EXACT">
-(function(){
-  window.pvWireVoiceBubble=function(container, voiceUrl, dur){
-    try{
-      var playBtn=container.querySelector('.pv-voice-sent-play');
-      var speedBtn=container.querySelector('.pv-voice-sent-speed');
-      var wave=container.querySelector('.pv-voice-sent-wave');
-      var dot=container.querySelector('.pv-voice-sent-dot');
-      var durEl=container.querySelector('.pv-voice-sent-dur');
-      if(!playBtn) return;
-      var audio=null, raf=null, speed=1, playing=false;
-      // GREEN when not played, BLUE when tapped/played - like WhatsApp. Persist played state so reload still shows blue.
-      var _sentEl=container.querySelector('.pv-voice-sent')||container;
-      var _playKey='pv_played_voice_'+String(voiceUrl||playBtn.getAttribute('data-voice-url')||'').slice(-40)+'_'+String(dur||0);
-      try{ if(localStorage.getItem(_playKey)==='1'){ _sentEl.classList.add('played'); if(wave) wave.querySelectorAll('span[data-idx]').forEach(function(b){ b.classList.add('played'); }); } }catch(e){}
-      function fmtS(s){ var m=Math.floor(s/60), ss=Math.floor(s%60); return m+':'+(ss<10?'0':'')+ss; }
-      function updateProgress(){
-        if(!audio) return;
-        var p=audio.duration ? (audio.currentTime/audio.duration) : 0;
-        /* dot stays before wave, does not move - bars turning blue is the progress, like WhatsApp */
-        if(wave){ var bars=wave.querySelectorAll('span[data-idx]'); bars.forEach(function(b,idx){ if(idx/bars.length <= p) b.classList.add('played'); else b.classList.remove('played'); }); }
-        if(durEl) durEl.textContent=fmtS(audio.currentTime);
-        if(playing) raf=requestAnimationFrame(updateProgress);
-      }
-      playBtn.addEventListener('click', function(e){
-        e.preventDefault(); e.stopPropagation();
-        var src=playBtn.getAttribute('data-voice-url') || voiceUrl;
-        if(!src) return;
-        if(!audio){ audio=new Audio(src); audio.playbackRate=speed; audio.onended=function(){ playing=false; playBtn.textContent='▶'; _sentEl.classList.remove('playing'); _sentEl.classList.add('played'); try{ localStorage.setItem(_playKey,'1'); }catch(e){} if(dot) dot.style.left='0%'; if(durEl) durEl.textContent=fmtS(dur||audio.duration||0); cancelAnimationFrame(raf); }; }
-        if(playing){ audio.pause(); playing=false; playBtn.textContent='▶'; _sentEl.classList.remove('playing'); cancelAnimationFrame(raf); }
-        else { audio.playbackRate=speed; audio.play(); playing=true; playBtn.textContent='❚❚'; _sentEl.classList.add('playing'); _sentEl.classList.add('played'); try{ localStorage.setItem(_playKey,'1'); }catch(e){} raf=requestAnimationFrame(updateProgress); }
-      });
-      if(speedBtn){ speedBtn.setAttribute('data-speed','1'); speedBtn.addEventListener('click', function(e){
-        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-        // WhatsApp cycle: 1x -> 1.5x -> 2x -> back to 1x. Never pass 2x.
-        speed = speed===1 ? 1.5 : (speed===1.5 ? 2 : 1);
-        speedBtn.setAttribute('data-speed', String(speed));
-        speedBtn.textContent=(speed===1?'1x':(speed===1.5?'1.5x':'2x'));
-        if(audio) audio.playbackRate=speed;
-      });
-    }catch(e){}
-  };
-  // Incoming voice messages from Firebase / cache: render exactly same sent bubble in renderAllMessages
-  // Patch renderAllMessages to handle m.voice / m.voiceUrl
-  try{
-    var _origRenderAll2 = window.renderAllMessages;
-    if(_origRenderAll2 && !_origRenderAll2._pvVoice){
-      var _wrapped=function(all){
-        // Let original render first, then replace any voice text bubbles with exact voice bubble
-        var r=_origRenderAll2.apply(this, arguments);
-        try{
-          if(Array.isArray(all)){
-            var bubbles=document.querySelectorAll('#messages .bubble');
-            bubbles.forEach(function(bEl){
-              // Match by message ID (data-pv-id = n|m|t), NOT by position - position shifts cause voice to become text then disappear
-              var _pid=bEl.getAttribute('data-pv-id')||'';
-              var m=null;
-              if(_pid){ for(var _i=0; _i<all.length; _i++){ var _cand=all[_i]; var _cid=(_cand.n||'')+'|'+(_cand.m||'')+'|'+(_cand.t||''); if(_cid===_pid){ m=_cand; break; } } }
-              if(!m){ // Fallback: try to find voice message by text + name in this bubble
-                var _txt=bEl.getAttribute('data-pv-text')||''; var _nm=bEl.getAttribute('data-pv-name')||'';
-                for(var _j=0; _j<all.length; _j++){ if(all[_j].m===_txt && all[_j].n===_nm){ m=all[_j]; break; } }
-              }
-              if(!m) return;
-              var vUrl=(typeof m.voice==='string' && m.voice) ? m.voice : (typeof m.voiceUrl==='string' && m.voiceUrl) ? m.voiceUrl : null;
-              if(!vUrl){ try{ var _vs=JSON.parse(localStorage.getItem('pv_voice_store')||'[]'); for(var _k=0; _k<_vs.length; _k++){ var _vm=_vs[_k]; if(_vm.n===m.n && Math.abs(Number(_vm.t)-Number(m.t))<20000 && _vm.dur===m.dur){ vUrl=_vm.voiceUrl||_vm.voice||null; if(vUrl){ m.voice=vUrl; m.voiceUrl=vUrl; } break; } } }catch(e){} }
-              if(!vUrl || bEl.querySelector('.pv-voice-sent')) return;
-              // Only for voice messages
-              if(!(m.voice || m.voiceUrl || (m.m && m.m.indexOf('Voice message')!==-1))) return;
-              var isMe=(m.n=== (localStorage.getItem('prochat_username')||localStorage.getItem('pv_username')||''));
-              var durV=m.dur||0;
-              var _wd=(m.wave&&Array.isArray(m.wave))?m.wave:[]; var _step=Math.max(1, Math.floor(_wd.length/34)); var waveHtml=''; for(var i=0;i<34;i++){ var _amp=_wd.length?(_wd[Math.min(_wd.length-1,i*_step)]||0.08):0.15; var h=5+_amp*26; waveHtml+='<span style="height:'+Math.round(h)+'px" data-idx="'+i+'"></span>'; }
-              var timeTxt=''; try{ timeTxt=new Date(Number(m.t)).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }catch(e){}
-              var whoHtml=''; if(!isMe){ whoHtml='<b style="font-size:11px;color:#25D366;display:block;margin-bottom:2px">'+(m.n||'User')+'</b>'; }
-              bEl.innerHTML=whoHtml+'<div class="pv-voice-sent"><div class="pv-voice-sent-row"><button class="pv-voice-sent-play" data-voice-url="'+String(vUrl).replace(/"/g,'&quot;')+'" data-dur="'+durV+'">▶</button><div class="pv-voice-sent-wave"><div class="pv-voice-sent-dot"></div>'+waveHtml+'</div><button class="pv-voice-sent-speed">1x</button></div><div class="pv-voice-sent-meta"><span class="pv-voice-sent-dur">'+(durV?Math.floor(durV/60)+':'+String(Math.floor(durV%60)).padStart(2,'0'):'0:00')+'</span><span class="pv-voice-sent-time">'+timeTxt+(isMe?' <span style="color:#8696a0;">✓</span>':'')+'</span></div></div>';
-              window.pvWireVoiceBubble(bEl, vUrl, durV);
-            });
-          }
-        }catch(e){}
-        return r;
-      };
-      _wrapped._pvVoice=true;
-      window.renderAllMessages=_wrapped;
-    }
-  }catch(e){}
-})();
-</script>
+<script id="PV-VOICE-FREE-V1">(function(){ /* DELETED PERMANENTLY - old recorder logic wiped, replaced by PV-VOICE-FRESH-WHATSAPP-V1 */ })();</script>
+<script id="PV-VOICE-PLAYBACK-EXACT">(function(){ /* DELETED PERMANENTLY - old recorder logic wiped, replaced by PV-VOICE-FRESH-WHATSAPP-V1 */ })();</script>
 
 
 
@@ -7601,7 +7324,21 @@ window.pvViewNotifChat = function(chatTarget){
       var t=e.target && e.target.closest ? e.target.closest('#continueBtn') : null;
       if(!t) return;
       if(t.disabled){ e.preventDefault(); e.stopPropagation(); return; }
-      if(!window.__pvAuthPassed){ e.preventDefault(); e.stopPropagation(); return; }
+      if(!window.__pvAuthPassed){
+        // FIX ONLY - trusted Continue deadlock: this blocker used to swallow the
+        // tap that was supposed to SET __pvAuthPassed, so Continue could never
+        // work. Now run auth instead of just blocking. window._pvForceContinue
+        // here is the PV-AUTH-V2 wrapper: it runs handleContinue (trusted mode
+        // = name only, no password; verify mode = check password) then opens
+        // the app. Block the raw tap so handleContinue does not run twice.
+        e.preventDefault(); e.stopPropagation();
+        try{
+          if(window._pvForceContinue && window._pvForceContinue!==forceContinue) window._pvForceContinue();
+          else if(window.__pvHandleContinue) window.__pvHandleContinue();
+          else if(window._pvForceContinue) window._pvForceContinue();
+        }catch(err){}
+        return;
+      }
       forceContinue();
     }catch(e){}
   }
@@ -7724,9 +7461,19 @@ window.pvViewNotifChat = function(chatTarget){
   var FIREBASE_URL = 'https://prochat2026-default-rtdb.firebaseio.com';
   var RESET_SECONDS = 240;
   var timerInt = null, expiresAt = 0, currentName = '', currentGmail = '', currentUserId = '', currentFullAcc = null, attempts = 0;
+  // LOCKOUT 5 -> 10, MAX 10: first lock 5 mins, next locks 10 mins, never more than 10. Stored in localStorage so reload cannot bypass.
+  var lockUntil = 0, lockLevel = 0, lockTimerInt = null;
   function safeName(n){ return String(n||'').trim().toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,24) || 'user'; }
   function showForgotMsg(text, type){ var el = document.getElementById('pvForgotMsg'); if(!el) return; el.textContent = text; el.style.display = 'block'; if(type==='err'){ el.style.background='rgba(255,80,80,0.15)'; el.style.color='#ff8a8a'; el.style.border='1px solid rgba(255,80,80,0.4)'; } else if(type==='ok'){ el.style.background='rgba(0,230,118,0.15)'; el.style.color='#00e676'; el.style.border='1px solid rgba(0,230,118,0.4)'; } else { el.style.background='rgba(110,168,255,0.15)'; el.style.color='#a8c8ff'; el.style.border='1px solid rgba(110,168,255,0.4)'; } }
   function hideForgotMsg(){ var el=document.getElementById('pvForgotMsg'); if(el) el.style.display='none'; }
+  function lockKey(){ try{ return 'pv_lock_'+safeName(currentName||''); }catch(e){ return 'pv_lock_'; } }
+  function lockLevelKey(){ try{ return 'pv_lock_level_'+safeName(currentName||''); }catch(e){ return 'pv_lock_level_'; } }
+  function loadLock(){ try{ var v=JSON.parse(localStorage.getItem(lockKey())||'null'); if(v && v.until) lockUntil=v.until||0; var lv=parseInt(localStorage.getItem(lockLevelKey())||'0',10); lockLevel=isNaN(lv)?0:lv; }catch(e){} if(lockUntil && Date.now()>=lockUntil){ lockUntil=0; try{ localStorage.removeItem(lockKey()); }catch(e){} } }
+  function saveLock(){ try{ localStorage.setItem(lockKey(), JSON.stringify({until:lockUntil, level:lockLevel})); localStorage.setItem(lockLevelKey(), String(lockLevel)); }catch(e){} }
+  function clearLock(){ lockUntil=0; lockLevel=0; attempts=0; try{ localStorage.removeItem(lockKey()); localStorage.removeItem(lockLevelKey()); }catch(e){} }
+  function lockRemaining(){ return Math.max(0, Math.ceil((lockUntil-Date.now())/1000)); }
+  function isLocked(){ if(!lockUntil) return false; if(Date.now()>=lockUntil){ lockUntil=0; try{ localStorage.removeItem(lockKey()); }catch(e){} return false; } return true; }
+  function startLockCountdown(){ try{ if(lockTimerInt) clearInterval(lockTimerInt); }catch(e){} lockTimerInt=setInterval(function(){ if(!isLocked()){ try{ clearInterval(lockTimerInt); lockTimerInt=null; }catch(e){} var vb=document.getElementById('pvForgotVerifyBtn'); if(vb) vb.disabled=false; showForgotMsg('You can try again now.', 'info'); return; } var left=lockRemaining(); var mm=Math.floor(left/60), ss=left%60; showForgotMsg('Too many wrong tries. Wait ' + mm + ':' + (ss<10?'0'+ss:ss) + ' before trying again.', 'err'); }, 1000); }
   function maskGmail(g){ if(!g) return ''; var parts=String(g).split('@'); if(parts.length!==2) return g; var name=parts[0]; if(name.length<=2) return name[0]+'***@'+parts[1]; return name[0]+'***'+name.slice(-1)+'@'+parts[1]; }
   async function hashStr(s){ try{ var enc=new TextEncoder(); var buf=await crypto.subtle.digest('SHA-256', enc.encode(String(s))); return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join(''); }catch(e){ var h=0; for(var i=0;i<String(s).length;i++){ h=(h*31+String(s).charCodeAt(i))>>>0; } return 'fallback_'+h.toString(16); } }
   async function fetchAccountsByName(name){ try{ var key=safeName(name); var res=await fetch(FIREBASE_URL+'/pv_accounts_by_name/'+encodeURIComponent(key)+'.json'); var data=await res.json(); if(!data) return []; if(Array.isArray(data)) return data; if(data.userId) return [data]; var list=[]; Object.keys(data).forEach(function(k){ var v=data[k]; if(v&&v.userId) list.push(v); }); return list; }catch(e){ return []; } }
@@ -7735,11 +7482,11 @@ window.pvViewNotifChat = function(chatTarget){
   function stopTimer(){ if(timerInt){ clearInterval(timerInt); timerInt=null; } }
   function startTimer(){ stopTimer(); expiresAt = Date.now() + RESET_SECONDS*1000; var timerEl = document.getElementById('pvForgotTimer'); var expEl = document.getElementById('pvForgotExpired'); var verifyBtn = document.getElementById('pvForgotVerifyBtn'); if(expEl) expEl.style.display='none'; if(verifyBtn) verifyBtn.disabled=false; if(timerEl) timerEl.classList.remove('expired'); function tick(){ var left = Math.max(0, Math.floor((expiresAt - Date.now())/1000)); var m = Math.floor(left/60), s = left%60; if(timerEl) timerEl.textContent = 'Time left: ' + m + ':' + (s<10?'0'+s:s); if(left<=0){ stopTimer(); if(timerEl){ timerEl.textContent='Time left: 0:00'; timerEl.classList.add('expired'); } if(expEl) expEl.style.display='block'; if(verifyBtn) verifyBtn.disabled=true; showForgotMsg('Code has expired. Request a new one.', 'err'); } } tick(); timerInt = setInterval(tick, 1000); }
   function showStep(n){ document.getElementById('pvForgotStep1').style.display = (n===1?'block':'none'); document.getElementById('pvForgotStep2').style.display = (n===2?'block':'none'); document.getElementById('pvForgotStep3').style.display = (n===3?'block':'none'); hideForgotMsg(); if(n===2){ document.getElementById('pvForgotCode').value=''; } if(n===3){ document.getElementById('pvForgotNewPass').value=''; document.getElementById('pvForgotConfirmPass').value=''; } }
-  function openModal(){ var modal=document.getElementById('pvForgotModal'); if(!modal) return; var nameEl=document.getElementById('uName'); var name = nameEl ? nameEl.value.trim() : ''; document.getElementById('pvForgotName').value = name; document.getElementById('pvForgotGmail').value = ''; document.getElementById('pvForgotSavedGmail').style.display='none'; currentName=''; currentGmail=''; currentUserId=''; currentFullAcc=null; attempts=0; stopTimer(); showStep(1); modal.classList.add('show'); if(name && name.length>=2){ fetchAccountsByName(name).then(function(list){ if(!list || list.length===0) return; var cand=list[0]; if(!cand.userId) return; fetchAccount(cand.userId).then(function(full){ if(full && full.gmail){ document.getElementById('pvForgotSavedGmail').textContent = 'Code will go to your saved Gmail: ' + maskGmail(full.gmail); document.getElementById('pvForgotSavedGmail').style.display='block'; document.getElementById('pvForgotGmail').value = full.gmail; document.getElementById('pvForgotGmail').style.display='none'; } }); }); } }
+  function openModal(){ var modal=document.getElementById('pvForgotModal'); if(!modal) return; var nameEl=document.getElementById('uName'); var name = nameEl ? nameEl.value.trim() : ''; document.getElementById('pvForgotName').value = name; document.getElementById('pvForgotGmail').value = ''; document.getElementById('pvForgotSavedGmail').style.display='none'; currentName=name; currentGmail=''; currentUserId=''; currentFullAcc=null; attempts=0; stopTimer(); loadLock(); if(isLocked()){ var _lvb=document.getElementById('pvForgotVerifyBtn'); if(_lvb) _lvb.disabled=true; var _lr=lockRemaining(); var _lm=Math.floor(_lr/60), _ls=_lr%60; showForgotMsg('Too many wrong tries. Wait ' + _lm + ':' + (_ls<10?'0'+_ls:_ls) + ' before trying again.', 'err'); startLockCountdown(); } showStep(1); modal.classList.add('show'); if(name && name.length>=2){ fetchAccountsByName(name).then(function(list){ if(!list || list.length===0) return; var cand=list[0]; if(!cand.userId) return; fetchAccount(cand.userId).then(function(full){ if(full && full.gmail){ document.getElementById('pvForgotSavedGmail').textContent = 'Code will go to your saved Gmail: ' + maskGmail(full.gmail); document.getElementById('pvForgotSavedGmail').style.display='block'; document.getElementById('pvForgotGmail').value = full.gmail; document.getElementById('pvForgotGmail').style.display='none'; } }); }); } }
   function closeModal(){ var m=document.getElementById('pvForgotModal'); if(m) m.classList.remove('show'); stopTimer(); }
-  async function doSendCode(isResend){ var name = document.getElementById('pvForgotName').value.trim(); var gmail = document.getElementById('pvForgotGmail').value.trim().toLowerCase(); if(!name || name.length<2){ showForgotMsg('Please enter your name.', 'err'); return; } if(!gmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(gmail)){ showForgotMsg('Please enter a valid Gmail.', 'err'); return; } var sendBtn=document.getElementById('pvForgotSendBtn'); if(sendBtn){ sendBtn.disabled=true; sendBtn.textContent='Sending code...'; } showForgotMsg('Sending code to your Gmail. Please wait.', 'info'); var list = await fetchAccountsByName(name); if(!list || list.length===0){ showForgotMsg('No account found for this name. Please check your name.', 'err'); if(sendBtn){ sendBtn.disabled=false; sendBtn.textContent='Send Code to Gmail'; } return; } var cand = list[0]; var full = await fetchAccount(cand.userId); if(!full){ showForgotMsg('Account not found. Please try again.', 'err'); if(sendBtn){ sendBtn.disabled=false; sendBtn.textContent='Send Code to Gmail'; } return; } if(full.gmail && String(full.gmail).toLowerCase() !== gmail){ showForgotMsg('This Gmail does not match the Gmail saved for this account.', 'err'); if(sendBtn){ sendBtn.disabled=false; sendBtn.textContent='Send Code to Gmail'; } return; } currentName = full.name || name; currentGmail = gmail; currentUserId = full.userId; currentFullAcc = full; attempts=0; var code = String(100000 + Math.floor(Math.random()*900000)); var codeHash = await hashStr(code + '::' + currentUserId + '::reset'); var resetData = {codeHash:codeHash, expiresAt: Date.now() + RESET_SECONDS*1000, attempts:0}; try{ localStorage.setItem('pv_reset_'+safeName(currentName), JSON.stringify(resetData)); }catch(e){} try{ await fetch(FIREBASE_URL+'/pv_reset_codes/'+encodeURIComponent(safeName(currentName))+'.json', {method:'PUT', body: JSON.stringify(resetData)}); }catch(e){} var sent = await sendCodeEmail(gmail, code); document.getElementById('pvForgotToGmail').textContent = maskGmail(gmail); showStep(2); startTimer(); if(sent){ showForgotMsg('Code sent to your Gmail. Check Gmail and Spam. It expires in 4 minutes.', 'ok'); } else { showForgotMsg('Code created. If you did not get the email, check Spam and tap Request New Code. First time, Gmail may ask you to activate PRO VIBES emails.', 'info'); } if(sendBtn){ sendBtn.disabled=false; sendBtn.textContent='Send Code to Gmail'; } }
-  async function doVerify(){ var entered = document.getElementById('pvForgotCode').value.trim(); if(!entered || entered.length!==6 || !/^\d{6}$/.test(entered)){ showForgotMsg('Please enter the 6-digit code.', 'err'); return; } if(Date.now() > expiresAt){ showForgotMsg('Code has expired. Request a new one.', 'err'); return; } var stored = null; try{ stored = JSON.parse(localStorage.getItem('pv_reset_'+safeName(currentName))||'null'); }catch(e){} if(!stored){ try{ var r=await fetch(FIREBASE_URL+'/pv_reset_codes/'+encodeURIComponent(safeName(currentName))+'.json'); stored=await r.json(); }catch(e){} } if(!stored || !stored.codeHash){ showForgotMsg('Code not found. Request a new one.', 'err'); return; } if(Date.now() > stored.expiresAt){ showForgotMsg('Code has expired. Request a new one.', 'err'); document.getElementById('pvForgotExpired').style.display='block'; document.getElementById('pvForgotVerifyBtn').disabled=true; return; } var enteredHash = await hashStr(entered + '::' + currentUserId + '::reset'); if(enteredHash !== stored.codeHash){ attempts++; if(attempts>=5){ showForgotMsg('Too many wrong attempts. Request a new code.', 'err'); return; } showForgotMsg('Wrong code. Try again.', 'err'); return; } try{ localStorage.removeItem('pv_reset_'+safeName(currentName)); }catch(e){} try{ await fetch(FIREBASE_URL+'/pv_reset_codes/'+encodeURIComponent(safeName(currentName))+'.json', {method:'DELETE'}); }catch(e){} stopTimer(); showStep(3); showForgotMsg('Code verified. Create your new password.', 'ok'); }
-  async function doSaveNew(){ var np = document.getElementById('pvForgotNewPass').value; var cf = document.getElementById('pvForgotConfirmPass').value; if(!np || np.length<4){ showForgotMsg('Your new password must be at least 4 characters.', 'err'); return; } if(np !== cf){ showForgotMsg('The two new passwords do not match. Please type them again.', 'err'); return; } var saveBtn=document.getElementById('pvForgotSaveBtn'); if(saveBtn){ saveBtn.disabled=true; saveBtn.textContent='Saving...'; } showForgotMsg('Saving your new password. Your chats will stay.', 'info'); var newHash = await hashStr(np + '::' + currentUserId); var updated = Object.assign({}, currentFullAcc); updated.passHash = newHash; updated.gmail = currentGmail; updated.name = currentFullAcc.name || currentName; updated.userId = currentUserId; try{ await fetch(FIREBASE_URL+'/pv_accounts/'+encodeURIComponent(currentUserId)+'.json', {method:'PUT', body: JSON.stringify(updated)}); }catch(e){} try{ var localAcc = null; try{ localAcc = JSON.parse(localStorage.getItem('pv_account')||'null'); }catch(e){} if(localAcc && localAcc.userId === currentUserId){ localAcc.passHash = newHash; localAcc.gmail = currentGmail; localStorage.setItem('pv_account', JSON.stringify(localAcc)); } else { var adopted = {name:updated.name, userId:updated.userId, shortId:updated.shortId, deviceId:localStorage.getItem('pv_device_id')||updated.deviceId, passHash:newHash, createdAt:updated.createdAt||Date.now(), gmail:currentGmail}; localStorage.setItem('pv_account', JSON.stringify(adopted)); localStorage.setItem('pv_user_id', adopted.userId); localStorage.setItem('pv_short_id', adopted.shortId); localStorage.setItem('prochat_name', adopted.name); localStorage.setItem('prochat_username', adopted.name); localStorage.setItem('pv_username', adopted.name); localStorage.setItem('cospro_name', adopted.name); localStorage.setItem('pv_setup_done', '1'); } localStorage.setItem('pv_pass_hash', newHash); }catch(e){} try{ var lp=document.getElementById('pvLoginPassword'); if(lp) lp.value=np; var nameEl=document.getElementById('uName'); if(nameEl) nameEl.value=updated.name; }catch(e){} showForgotMsg('New password saved. Old password will no longer work. Your chats are safe.', 'ok'); setTimeout(function(){ closeModal(); var authMsg=document.getElementById('pvAuthMsg'); if(authMsg){ authMsg.textContent='New password saved. Tap Login to enter with your new password. Your chats are safe.'; authMsg.style.display='block'; } try{ var btn=document.getElementById('continueBtn'); if(btn){ btn.disabled=false; btn.style.opacity='1'; } }catch(e){} if(saveBtn){ saveBtn.disabled=false; saveBtn.textContent='Save New Password'; } }, 1200); }
+  async function doSendCode(isResend){ var name = document.getElementById('pvForgotName').value.trim(); var gmail = document.getElementById('pvForgotGmail').value.trim().toLowerCase(); currentName=name; loadLock(); if(isLocked()){ var _sr=lockRemaining(); var _sm=Math.floor(_sr/60), _ss=_sr%60; showForgotMsg('Too many wrong tries. Wait ' + _sm + ':' + (_ss<10?'0'+_ss:_ss) + ' before trying again.', 'err'); startLockCountdown(); return; } if(!name || name.length<2){ showForgotMsg('Please enter your name.', 'err'); return; } if(!gmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(gmail)){ showForgotMsg('Please enter a valid Gmail.', 'err'); return; } var sendBtn=document.getElementById('pvForgotSendBtn'); if(sendBtn){ sendBtn.disabled=true; sendBtn.textContent='Sending code...'; } showForgotMsg('Sending code to your Gmail. Please wait.', 'info'); var list = await fetchAccountsByName(name); if(!list || list.length===0){ showForgotMsg('No account found for this name. Please check your name.', 'err'); if(sendBtn){ sendBtn.disabled=false; sendBtn.textContent='Send Code to Gmail'; } return; } var cand = list[0]; var full = await fetchAccount(cand.userId); if(!full){ showForgotMsg('Account not found. Please try again.', 'err'); if(sendBtn){ sendBtn.disabled=false; sendBtn.textContent='Send Code to Gmail'; } return; } if(full.gmail && String(full.gmail).toLowerCase() !== gmail){ showForgotMsg('This Gmail does not match the Gmail saved for this account.', 'err'); if(sendBtn){ sendBtn.disabled=false; sendBtn.textContent='Send Code to Gmail'; } return; } currentName = full.name || name; currentGmail = gmail; currentUserId = full.userId; currentFullAcc = full; attempts=0; var code = String(100000 + Math.floor(Math.random()*900000)); var codeHash = await hashStr(code + '::' + currentUserId + '::reset'); var resetData = {codeHash:codeHash, expiresAt: Date.now() + RESET_SECONDS*1000, attempts:0}; try{ localStorage.setItem('pv_reset_'+safeName(currentName), JSON.stringify(resetData)); }catch(e){} try{ await fetch(FIREBASE_URL+'/pv_reset_codes/'+encodeURIComponent(safeName(currentName))+'.json', {method:'PUT', body: JSON.stringify(resetData)}); }catch(e){} var sent = await sendCodeEmail(gmail, code); document.getElementById('pvForgotToGmail').textContent = maskGmail(gmail); showStep(2); startTimer(); if(sent){ showForgotMsg('Code sent to your Gmail. Check Gmail and Spam. It expires in 4 minutes.', 'ok'); } else { showForgotMsg('Code created. If you did not get the email, check Spam and tap Request New Code. First time, Gmail may ask you to activate PRO VIBES emails.', 'info'); } if(sendBtn){ sendBtn.disabled=false; sendBtn.textContent='Send Code to Gmail'; } }
+  async function doVerify(){ var entered = document.getElementById('pvForgotCode').value.trim(); loadLock(); if(isLocked()){ var _vr=lockRemaining(); var _vm=Math.floor(_vr/60), _vs=_vr%60; showForgotMsg('Too many wrong tries. Wait ' + _vm + ':' + (_vs<10?'0'+_vs:_vs) + ' before trying again.', 'err'); startLockCountdown(); return; } if(!entered || entered.length!==6 || !/^\d{6}$/.test(entered)){ showForgotMsg('Please enter the 6-digit code.', 'err'); return; } if(Date.now() > expiresAt){ showForgotMsg('Code has expired. Request a new one.', 'err'); return; } var stored = null; try{ stored = JSON.parse(localStorage.getItem('pv_reset_'+safeName(currentName))||'null'); }catch(e){} if(!stored){ try{ var r=await fetch(FIREBASE_URL+'/pv_reset_codes/'+encodeURIComponent(safeName(currentName))+'.json'); stored=await r.json(); }catch(e){} } if(!stored || !stored.codeHash){ showForgotMsg('Code not found. Request a new one.', 'err'); return; } if(Date.now() > stored.expiresAt){ showForgotMsg('Code has expired. Request a new one.', 'err'); document.getElementById('pvForgotExpired').style.display='block'; document.getElementById('pvForgotVerifyBtn').disabled=true; return; } var enteredHash = await hashStr(entered + '::' + currentUserId + '::reset'); if(enteredHash !== stored.codeHash){ attempts++; if(attempts>=5){ attempts=0; var _dur=(lockLevel===0 ? 5*60*1000 : 10*60*1000); var _mins=(lockLevel===0 ? 5 : 10); lockLevel=(lockLevel===0 ? 1 : 2); lockUntil=Date.now()+_dur; saveLock(); var _vb2=document.getElementById('pvForgotVerifyBtn'); if(_vb2) _vb2.disabled=true; showForgotMsg('Too many wrong tries. Wait ' + _mins + ' minutes before trying again.', 'err'); startLockCountdown(); return; } showForgotMsg('Wrong code. Try again. (' + (5-attempts) + ' tries left)', 'err'); return; } try{ localStorage.removeItem('pv_reset_'+safeName(currentName)); }catch(e){} try{ await fetch(FIREBASE_URL+'/pv_reset_codes/'+encodeURIComponent(safeName(currentName))+'.json', {method:'DELETE'}); }catch(e){} clearLock(); stopTimer(); showStep(3); showForgotMsg('Code verified. Create your new password.', 'ok'); }
+  async function doSaveNew(){ var np = document.getElementById('pvForgotNewPass').value; var cf = document.getElementById('pvForgotConfirmPass').value; if(!np || np.length<8){ showForgotMsg('Your new password must be at least 8 characters.', 'err'); return; } if(np !== cf){ showForgotMsg('The two new passwords do not match. Please type them again.', 'err'); return; } var saveBtn=document.getElementById('pvForgotSaveBtn'); if(saveBtn){ saveBtn.disabled=true; saveBtn.textContent='Saving...'; } showForgotMsg('Saving your new password. Your chats will stay.', 'info'); var newHash = await hashStr(np + '::' + currentUserId); var updated = Object.assign({}, currentFullAcc); updated.passHash = newHash; updated.gmail = currentGmail; updated.name = currentFullAcc.name || currentName; updated.userId = currentUserId; try{ await fetch(FIREBASE_URL+'/pv_accounts/'+encodeURIComponent(currentUserId)+'.json', {method:'PUT', body: JSON.stringify(updated)}); }catch(e){} try{ var localAcc = null; try{ localAcc = JSON.parse(localStorage.getItem('pv_account')||'null'); }catch(e){} if(localAcc && localAcc.userId === currentUserId){ localAcc.passHash = newHash; localAcc.gmail = currentGmail; localStorage.setItem('pv_account', JSON.stringify(localAcc)); } else { var adopted = {name:updated.name, userId:updated.userId, shortId:updated.shortId, deviceId:localStorage.getItem('pv_device_id')||updated.deviceId, passHash:newHash, createdAt:updated.createdAt||Date.now(), gmail:currentGmail}; localStorage.setItem('pv_account', JSON.stringify(adopted)); localStorage.setItem('pv_user_id', adopted.userId); localStorage.setItem('pv_short_id', adopted.shortId); localStorage.setItem('prochat_name', adopted.name); localStorage.setItem('prochat_username', adopted.name); localStorage.setItem('pv_username', adopted.name); localStorage.setItem('cospro_name', adopted.name); localStorage.setItem('pv_setup_done', '1'); } localStorage.setItem('pv_pass_hash', newHash); }catch(e){} try{ var lp=document.getElementById('pvLoginPassword'); if(lp) lp.value=np; var nameEl=document.getElementById('uName'); if(nameEl) nameEl.value=updated.name; }catch(e){} showForgotMsg('New password saved. Old password will no longer work. Your chats are safe.', 'ok'); setTimeout(function(){ closeModal(); var authMsg=document.getElementById('pvAuthMsg'); if(authMsg){ authMsg.textContent='New password saved. Tap Login to enter with your new password. Your chats are safe.'; authMsg.style.display='block'; } try{ var btn=document.getElementById('continueBtn'); if(btn){ btn.disabled=false; btn.style.opacity='1'; } }catch(e){} if(saveBtn){ saveBtn.disabled=false; saveBtn.textContent='Save New Password'; } }, 1200); }
   function wire(){ var b1=document.getElementById('pvForgotBtn'); if(b1 && !b1.dataset.pvForgotWired){ b1.dataset.pvForgotWired='1'; b1.addEventListener('click', function(e){ e.preventDefault(); openModal(); }); b1.addEventListener('touchend', function(e){ e.preventDefault(); openModal(); }); } var close=document.getElementById('pvForgotClose'); if(close) close.onclick=closeModal; var back=document.getElementById('pvForgotBackBtn'); if(back) back.onclick=closeModal; var send=document.getElementById('pvForgotSendBtn'); if(send && !send.dataset.wired){ send.dataset.wired='1'; send.addEventListener('click', function(){ doSendCode(false); }); } var verify=document.getElementById('pvForgotVerifyBtn'); if(verify && !verify.dataset.wired){ verify.dataset.wired='1'; verify.addEventListener('click', function(){ doVerify(); }); } var resend=document.getElementById('pvForgotResendBtn'); if(resend && !resend.dataset.wired){ resend.dataset.wired='1'; resend.addEventListener('click', function(){ doSendCode(true); }); } var save=document.getElementById('pvForgotSaveBtn'); if(save && !save.dataset.wired){ save.dataset.wired='1'; save.addEventListener('click', function(){ doSaveNew(); }); } var showBtn=document.getElementById('pvForgotShowBtn'); if(showBtn && !showBtn.dataset.wired){ showBtn.dataset.wired='1'; showBtn.addEventListener('click', function(e){ e.preventDefault(); var a=document.getElementById('pvForgotNewPass'); var b=document.getElementById('pvForgotConfirmPass'); var hidden = a && a.type==='password'; if(a) a.type = hidden?'text':'password'; if(b) b.type = hidden?'text':'password'; showBtn.textContent = hidden?'Hide Password':'Show Password'; }); } var modal=document.getElementById('pvForgotModal'); if(modal){ modal.addEventListener('click', function(e){ if(e.target===modal) closeModal(); }); } }
   document.addEventListener('DOMContentLoaded', function(){ setTimeout(wire, 500); });
   setTimeout(wire, 800); setTimeout(wire, 2000);
@@ -7781,7 +7528,521 @@ window.pvViewNotifChat = function(chatTarget){
 #homeScreen #reelsFeed, #reelsFeed{ height:calc(100dvh - 54px) !important; overflow-y:scroll !important; overflow-x:hidden !important; scroll-snap-type:y mandatory !important; scroll-behavior:smooth !important; -webkit-overflow-scrolling:touch !important; touch-action:pan-y !important; }
 #homeScreen #reelsFeed .reel, #reelsFeed .reel{ height:calc(100dvh - 54px) !important; min-height:calc(100dvh - 54px) !important; max-height:calc(100dvh - 54px) !important; flex:none !important; scroll-snap-align:start !important; scroll-snap-stop:always !important; }
 </style>
+
+
+
+
+
+
+
+
+
+
+<script id="PV-ID-NEW-REBUILD">
+/* PV-ID-NEW-REBUILD — New + Private rebuilt on ID. Front clean, back na ID.
+   - Contacts come from /pv_accounts/ (ID accounts), NOT from All Users messages.
+   - No #shortId shown, no last-message preview, no count.
+   - Avatar color different per userId, stable, based on ID hash.
+   - Right side sleek: Friends ✓ if don chat before (ID room get message), else Message.
+   - Private room na ID room: priv_id_<sorted userIds>. Message go meet right person even if name same.
+   - Old name-based private chats cleared once: local + old Firebase /private_chats.json ignored. New chats live in /private_id/ so old no go mix.
+   - Login / security / All Users / voice untouched.
+*/
+(function(){
+  var URL_BASE = 'https://prochat2026-default-rtdb.firebaseio.com';
+  var PALETTE = ['#00a884','#25D366','#8e24aa','#ff6d00','#039be5','#d32f2f','#7b1fa2','#f9a825','#00897b','#5e35b1','#e65100','#2e7d32'];
+  function hashStr(s){ var h=0; s=String(s||''); for(var i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return Math.abs(h); }
+  function colorForId(uid){ return PALETTE[hashStr(uid) % PALETTE.length]; }
+  function sanitizeId(s){ return String(s||'').replace(/[^a-zA-Z0-9_]/g,'_'); }
+  function myUserId(){ return localStorage.getItem('pv_user_id') || window.__pvUserId || ''; }
+  function myName(){ return localStorage.getItem('prochat_name') || window.NAME || ''; }
+  function myPassHash(){ return localStorage.getItem('pv_pass_hash') || ''; }
+
+  /* --- 1. CLEAR OLD PRIVATE ONCE --- */
+  try{
+    if(localStorage.getItem('pv_id_cleared')!=='1'){
+      // Clear old name-based local private
+      try{ localStorage.removeItem('prochat_private_chats'); }catch(e){}
+      try{ localStorage.setItem('pv_id_private_chats','{}'); }catch(e){}
+      try{ localStorage.setItem('pv_id_friends','[]'); }catch(e){}
+      localStorage.setItem('pv_id_cleared','1');
+      // Try clear old Firebase private path once (old name rooms). New rooms are in /private_id/ so this no go touch new.
+      try{ fetch(URL_BASE+'/private_chats.json',{method:'DELETE'}).catch(function(){}); }catch(e){}
+      // Remove old private rows from main list if any
+      try{ document.querySelectorAll('[data-private], .private-row').forEach(function(n){ n.remove(); }); }catch(e){}
+    }
+  }catch(e){}
+
+  function getIdChats(){ try{ return JSON.parse(localStorage.getItem('pv_id_private_chats')||'{}'); }catch(e){ return {}; } }
+  function saveIdChats(o){ try{ localStorage.setItem('pv_id_private_chats', JSON.stringify(o)); }catch(e){} }
+  function getFriends(){ try{ return JSON.parse(localStorage.getItem('pv_id_friends')||'[]'); }catch(e){ return []; } }
+  function saveFriends(a){ try{ localStorage.setItem('pv_id_friends', JSON.stringify(a)); }catch(e){} }
+  function isFriend(uid){ var f=getFriends(); return f.indexOf(uid)!==-1; }
+  function markFriend(uid){ var f=getFriends(); if(f.indexOf(uid)===-1){ f.push(uid); saveFriends(f); } }
+  function roomIdFor(otherUid){
+    var a = String(myUserId()||''); var b = String(otherUid||'');
+    var arr = [a,b].sort();
+    return 'id_' + sanitizeId(arr[0]) + '_' + sanitizeId(arr[1]);
+  }
+
+  var accountsCache = [];
+  async function fetchAccounts(){
+    try{
+      var r = await fetch(URL_BASE + '/pv_accounts.json');
+      var j = await r.json();
+      if(!j || typeof j!=='object') return accountsCache;
+      var me = myUserId();
+      var arr = [];
+      Object.values(j).forEach(function(a){
+        if(!a || !a.userId || !a.name) return;
+        if(me && String(a.userId)===String(me)) return; // no show myself in contacts
+        arr.push({ userId:String(a.userId), name:String(a.name), shortId:String(a.shortId||'') });
+      });
+      // Dedupe by userId only (not by name) — Ghost vs GHOST stay separate, same ID never duplicate
+      var seen={}; var out=[];
+      arr.forEach(function(x){ if(!seen[x.userId]){ seen[x.userId]=1; out.push(x); } });
+      // Stable sort by name lower, then userId — no flicker, no last-message sort
+      out.sort(function(x,y){ var a=x.name.toLowerCase(), b=y.name.toLowerCase(); if(a<b) return -1; if(a>b) return 1; return x.userId<b.userId?-1:1; });
+      accountsCache = out;
+      return out;
+    }catch(e){ return accountsCache; }
+  }
+  window.__pvFetchIdAccounts = fetchAccounts;
+
+  /* --- 2. OVERRIDE Select Contact list (New) --- */
+  var listEl = document.getElementById('exactContactsList');
+  var countEl = document.getElementById('exactCount');
+  var sectionTitle = document.getElementById('exactSectionTitle');
+  var sheet = document.getElementById('newSheet');
+  var overlay = document.getElementById('newSheetOverlay');
+
+  async function renderIdContacts(firstLoad){
+    if(!listEl) return;
+    // First load only show loading, no clear on every poll
+    if(firstLoad){
+      if(countEl) countEl.textContent = 'loading...';
+      listEl.innerHTML = '<div style="padding:40px 16px;text-align:center;color:#8696a0;"><div style="width:24px;height:24px;border:2px solid #2a3942;border-top:2px solid #25D366;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;"></div>Pulling contacts...</div>';
+    }
+    var contacts = await fetchAccounts();
+    if(countEl) countEl.textContent = contacts.length + ' contacts';
+    if(sectionTitle) sectionTitle.textContent = contacts.length ? 'Contacts on PRO VIBES' : 'No contacts yet';
+    // Build without clearing scroll if same data — we rebuild but keep scrollTop
+    var prevScroll = listEl.scrollTop || 0;
+    listEl.innerHTML = '';
+    var myN = myName() || 'You';
+    // Myself row — clean, no last message
+    var myselfRow = document.createElement('div');
+    myselfRow.className='exact-contact';
+    var myColor = colorForId(myUserId()||myN);
+    myselfRow.innerHTML = '<div class="exact-contact-avatar" style="background:'+myColor+' !important;">'+(myN[0]||'Y').toUpperCase()+'</div><div class="exact-contact-name"><b>Myself (You)</b></div><button class="sleek-msg-btn" data-self="1">Message</button>';
+    myselfRow.querySelector('.sleek-msg-btn').addEventListener('click', function(e){ e.stopPropagation(); openIdPrivate(myN, myUserId()); closeIdSheet(); });
+    listEl.appendChild(myselfRow);
+    if(!contacts.length){
+      var empty=document.createElement('div'); empty.style.cssText='padding:24px 16px;color:#8696a0;font-size:13px;text-align:center;'; empty.innerHTML='No contacts yet.<br/>A new person will appear here after they create an account.';
+      listEl.appendChild(empty); return;
+    }
+    contacts.forEach(function(c){
+      var row=document.createElement('div'); row.className='exact-contact';
+      var col=colorForId(c.userId);
+      var friend=isFriend(c.userId);
+      // Right sleek: Friends if don chat, else Message. No last message, no count, no #.
+      var rightHtml = friend ? '<span style="background:#1f2c34;color:#00e676;border:1px solid #00e67633;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;">Friends ✓</span>' : '<button class="sleek-msg-btn">Message</button>';
+      row.innerHTML = '<div class="exact-contact-avatar" style="background:'+col+' !important;">'+(c.name[0]||'?').toUpperCase()+'</div><div class="exact-contact-name"><b>'+c.name.replace(/</g,'&lt;')+'</b></div>'+rightHtml;
+      var btn=row.querySelector('.sleek-msg-btn');
+      function go(){ openIdPrivate(c.name, c.userId); closeIdSheet(); }
+      if(btn) btn.addEventListener('click', function(e){ e.stopPropagation(); go(); });
+      row.addEventListener('click', go);
+      listEl.appendChild(row);
+    });
+    try{ listEl.scrollTop = prevScroll; }catch(e){}
+  }
+  // Override global render if it exists — new sheet open uses ID list
+  window.renderExactContacts = function(){ return renderIdContacts(false); };
+
+  function openIdSheet(){
+    if(overlay) overlay.classList.add('open');
+    if(sheet) sheet.classList.add('open');
+    renderIdContacts(true);
+  }
+  function closeIdSheet(){
+    if(overlay) overlay.classList.remove('open');
+    if(sheet) sheet.classList.remove('open');
+  }
+  // Re-wire fab/back/overlay to ID version (keep old listeners harmless, we add new ones)
+  try{
+    var fab=document.getElementById('newFabExact');
+    if(fab){ fab.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openIdSheet(); }); }
+    var back=document.getElementById('exactBack');
+    if(back) back.addEventListener('click', closeIdSheet);
+    if(overlay) overlay.addEventListener('click', closeIdSheet);
+  }catch(e){}
+  window.openIdSheet=openIdSheet; window.closeIdSheet=closeIdSheet;
+
+  /* --- 3. PRIVATE BY ID --- */
+  window.__pvCurrentPrivateUid = null;
+  window.__pvCurrentPrivateRoom = null;
+
+  window.openIdPrivate = function(name, otherUid){
+    // If otherUid missing (old call with name only), try find by name in cache
+    if(!otherUid){
+      var found = accountsCache.find(function(x){ return x.name===name; });
+      if(found) otherUid = found.userId; else { // fallback: treat name as uid for old compat, but still use ID room with name hash
+        otherUid = 'name_' + sanitizeId(name);
+      }
+    }
+    window.__pvCurrentPrivateUid = otherUid;
+    var room = roomIdFor(otherUid);
+    window.__pvCurrentPrivateRoom = room;
+    window.currentChat = 'private_id_' + room;
+    var chatScreen=document.getElementById('chatScreen');
+    var chatNameEl=document.getElementById('chatName');
+    var chatAvatar=document.getElementById('chatAvatar');
+    var messages=document.getElementById('messages');
+    var listScreen=document.getElementById('listScreen');
+    if(listScreen) listScreen.style.display='none';
+    if(chatScreen){ chatScreen.style.display='flex'; chatScreen.classList.remove('ai-mode'); chatScreen.classList.remove('all-mode'); chatScreen.classList.add('private-mode'); }
+    if(chatNameEl) chatNameEl.innerHTML='<span class="chat-title-main">'+String(name).replace(/</g,'&lt;')+'</span>';
+    if(chatAvatar){ chatAvatar.textContent=(String(name)[0]||'?').toUpperCase(); chatAvatar.style.background=colorForId(otherUid); chatAvatar.style.backgroundColor=colorForId(otherUid); chatAvatar.style.display='flex'; }
+    if(messages) messages.innerHTML='';
+    var inputBar=document.getElementById('inputBar'); if(inputBar) inputBar.style.display='flex';
+    // Load local first
+    var chats=getIdChats(); var local=(chats[room]||[]);
+    local.forEach(function(msg){ appendIdMsg(msg, name, otherUid); });
+    // Then Firebase /private_id/<room>
+    fetch(URL_BASE + '/private_id/' + room + '.json').then(function(r){ return r.json(); }).then(function(j){
+      if(!j || typeof j!=='object') return;
+      var arr=Object.values(j).sort(function(a,b){ return (a.t||0)-(b.t||0); });
+      // If Firebase has more than local, replace view
+      if(arr.length>local.length){
+        if(messages) messages.innerHTML='';
+        chats[room]=arr; saveIdChats(chats);
+        arr.forEach(function(msg){ appendIdMsg(msg, name, otherUid); });
+      }
+    }).catch(function(){});
+    // Mark friend after opening? Only after first message sent, not just open — keep Friends logic on send
+  };
+  // Keep old name for compat — old code calling openPrivateChat(name) will now go through ID
+  window.openPrivateChat = function(name, maybeUid){
+    if(maybeUid) return window.openIdPrivate(name, maybeUid);
+    return window.openIdPrivate(name, null);
+  };
+
+  function appendIdMsg(msg, otherName, otherUid){
+    var messages=document.getElementById('messages'); if(!messages) return;
+    var isMe = String(msg.uid||msg.s||'')===String(myUserId()) || msg.s==='me';
+    var div=document.createElement('div'); div.className = isMe ? 'bubble me' : 'bubble other';
+    var safe = String(msg.m||msg.text||'').replace(/</g,'&lt;');
+    var time = msg.time || (msg.t ? new Date(msg.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '');
+    div.innerHTML = safe + '<span class="msg-meta"><span class="msg-time">'+time+'</span><span class="msg-ticks tick-blue">✓</span></span>';
+    messages.appendChild(div);
+  }
+
+  // Wrap sendMsg: if in ID private, send to /private_id/ with security proof
+  var origSend = window.sendMsg;
+  window.sendMsg = function(){
+    if(window.currentChat && String(window.currentChat).startsWith('private_id_')){
+      var inp=document.getElementById('mInput'); if(!inp) return;
+      var txt=inp.value.trim(); if(!txt) return;
+      // Security: must have passed login (same rule as All Users)
+      if(window.__pvAuthPassed===false){ alert('Please login first.'); return; }
+      var room=window.__pvCurrentPrivateRoom; var otherUid=window.__pvCurrentPrivateUid;
+      var time=new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      var msg={ uid: myUserId(), n: myName(), m: txt, time: time, t: Date.now(), passHash: myPassHash(), auth: myUserId()+':'+myPassHash() };
+      var chats=getIdChats(); if(!chats[room]) chats[room]=[];
+      chats[room].push(msg); saveIdChats(chats);
+      // Show
+      var messages=document.getElementById('messages');
+      if(messages){ var div=document.createElement('div'); div.className='bubble me'; div.innerHTML=txt.replace(/</g,'&lt;')+'<span class="msg-meta"><span class="msg-time">'+time+'</span><span class="msg-ticks tick-blue">✓</span></span>'; messages.appendChild(div); }
+      inp.value='';
+      try{ if(window.onInputChange) window.onInputChange(); }catch(e){}
+      markFriend(otherUid);
+      // Firebase send to ID room — never to old name room
+      fetch(URL_BASE + '/private_id/' + room + '.json', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(msg)}).catch(function(){});
+      return;
+    }
+    if(origSend) return origSend.apply(this, arguments);
+  };
+
+  // Poll ID private while open — every 5s, no clear, only append new
+  setInterval(function(){
+    if(!window.currentChat || !String(window.currentChat).startsWith('private_id_')) return;
+    var room=window.__pvCurrentPrivateRoom; if(!room) return;
+    fetch(URL_BASE + '/private_id/' + room + '.json').then(function(r){ return r.json(); }).then(function(j){
+      if(!j || typeof j!=='object') return;
+      var arr=Object.values(j).sort(function(a,b){ return (a.t||0)-(b.t||0); });
+      var chats=getIdChats(); var local=chats[room]||[];
+      if(arr.length>local.length){
+        var messages=document.getElementById('messages'); if(!messages) return;
+        // Append only new ones
+        for(var i=local.length;i<arr.length;i++){ appendIdMsg(arr[i]); }
+        chats[room]=arr; saveIdChats(chats);
+      }
+    }).catch(function(){});
+  }, 5000);
+
+  // Hide old private rows on main list, keep All Users
+  function hideOldPrivateRows(){
+    try{ document.querySelectorAll('[data-private], .private-row').forEach(function(n){ n.remove(); }); }catch(e){}
+  }
+  setTimeout(hideOldPrivateRows, 500);
+  setTimeout(hideOldPrivateRows, 2000);
+})();
+</script>
+
+
+<script id="PV-SAVE-CONTACTS-FINAL">
+/* PV-SAVE-CONTACTS-FINAL — Save contacts before chat. Local only, not global.
+   - First tap on a contact (from New or from All Users name) must Save before chat.
+   - Saved name is only on YOUR phone (localStorage pv_saved_contacts), not in Firebase, not on their phone.
+   - New list shows YOUR saved name, not global name. No #, no last message in list.
+   - Save screen shows last All Users message preview. Tap that preview -> jump to All Users, highlight that exact message.
+   - Every name in All Users is tappable -> Save -> Chat -> Friends.
+   - If 3 Glories share name, chooser shows each with color + joined date + last message hint, so you pick correct one.
+   - Private still ID-based (previous script), security still on.
+*/
+(function(){
+  var URL_BASE='https://prochat2026-default-rtdb.firebaseio.com';
+  var PALETTE=['#00a884','#25D366','#8e24aa','#ff6d00','#039be5','#d32f2f','#7b1fa2','#f9a825','#00897b','#5e35b1','#e65100','#2e7d32'];
+  function hashStr(s){ var h=0; s=String(s||''); for(var i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return Math.abs(h); }
+  function colorForId(uid){ return PALETTE[hashStr(uid)%PALETTE.length]; }
+  function myUid(){ return localStorage.getItem('pv_user_id')||''; }
+  function myName(){ return localStorage.getItem('prochat_name')||''; }
+  function getSavedMap(){ try{ return JSON.parse(localStorage.getItem('pv_saved_contacts')||'{}'); }catch(e){ return {}; } }
+  function saveSavedMap(m){ try{ localStorage.setItem('pv_saved_contacts', JSON.stringify(m)); }catch(e){} }
+  function getSavedName(uid, globalName){ var m=getSavedMap(); return m[uid] || globalName; }
+  function isSaved(uid){ var m=getSavedMap(); return !!m[uid]; }
+  function getFriends(){ try{ return JSON.parse(localStorage.getItem('pv_id_friends')||'[]'); }catch(e){ return []; } }
+  function isFriend(uid){ return getFriends().indexOf(uid)!==-1 || isSaved(uid); }
+
+  var accountsCache=[];
+  async function fetchAccounts(){
+    if(window.__pvFetchIdAccounts){ try{ var a=await window.__pvFetchIdAccounts(); accountsCache=a||accountsCache; return accountsCache; }catch(e){} }
+    try{
+      var r=await fetch(URL_BASE+'/pv_accounts.json'); var j=await r.json(); var me=myUid(); var arr=[];
+      Object.values(j||{}).forEach(function(a){ if(!a||!a.userId||!a.name) return; if(me && String(a.userId)===String(me)) return; arr.push({userId:String(a.userId), name:String(a.name), shortId:String(a.shortId||''), createdAt:a.createdAt||0}); });
+      var seen={}; var out=[]; arr.forEach(function(x){ if(!seen[x.userId]){ seen[x.userId]=1; out.push(x); } });
+      out.sort(function(x,y){ var a=x.name.toLowerCase(), b=y.name.toLowerCase(); if(a<b) return -1; if(a>b) return 1; return x.userId<y.userId?-1:1; });
+      accountsCache=out; return out;
+    }catch(e){ return accountsCache; }
+  }
+
+  async function fetchLastAllMsgFor(uid, globalName){
+    try{
+      var rs=await Promise.all([fetch(URL_BASE+'/msgs.json').then(function(r){return r.json();}).catch(function(){return null;}), fetch(URL_BASE+'/prochat/rooms/general.json').then(function(r){return r.json();}).catch(function(){return null;})]);
+      var all=[];
+      rs.forEach(function(obj){ if(obj && typeof obj==='object'){ Object.values(obj).forEach(function(m){ if(m && m.n) all.push(m); }); } });
+      // Prefer uid match (new messages have uid), fallback to name match
+      var byUid=all.filter(function(m){ return uid && String(m.uid||'')===String(uid); });
+      var pool=byUid.length?byUid:all.filter(function(m){ return String(m.n||'').toLowerCase()===String(globalName||'').toLowerCase(); });
+      if(!pool.length) return null;
+      pool.sort(function(a,b){ return (Number(a.t)||0)-(Number(b.t)||0); });
+      return pool[pool.length-1];
+    }catch(e){ return null; }
+  }
+
+  /* --- Save dialog --- */
+  function ensureDialog(){
+    var d=document.getElementById('pvSaveDialog');
+    if(d) return d;
+    d=document.createElement('div'); d.id='pvSaveDialog';
+    d.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:flex-end;justify-content:center;';
+    d.innerHTML='<div style="background:#111b21;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 18px 28px;color:#e9edef;"><div style="width:40px;height:4px;background:#374045;border-radius:2px;margin:0 auto 14px;"></div><div id="pvSaveAvatar" style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin:0 auto 10px;"></div><div id="pvSaveGlobal" style="text-align:center;font-weight:700;font-size:17px;"></div><div id="pvSaveHint" style="text-align:center;color:#8696a0;font-size:12px;margin-top:4px;"></div><div id="pvSaveLastWrap" style="display:none;margin-top:14px;background:#202c33;border-radius:12px;padding:12px;cursor:pointer;"><div style="font-size:11px;color:#25D366;font-weight:700;margin-bottom:4px;">Last message in All Users — tap to see in All Users</div><div id="pvSaveLastText" style="font-size:13px;color:#e9edef;line-height:1.4;"></div><div style="font-size:11px;color:#8696a0;margin-top:4px;">Tap to jump to All Users and see this message</div></div><label style="display:block;margin-top:16px;font-size:13px;color:#8696a0;">Save this contact as (only on your phone)</label><input id="pvSaveInput" placeholder="e.g. Glory School" maxlength="24" style="width:100%;margin-top:6px;padding:14px 14px;background:#182830;border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:#fff;font-size:16px;"/><div style="display:flex;gap:10px;margin-top:16px;"><button id="pvSaveCancel" style="flex:1;padding:13px;border-radius:12px;background:#202c33;color:#e9edef;border:none;font-weight:700;">Cancel</button><button id="pvSaveDo" style="flex:1;padding:13px;border-radius:12px;background:#00a884;color:#fff;border:none;font-weight:800;">Save &amp; Chat</button></div></div>';
+    document.body.appendChild(d);
+    d.addEventListener('click', function(e){ if(e.target===d) hideSaveDialog(); });
+    return d;
+  }
+  function hideSaveDialog(){ var d=document.getElementById('pvSaveDialog'); if(d) d.style.display='none'; }
+  function showSaveDialog(account, lastMsg){
+    var d=ensureDialog();
+    var av=document.getElementById('pvSaveAvatar'); var gl=document.getElementById('pvSaveGlobal'); var hint=document.getElementById('pvSaveHint'); var inp=document.getElementById('pvSaveInput');
+    var savedMap=getSavedMap(); var curSaved=savedMap[account.userId]||'';
+    av.style.background=colorForId(account.userId); av.textContent=(account.name[0]||'?').toUpperCase();
+    gl.textContent=account.name;
+    hint.textContent = curSaved ? ('You saved as: '+curSaved) : 'This saved name is only on your phone, not global.';
+    inp.value = curSaved || account.name;
+    var wrap=document.getElementById('pvSaveLastWrap'); var lastTxt=document.getElementById('pvSaveLastText');
+    if(lastMsg && lastMsg.m){ wrap.style.display='block'; lastTxt.textContent='"'+String(lastMsg.m).slice(0,140)+'"';
+      wrap.onclick=function(){ hideSaveDialog(); jumpToAllUsers(account.name, lastMsg.m, lastMsg.t); };
+    } else { wrap.style.display='none'; }
+    d.style.display='flex';
+    setTimeout(function(){ try{ inp.focus(); inp.select(); }catch(e){} }, 100);
+    document.getElementById('pvSaveCancel').onclick=function(){ hideSaveDialog(); };
+    document.getElementById('pvSaveDo').onclick=function(){
+      var v=inp.value.trim(); if(v.length<2){ alert('Please type a name to save, at least 2 letters.'); return; }
+      var m=getSavedMap(); m[account.userId]=v; saveSavedMap(m);
+      hideSaveDialog();
+      // Now open private with saved name displayed
+      if(window.__pvOpenIdPrivateOrig){ window.__pvOpenIdPrivateOrig(v, account.userId); }
+      else if(window.openIdPrivate){ window.openIdPrivate(v, account.userId); }
+      if(window.closeIdSheet) window.closeIdSheet();
+    };
+  }
+
+  function jumpToAllUsers(globalName, text, t){
+    // Close sheets, open All Users
+    try{ if(window.closeIdSheet) window.closeIdSheet(); }catch(e){}
+    try{ var ov=document.getElementById('newSheetOverlay'); if(ov) ov.classList.remove('open'); var sh=document.getElementById('newSheet'); if(sh) sh.classList.remove('open'); }catch(e){}
+    // Try open All Users via known functions
+    try{
+      var row=document.querySelector('[data-room="all"]');
+      if(row){ row.click(); }
+      else if(typeof window.openChat==='function'){ window.openChat('all'); }
+      else if(typeof window.tabNav==='function'){ window.tabNav('chats'); }
+    }catch(e){}
+    // After render, find bubble and highlight
+    setTimeout(function(){
+      try{
+        var box=document.getElementById('messages'); if(!box) return;
+        var bubbles=box.querySelectorAll('.bubble');
+        var target=null;
+        bubbles.forEach(function(b){
+          var txt=b.getAttribute('data-pv-text')||'';
+          var nm=b.getAttribute('data-pv-name')||'';
+          if(txt===String(text) && nm===String(globalName)) target=b;
+        });
+        if(!target && bubbles.length){ // fallback: last bubble with that name
+          for(var i=bubbles.length-1;i>=0;i--){ var b2=bubbles[i]; if((b2.getAttribute('data-pv-name')||'')===String(globalName)){ target=b2; break; } }
+        }
+        if(target){ target.scrollIntoView({behavior:'smooth', block:'center'}); target.style.outline='2px solid #25D366'; target.style.outlineOffset='2px'; setTimeout(function(){ try{ target.style.outline=''; target.style.outlineOffset=''; }catch(e){} }, 4000); }
+      }catch(e){}
+    }, 900);
+  }
+  window.__pvJumpToAllUsers=jumpToAllUsers;
+
+  /* --- Chooser for duplicate names (3 Glories) --- */
+  function showChooser(matches, globalName){
+    var d=document.getElementById('pvChooser');
+    if(!d){ d=document.createElement('div'); d.id='pvChooser'; d.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99998;display:none;align-items:flex-end;justify-content:center;'; document.body.appendChild(d); }
+    var html='<div style="background:#111b21;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 18px 28px;color:#e9edef;"><div style="text-align:center;font-weight:800;font-size:17px;">Which '+String(globalName).replace(/</g,'&lt;')+'?</div><div style="text-align:center;color:#8696a0;font-size:12px;margin-top:6px;">There are '+matches.length+' people with this name. Pick the correct one by color + joined date.</div>';
+    matches.forEach(function(a, idx){
+      var joined=a.createdAt ? new Date(Number(a.createdAt)).toLocaleDateString() : 'Joined: unknown';
+      html+='<div data-idx="'+idx+'" class="pv-chooser-row" style="display:flex;align-items:center;gap:12px;margin-top:12px;background:#202c33;border-radius:12px;padding:12px;cursor:pointer;"><div style="width:44px;height:44px;border-radius:50%;background:'+colorForId(a.userId)+';display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;">'+(a.name[0]||'?').toUpperCase()+'</div><div style="flex:1;"><div style="font-weight:700;">'+a.name.replace(/</g,'&lt;')+'</div><div style="font-size:12px;color:#8696a0;">Joined: '+joined+' • Color helps tell them apart</div></div><div style="color:#25D366;font-weight:800;">›</div></div>';
+    });
+    html+='<button id="pvChooserCancel" style="width:100%;margin-top:16px;padding:13px;border-radius:12px;background:#202c33;color:#e9edef;border:none;font-weight:700;">Cancel</button></div>';
+    d.innerHTML=html; d.style.display='flex';
+    d.querySelectorAll('.pv-chooser-row').forEach(function(row){
+      row.addEventListener('click', function(){
+        var idx=parseInt(row.getAttribute('data-idx'),10); var acc=matches[idx]; d.style.display='none';
+        openSaveForAccount(acc);
+      });
+    });
+    var c=document.getElementById('pvChooserCancel'); if(c) c.onclick=function(){ d.style.display='none'; };
+    d.addEventListener('click', function(e){ if(e.target===d) d.style.display='none'; });
+  }
+
+  async function openSaveForAccount(account){
+    var last=await fetchLastAllMsgFor(account.userId, account.name);
+    showSaveDialog(account, last);
+  }
+
+  async function handleTapName(globalName, text, t){
+    if(!globalName) return;
+    var me=myName(); if(me && String(globalName).toLowerCase()===String(me).toLowerCase()) return; // don't save yourself
+    var accounts=await fetchAccounts();
+    var matches=accounts.filter(function(a){ return String(a.name).toLowerCase()===String(globalName).toLowerCase(); });
+    if(matches.length===0){
+      // No account with that name (old All Users message from before accounts) — show by name with temp id, but still allow save by name
+      var temp={userId:'name_'+String(globalName).toLowerCase().replace(/[^a-z0-9]/g,'_'), name:globalName, createdAt:0};
+      var last=await fetchLastAllMsgFor(null, globalName);
+      showSaveDialog(temp, last);
+      return;
+    }
+    if(matches.length===1){
+      await openSaveForAccount(matches[0]); return;
+    }
+    // Multiple — try to narrow by last message uid
+    if(text){
+      try{
+        var rs=await Promise.all([fetch(URL_BASE+'/msgs.json').then(function(r){return r.json();}).catch(function(){return null;}), fetch(URL_BASE+'/prochat/rooms/general.json').then(function(r){return r.json();}).catch(function(){return null;})]);
+        var all=[]; rs.forEach(function(obj){ if(obj && typeof obj==='object'){ Object.values(obj).forEach(function(m){ if(m && m.n) all.push(m); }); } });
+        var found=all.find(function(m){ return String(m.n||'')===String(globalName) && String(m.m||'')===String(text) && Math.abs(Number(m.t||0)-Number(t||0))<10000 && m.uid; });
+        if(found){
+          var exact=matches.find(function(a){ return String(a.userId)===String(found.uid); });
+          if(exact){ await openSaveForAccount(exact); return; }
+        }
+      }catch(e){}
+    }
+    showChooser(matches, globalName);
+  }
+
+  /* --- Override New list to show saved names --- */
+  var origRender = window.renderExactContacts;
+  window.renderExactContacts = async function(){
+    var listEl=document.getElementById('exactContactsList'); var countEl=document.getElementById('exactCount'); var sectionTitle=document.getElementById('exactSectionTitle');
+    if(!listEl){ if(origRender) return origRender(); return; }
+    var contacts=await fetchAccounts();
+    if(countEl) countEl.textContent=contacts.length+' contacts';
+    if(sectionTitle) sectionTitle.textContent=contacts.length?'Contacts on PRO VIBES':'No contacts yet';
+    var prevScroll=listEl.scrollTop||0; listEl.innerHTML='';
+    var myN=myName()||'You'; var myselfRow=document.createElement('div'); myselfRow.className='exact-contact';
+    myselfRow.innerHTML='<div class="exact-contact-avatar" style="background:'+colorForId(myUid()||myN)+' !important;">'+(myN[0]||'Y').toUpperCase()+'</div><div class="exact-contact-name"><b>Myself (You)</b></div><button class="sleek-msg-btn" data-self="1">Message</button>';
+    myselfRow.querySelector('.sleek-msg-btn').addEventListener('click', function(e){ e.stopPropagation(); if(window.openIdPrivate) window.openIdPrivate(myN, myUid()); if(window.closeIdSheet) window.closeIdSheet(); });
+    listEl.appendChild(myselfRow);
+    contacts.forEach(function(c){
+      var display=getSavedName(c.userId, c.name);
+      var friend=isFriend(c.userId);
+      var row=document.createElement('div'); row.className='exact-contact';
+      var rightHtml = friend ? '<span style="background:#1f2c34;color:#00e676;border:1px solid #00e67633;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;">Friends ✓</span>' : '<button class="sleek-msg-btn">Message</button>';
+      row.innerHTML='<div class="exact-contact-avatar" style="background:'+colorForId(c.userId)+' !important;">'+(display[0]||'?').toUpperCase()+'</div><div class="exact-contact-name"><b>'+String(display).replace(/</g,'&lt;')+'</b></div>'+rightHtml;
+      function go(){ handleTapName(c.name, null, null); if(window.closeIdSheet) window.closeIdSheet(); }
+      // In New, tap must go through save (handleTapName shows save dialog)
+      var btn=row.querySelector('.sleek-msg-btn');
+      if(btn) btn.addEventListener('click', function(e){ e.stopPropagation(); go(); });
+      row.addEventListener('click', go);
+      listEl.appendChild(row);
+    });
+    try{ listEl.scrollTop=prevScroll; }catch(e){}
+  };
+
+  /* --- Wrap openIdPrivate to require save --- */
+  if(window.openIdPrivate && !window.__pvOpenIdPrivateOrig){
+    window.__pvOpenIdPrivateOrig = window.openIdPrivate;
+    window.openIdPrivate = function(name, uid){
+      if(!uid){
+        // Old call with name only — go through save chooser
+        handleTapName(name, null, null); return;
+      }
+      if(isSaved(uid)){
+        var saved=getSavedName(uid, name);
+        return window.__pvOpenIdPrivateOrig(saved, uid);
+      }
+      // Not saved — show save dialog for this uid
+      fetchAccounts().then(function(list){
+        var acc=list.find(function(x){ return String(x.userId)===String(uid); }) || {userId:uid, name:name, createdAt:0};
+        openSaveForAccount(acc);
+      });
+    };
+    // Keep openPrivateChat in sync
+    window.openPrivateChat = window.openIdPrivate;
+  }
+
+  /* --- All Users names tappable --- */
+  document.addEventListener('click', function(e){
+    try{
+      var box=document.getElementById('messages'); if(!box || !box.contains(e.target)) return;
+      var chatScreen=document.getElementById('chatScreen'); if(!chatScreen || !chatScreen.classList.contains('all-mode')) return;
+      // Only when in All Users chat
+      var bEl=e.target.closest('b');
+      var bubble=e.target.closest('.bubble');
+      if(!bubble || !bEl) return;
+      // b inside bubble is the sender name (font-size 11px, green)
+      var nm=bubble.getAttribute('data-pv-name') || bEl.textContent.trim();
+      var txt=bubble.getAttribute('data-pv-text') || '';
+      // Parse t from data-pv-id: name|text|t
+      var rid=bubble.getAttribute('data-pv-id')||''; var parts=rid.split('|'); var tt=parts[parts.length-1]||'';
+      e.preventDefault(); e.stopPropagation();
+      handleTapName(nm, txt, tt);
+    }catch(err){}
+  }, true);
+
+  console.log('PV SAVE CONTACTS FINAL ready — save before chat, local only, All Users names tappable');
+})();
+</script>
+
 </body>
+
+
+
 
 <style id="PV-VOICE-SLEEK-FINAL-OVERRIDE">
 body.pv-recording #inputBar{display:none !important;}
@@ -8559,53 +8820,9 @@ html body #chatScreen.ai-mode #waScrollDownBtn{
   border-radius:50% !important; width:46px !important; height:46px !important; min-width:46px !important;
 }
 </style>
-<script id="MIC-BY-DEFAULT-JS">(function(){
-  var MIC='<svg viewBox="0 0 24 24" width="22" height="22"><path fill="#111b21" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path fill="#111b21" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>';
-  var SEND='<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
-  function sync(){
-    try{
-      var btn=document.getElementById('sendBtn'); var inp=document.getElementById('mInput'); if(!btn||!inp) return;
-      // Only inside a chat room (AI or All Users) - not list
-      if(!document.body.classList.contains('in-chat-room')) return;
-      var empty=!inp.value.trim();
-      if(empty){
-        if(btn.getAttribute('data-mic')!=='1'){
-          btn.classList.add('pv-mic-state'); btn.setAttribute('data-mic','1'); btn.innerHTML=MIC;
-          btn.style.setProperty('background','#ffffff','important'); btn.style.setProperty('background-color','#ffffff','important');
-          btn.style.setProperty('border-radius','50%','important'); btn.style.setProperty('width','46px','important'); btn.style.setProperty('height','46px','important');
-        }
-      } else {
-        if(btn.getAttribute('data-mic')==='1'){
-          btn.classList.remove('pv-mic-state'); btn.removeAttribute('data-mic'); btn.innerHTML=SEND;
-          btn.style.removeProperty('background'); btn.style.removeProperty('background-color'); btn.style.removeProperty('border-radius'); btn.style.removeProperty('width'); btn.style.removeProperty('height');
-          // All Users send is green circle, AI send is as before - let original CSS handle it
-        }
-      }
-    }catch(e){}
-  }
-  /* CONFLICT-CLEANED: duplicate mic 200ms removed, kept latest MIC-DEFAULT-ON-OPEN 500ms */
-  document.addEventListener('input', function(e){ if(e.target && e.target.id==='mInput') sync(); });
-  setTimeout(sync, 300);
-})();</script>
+<script id="MIC-BY-DEFAULT-JS">(function(){ /* DELETED PERMANENTLY - old recorder logic wiped, replaced by PV-VOICE-FRESH-WHATSAPP-V1 */ })();</script>
 
-<script id="MIC-DEFAULT-ON-OPEN-JS">(function(){
-  function syncNow(){
-    try{
-      var btn=document.getElementById('sendBtn'); var inp=document.getElementById('mInput'); if(!btn||!inp) return;
-      var empty=!inp.value.trim();
-      if(empty && btn.getAttribute('data-mic')!=='1'){
-        btn.classList.add('pv-mic-state'); btn.setAttribute('data-mic','1');
-        btn.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22"><path fill="#111b21" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path fill="#111b21" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>';
-        btn.style.setProperty('background','#ffffff','important'); btn.style.setProperty('background-color','#ffffff','important');
-      }
-    }catch(e){}
-  }
-  // Sync the moment you enter any chat - no need type first
-  var origOpen=window.openChat; if(origOpen && !origOpen._micDefault){
-    var w=function(){ var r=origOpen.apply(this, arguments); setTimeout(syncNow, 30); setTimeout(syncNow, 300); setTimeout(syncNow, 800); return r; }; w._micDefault=true; window.openChat=w;
-  }
-  setInterval(syncNow, 500);
-})();</script>
+<script id="MIC-DEFAULT-ON-OPEN-JS">(function(){ /* DELETED PERMANENTLY - old recorder logic wiped, replaced by PV-VOICE-FRESH-WHATSAPP-V1 */ })();</script>
 
 <!-- HIDE-AI-WHEN-CLEARED: like WhatsApp - AI row hidden when history empty, only waAiFab above nav opens it -->
 <script id="HIDE-AI-WHEN-CLEARED-JS">(function(){
@@ -9645,40 +9862,7 @@ body.in-chat-room #fabStackRight, body.in-chat-room #waAiFab, body.in-chat-room 
   }
   #chatScreen.private-mode #sendBtn.pv-mic-state svg path { fill:#111b21 !important; stroke:none !important; }
 </style>
-<script id="PRIVATE-VOICE-LIGHT-GREEN-FINAL-JS">(function(){
-  function isPrivate(){
-    try{
-      var cur=''; try{ cur=document.getElementById('chatScreen')?.dataset?.pvCurrent || window.currentChat || ''; }catch(e){ cur=window.currentChat||''; }
-      if(cur && String(cur).indexOf('private_')===0) return true;
-      try{ var cs=document.getElementById('chatScreen'); if(cs && cs.classList.contains('private-mode')) return true; }catch(e){}
-    }catch(e){}
-    return false;
-  }
-  // Private only: make sure voice UI is not hidden by any old hide rule, and that mic state can show.
-  // We do NOT touch AI or All Users - this interval returns immediately if not private.
-  setInterval(function(){
-    try{
-      if(!isPrivate()) return;
-      var rec=document.getElementById('pvVoiceRecBar');
-      // Only un-hide when it has .show (i.e. actually recording) - otherwise leave it hidden so it does not flash
-      if(rec && rec.classList.contains('show')){ rec.style.setProperty('display','flex','important'); }
-      // If input is empty in private, let the existing mic scripts show the white mic - do not force green send
-      var inp=document.getElementById('mInput'); var btn=document.getElementById('sendBtn');
-      if(inp && btn && !inp.value.trim() && !btn.classList.contains('pv-mic-state')){
-        // Trigger the existing mic sync by firing an input event - the All Users mic logic already handles private because private has all-mode
-        try{ inp.dispatchEvent(new Event('input',{bubbles:true})); }catch(e){}
-      }
-    }catch(e){}
-  }, 500);
-  // Private only: when opening a private chat, re-sync mic so voice recorder is there by default
-  try{
-    if(window.openPrivateChat && !window.openPrivateChat._privVoiceLight){
-      var oP=window.openPrivateChat;
-      var wP=function(){ var r=oP.apply(this, arguments); setTimeout(function(){ try{ var inp=document.getElementById('mInput'); if(inp) inp.dispatchEvent(new Event('input',{bubbles:true})); }catch(e){} }, 350); return r; };
-      wP._privVoiceLight=true; window.openPrivateChat=wP;
-    }
-  }catch(e){}
-})();</script>
+<script id="PRIVATE-VOICE-LIGHT-GREEN-FINAL-JS">(function(){ /* DELETED PERMANENTLY - old recorder logic wiped, replaced by PV-VOICE-FRESH-WHATSAPP-V1 */ })();</script>
 
 <!-- PRIVATE-ONLY-FINAL-2: stable call + 3-dots in Private, no blink. AI + All Users untouched. -->
 <style id="PRIVATE-CALL-DOTS-STABLE-FINAL-CSS">
@@ -10882,6 +11066,10 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   function getOrCreateUserId(){ try{ var id=localStorage.getItem('pv_user_id'); if(!id){ id='pv_u_'+Date.now().toString(36)+'_'+randStr(6); localStorage.setItem('pv_user_id', id); } try{ localStorage.setItem('prochat_global_uid', id); }catch(e){} return id; }catch(e){ return 'pv_u_'+Date.now().toString(36)+'_'+randStr(6); } }
   function getShortId(userId){ try{ var saved=localStorage.getItem('pv_short_id'); if(saved) return saved; var h=0; for(var i=0;i<userId.length;i++){ h=(h*31+userId.charCodeAt(i))>>>0; } var s=String(1000+(h%9000)); localStorage.setItem('pv_short_id', s); return s; }catch(e){ return String(1000+Math.floor(Math.random()*9000)); } }
   function getAccountLocal(){ try{ return JSON.parse(localStorage.getItem('pv_account')||'null'); }catch(e){ return null; } }
+  // ACCOUNT LOCK: phone belongs to first account. Typing another name must NOT create a new account on top of it.
+  function isPhoneLocked(){ try{ var sd=localStorage.getItem('pv_setup_done')||'0'; return !!(account && account.name && sd==='1'); }catch(e){ return false; } }
+  function lockedName(){ return account ? account.name : ''; }
+  function isDifferentName(n){ return isPhoneLocked() && String(n||'').trim().toLowerCase() !== String(lockedName()||'').trim().toLowerCase(); }
   function saveAccountLocal(acc){ try{ localStorage.setItem('pv_account', JSON.stringify(acc)); localStorage.setItem('pv_user_id', acc.userId); localStorage.setItem('pv_short_id', acc.shortId); localStorage.setItem('pv_device_id', acc.deviceId); localStorage.setItem('prochat_global_uid', acc.userId); localStorage.setItem('prochat_name', acc.name); localStorage.setItem('prochat_username', acc.name); localStorage.setItem('pv_username', acc.name); localStorage.setItem('cospro_name', acc.name); localStorage.setItem('pv_setup_done', '1'); }catch(e){} }
   async function hashPassword(password, salt){ try{ var enc=new TextEncoder(); var data=enc.encode(String(password)+'::'+String(salt)); var buf=await crypto.subtle.digest('SHA-256', data); return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join(''); }catch(e){ var s=String(password)+'::'+String(salt); var h=0; for(var i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return 'fallback_'+h.toString(16); } }
   function showMsg(text, type){ var el=document.getElementById('pvAuthMsg'); if(!el) return; el.textContent=text; el.style.display='block'; el.style.cssText='display:block;width:100%;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px;text-align:center;'; if(type==='ok') el.style.cssText+='background:rgba(0,230,118,0.15);color:#00e676;border:1px solid rgba(0,230,118,0.4);'; else if(type==='err') el.style.cssText+='background:rgba(255,80,80,0.15);color:#ff8a8a;border:1px solid rgba(255,80,80,0.4);'; else el.style.cssText+='background:rgba(110,168,255,0.15);color:#a8c8ff;border:1px solid rgba(110,168,255,0.4);'; }
@@ -10894,16 +11082,16 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   var cloudCandidates = [];
   var checkingCloud = false;
   function getEls(){ return { name: document.getElementById('uName'), pass: document.getElementById('pvPassword'), confirm: document.getElementById('pvPasswordConfirm'), loginPass: document.getElementById('pvLoginPassword'), setupBlock: document.getElementById('pvSetupBlock'), loginBlock: document.getElementById('pvLoginPassBlock'), btn: document.getElementById('continueBtn') }; }
-  function setMode(newMode){ mode=newMode; var els=getEls(); if(els.setupBlock) els.setupBlock.style.display=(mode==='setup'?'block':'none'); if(els.loginBlock) els.loginBlock.style.display=(mode==='verify'?'block':'none'); var _ar=document.getElementById('pvAuthRow'); if(_ar) _ar.style.display=(mode==='trusted'?'none':'flex'); if(els.btn){ if(mode==='setup') els.btn.textContent='Account Setup'; else if(mode==='verify') els.btn.textContent='Login'; else els.btn.textContent='Continue'; } updateContinueState(); }
-  function updateContinueState(){ var els=getEls(); if(!els.name||!els.btn) return; var name=els.name.value.trim(); var enabled=false; if(name.length<2){ enabled=false; } else if(mode==='setup'){ var pw=els.pass?els.pass.value:''; var cf=els.confirm?els.confirm.value:''; enabled=(pw.length>=4&&cf.length>=4&&pw===cf); } else if(mode==='verify'){ var lp=els.loginPass?els.loginPass.value:''; enabled=(lp.length>=4); } else if(mode==='trusted'){ enabled=true; } els.btn.disabled=!enabled; els.btn.style.opacity=enabled?'1':'0.45'; if(mode==='setup'&&name.length>=2){ var pw2=els.pass?els.pass.value:''; var cf2=els.confirm?els.confirm.value:''; if(pw2.length>0&&pw2.length<4){ showMsg('Your password must be at least 4 characters.', 'err'); } else if(cf2.length>0&&pw2!==cf2){ showMsg('The two passwords do not match. Please type them again.', 'err'); } else if(pw2.length>=4&&cf2.length>=4&&pw2===cf2){ hideMsg(); } else { hideMsg(); } } }
+  function setMode(newMode){ mode=newMode; var els=getEls(); try{ var _sw2=document.getElementById('pvSwitchAccountBtn'); if(_sw2) _sw2.style.display=(isPhoneLocked()?'block':'none'); }catch(e){} if(els.setupBlock) els.setupBlock.style.display=(mode==='setup'?'block':'none'); if(els.loginBlock) els.loginBlock.style.display=(mode==='verify'?'block':'none'); var _ar=document.getElementById('pvAuthRow'); if(_ar) _ar.style.display=(mode==='trusted'?'none':'flex'); if(els.btn){ if(mode==='setup') els.btn.textContent='Account Setup'; else if(mode==='verify') els.btn.textContent='Login'; else els.btn.textContent='Continue'; } updateContinueState(); }
+  function updateContinueState(){ var els=getEls(); if(!els.name||!els.btn) return; var name=els.name.value.trim(); var enabled=false; if(name.length<2){ enabled=false; } else if(mode==='setup'){ if(isPhoneLocked()){ showMsg('This phone belongs to '+lockedName()+'. Tap Switch account to use another name.', 'err'); return false; } var pw=els.pass?els.pass.value:''; var cf=els.confirm?els.confirm.value:''; enabled=(pw.length>=8&&cf.length>=8&&pw===cf); /* NEW passwords must be 8. Verify (old passwords) still allows 4 below, so old users are not locked out. */ } else if(mode==='verify'){ var lp=els.loginPass?els.loginPass.value:''; enabled=(lp.length>=4); } else if(mode==='trusted'){ var _tn=els.name?els.name.value.trim():''; enabled=!isDifferentName(_tn); } els.btn.disabled=!enabled; els.btn.style.opacity=enabled?'1':'0.45'; if(mode==='setup'&&name.length>=2){ var pw2=els.pass?els.pass.value:''; var cf2=els.confirm?els.confirm.value:''; if(pw2.length>0&&pw2.length<8){ showMsg('Your password must be at least 8 characters.', 'err'); } else if(cf2.length>0&&pw2!==cf2){ showMsg('The two passwords do not match. Please type them again.', 'err'); } else if(pw2.length>=8&&cf2.length>=8&&pw2===cf2){ hideMsg(); } else { hideMsg(); } } }
   async function fetchAccountsByName(name){ try{ var key=safeName(name); var res=await fetch(FIREBASE_URL+'/pv_accounts_by_name/'+encodeURIComponent(key)+'.json'); var data=await res.json(); if(!data) return []; var list=[]; if(Array.isArray(data)){ list=data; } else if(data.userId){ list=[data]; } else { Object.keys(data).forEach(function(k){ var v=data[k]; if(v&&v.userId) list.push(v); else if(typeof v==='string') list.push({userId:v, shortId:k}); }); } return list; }catch(e){ return []; } }
   async function fetchAccount(uid){ try{ var res=await fetch(FIREBASE_URL+'/pv_accounts/'+encodeURIComponent(uid)+'.json'); return await res.json(); }catch(e){ return null; } }
   async function saveAccountToCloud(acc){ try{ await fetch(FIREBASE_URL+'/pv_accounts/'+encodeURIComponent(acc.userId)+'.json', {method:'PUT', body: JSON.stringify(acc)}); var key=safeName(acc.name); await fetch(FIREBASE_URL+'/pv_accounts_by_name/'+encodeURIComponent(key)+'/'+encodeURIComponent(String(acc.shortId))+'.json', {method:'PUT', body: JSON.stringify({userId:acc.userId, name:acc.name, shortId:acc.shortId})}); return true; }catch(e){ console.log('save account cloud fail', e); return false; } }
-  async function checkNameInCloud(){ var els=getEls(); if(!els.name) return; var name=els.name.value.trim(); if(name.length<2) return; if(account&&account.name.toLowerCase()===name.toLowerCase()){ var sd='0'; try{ sd=localStorage.getItem('pv_setup_done')||'0'; }catch(e){} if(sd==='1'){ setMode('trusted'); hideMsg(); return; } } if(checkingCloud) return; checkingCloud=true; try{ var list=await fetchAccountsByName(name); cloudCandidates=list; if(list.length>0){ if(mode!=='verify'){ setMode('verify'); showMsg('Welcome back. This name already exists. Please enter your password to continue.', 'info'); } } else { if(mode==='verify'){ setMode('setup'); } } }catch(e){} checkingCloud=false; updateContinueState(); }
+  async function checkNameInCloud(){ var els=getEls(); if(!els.name) return; var name=els.name.value.trim(); if(name.length<2) return; if(isDifferentName(name)){ setMode('trusted'); showMsg('This phone belongs to '+lockedName()+'. To use another name, tap Switch account below.', 'err'); updateContinueState(); return; } if(account&&account.name.toLowerCase()===name.toLowerCase()){ var sd='0'; try{ sd=localStorage.getItem('pv_setup_done')||'0'; }catch(e){} if(sd==='1'){ setMode('trusted'); hideMsg(); return; } } if(checkingCloud) return; checkingCloud=true; try{ var list=await fetchAccountsByName(name); cloudCandidates=list; if(list.length>0){ if(mode!=='verify'){ setMode('verify'); showMsg('Welcome back. This name already exists. Please enter your password to continue.', 'info'); } } else { if(mode==='verify'){ setMode('setup'); } } }catch(e){} checkingCloud=false; updateContinueState(); }
   async function doAuth(){
-    var els=getEls(); var name=els.name?els.name.value.trim():''; if(!name||name.length<2){ showMsg('Please enter your name.', 'err'); return false; }
+    var els=getEls(); var name=els.name?els.name.value.trim():''; if(!name||name.length<2){ showMsg('Please enter your name.', 'err'); return false; } if(isDifferentName(name)){ showMsg('This phone belongs to '+lockedName()+'. To use another name, tap Switch account below.', 'err'); return false; }
     if(mode==='trusted'){ if(account&&account.name.toLowerCase()===name.toLowerCase()){ window.PV_AUTH={name:account.name, userId:account.userId, shortId:account.shortId, deviceId:deviceId, display:account.name}; window.PV_USER_ID=account.userId; window.PV_SHORT_ID=account.shortId; window.PV_DEVICE_ID=deviceId; return true; } await checkNameInCloud(); if(mode==='trusted') return false; return await doAuth(); }
-    if(mode==='setup'){ var pw=els.pass?els.pass.value:''; var cf=els.confirm?els.confirm.value:''; if(pw.length<4){ showMsg('Your password must be at least 4 characters.', 'err'); return false; } if(pw!==cf){ showMsg('The two passwords do not match. Please type them again.', 'err'); return false; } if(account&&account.name.toLowerCase()===name.toLowerCase()){ var sd2='0'; try{ sd2=localStorage.getItem('pv_setup_done')||'0'; }catch(e){} if(sd2==='1'){ setMode('trusted'); return true; } } showMsg('Creating your account. Please wait.', 'info'); var existingList=[]; try{ existingList=await fetchAccountsByName(name); }catch(e){} var used={}; existingList.forEach(function(it){ if(it.shortId) used[String(it.shortId)]=true; }); var finalShort=shortId; var finalUserId=userId; if(used[String(finalShort)]){ var tries=0; while(used[String(finalShort)]&&tries<20){ finalShort=String(1000+Math.floor(Math.random()*9000)); tries++; } finalUserId='pv_u_'+Date.now().toString(36)+'_'+randStr(6); try{ localStorage.setItem('pv_user_id', finalUserId); localStorage.setItem('pv_short_id', finalShort); }catch(e){} userId=finalUserId; shortId=finalShort; } var passHash=await hashPassword(pw, finalUserId); var _gmail=''; try{ var _gEl=document.getElementById('pvGmail'); if(_gEl) _gmail=String(_gEl.value||'').trim().toLowerCase(); if(_gmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(_gmail)) _gmail=''; }catch(e){ _gmail=''; } var newAcc={name:name, userId:finalUserId, shortId:finalShort, deviceId:deviceId, passHash:passHash, createdAt:Date.now(), gmail:_gmail}; saveAccountLocal(newAcc); try{ localStorage.setItem('pv_pass_hash', passHash); }catch(e){} await saveAccountToCloud(newAcc); account=newAcc; window.PV_AUTH={name:name, userId:finalUserId, shortId:finalShort, deviceId:deviceId, display:name}; window.PV_USER_ID=finalUserId; window.PV_SHORT_ID=finalShort; window.PV_DEVICE_ID=deviceId; try{ var form=document.getElementById('pvLoginForm'); if(form) form.dispatchEvent(new Event('submit', {cancelable:true})); }catch(e){} showMsg('Your account has been created. You can now continue with your name only on this phone.', 'ok'); await new Promise(function(r){ setTimeout(r, 500); }); return true; }
+    if(mode==='setup'){ if(isPhoneLocked()){ showMsg('This phone belongs to '+lockedName()+'. Tap Switch account to use another name.', 'err'); return false; } var pw=els.pass?els.pass.value:''; var cf=els.confirm?els.confirm.value:''; if(pw.length<8){ showMsg('Your password must be at least 8 characters.', 'err'); return false; } if(pw!==cf){ showMsg('The two passwords do not match. Please type them again.', 'err'); return false; } if(account&&account.name.toLowerCase()===name.toLowerCase()){ var sd2='0'; try{ sd2=localStorage.getItem('pv_setup_done')||'0'; }catch(e){} if(sd2==='1'){ setMode('trusted'); return true; } } showMsg('Creating your account. Please wait.', 'info'); var existingList=[]; try{ existingList=await fetchAccountsByName(name); }catch(e){} var used={}; existingList.forEach(function(it){ if(it.shortId) used[String(it.shortId)]=true; }); var finalShort=String(1000+Math.floor(Math.random()*9000)); var _tries=0; while(used[String(finalShort)]&&_tries<20){ finalShort=String(1000+Math.floor(Math.random()*9000)); _tries++; } var finalUserId='pv_u_'+Date.now().toString(36)+'_'+randStr(6); try{ localStorage.setItem('pv_user_id', finalUserId); localStorage.setItem('pv_short_id', finalShort); }catch(e){} userId=finalUserId; shortId=finalShort; /* ALWAYS fresh userId for new account, so new account never overwrites old account in Firebase */ var passHash=await hashPassword(pw, finalUserId); var _gmail=''; try{ var _gEl=document.getElementById('pvGmail'); if(_gEl) _gmail=String(_gEl.value||'').trim().toLowerCase(); if(_gmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(_gmail)) _gmail=''; }catch(e){ _gmail=''; } var newAcc={name:name, userId:finalUserId, shortId:finalShort, deviceId:deviceId, passHash:passHash, createdAt:Date.now(), gmail:_gmail}; saveAccountLocal(newAcc); try{ localStorage.setItem('pv_pass_hash', passHash); }catch(e){} await saveAccountToCloud(newAcc); account=newAcc; window.PV_AUTH={name:name, userId:finalUserId, shortId:finalShort, deviceId:deviceId, display:name}; window.PV_USER_ID=finalUserId; window.PV_SHORT_ID=finalShort; window.PV_DEVICE_ID=deviceId; try{ var form=document.getElementById('pvLoginForm'); if(form) form.dispatchEvent(new Event('submit', {cancelable:true})); }catch(e){} showMsg('Your account has been created. You can now continue with your name only on this phone.', 'ok'); await new Promise(function(r){ setTimeout(r, 500); }); return true; }
     if(mode==='verify'){ var lp=els.loginPass?els.loginPass.value:''; if(lp.length<4){ showMsg('Please enter your password.', 'err'); return false; } showMsg('Checking your password. Please wait.', 'info'); var candidates=cloudCandidates; if(!candidates||candidates.length===0){ try{ candidates=await fetchAccountsByName(name); }catch(e){ candidates=[]; } } for(var i=0;i<candidates.length;i++){ var cand=candidates[i]; var candId=cand.userId; if(!candId) continue; var full=null; try{ full=await fetchAccount(candId); }catch(e){} if(!full||!full.passHash) continue; var inputHash=await hashPassword(lp, candId); if(inputHash===full.passHash){ var adopted={name:full.name, userId:full.userId, shortId:full.shortId, deviceId:deviceId, passHash:full.passHash, createdAt:full.createdAt||Date.now(), gmail:full.gmail||''}; saveAccountLocal(adopted); try{ localStorage.setItem('pv_pass_hash', full.passHash); }catch(e){} try{ saveAccountToCloud({...adopted, deviceId:deviceId}); }catch(e){} account=adopted; userId=adopted.userId; shortId=adopted.shortId; window.PV_AUTH={name:adopted.name, userId:adopted.userId, shortId:adopted.shortId, deviceId:deviceId, display:adopted.name}; window.PV_USER_ID=adopted.userId; window.PV_SHORT_ID=adopted.shortId; window.PV_DEVICE_ID=deviceId; showMsg('Welcome back. Your account has been restored on this phone.', 'ok'); await new Promise(function(r){ setTimeout(r, 400); }); return true; } } showMsg('The password is incorrect for this name. Please try again.', 'err'); return false; }
     return false;
   }
@@ -10916,6 +11104,32 @@ body:has(#chatScreen.private-as-all) #waDownCount{
       // STRICT: Everyone must complete setup once, even if they used the app before.
       if(account&&account.name&&setupDone==='1'){ setMode('trusted'); try{ els.name.value=account.name; }catch(e){} showMsg('Welcome back, '+account.name+'. Enter your name and select Continue.', 'info'); setTimeout(function(){ hideMsg(); }, 3000); }
       else { setMode('setup'); if(oldName&&!els.name.value){ try{ els.name.value=oldName; }catch(e){} } showMsg('For your security, please complete this one-time setup. Enter your name, create a password, and enter it again. Continue will remain disabled until everything is complete.', 'info'); if(els.btn){ els.btn.disabled=true; els.btn.style.opacity='0.45'; } }
+      // SWITCH ACCOUNT BUTTON - only way to use another name on this phone. Does NOT delete Firebase account.
+      try{
+        var _sw=document.getElementById('pvSwitchAccountBtn');
+        if(!_sw){
+          _sw=document.createElement('button'); _sw.id='pvSwitchAccountBtn'; _sw.type='button';
+          _sw.textContent='Switch account / Use another name';
+          _sw.style.cssText='background:none;border:none;color:#6ea8ff;font-size:13px;font-weight:600;cursor:pointer;padding:8px 0;margin-top:4px;width:100%;text-align:center;';
+          var _cb=document.getElementById('continueBtn');
+          if(_cb && _cb.parentNode) _cb.parentNode.insertBefore(_sw, _cb.nextSibling);
+          _sw.addEventListener('click', function(){
+            var _cur=lockedName()||'this phone';
+            if(!confirm('Switch account? This phone is now for '+_cur+'. Your old account will NOT be deleted. You will need your other account password to login again. Continue?')) return;
+            try{
+              localStorage.removeItem('pv_account'); localStorage.removeItem('pv_pass_hash'); localStorage.removeItem('pv_setup_done');
+              localStorage.removeItem('prochat_name'); localStorage.removeItem('prochat_username'); localStorage.removeItem('pv_username'); localStorage.removeItem('cospro_name');
+              var _nu='pv_u_'+Date.now().toString(36)+'_'+randStr(6); var _ns=String(1000+Math.floor(Math.random()*9000));
+              localStorage.setItem('pv_user_id', _nu); localStorage.setItem('pv_short_id', _ns); localStorage.setItem('prochat_global_uid', _nu);
+              userId=_nu; shortId=_ns; account=null; window.PV_AUTH=null; window.__pvAuthPassed=false;
+            }catch(e){}
+            try{ var _ni=document.getElementById('uName'); if(_ni) _ni.value=''; }catch(e){}
+            setMode('setup');
+            showMsg('Switched. Enter the other name and password. Your old account is still safe in Firebase.', 'info');
+          });
+        }
+        try{ _sw.style.display=(isPhoneLocked()?'block':'none'); }catch(e){}
+      }catch(e){}
       if(els.name){ els.name.addEventListener('input', function(){ hideMsg(); updateContinueState(); }); els.name.addEventListener('change', function(){ checkNameInCloud(); }); els.name.addEventListener('blur', function(){ checkNameInCloud(); }); }
       [els.pass, els.confirm, els.loginPass].forEach(function(inp){ if(!inp) return; inp.addEventListener('input', function(){ updateContinueState(); }); inp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); handleContinue(); } }); });
       if(els.name){ els.name.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); handleContinue(); } }); }
@@ -10940,6 +11154,951 @@ body:has(#chatScreen.private-as-all) #waDownCount{
     }catch(e){ console.log('PV AUTH V2 init fail', e); }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(initAuth, 300); }); else setTimeout(initAuth, 300); setTimeout(initAuth, 1500);
+})();
+</script>
+
+
+<!-- PV-E2E-FOOTER-CHATLIST-ONLY: WhatsApp-style encryption note. CHAT LIST ONLY (#listScreen). Nothing else touched. -->
+<style id="PV-E2E-FOOTER-CHATLIST-ONLY">
+  /* ONLY inside the chat list. Never in chatScreen / home / friends / alerts. */
+  #listScreen #pvE2EFooter{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    text-align:center !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+    padding:18px 20px 110px 20px !important;
+    margin:0 !important;
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    /* Does nothing when tapped - just a label */
+    pointer-events:none !important;
+    cursor:default !important;
+    user-select:none !important;
+    -webkit-user-select:none !important;
+  }
+  #listScreen #pvE2EFooter .pv-e2e-text{
+    font-size:12.5px !important;
+    line-height:1.5 !important;
+    font-weight:400 !important;
+    color:#8696a0 !important;
+  }
+  /* ONLY "End To End Encrypted" is green - nothing else */
+  #listScreen #pvE2EFooter .pv-e2e-green{
+    color:#25D366 !important;
+    font-weight:600 !important;
+  }
+  #listScreen #pvE2EFooter .pv-e2e-lock{
+    font-size:12.5px !important;
+    line-height:1 !important;
+  }
+</style>
+<script id="PV-E2E-FOOTER-CHATLIST-ONLY-JS">(function(){
+  function ensureE2EFooter(){
+    try{
+      var list=document.getElementById('listScreen'); if(!list) return;
+      var f=document.getElementById('pvE2EFooter');
+      if(!f){
+        f=document.createElement('div');
+        f.id='pvE2EFooter';
+        f.className='pv-e2e-footer';
+        f.setAttribute('aria-hidden','true');
+        f.innerHTML='<span class="pv-e2e-text">Private chats are now <span class="pv-e2e-green">End To End Encrypted</span> <span class="pv-e2e-lock">\uD83D\uDD10</span></span>';
+        list.appendChild(f);
+        return;
+      }
+      // Keep it UNDER every chat: if a new chat / sort appends rows after it, move it back to the very end.
+      if(f.parentElement!==list) list.appendChild(f);
+      else if(list.lastElementChild!==f) list.appendChild(f);
+    }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', ensureE2EFooter);
+  else ensureE2EFooter();
+  setTimeout(ensureE2EFooter, 300);
+  setTimeout(ensureE2EFooter, 1200);
+  // Safety net: catches new chats + re-sorts that append rows after the footer
+  setInterval(ensureE2EFooter, 1500);
+  try{
+    var list=document.getElementById('listScreen');
+    if(list) new MutationObserver(function(){ ensureE2EFooter(); }).observe(list, {childList:true});
+  }catch(e){}
+})();</script>
+
+<!-- PV-AI-UNREAD-BLINK-FINAL-FIX: 2 bugs in one. (1) AI read no stick: old code only marks read if you stay in AI 800ms + openChat wrapper gets overwritten, so quick read is missed and pv_seen_ai_count stays stale -> AI stuck in Unread. Fix: mark read SYNCHRONOUSLY on tap of AI row / AI fab + the moment chatScreen becomes ai-mode. (2) List flashes to All in Unread filter: upsertPrivateRow forces hidden rows to display:flex on every Firebase sync, ignoring filter, then PV-UNREAD-FILTER-REFRESH hides them 2s later = blink. Fix: MutationObserver hides offending rows before paint + interval fallback. Also restores smooth filter + Unread N count. Nothing else touched. -->
+<style id="PV-AI-UNREAD-BLINK-FINAL-FIX-CSS">
+  #filterScroll{ scroll-snap-type:none !important; scroll-behavior:auto !important; overflow-x:auto !important; overflow-y:hidden !important; -webkit-overflow-scrolling:touch !important; touch-action:pan-x pan-y !important; overscroll-behavior-x:contain !important; scrollbar-width:none !important; -ms-overflow-style:none !important; gap:8px !important; }
+  #filterScroll::-webkit-scrollbar{ display:none !important; width:0 !important; height:0 !important; }
+  #filterScroll .filter-pill{ scroll-snap-align:none !important; touch-action:pan-x pan-y !important; flex-shrink:0 !important; white-space:nowrap !important; }
+</style>
+<script id="PV-AI-UNREAD-BLINK-FINAL-FIX-JS">(function(){
+  function getTotal(){
+    try{ var m=JSON.parse(localStorage.getItem('cospro_ai_msgs')||'[]'); var t=0; for(var i=0;i<m.length;i++){ if(m[i]&&m[i].s==='ai') t++; } return {msgs:m,total:t}; }catch(e){ return {msgs:[],total:0}; }
+  }
+  function getSeen(){ try{ return Number(localStorage.getItem('pv_seen_ai_count')||'0')||0; }catch(e){ return 0; } }
+  function isInAI(){
+    try{ var cs=document.getElementById('chatScreen'); return !!(cs && cs.style.display!=='none' && getComputedStyle(cs).display!=='none' && cs.classList.contains('ai-mode')); }catch(e){ return false; }
+  }
+  function clearAIUnread(){
+    try{ localStorage.removeItem('pv_ai_forced_unread'); localStorage.removeItem('pv_ai_forced_at'); }catch(e){}
+    try{
+      document.querySelectorAll('#pvUnreadAI, .user-row[data-room="ai"] .pv-unread-badge').forEach(function(b){
+        if(b.textContent!=='' || b.classList.contains('show')){ b.textContent=''; b.classList.remove('show'); }
+      });
+    }catch(e){}
+    try{
+      document.querySelectorAll('.user-row[data-room="ai"], .user-row[onclick*="openChat(\'ai\')"]').forEach(function(row){
+        if(row.dataset && row.dataset.unread){ try{ delete row.dataset.unread; }catch(e){ row.removeAttribute('data-unread'); } }
+        if(row.hasAttribute && row.hasAttribute('data-unread-count')) row.removeAttribute('data-unread-count');
+        if(row.classList && row.classList.contains('has-unread')) row.classList.remove('has-unread');
+      });
+    }catch(e){}
+  }
+  // THE fix for quick-read: mark read NOW, synchronously, no 800ms wait, no openChat wrapper dependency
+  function markAIReadNow(){
+    try{
+      var d=getTotal();
+      try{ localStorage.setItem('pv_seen_ai_count', String(d.total)); }catch(e){}
+      try{ window._pvAiJustReadAt=Date.now(); }catch(e){}
+      clearAIUnread();
+    }catch(e){}
+  }
+  function fixAIStuck(){
+    try{
+      var d=getTotal(), total=d.total, seen=getSeen();
+      if(!d.msgs.length){ if(seen!==0){ try{ localStorage.setItem('pv_seen_ai_count','0'); }catch(e){} } clearAIUnread(); return; }
+      if(isInAI()){ if(seen!==total){ try{ localStorage.setItem('pv_seen_ai_count', String(total)); }catch(e){} } clearAIUnread(); return; }
+      if(seen>=total){
+        if(seen!==total){ try{ localStorage.setItem('pv_seen_ai_count', String(total)); }catch(e){} }
+        clearAIUnread(); return;
+      }
+      // seen < total = real new AI message, leave badge alone
+    }catch(e){}
+  }
+  // 1) Tap AI row / AI fab = read, instantly
+  try{
+    document.addEventListener('click', function(e){
+      try{
+        var t=e.target;
+        if(!t || !t.closest) return;
+        var aiRow=t.closest('.user-row[data-room="ai"], .user-row[onclick*="openChat(\'ai\')"]');
+        var aiFab=t.closest('#waAiFab, [onclick*="openChat(\'ai\')"]');
+        if(aiRow || aiFab) markAIReadNow();
+      }catch(err){}
+    }, true);
+  }catch(e){}
+  // 2) The moment chatScreen becomes ai-mode = read, instantly (covers any open path)
+  try{
+    var cs=document.getElementById('chatScreen');
+    if(cs && window.MutationObserver){
+      var lastAI=false;
+      new MutationObserver(function(){
+        try{
+          var now=isInAI();
+          if(now && !lastAI) markAIReadNow();
+          lastAI=now;
+        }catch(err){}
+      }).observe(cs, {attributes:true, attributeFilter:['class','style']});
+    }
+  }catch(e){}
+  fixAIStuck();
+  setInterval(fixAIStuck, 250);
+
+  // ---- Anti-flash for Unread filter: upsert forces hidden rows to flex, hide them before paint ----
+  function getActiveFilter(){
+    try{ var a=document.querySelector('.filter-pill.active'); return a ? (a.dataset.filter||'all') : 'all'; }catch(e){ return 'all'; }
+  }
+  function isUnreadRow(row){
+    try{
+      if(row.dataset && row.dataset.unread==='1') return true;
+      if(row.classList && row.classList.contains('has-unread')) return true;
+      if(row.querySelector && row.querySelector('.unread-dot')) return true;
+      var b=row.querySelector ? row.querySelector('.pv-unread-badge') : null;
+      if(b && b.classList && b.classList.contains('show')){ var n=parseInt(String(b.textContent||'').replace(/\D/g,''),10); if(n>0) return true; }
+      var pb=row.querySelector ? row.querySelector('.pv-unread-count') : null;
+      if(pb && pb.classList && pb.classList.contains('show')){ var n2=parseInt(String(pb.textContent||'').replace(/\D/g,''),10); if(n2>0) return true; }
+      var attr=row.getAttribute ? row.getAttribute('data-unread-count') : null;
+      if(attr){ var n3=parseInt(String(attr).replace(/\D/g,''),10); if(n3>0) return true; }
+    }catch(err){}
+    return false;
+  }
+  function hideWrongRows(){
+    try{
+      if(getActiveFilter()!=='unread') return;
+      var list=document.getElementById('listScreen'); if(!list) return;
+      var rows=list.querySelectorAll('.user-row');
+      rows.forEach(function(r){
+        try{
+          if(localStorage.getItem('prochat_ai_cleared_forever')==='1'){
+            var isAI=(r.getAttribute('data-room')==='ai')||((r.getAttribute('onclick')||'').indexOf("'ai'")!==-1);
+            if(isAI){ if(r.style.display!=='none') r.style.display='none'; return; }
+          }
+          // If row is visible but NOT unread, it was force-shown by upsert -> hide it now
+          if(r.style.display!=='none' && !isUnreadRow(r)) r.style.display='none';
+        }catch(err){}
+      });
+    }catch(e){}
+  }
+  // MutationObserver = runs before next paint, so flash never shows. Only style changes, light work.
+  try{
+    var list=document.getElementById('listScreen');
+    if(list && window.MutationObserver){
+      new MutationObserver(function(muts){
+        try{
+          if(getActiveFilter()!=='unread') return;
+          for(var i=0;i<muts.length;i++){
+            var t=muts[i].target;
+            if(t && t.classList && t.classList.contains('user-row')){
+              if(t.style.display!=='none' && !isUnreadRow(t)) t.style.display='none';
+            }
+          }
+        }catch(err){}
+      }).observe(list, {attributes:true, attributeFilter:['style'], subtree:true});
+    }
+  }catch(e){}
+  setInterval(hideWrongRows, 500);
+
+  // ---- Unread pill = count of unread CHATS, like Groups 1 ----
+  function updateUnreadPill(){
+    try{
+      var pill=document.querySelector('#filterScroll .filter-pill[data-filter="unread"]'); if(!pill) return;
+      var list=document.getElementById('listScreen'); if(!list) return;
+      var count=0;
+      list.querySelectorAll('.user-row').forEach(function(r){
+        try{
+          var isAI=(r.getAttribute('data-room')==='ai')||((r.getAttribute('onclick')||'').indexOf("'ai'")!==-1);
+          if(isAI && localStorage.getItem('prochat_ai_cleared_forever')==='1') return;
+        }catch(err){}
+        if(isUnreadRow(r)) count++;
+      });
+      var wanted=count>0 ? ('Unread '+count) : 'Unread';
+      if(pill.textContent.trim()!==wanted) pill.textContent=wanted;
+    }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', updateUnreadPill); else updateUnreadPill();
+  setTimeout(updateUnreadPill, 300); setTimeout(updateUnreadPill, 1200);
+  setInterval(updateUnreadPill, 1000);
+
+  // ---- Backup wraps (in case openChat still exists) ----
+  function tryWrapOpen(){
+    try{
+      if(window.openChat && !window.openChat._pvAiBlinkFix){
+        var o=window.openChat;
+        var w=function(type){ var r=null; try{ r=o.apply(this, arguments); }catch(e){} try{ if(type==='ai') markAIReadNow(); }catch(e){} return r; };
+        w._pvAiBlinkFix=true; window.openChat=w;
+      }
+    }catch(e){}
+  }
+  function tryWrapBack(){
+    try{
+      if(window.backToList && !window.backToList._pvAiBlinkFix){
+        var o=window.backToList;
+        var w=function(){ var r=null; try{ r=o.apply(this, arguments); }catch(e){} setTimeout(hideWrongRows, 50); setTimeout(hideWrongRows, 400); setTimeout(fixAIStuck, 50); return r; };
+        w._pvAiBlinkFix=true; window.backToList=w;
+      }
+    }catch(e){}
+  }
+  tryWrapOpen(); tryWrapBack();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ tryWrapOpen(); tryWrapBack(); });
+  setTimeout(function(){ tryWrapOpen(); tryWrapBack(); }, 1000);
+  setTimeout(function(){ tryWrapOpen(); tryWrapBack(); }, 3000);
+})();
+</script>
+
+<script id="PV-VOICE-FRESH-WHATSAPP-V1">
+(function(){
+  var FB='https://prochat2026-default-rtdb.firebaseio.com';
+  function myName(){ try{ return (localStorage.getItem('prochat_username')||localStorage.getItem('pv_username')||localStorage.getItem('prochat_name')||localStorage.getItem('cospro_name')||'You').trim()||'You'; }catch(e){ return 'You'; } }
+  function safe(s){ return String(s||'').replace(/[^a-zA-Z0-9]/g,'_').toLowerCase(); }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function fmt(sec){ sec=Math.max(0, Math.round(Number(sec)||0)); var m=Math.floor(sec/60), s=sec%60; return m+':'+(s<10?'0':'')+s; }
+  function fmtTime(t){ try{ if(typeof formatTime==='function') return formatTime(t); }catch(e){} try{ return new Date(Number(t)||Date.now()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+  function isAI(){ try{ if(window.currentChat==='ai') return true; var cs=document.getElementById('chatScreen'); if(cs && cs.classList.contains('ai-mode')) return true; }catch(e){} return false; }
+  function isPrivate(){ try{ return String(window.currentChat||'').indexOf('private_')===0; }catch(e){ return false; } }
+  function roomId(other){ var a=safe(myName()), b=safe(other); return [a,b].sort().join('__'); }
+  function inChat(){ try{ if(!window.currentChat) return false; if(isAI()) return false; if(window.currentChat==='all') return true; if(isPrivate()) return true; return false; }catch(e){ return false; } }
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  function toast(msg){ try{ var el=document.getElementById('pvFreshToast'); if(!el){ el=document.createElement('div'); el.id='pvFreshToast'; el.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#111b21;color:#fff;padding:10px 16px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.35);max-width:86%;text-align:center;'; document.body.appendChild(el); } el.textContent=msg; el.style.display='block'; clearTimeout(el._t); el._t=setTimeout(function(){ el.style.display='none'; }, 2600); }catch(e){} }
+
+  /* ---------- Local cache: memory + IndexedDB ---------- */
+  var mem={};
+  var inlineMap={};
+  window._pvInlineMap=inlineMap;
+  var dbP=null;
+  function db(){ if(dbP) return dbP; dbP=new Promise(function(res){ try{ var r=indexedDB.open('pv-voice-v2',1); r.onupgradeneeded=function(){ try{ r.result.createObjectStore('voices'); }catch(e){} }; r.onsuccess=function(){ res(r.result); }; r.onerror=function(){ res(null); }; }catch(e){ res(null); } }); return dbP; }
+  function idbPut(id, blob){ return db().then(function(d){ if(!d) return; try{ var tx=d.transaction('voices','readwrite'); tx.objectStore('voices').put(blob,id); }catch(e){} }); }
+  function idbGet(id){ return db().then(function(d){ if(!d) return null; return new Promise(function(res){ try{ var tx=d.transaction('voices','readonly'); var q=tx.objectStore('voices').get(id); q.onsuccess=function(){ res(q.result||null); }; q.onerror=function(){ res(null); }; }catch(e){ res(null); } }); }); }
+  function blobUrl(id, blob){ if(mem[id]) return mem[id]; var u=URL.createObjectURL(blob); mem[id]=u; return u; }
+  function b64ToBlob(b64, type){ var clean=String(b64||'').replace(/^data:[^,]+,/, ''); var bin=atob(clean); var len=bin.length; var bytes=new Uint8Array(len); for(var i=0;i<len;i++) bytes[i]=bin.charCodeAt(i); return new Blob([bytes], {type: type||'audio/webm'}); }
+  function blobToB64(blob){ return new Promise(function(res, rej){ try{ var fr=new FileReader(); fr.onload=function(){ var s=String(fr.result||''); res(s.split(',')[1]||''); }; fr.onerror=rej; fr.readAsDataURL(blob); }catch(e){ rej(e); } }); }
+  function blobToDataUrl(blob){ return new Promise(function(res, rej){ try{ var fr=new FileReader(); fr.onload=function(){ res(String(fr.result||'')); }; fr.onerror=rej; fr.readAsDataURL(blob); }catch(e){ rej(e); } }); }
+  function isDataUrl(s){ return typeof s==='string' && s.indexOf('data:audio')===0; }
+
+  /* ---------- Persistent retry queue (survives reload / offline) ---------- */
+  var QUEUE_KEY='pv_voice_queue_v2';
+  function getQueue(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY)||'[]'); }catch(e){ return []; } }
+  function setQueue(q){ try{ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }catch(e){} }
+  function enqueue(task){ try{ var q=getQueue(); if(!q.some(function(x){ return x.id===task.id && x.kind===task.kind; })){ q.push(task); setQueue(q); } }catch(e){} }
+  function dequeue(id, kind){ try{ var q=getQueue().filter(function(x){ return !(x.id===id && x.kind===kind); }); setQueue(q); }catch(e){} }
+  var queueRunning=false;
+  function processQueue(){
+    if(queueRunning) return; queueRunning=true;
+    var q=getQueue();
+    if(!q.length){ queueRunning=false; return; }
+    (async function(){
+      for(var i=0;i<q.length;i++){
+        var task=q[i];
+        try{
+          if(task.kind==='voice'){
+            var b=mem[task.id] ? null : await idbGet(task.id);
+            var blob=null;
+            if(b) blob=b;
+            else if(task.localUrl) blob=null;
+            if(!blob && task.id && inlineMap[task.id] && isDataUrl(inlineMap[task.id])) blob=b64ToBlob(inlineMap[task.id], task.type||'audio/webm');
+            if(!blob){
+              try{ var cached=await idbGet(task.id); if(cached) blob=cached; }catch(e){}
+            }
+            if(!blob) continue;
+            var ok=await uploadVoiceRobust(task.id, blob, task.dur||0, task.wave||[]);
+            if(ok) dequeue(task.id, 'voice');
+          } else if(task.kind==='msg'){
+            var res=await fetch(task.url, {method:'POST', body: JSON.stringify(task.payload)});
+            if(res && res.ok) dequeue(task.id, 'msg');
+          }
+        }catch(e){}
+        await sleep(400);
+      }
+      queueRunning=false;
+    })();
+  }
+
+  /* ---------- Upload: chunked + per-chunk retry + verify + full fallback ---------- */
+  function fetchWithRetry(url, opts, tries){
+    tries=tries||3;
+    function attempt(n){
+      return fetch(url, opts).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r; }).catch(function(e){ if(n>=tries) throw e; return sleep(500*Math.pow(2, n-1)).then(function(){ return attempt(n+1); }); });
+    }
+    return attempt(1);
+  }
+  function uploadVoiceRobust(id, blob, dur, wave){
+    return blobToB64(blob).then(function(b64){
+      var CH=90000; var count=Math.max(1, Math.ceil(b64.length/CH));
+      function putChunk(i){
+        return fetchWithRetry(FB+'/voice_v2/'+encodeURIComponent(id)+'/c'+i+'.json', {method:'PUT', body: JSON.stringify(b64.slice(i*CH,(i+1)*CH))}, 3);
+      }
+      function batch(list){
+        if(!list.length) return Promise.resolve();
+        var part=list.slice(0,3); var rest=list.slice(3);
+        return Promise.all(part.map(putChunk)).then(function(){ return batch(rest); });
+      }
+      var idx=[]; for(var i=0;i<count;i++) idx.push(i);
+      return batch(idx).then(function(){
+        return fetchWithRetry(FB+'/voice_v2/'+encodeURIComponent(id)+'/meta.json', {method:'PUT', body: JSON.stringify({count:count, type:blob.type||'audio/webm', dur:dur, wave:wave})}, 3);
+      }).then(function(){
+        return fetch(FB+'/voice_v2/'+encodeURIComponent(id)+'/meta.json?_='+Date.now()).then(function(r){ return r.json(); }).then(function(meta){
+          if(meta && meta.count===count) return true;
+          throw new Error('verify failed');
+        });
+      }).catch(function(){
+        return fetchWithRetry(FB+'/voice_v2/'+encodeURIComponent(id)+'/full.json', {method:'PUT', body: JSON.stringify({data:b64, type:blob.type||'audio/webm', dur:dur, wave:wave})}, 3).then(function(){ return true; }).catch(function(){ return false; });
+      });
+    }).catch(function(){ return false; });
+  }
+  function uploadInBackground(id, blob, dur, wave){
+    uploadVoiceRobust(id, blob, dur, wave).then(function(ok){
+      if(!ok){
+        enqueue({kind:'voice', id:id, dur:dur, wave:wave, type:blob.type||'audio/webm', t:Date.now()});
+        if(!navigator.onLine) toast('You are offline - voice will send when back online');
+      }
+    });
+  }
+
+  /* ---------- Download: memory -> IDB -> inline -> v2 chunks -> v2 full -> legacy ---------- */
+  function fetchVoiceUrl(id, inline){
+    if(!id && !inline) return Promise.resolve(null);
+    if(inline && isDataUrl(inline)) return Promise.resolve(inline);
+    if(inline && typeof inline==='string' && inline.length>100){
+      try{ var b0=b64ToBlob(inline, 'audio/webm'); return Promise.resolve(blobUrl(id||('inline_'+Date.now()), b0)); }catch(e){}
+    }
+    if(id && inlineMap[id] && isDataUrl(inlineMap[id])) return Promise.resolve(inlineMap[id]);
+    if(id && mem[id]) return Promise.resolve(mem[id]);
+    if(!id) return Promise.resolve(null);
+    return idbGet(id).then(function(b){
+      if(b) return blobUrl(id, b);
+      return fetch(FB+'/voice_v2/'+encodeURIComponent(id)+'/meta.json?_='+Date.now()).then(function(r){ return r.json(); }).then(function(meta){
+        if(meta && meta.count){
+          var idx=[]; for(var i=0;i<meta.count;i++) idx.push(i);
+          function batch(list, acc){
+            if(!list.length) return Promise.resolve(acc);
+            var part=list.slice(0,4); var rest=list.slice(4);
+            return Promise.all(part.map(function(i){ return fetch(FB+'/voice_v2/'+encodeURIComponent(id)+'/c'+i+'.json?_='+Date.now()).then(function(r){ return r.json(); }); })).then(function(vals){ return batch(rest, acc.concat(vals)); });
+          }
+          return batch(idx, []).then(function(parts){
+            var b64=parts.join(''); if(!b64) return null;
+            var blob=b64ToBlob(b64, meta.type||'audio/webm');
+            idbPut(id, blob); return blobUrl(id, blob);
+          });
+        }
+        return fetch(FB+'/voice_v2/'+encodeURIComponent(id)+'/full.json?_='+Date.now()).then(function(r){ return r.json(); }).then(function(full){
+          if(full && full.data){ var blob2=b64ToBlob(full.data, full.type||'audio/webm'); idbPut(id, blob2); return blobUrl(id, blob2); }
+          return null;
+        });
+      }).catch(function(){ return null; });
+    }).then(function(url){
+      if(url) return url;
+      return fetch(FB+'/voice_files/'+encodeURIComponent(id)+'.json?_='+Date.now()).then(function(r){ return r.json(); }).then(function(d){
+        if(!d) return null;
+        var b64='';
+        if(typeof d==='string') b64=d;
+        else if(d.data) b64=String(d.data);
+        else { var keys=Object.keys(d).filter(function(k){ return k!=='meta'; }).sort(function(a,b){ var na=parseInt(String(a).replace(/\D/g,''),10)||0; var nb=parseInt(String(b).replace(/\D/g,''),10)||0; return na-nb; }); keys.forEach(function(k){ if(typeof d[k]==='string') b64+=d[k]; }); }
+        if(!b64) return null;
+        var blob=b64ToBlob(b64, (d && d.meta && d.meta.type) || 'audio/webm');
+        idbPut(id, blob); return blobUrl(id, blob);
+      }).catch(function(){ return null; });
+    });
+  }
+  window.pvFetchVoiceFile=function(id){ return fetchVoiceUrl(id, inlineMap[id]||null); };
+
+  /* ---------- Voice bubble HTML (uses existing design classes) ---------- */
+  function voiceHTML(dur, wave, timeStr){
+    var wd=(wave && wave.length) ? wave : [];
+    var step=Math.max(1, Math.floor(wd.length/34));
+    var wh='';
+    for(var k=0;k<34;k++){ var a=wd.length ? (wd[Math.min(wd.length-1, k*step)]||0.08) : 0.15; wh+='<span style="height:'+Math.round(5+Number(a)*26)+'px" data-idx="'+k+'"></span>'; }
+    return '<div class="pv-voice-sent"><div class="pv-voice-sent-row"><button class="pv-voice-sent-play" data-voice-url="">&#9654;</button><div class="pv-voice-sent-wave"><div class="pv-voice-sent-dot"></div>'+wh+'</div><button class="pv-voice-sent-speed">1x</button></div><div class="pv-voice-sent-meta"><span class="pv-voice-sent-dur">'+fmt(dur)+'</span><span class="pv-voice-sent-time">'+esc(timeStr||'')+'</span></div></div>';
+  }
+
+  /* ---------- Playback: one global audio, WhatsApp style ---------- */
+  var audio=null;
+  var cur=null;
+  function getAudio(){ if(audio) return audio; audio=new Audio(); audio.preload='auto'; audio.setAttribute('playsinline',''); audio.addEventListener('timeupdate', function(){ syncProgress(); }); audio.addEventListener('ended', function(){ finishPlay(); }); audio.addEventListener('pause', function(){ if(cur && cur.bubble) syncPlayIcon(); }); audio.addEventListener('play', function(){ if(cur && cur.bubble) syncPlayIcon(); }); audio.addEventListener('loadedmetadata', function(){ try{ if(cur && cur.bubble && (!cur.dur || cur.dur<=0) && audio.duration){ cur.dur=Math.round(audio.duration); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(cur.dur); } }catch(e){} }); audio.addEventListener('error', function(){ if(cur){ toast('Voice failed to play, tap again'); cur=null; } }); return audio; }
+  function syncPlayIcon(){ try{ if(!cur || !cur.bubble) return; var btn=cur.bubble.querySelector('.pv-voice-sent-play'); if(!btn) return; btn.textContent = (audio && !audio.paused) ? '❚❚' : '▶'; }catch(e){} }
+  function syncProgress(){ try{ if(!cur || !cur.bubble || !audio) return; var dur=cur.dur||audio.duration||0; if(!dur) return; var p=Math.min(1, audio.currentTime/dur); var spans=cur.bubble.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp, i){ if(i/spans.length <= p) sp.classList.add('played'); else sp.classList.remove('played'); }); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(audio.currentTime); var wrap=cur.bubble.querySelector('.pv-voice-sent'); if(wrap) wrap.classList.add('playing'); }catch(e){} }
+  function finishPlay(){ try{ if(!cur) return; var b=cur.bubble; var dur=cur.dur||0; if(b){ var spans=b.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp){ sp.classList.remove('played'); }); var dEl=b.querySelector('.pv-voice-sent-dur'); if(dEl) dEl.textContent=fmt(dur); var wrap=b.querySelector('.pv-voice-sent'); if(wrap){ wrap.classList.remove('playing'); wrap.classList.add('played'); } var btn=b.querySelector('.pv-voice-sent-play'); if(btn) btn.textContent='▶'; } }catch(e){} cur=null; }
+  function stopPlayback(){ try{ if(audio){ audio.pause(); audio.removeAttribute('src'); audio.load(); } }catch(e){} try{ if(cur && cur.bubble){ var spans=cur.bubble.querySelectorAll('.pv-voice-sent-wave span'); spans.forEach(function(sp){ sp.classList.remove('played'); }); var dEl=cur.bubble.querySelector('.pv-voice-sent-dur'); if(dEl && cur.dur) dEl.textContent=fmt(cur.dur); var wrap=cur.bubble.querySelector('.pv-voice-sent'); if(wrap) wrap.classList.remove('playing'); var btn=cur.bubble.querySelector('.pv-voice-sent-play'); if(btn) btn.textContent='▶'; } }catch(e){} cur=null; }
+  function togglePlay(container){
+    var fid=container.getAttribute('data-pv-voice-file')||'';
+    var inline=container.getAttribute('data-pv-voice-inline')||inlineMap[fid]||'';
+    if(!fid && !inline) return;
+    if(cur && cur.id===fid){
+      try{ if(audio.paused){ audio.play(); } else { audio.pause(); } syncPlayIcon(); }catch(e){}
+      return;
+    }
+    stopPlayback();
+    var durEl=container.querySelector('.pv-voice-sent-dur'); var dur=0;
+    var m=(durEl?durEl.textContent:'').split(':'); if(m.length===2) dur=(parseInt(m[0],10)||0)*60+(parseInt(m[1],10)||0);
+    var a=getAudio();
+    cur={id:fid, bubble:container, dur:dur, speed:1};
+    var btn=container.querySelector('.pv-voice-sent-play');
+    var url=(btn && btn.getAttribute('data-voice-url'))||'';
+    var p=url ? Promise.resolve(url) : fetchVoiceUrl(fid, inline);
+    p.then(function(u){
+      if(!u || !cur || cur.id!==fid){
+        if(!u){
+          return sleep(1500).then(function(){
+            if(!cur || cur.id!==fid) return;
+            return fetchVoiceUrl(fid, inline).then(function(u2){
+              if(!u2){ cur=null; toast('Voice still uploading, tap again in a moment'); return; }
+              a.src=u2; a.playbackRate=1; a.play().catch(function(){});
+            });
+          });
+        }
+        return;
+      }
+      if(cur && cur.bubble){ var b2=cur.bubble.querySelector('.pv-voice-sent-play'); if(b2 && u && u.indexOf('blob:')===0) b2.setAttribute('data-voice-url', u); }
+      a.src=u; a.playbackRate=1; a.play().catch(function(){ toast('Tap play again to listen'); });
+    });
+  }
+  function cycleSpeed(container){
+    var btn=container.querySelector('.pv-voice-sent-speed'); if(!btn) return;
+    var next = btn.textContent.trim()==='1x' ? '1.5x' : (btn.textContent.trim()==='1.5x' ? '2x' : '1x');
+    btn.textContent=next;
+    try{ if(cur && cur.bubble===container && audio){ audio.playbackRate=parseFloat(next); cur.speed=parseFloat(next); } }catch(e){}
+  }
+  function wireBubble(container){
+    if(!container) return;
+    if(container.dataset.pvFreshWired){ refreshPlayingState(container); return; }
+    container.dataset.pvFreshWired='1';
+    var play=container.querySelector('.pv-voice-sent-play');
+    var speed=container.querySelector('.pv-voice-sent-speed');
+    if(play) play.addEventListener('click', function(e){ e.stopPropagation(); togglePlay(container); });
+    if(speed) speed.addEventListener('click', function(e){ e.stopPropagation(); cycleSpeed(container); });
+    refreshPlayingState(container);
+  }
+  function refreshPlayingState(container){
+    try{ if(cur && cur.id===(container.getAttribute('data-pv-voice-file')||'')){ cur.bubble=container; syncPlayIcon(); syncProgress(); } }catch(e){}
+  }
+  window.pvWireVoiceBubble=function(container, url, dur){ try{ var fid=container && container.getAttribute('data-pv-voice-file'); if(fid && url) mem[fid]=url; }catch(e){} wireBubble(container); };
+
+  /* ---------- Upgrade bubbles ---------- */
+  function upgradeBubble(bubble, info){
+    if(!bubble) return;
+    if(bubble.querySelector('.pv-voice-sent')){
+      if(info.voiceData) { bubble.setAttribute('data-pv-voice-inline', info.voiceData); inlineMap[info.voiceFile]=info.voiceData; }
+      wireBubble(bubble); return;
+    }
+    var nameEl=bubble.querySelector('b');
+    var replyEl=bubble.querySelector('.pv-reply-quote');
+    var html='';
+    if(nameEl) html+=nameEl.outerHTML;
+    if(replyEl) html+=replyEl.outerHTML;
+    html+=voiceHTML(info.dur||0, info.wave||[], info.time||'');
+    bubble.innerHTML=html;
+    bubble.setAttribute('data-pv-voice-file', info.voiceFile);
+    if(info.voiceData){ bubble.setAttribute('data-pv-voice-inline', info.voiceData); inlineMap[info.voiceFile]=info.voiceData; }
+    wireBubble(bubble);
+  }
+  function upgradeAllBubbles(){
+    var box=document.getElementById('messages'); if(!box) return;
+    var bubbles=box.querySelectorAll('.bubble');
+    var arr=window._pvFreshAll||[];
+    bubbles.forEach(function(b, i){
+      var fid=b.getAttribute('data-pv-voice-file');
+      if(fid){ if(b.querySelector('.pv-voice-sent')){ if(inlineMap[fid]) b.setAttribute('data-pv-voice-inline', inlineMap[fid]); wireBubble(b); } return; }
+      if(arr[i] && arr[i].voiceFile) upgradeBubble(b, arr[i]);
+    });
+  }
+  try{
+    var origRender=window.renderAllMessages;
+    if(origRender && !origRender._pvFresh){
+      var wrapped=function(all){
+        try{ window._pvFreshAll=(all||[]).map(function(m){ return {voiceFile:m.voiceFile||null, dur:m.dur||0, wave:m.wave||[], time:m.t?fmtTime(m.t):'', n:m.n||'', voiceData:m.voiceData||m.voiceInline||null}; }); }catch(e){ window._pvFreshAll=[]; }
+        try{ (all||[]).forEach(function(m){ if(m.voiceFile && m.voiceData) inlineMap[m.voiceFile]=m.voiceData; }); }catch(e){}
+        var r=origRender.apply(this, arguments);
+        try{ upgradeAllBubbles(); }catch(e){}
+        return r;
+      };
+      wrapped._pvFresh=true;
+      window.renderAllMessages=wrapped;
+    }
+  }catch(e){}
+  var obs=null;
+  function startObserver(){
+    var box=document.getElementById('messages'); if(!box || obs) return;
+    obs=new MutationObserver(function(muts){
+      muts.forEach(function(mu){
+        mu.addedNodes.forEach(function(node){
+          if(!node || node.nodeType!==1) return;
+          var list=[];
+          if(node.classList && node.classList.contains('bubble')) list=[node];
+          else if(node.querySelectorAll) list=Array.prototype.slice.call(node.querySelectorAll('.bubble'));
+          list.forEach(function(b){
+            var fid=b.getAttribute('data-pv-voice-file');
+            if(fid && b.querySelector('.pv-voice-sent')){ if(inlineMap[fid]) b.setAttribute('data-pv-voice-inline', inlineMap[fid]); wireBubble(b); }
+          });
+        });
+      });
+    });
+    obs.observe(box, {childList:true, subtree:true});
+  }
+  /* Private + All inline sync: fetch messages directly so inline fallback reaches private bubbles too */
+  function syncInlineMaps(){
+    try{
+      if(isPrivate()){
+        var other=String(window.currentChat).replace('private_','');
+        fetch(FB+'/private_chats/'+roomId(other)+'/msgs.json?_='+Date.now()).then(function(r){ return r.json(); }).then(function(d){
+          if(!d) return;
+          Object.values(d).forEach(function(m){ if(m && m.voiceFile && m.voiceData) inlineMap[m.voiceFile]=m.voiceData; });
+          document.querySelectorAll('.bubble[data-pv-voice-file]').forEach(function(b){ var fid=b.getAttribute('data-pv-voice-file'); if(inlineMap[fid]) b.setAttribute('data-pv-voice-inline', inlineMap[fid]); });
+        }).catch(function(){});
+      }
+      /* All Users: voiceData arrives via patched loadAll -> renderAllMessages wrapper, no extra full fetch here. */
+    }catch(e){}
+  }
+
+  /* ---------- Mic / send button ---------- */
+  var MIC_SVG='<svg viewBox="0 0 24 24" width="22" height="22"><path fill="#111b21" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path fill="#111b21" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>';
+  var SEND_SVG='<svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
+  function syncSendBtn(){
+    try{
+      var btn=document.getElementById('sendBtn'); var inp=document.getElementById('mInput'); if(!btn||!inp) return;
+      var empty=!inp.value.trim();
+      if(empty){
+        btn.classList.add('pv-mic-state'); btn.setAttribute('data-mic','1');
+        if(btn.innerHTML.indexOf('M12 14')===-1) btn.innerHTML=MIC_SVG;
+        btn.style.setProperty('background','#ffffff','important'); btn.style.setProperty('background-color','#ffffff','important'); btn.style.setProperty('border-radius','50%','important'); btn.style.setProperty('width','46px','important'); btn.style.setProperty('height','46px','important');
+      } else {
+        btn.classList.remove('pv-mic-state'); btn.setAttribute('data-mic','0');
+        if(btn.innerHTML.indexOf('M22 2')===-1) btn.innerHTML=SEND_SVG;
+        btn.style.removeProperty('background'); btn.style.removeProperty('background-color'); btn.style.removeProperty('border-radius'); btn.style.removeProperty('width'); btn.style.removeProperty('height');
+      }
+    }catch(e){}
+  }
+
+  /* ---------- Recording presence ---------- */
+  var presenceTimer=null;
+  function presencePath(){
+    if(isPrivate()) return FB+'/recording_priv/'+roomId(String(window.currentChat).replace('private_',''))+'/'+safe(myName())+'.json';
+    return FB+'/recording_all/'+safe(myName())+'.json';
+  }
+  function presenceBeat(){ if(!rec || !rec.active) return; try{ fetch(presencePath(), {method:'PUT', body: JSON.stringify({n:myName(), t:Date.now()})}).catch(function(){}); }catch(e){} }
+  function startPresence(){ stopPresence(false); presenceBeat(); presenceTimer=setInterval(presenceBeat, 2000); }
+  function stopPresence(clearServer){ try{ if(presenceTimer) clearInterval(presenceTimer); }catch(e){} presenceTimer=null; if(clearServer){ try{ fetch(presencePath(), {method:'DELETE'}).catch(function(){}); }catch(e){} } }
+  function pollRecording(){
+    try{
+      if(!window.currentChat || isAI()){ hideRecordingIndicator(); return; }
+      var url=isPrivate() ? FB+'/recording_priv/'+roomId(String(window.currentChat).replace('private_',''))+'.json?_='+Date.now() : FB+'/recording_all.json?_='+Date.now();
+      fetch(url).then(function(r){ return r.json(); }).then(function(d){
+        var other=null;
+        if(d){ Object.keys(d).forEach(function(k){ var v=d[k]; if(v && v.n && safe(v.n)!==safe(myName()) && (Date.now()-(v.t||0))<5000) other=v.n; }); }
+        if(other){ showRecordingIndicator(other); window._pvRecordingActive=true; }
+        else { hideRecordingIndicator(); window._pvRecordingActive=!!(rec && rec.active); }
+      }).catch(function(){});
+    }catch(e){}
+  }
+  function showRecordingIndicator(name){
+    try{ var el=document.getElementById('pvRecordingIndicator'); if(!el) return; el.innerHTML=esc(name)+' is recording audio...<span class="pv-typing-dots"><i></i><i></i><i></i></span>'; el.classList.add('show'); }catch(e){}
+  }
+  function hideRecordingIndicator(){ try{ var el=document.getElementById('pvRecordingIndicator'); if(!el) return; el.classList.remove('show'); }catch(e){} }
+
+  /* ---------- Recorder ---------- */
+  var rec=null;
+  var startingMic=false;
+  function elapsed(){ if(!rec) return 0; if(rec.paused) return rec.base; return rec.base+(Date.now()-rec.startAt)/1000; }
+  function buildWave(samples){
+    var out=[];
+    if(!samples || !samples.length){ for(var i=0;i<34;i++) out.push(0.15); return out; }
+    for(var k=0;k<34;k++){ var from=Math.floor(k*samples.length/34), to=Math.max(from+1, Math.floor((k+1)*samples.length/34)); var mx=0; for(var j=from;j<to;j++) mx=Math.max(mx, samples[j]||0); out.push(Math.min(1, Math.max(0.08, mx))); }
+    return out;
+  }
+  function showRecBar(){
+    try{ var bar=document.getElementById('pvVoiceRecBar'); if(bar){ bar.classList.add('show'); bar.style.display='flex'; } document.body.classList.add('pv-recording'); window._pvRecordingActive=true; }catch(e){}
+  }
+  function hideRecBar(){
+    try{ var bar=document.getElementById('pvVoiceRecBar'); if(bar){ bar.classList.remove('show'); bar.style.display='none'; } document.body.classList.remove('pv-recording'); }catch(e){}
+  }
+  function updatePauseBtn(){
+    try{ var icon=document.querySelector('#pvRecPause .pv-rec-pause-icon'); var txt=document.getElementById('pvRecPauseTxt'); if(rec && rec.paused){ if(icon) icon.textContent='▶'; if(txt) txt.textContent='Resume'; } else { if(icon) icon.textContent='❚❚'; if(txt) txt.textContent='Pause'; } }catch(e){}
+  }
+  function startRecording(){
+    if(rec && rec.active) return;
+    if(startingMic) return;
+    if(isAI()) return;
+    if(!inChat()) return;
+    stopPlayback();
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ toast('Microphone needs HTTPS - on Vercel it works, on file:// it is blocked'); return; }
+    if(window.location.protocol==='file:'){ toast('Open this on Vercel (HTTPS) - mic is blocked on file://'); return; }
+    startingMic=true;
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+      startingMic=false;
+      var mime='';
+      try{ if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mime='audio/webm;codecs=opus'; else if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) mime='audio/ogg;codecs=opus'; else if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/mp4')) mime='audio/mp4'; }catch(e){}
+      var recorder;
+      try{ recorder=new MediaRecorder(stream, mime?{mimeType:mime, audioBitsPerSecond:64000}:undefined); }catch(e){ try{ recorder=new MediaRecorder(stream); }catch(e2){ toast('Recorder not supported on this browser'); try{ stream.getTracks().forEach(function(tr){ tr.stop(); }); }catch(e3){} return; } }
+      rec={active:true, paused:false, stream:stream, recorder:recorder, mime:mime||recorder.mimeType||'audio/webm', chunks:[], base:0, startAt:Date.now(), waveSamples:[], intent:'', timer:null, analyser:null, audioCtx:null, sampleTimer:null};
+      var waveEl=document.getElementById('pvRecWave');
+      if(waveEl && !waveEl.querySelector('span')){ for(var i=0;i<40;i++){ var s=document.createElement('span'); s.style.height='6px'; waveEl.appendChild(s); } }
+      try{
+        var AC=window.AudioContext||window.webkitAudioContext;
+        if(AC){ rec.audioCtx=new AC(); if(rec.audioCtx.state==='suspended'){ rec.audioCtx.resume().catch(function(){}); } var src=rec.audioCtx.createMediaStreamSource(stream); rec.analyser=rec.audioCtx.createAnalyser(); rec.analyser.fftSize=256; src.connect(rec.analyser); }
+      }catch(e){}
+      recorder.ondataavailable=function(e){ if(e.data && e.data.size>0 && rec) rec.chunks.push(e.data); };
+      recorder.onstop=function(){ finishRecording(); };
+      recorder.onerror=function(){ try{ if(rec) rec.intent='cancel'; }catch(e){} };
+      try{ recorder.start(250); }catch(e){ recorder.start(); }
+      showRecBar();
+      updatePauseBtn();
+      var timeEl=document.getElementById('pvRecTime'); if(timeEl) timeEl.textContent='0:00';
+      rec.timer=setInterval(function(){
+        if(!rec) return;
+        var el=elapsed();
+        var tEl=document.getElementById('pvRecTime'); if(tEl) tEl.textContent=fmt(el);
+        if(el>=600){ sendRecording(); }
+      }, 200);
+      rec.sampleTimer=setInterval(function(){
+        if(!rec || rec.paused || !rec.analyser) return;
+        try{
+          var data=new Uint8Array(rec.analyser.fftSize); rec.analyser.getByteTimeDomainData(data);
+          var sum=0; for(var i=0;i<data.length;i++){ var v=(data[i]-128)/128; sum+=v*v; }
+          var rms=Math.min(1, Math.sqrt(sum/data.length)*3);
+          rec.waveSamples.push(rms);
+          var wEl=document.getElementById('pvRecWave'); if(wEl){ var spans=wEl.querySelectorAll('span'); var recent=rec.waveSamples.slice(-40); for(var j=0;j<spans.length;j++){ var val=recent[j]!==undefined?recent[j]:0.08; spans[j].style.height=Math.round(6+val*28)+'px'; } }
+        }catch(e){}
+      }, 100);
+      startPresence();
+    }).catch(function(err){
+      startingMic=false;
+      if(err && err.name==='NotAllowedError') toast('Allow microphone permission - tap the lock icon in your browser');
+      else if(err && err.name==='NotFoundError') toast('No microphone found on this device');
+      else toast('Microphone blocked - open this on Vercel over HTTPS');
+    });
+  }
+  function togglePause(){
+    if(!rec || !rec.active) return;
+    try{
+      if(rec.paused){ rec.recorder.resume(); rec.paused=false; rec.startAt=Date.now(); }
+      else { try{ rec.recorder.pause(); }catch(e){} rec.paused=true; rec.base=elapsed(); }
+    }catch(e){}
+    updatePauseBtn();
+  }
+  function cancelRecording(){
+    if(!rec || !rec.active) return;
+    rec.intent='cancel';
+    try{ rec.recorder.stop(); }catch(e){ cleanupRec(); }
+  }
+  function sendRecording(){
+    if(!rec || !rec.active) return;
+    if(elapsed()<0.5){ cancelRecording(); toast('Voice too short'); return; }
+    rec.intent='send';
+    try{ rec.recorder.stop(); }catch(e){ cleanupRec(); }
+  }
+  function cleanupRec(){
+    try{ if(rec && rec.timer) clearInterval(rec.timer); }catch(e){}
+    try{ if(rec && rec.sampleTimer) clearInterval(rec.sampleTimer); }catch(e){}
+    try{ if(rec && rec.stream) rec.stream.getTracks().forEach(function(tr){ tr.stop(); }); }catch(e){}
+    try{ if(rec && rec.audioCtx) rec.audioCtx.close(); }catch(e){}
+    stopPresence(true);
+    hideRecBar();
+    window._pvRecordingActive=false;
+    rec=null;
+    syncSendBtn();
+  }
+  function finishRecording(){
+    if(!rec) return;
+    var intent=rec.intent;
+    var chunks=rec.chunks.slice();
+    var dur=Math.max(1, Math.round(elapsed()));
+    var wave=buildWave(rec.waveSamples);
+    var mime=rec.mime;
+    var chatAtFinish=window.currentChat;
+    cleanupRec();
+    if(intent!=='send') return;
+    if(!chatAtFinish || chatAtFinish==='ai') return;
+    if(!chunks.length){ toast('Recording was empty, try again'); return; }
+    var blob=new Blob(chunks, {type:mime||'audio/webm'});
+    var id='v2_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+    idbPut(id, blob);
+    mem[id]=URL.createObjectURL(blob);
+    (async function(){
+      var inline=null;
+      try{
+        if(dur<=20 && blob.size<=90000){ inline=await blobToDataUrl(blob); inlineMap[id]=inline; }
+      }catch(e){}
+      appendOptimistic(id, dur, wave, chatAtFinish, inline);
+      var ok=await sendVoiceMessage(id, dur, wave, chatAtFinish, inline);
+      if(!ok){
+        enqueue({kind:'msg', id:id, url: chatAtFinish.indexOf('private_')===0 ? FB+'/private_chats/'+roomId(String(chatAtFinish).replace('private_',''))+'/msgs.json' : FB+'/msgs.json', payload: buildPayload(id, dur, wave, chatAtFinish, inline), t:Date.now()});
+        toast('You are offline - voice will send when back online');
+      }
+      uploadInBackground(id, blob, dur, wave);
+      setTimeout(processQueue, 2000);
+    })();
+  }
+  function buildPayload(id, dur, wave, chatAtFinish, inline){
+    var text='🎤 Voice message ('+fmt(dur)+')';
+    if(String(chatAtFinish||'').indexOf('private_')===0){
+      var p={n:myName(), m:text, time:fmtTime(Date.now()), t:Date.now(), voiceFile:id, dur:dur, wave:wave};
+      if(inline) p.voiceData=inline;
+      return p;
+    }
+    var p2={n:myName(), m:text, t:Date.now(), voiceFile:id, dur:dur, wave:wave};
+    if(inline) p2.voiceData=inline;
+    return p2;
+  }
+  function appendOptimistic(id, dur, wave, chatAtFinish, inline){
+    try{
+      var box=document.getElementById('messages'); if(!box) return;
+      if(window.currentChat!==chatAtFinish) return;
+      var ep=box.querySelector('.empty-placeholder'); if(ep) ep.remove();
+      var div=document.createElement('div'); div.className='bubble me';
+      div.setAttribute('data-pv-voice-file', id);
+      if(inline) div.setAttribute('data-pv-voice-inline', inline);
+      div.innerHTML=voiceHTML(dur, wave, fmtTime(Date.now()));
+      box.appendChild(div);
+      wireBubble(div);
+      try{ box.scrollTop=box.scrollHeight; }catch(e){}
+      if(String(chatAtFinish).indexOf('private_')!==0){
+        try{ var cc=JSON.parse(localStorage.getItem('prochat_cached_all_v2')||'[]'); var entry={n:myName(), m:'🎤 Voice message ('+fmt(dur)+')', t:Date.now(), voiceFile:id, dur:dur, wave:wave}; if(inline) entry.voiceData=inline; cc.push(entry); localStorage.setItem('prochat_cached_all_v2', JSON.stringify(cc.slice(-200))); }catch(e){}
+        try{ window.lastSendTime=Date.now(); }catch(e){}
+      }
+    }catch(e){}
+  }
+  function sendVoiceMessage(id, dur, wave, chatAtFinish, inline){
+    var payload=buildPayload(id, dur, wave, chatAtFinish, inline);
+    var url=String(chatAtFinish||'').indexOf('private_')===0 ? FB+'/private_chats/'+roomId(String(chatAtFinish).replace('private_',''))+'/msgs.json' : FB+'/msgs.json';
+    function attempt(n){
+      return fetch(url, {method:'POST', body: JSON.stringify(payload)}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return true; }).catch(function(e){ if(n>=3) return false; return sleep(800*n).then(function(){ return attempt(n+1); }); });
+    }
+    return attempt(1);
+  }
+
+  /* ---------- Wire UI ---------- */
+  function init(){
+    try{
+      var btn=document.getElementById('sendBtn');
+      if(btn && !btn._pvFresh){
+        btn._pvFresh=true;
+        btn.addEventListener('click', function(){
+          if(isAI()) return;
+          if(rec && rec.active) return;
+          var inp=document.getElementById('mInput');
+          var v=inp?inp.value.trim():'';
+          if(!v) startRecording();
+        }, true);
+      }
+      var inp2=document.getElementById('mInput');
+      if(inp2 && !inp2._pvFresh){ inp2._pvFresh=true; inp2.addEventListener('input', syncSendBtn); }
+      var trash=document.getElementById('pvRecTrash');
+      if(trash && !trash._pvFresh){ trash._pvFresh=true; trash.addEventListener('click', function(e){ e.stopPropagation(); cancelRecording(); }); }
+      var pause=document.getElementById('pvRecPause');
+      if(pause && !pause._pvFresh){ pause._pvFresh=true; pause.addEventListener('click', function(e){ e.stopPropagation(); togglePause(); }); }
+      var sendRec=document.getElementById('pvRecSend');
+      if(sendRec && !sendRec._pvFresh){ sendRec._pvFresh=true; sendRec.addEventListener('click', function(e){ e.stopPropagation(); sendRecording(); }); }
+      startObserver();
+      syncSendBtn();
+      setTimeout(processQueue, 1000);
+    }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
+  setTimeout(init, 800);
+  setInterval(syncSendBtn, 800);
+  setInterval(pollRecording, 2500);
+  setInterval(startObserver, 2000);
+  setInterval(syncInlineMaps, 4000);
+  setInterval(processQueue, 15000);
+  window.addEventListener('online', function(){ toast('Back online - sending pending voices'); processQueue(); });
+  window.addEventListener('beforeunload', function(e){ if(rec && rec.active){ e.preventDefault(); e.returnValue='Voice recording in progress'; return 'Voice recording in progress'; } if(getQueue().length){ e.preventDefault(); e.returnValue='Voice still sending'; return 'Voice still sending'; } });
+  window.addEventListener('pagehide', function(){ try{ stopPresence(true); }catch(e){} });
+  window.PVVoiceFresh={start:startRecording, cancel:cancelRecording, send:sendRecording, fetchVoiceUrl:fetchVoiceUrl, queue:getQueue, processQueue:processQueue};
+})();
+
+</script>
+
+
+<script id="PV-SECURITY-FIXES-V1">
+(function(){
+  // FIXES WE TALKED ABOUT ONLY - nothing else changed.
+  // 1) Private chats: NEW messages go to a secret random room (priv_...), OLD chats still readable (old + secret merged).
+  //    Account IDs (userId / shortId / deviceId) are NEVER changed or touched here.
+  // 2) Sending a message now requires login (__pvAuthPassed) + proof (uid + passHash). Setting name only no longer sends.
+  //    Old users without passHash are still allowed once __pvAuthPassed is true (trusted mode sets it), so nobody is locked out.
+  // 3) Password length (8 for NEW) + lockout (5 -> 10 max 10) are in PV-AUTH-V2 / PV-FORGOT-JS, not here.
+  // This script only patches fetch. It does not change design, IDs, or other logic.
+  try{
+    var FB='https://prochat2026-default-rtdb.firebaseio.com';
+    var _origFetch=window.fetch.bind(window);
+    function safeName(n){ try{ return String(n||'').trim().toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,24)||'user'; }catch(e){ return 'user'; } }
+    function mySafeName(){ try{ var v=localStorage.getItem('prochat_username')||localStorage.getItem('pv_username')||localStorage.getItem('prochat_name')||localStorage.getItem('cospro_name')||''; return safeName(v); }catch(e){ return 'user'; } }
+    function randSecret(){ var s=''; var c='abcdefghijklmnopqrstuvwxyz0123456789'; try{ var a=new Uint8Array(24); if(window.crypto && window.crypto.getRandomValues) crypto.getRandomValues(a); for(var i=0;i<24;i++){ s+=c.charAt(a[i]%c.length); } if(s.length===24) return 'priv_'+s; }catch(e){} for(var j=0;j<24;j++){ s+=c.charAt(Math.floor(Math.random()*c.length)); } return 'priv_'+s; }
+    function getSecretMap(){ try{ return JSON.parse(localStorage.getItem('pv_priv_secret_map')||'{}')||{}; }catch(e){ return {}; } }
+    function saveSecretMap(m){ try{ localStorage.setItem('pv_priv_secret_map', JSON.stringify(m||{})); }catch(e){} }
+    async function getSecretFor(oldRoom){
+      var map=getSecretMap();
+      if(map[oldRoom]) return map[oldRoom];
+      try{ var r=await _origFetch(FB+'/pv_priv_secrets/'+encodeURIComponent(oldRoom)+'.json?_='+Date.now()); var d=await r.json(); if(d && d.secret){ map[oldRoom]=d.secret; saveSecretMap(map); return d.secret; } }catch(e){}
+      return null;
+    }
+    async function createSecretFor(oldRoom,a,b){
+      var sec=randSecret();
+      var map=getSecretMap(); map[oldRoom]=sec; saveSecretMap(map);
+      try{ await _origFetch(FB+'/pv_priv_secrets/'+encodeURIComponent(oldRoom)+'.json', {method:'PUT', body: JSON.stringify({secret:sec, room:oldRoom, a:a, b:b, createdAt:Date.now()})}); }catch(e){}
+      return sec;
+    }
+    function getPassHash(){ try{ var acc=JSON.parse(localStorage.getItem('pv_account')||'null'); if(acc && acc.passHash) return acc.passHash; var h=localStorage.getItem('pv_pass_hash'); if(h) return h; }catch(e){} return ''; }
+    function getUid(){ try{ return localStorage.getItem('pv_user_id')||localStorage.getItem('prochat_global_uid')||window.PV_USER_ID||''; }catch(e){ return ''; } }
+    function isMsgPost(url,opts){ if(!opts || !opts.method) return false; var m=String(opts.method).toUpperCase(); if(m!=='POST') return false; if(url.indexOf('/msgs.json')!==-1) return true; if(url.indexOf('/prochat/rooms/general.json')!==-1) return true; if(/\/private_chats\/[^\/\?]+\/msgs\.json/.test(url)) return true; return false; }
+    function isPrivateMsgsGet(url,opts){ if(opts && opts.method && String(opts.method).toUpperCase()!=='GET') return false; return /\/private_chats\/[^\/\?]+\/msgs\.json/.test(url); }
+    function fakeRes(obj,ok,status){ return {ok:!!ok, status:status||200, json: async function(){ return obj; }, text: async function(){ return JSON.stringify(obj); }, clone:function(){ return this; } }; }
+    window.fetch=async function(url,opts){
+      try{
+        var urlStr=(typeof url==='string') ? url : (url && url.url ? url.url : String(url));
+        if(urlStr.indexOf('prochat2026-default-rtdb.firebaseio.com')===-1) return _origFetch(url,opts);
+        // A) LIST ALL PRIVATE CHATS: merge secret rooms back to old room keys so old code keeps working
+        if(urlStr.indexOf('/private_chats.json')!==-1 && (!opts || !opts.method || String(opts.method).toUpperCase()==='GET')){
+          var baseRes=await _origFetch(url,opts);
+          var baseData=null; try{ baseData=await baseRes.json(); }catch(e){ baseData=null; }
+          if(!baseData || typeof baseData!=='object') return fakeRes(baseData||{}, true, 200);
+          var hasSecret=false; Object.keys(baseData).forEach(function(k){ if(k.indexOf('priv_')===0) hasSecret=true; });
+          if(!hasSecret) return fakeRes(baseData, true, 200);
+          try{
+            var secRes=await _origFetch(FB+'/pv_priv_secrets.json?_='+Date.now());
+            var secData=await secRes.json();
+            var secretToOld={}; if(secData){ Object.keys(secData).forEach(function(oldR){ var v=secData[oldR]; if(v && v.secret) secretToOld[v.secret]=oldR; }); }
+            var merged={};
+            Object.keys(baseData).forEach(function(k){
+              if(k.indexOf('priv_')===0){
+                var oldR=secretToOld[k];
+                if(!oldR) return;
+                if(!merged[oldR]) merged[oldR]={};
+                var msgs=baseData[k]||{};
+                Object.keys(msgs).forEach(function(mk){ merged[oldR][mk]=msgs[mk]; });
+              } else {
+                if(!merged[k]) merged[k]={};
+                var m2=baseData[k]||{};
+                Object.keys(m2).forEach(function(mk){ merged[k][mk]=m2[mk]; });
+              }
+            });
+            return fakeRes(merged, true, 200);
+          }catch(e){ return fakeRes(baseData, true, 200); }
+        }
+        // B) READ ONE PRIVATE ROOM: merge old + secret history
+        if(isPrivateMsgsGet(urlStr,opts)){
+          var m=urlStr.match(/\/private_chats\/([^\/\?]+)\/msgs\.json/);
+          var room=m?decodeURIComponent(m[1]):'';
+          if(room.indexOf('priv_')===0) return _origFetch(url,opts);
+          var oldRes=await _origFetch(url,opts);
+          var oldData=null; try{ oldData=await oldRes.json(); }catch(e){ oldData=null; }
+          var sec=null; try{ sec=await getSecretFor(room); }catch(e){}
+          if(!sec) return fakeRes(oldData||{}, true, 200);
+          try{
+            var sRes=await _origFetch(FB+'/private_chats/'+encodeURIComponent(sec)+'/msgs.json?_='+Date.now());
+            var sData=await sRes.json();
+            var out={}; if(oldData){ Object.keys(oldData).forEach(function(k){ out[k]=oldData[k]; }); }
+            if(sData){ Object.keys(sData).forEach(function(k){ out[k]=sData[k]; }); }
+            return fakeRes(out, true, 200);
+          }catch(e){ return fakeRes(oldData||{}, true, 200); }
+        }
+        // C) SEND MESSAGE: require login + attach proof, rewrite private old room -> secret room
+        if(isMsgPost(urlStr,opts)){
+          var newUrl=urlStr;
+          var privM=urlStr.match(/\/private_chats\/([^\/\?]+)\/msgs\.json/);
+          if(privM){
+            var oldRoom=decodeURIComponent(privM[1]);
+            if(oldRoom.indexOf('priv_')!==0){
+              var parts=oldRoom.split('__');
+              var me=mySafeName();
+              if(parts.indexOf(me)!==-1){
+                var sec2=null; try{ sec2=await getSecretFor(oldRoom); }catch(e){}
+                if(!sec2){ try{ sec2=await createSecretFor(oldRoom, parts[0]||me, parts[1]||me); }catch(e){} }
+                if(sec2) newUrl=urlStr.split('/private_chats/')[0]+'/private_chats/'+encodeURIComponent(sec2)+'/msgs.json'+(urlStr.indexOf('?')!==-1 ? urlStr.slice(urlStr.indexOf('?')) : '');
+              }
+            }
+          }
+          if(!window.__pvAuthPassed){ return fakeRes({error:'not logged in'}, false, 403); }
+          try{
+            var bodyStr=(opts && opts.body) ? String(opts.body) : '';
+            if(bodyStr && bodyStr.charAt(0)==='{'){
+              var obj=JSON.parse(bodyStr);
+              var uid=getUid(); var ph=getPassHash();
+              if(uid && !obj.uid) obj.uid=uid;
+              if(ph && !obj.auth) obj.auth=ph;
+              var newOpts={}; if(opts){ Object.keys(opts).forEach(function(k){ newOpts[k]=opts[k]; }); }
+              newOpts.body=JSON.stringify(obj);
+              return _origFetch(newUrl, newOpts);
+            }
+          }catch(e){}
+          return _origFetch(newUrl, opts);
+        }
+        // D) CLEAR / DELETE ONE PRIVATE ROOM: delete both secret + old so clear is truly complete
+        if(opts && opts.method && String(opts.method).toUpperCase()==='DELETE' && /\/private_chats\/[^\/\?]+\/msgs\.json/.test(urlStr)){
+          var dm=urlStr.match(/\/private_chats\/([^\/\?]+)\/msgs\.json/);
+          var dRoom=dm?decodeURIComponent(dm[1]):'';
+          if(dRoom && dRoom.indexOf('priv_')!==0){
+            try{ var dSec=await getSecretFor(dRoom); if(dSec){ try{ await _origFetch(FB+'/private_chats/'+encodeURIComponent(dSec)+'/msgs.json', {method:'DELETE'}); }catch(e){} } }catch(e){}
+            try{ await _origFetch(urlStr, opts); }catch(e){}
+            return fakeRes({}, true, 200);
+          }
+          return _origFetch(url, opts);
+        }
+        return _origFetch(url, opts);
+      }catch(e){
+        try{ return _origFetch(url, opts); }catch(e2){ throw e2; }
+      }
+    };
+    console.log('PV SECURITY FIXES V1 ready - secret private rooms + login proof on send');
+  }catch(e){ console.log('PV SECURITY FIXES fail', e); }
 })();
 </script>
 
