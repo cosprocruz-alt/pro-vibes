@@ -2593,213 +2593,7 @@ setTimeout(()=>{ const close=(ev)=>{ if(!menu.contains(ev.target) && ev.target!=
 };
 }
 });
-</script><div class="sheet-title">New • PRO VIBES</div><div class="wa-new-divider"></div><div class="wa-section-title">Contacts on PRO VIBES</div><div class="wa-contacts-list" id="waContactsList"></div><script id="FIREBASE-REAL-CHATTERS">
-(function(){
-const URL_BASE = 'https://prochat2026-default-rtdb.firebaseio.com';
-const fab = document.getElementById('newFabExact');
-const sheet = document.getElementById('newSheet');
-const overlay = document.getElementById('newSheetOverlay');
-const backBtn = document.getElementById('exactBack');
-const countEl = document.getElementById('exactCount');
-const listEl = document.getElementById('exactContactsList');
-const listScreen = document.getElementById('listScreen');
-const sectionTitle = document.getElementById('exactSectionTitle');
-let privateChats = {};
-try{ privateChats = JSON.parse(localStorage.getItem('prochat_private_chats')||'{}'); }catch(e){ privateChats={}; }
-function savePrivate(){ localStorage.setItem('prochat_private_chats', JSON.stringify(privateChats)); }
-let firebaseChatters = []; // cache
-let isLoadingFirebase = false;
-async function fetchFirebaseChatters(){
-if(isLoadingFirebase) return firebaseChatters;
-isLoadingFirebase = true;
-try{
-// Fetch both possible paths
-const [r1, r2] = await Promise.all([
-fetch(URL_BASE + '/msgs.json').then(r=>r.json()).catch(()=>null),
-fetch(URL_BASE + '/prochat/rooms/general.json').then(r=>r.json()).catch(()=>null)
-]);
-const allMsgs = [];
-if(r1 && typeof r1==='object'){ Object.values(r1).forEach(m=>{ if(m && m.n) allMsgs.push(m); }); }
-if(r2 && typeof r2==='object'){ Object.values(r2).forEach(m=>{ if(m && (m.n || m.name)) { if(!m.n && m.name) m.n=m.name; allMsgs.push(m); } }); }
-// Also merge local cache to include very recent
-let cached = [];
-try{ cached = JSON.parse(localStorage.getItem('prochat_cached_all_v2')||'[]'); }catch(e){}
-cached.forEach(m=> allMsgs.push(m));
-const myName = (localStorage.getItem('prochat_name') || window.NAME || "").trim().toLowerCase();
-const map = {};
-allMsgs.forEach(m=>{
-const n = (m.n||"").trim();
-if(!n) return;
-if(myName && n.toLowerCase()===myName) return;
-if(!map[n]) map[n] = {name:n, lastMsg:m.m||m.text||"", count:0, t:m.t||m.timestamp||0};
-if(m.m) map[n].lastMsg = m.m;
-map[n].count++;
-if((m.t||0) > (map[n].t||0)) map[n].t = m.t||0;
-});
-const arr = Object.values(map).sort((a,b)=> (b.t||0)-(a.t||0));
-firebaseChatters = arr.map(x=>({
-name:x.name,
-about: (x.lastMsg||"Chatted in All Users").toString().substring(0,38),
-initial: x.name[0]?.toUpperCase() || "?",
-count: x.count,
-t: x.t
-}));
-return firebaseChatters;
-}catch(e){
-console.error("Firebase fetch failed", e);
-return firebaseChatters;
-}finally{
-isLoadingFirebase = false;
-}
-}
-function renderLoading(){
-countEl.textContent = `loading...`;
-listEl.innerHTML = `<div style="padding:40px 16px; text-align:center; color:#8696a0;"><div style="width:24px;height:24px;border:2px solid #2a3942;border-top:2px solid #25D366;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;"></div>Pulling real chatters from Firebase...<style>@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}</style></div>`;
-}
-async function renderExactContacts(){
-renderLoading();
-const chatters = await fetchFirebaseChatters();
-countEl.textContent = `${chatters.length} contacts`;
-sectionTitle.textContent = chatters.length ? `Contacts on PRO VIBES` : `No contacts yet`;
-listEl.innerHTML = "";
-const myName = localStorage.getItem('prochat_name') || window.NAME || "You";
-const myselfRow = document.createElement('div');
-myselfRow.className='exact-contact';
-myselfRow.innerHTML = `
-<div class="exact-contact-avatar" style="background:#2a3942;">${myName[0]?.toUpperCase()||"Y"}</div><div class="exact-contact-name"><b>Myself (You)</b><span>Message yourself</span></div><button class="sleek-msg-btn" data-self="1">Message</button>
-`;
-myselfRow.querySelector('.sleek-msg-btn').addEventListener('click', (e)=>{
-e.stopPropagation();
-openPrivateChat(myName + " (You)", true);
-closeSheet();
-});
-listEl.appendChild(myselfRow);
-if(!chatters.length){
-const empty = document.createElement('div');
-empty.style.cssText='padding:24px 16px; color:#8696a0; font-size:13px; text-align:center;';
-empty.innerHTML = `No one has chatted in All Users yet on Firebase.<br/>Send a message in All Users, then come back — real names will appear here.`;
-listEl.appendChild(empty);
-return;
-}
-chatters.forEach(c=>{
-const row = document.createElement('div');
-row.className='exact-contact';
-row.innerHTML = `
-<div class="exact-contact-avatar">${c.initial}</div><div class="exact-contact-name"><b>${c.name}</b><span>${c.about} • ${c.count} msgs</span></div><button class="sleek-msg-btn">Message</button>
-`;
-const btn = row.querySelector('.sleek-msg-btn');
-btn.addEventListener('click', (e)=>{
-e.stopPropagation();
-openPrivateChat(c.name);
-closeSheet();
-});
-row.addEventListener('click', ()=>{
-openPrivateChat(c.name);
-closeSheet();
-});
-listEl.appendChild(row);
-});
-}
-function ensurePrivateRow(name){
-const key = name;
-// Only show in chat list if actually chatted (has at least 1 message)
-if(!privateChats[key] || privateChats[key].length===0) return;
-if(document.querySelector(`[data-private="${CSS.escape(key)}"]`)) return;
-const row = document.createElement('div');
-row.className='user-row pv-tight-row private-row';
-row.setAttribute('data-private', key); row.onclick=function(){ openPrivateChat(key); }; /* ONE-TAP */
-row.style.cssText='display:flex;align-items:center;gap:14px;padding:12px 16px;cursor:pointer;border-bottom:none;';
-const initial = name[0]?.toUpperCase() || "?";
-row.innerHTML = `<div class="avatar" style="background:#00e676 !important;background-image:none !important;color:#fff !important;font-weight:800 !important;font-size:20px !important;display:flex !important;align-items:center !important;justify-content:center !important;width:49px !important;height:49px !important;border-radius:50% !important;">${initial}</div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600">${name}</span><span class="pv-priv-time" style="font-size:11px;color:#8696a0" id="pt-${key.replace(/[^a-zA-Z0-9]/g,'_')}">${new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}</span></div><div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:2px"><div style="display:flex;align-items:center;gap:4px;color:#8696a0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0"><span class="pv-priv-preview" id="pl-${key.replace(/[^a-zA-Z0-9]/g,'_')}">Tap to chat • Private</span></div></div></div>`;
-row.onclick=function(){ openPrivateChat(name); }; /* ONE-TAP: onclick like All Users */
-const rows = listScreen.querySelectorAll('.user-row');
-listScreen.appendChild(row); // WHATSAPP-FIX: append, WHATSAPP-CHAT-LIST-FINAL sorts it to top by last message
-}
-function updatePrivatePreview(name){
-const last = (privateChats[name]||[]).slice(-1)[0];
-if(!last) return;
-const id = name.replace(/[^a-zA-Z0-9]/g,'_');
-const el = document.getElementById(`pl-${id}`);
-if(el) el.textContent = last.m.substring(0,32);
-}
-window.openPrivateChat = function(name){
-window.currentChat = 'private_' + name;
-if(!privateChats[name]) privateChats[name]=[];
-// DON'T show in chat list yet - only after first message
-const chatScreen = document.getElementById('chatScreen');
-const chatNameEl = document.getElementById('chatName');
-const chatAvatar = document.getElementById('chatAvatar');
-const messages = document.getElementById('messages');
-listScreen.style.display='none';
-chatScreen.style.display='flex';
-chatScreen.classList.remove('ai-mode');
-chatScreen.classList.remove('all-mode');
-chatScreen.classList.add('private-mode');
-chatNameEl.innerHTML = `<span class="chat-title-main">${name}</span>`;
-chatAvatar.textContent = name[0]?.toUpperCase() || "?";
-chatAvatar.style.background='#00e676'; chatAvatar.style.backgroundColor='#00e676';
-chatAvatar.style.display='flex';
-messages.innerHTML='';
-(privateChats[name]||[]).forEach(msg=>{
-const div=document.createElement('div');
-div.className = msg.s==='me' ? 'bubble me' : 'bubble other';
-const safeM = (typeof E==='function'?E(msg.m):msg.m.replace(/</g,'&lt;'));
-div.innerHTML = `${safeM}<span class="msg-meta"><span class="msg-time">${msg.time||''}</span><span class="msg-ticks tick-blue">✓</span></span>`;
-messages.appendChild(div);
-});
-      // NO scroll-to-down in private - deleted permanently
-document.getElementById('inputBar').style.display='flex';
-};
-const origSendMsg = window.sendMsg;
-window.sendMsg = function(){
-if(window.currentChat && window.currentChat.startsWith('private_')){
-const name = window.currentChat.replace('private_','');
-const inp=document.getElementById('mInput');
-const txt=inp.value.trim();
-if(!txt) return;
-const time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-if(!privateChats[name]) privateChats[name]=[];
-const wasEmpty = privateChats[name].length===0;
-privateChats[name].push({s:'me', m:txt, time:time, t:Date.now()});
-savePrivate();
-if(wasEmpty) ensurePrivateRow(name);
-const messages=document.getElementById('messages');
-const div=document.createElement('div');
-div.className='bubble me';
-const safeTxt = (typeof E==='function'?E(txt):txt.replace(/</g,'&lt;'));
-div.innerHTML = `${safeTxt}<span class="msg-meta"><span class="msg-time">${time}</span><span class="msg-ticks tick-blue">✓</span></span>`;
-messages.appendChild(div);
-      // NO scroll-to-down in private - deleted permanently
-inp.value='';
-if(typeof onInputChange==='function') onInputChange();
-updatePrivatePreview(name);
-return;
-}
-if(origSendMsg) return origSendMsg.apply(this, arguments);
-};
-Object.keys(privateChats).forEach(n=> ensurePrivateRow(n));
-function openSheet(){ overlay.classList.add('open'); sheet.classList.add('open'); renderExactContacts(); }
-function closeSheet(){ overlay.classList.remove('open'); sheet.classList.remove('open'); }
-fab?.addEventListener('click', openSheet);
-overlay?.addEventListener('click', closeSheet);
-backBtn?.addEventListener('click', closeSheet);
-document.getElementById('exactNewGroup')?.addEventListener('click', ()=>{
-const g=prompt("New group name:"); if(g){ alert(`Group '${g}' created`); closeSheet(); }
-});
-document.getElementById('exactNewContact')?.addEventListener('click', async ()=>{
-const name=prompt("Enter contact name to chat privately:"); if(name){ openPrivateChat(name); closeSheet(); }
-});
-// Auto-refresh Firebase every 15s when sheet open
-setInterval(()=>{
-if(sheet.classList.contains('open')){
-fetchFirebaseChatters().then(()=>{
-// re-render if sheet open
-if(sheet.classList.contains('open')) renderExactContacts();
-});
-}
-},15000);
-})();
-</script><script id="FILE-BLOCK-FIX">
+</script><div class="sheet-title">New • PRO VIBES</div><div class="wa-new-divider"></div><div class="wa-section-title">Contacts on PRO VIBES</div><div class="wa-contacts-list" id="waContactsList"></div><script id="FIREBASE-REAL-CHATTERS-WIPED"><!-- OLD NEW WIPED PERMANENTLY. Replaced by PV-ID-NEW-REBUILD + PV-SAVE-CONTACTS-FINAL. No old list, no old list UI. --></script><script id="FILE-BLOCK-FIX">
 // For file:// protocol, youtube.com/embed is often blocked. Use no-cookie + fallback to thumbnail + external open
 (function(){
 // Override playReel to try youtube-nocookie first, then fallback
@@ -7638,7 +7432,7 @@ window.pvViewNotifChat = function(chatTarget){
     myselfRow.querySelector('.sleek-msg-btn').addEventListener('click', function(e){ e.stopPropagation(); openIdPrivate(myN, myUserId()); closeIdSheet(); });
     listEl.appendChild(myselfRow);
     if(!contacts.length){
-      var empty=document.createElement('div'); empty.style.cssText='padding:24px 16px;color:#8696a0;font-size:13px;text-align:center;'; empty.innerHTML='No contacts yet.<br/>A new person will appear here after they create an account.';
+      var empty=document.createElement('div'); empty.style.cssText='padding:24px 16px;color:#8696a0;font-size:13px;text-align:center;'; empty.innerHTML='No contacts yet.<br/>New person go show here after dem create account.';
       listEl.appendChild(empty); return;
     }
     contacts.forEach(function(c){
@@ -7662,7 +7456,7 @@ window.pvViewNotifChat = function(chatTarget){
   function openIdSheet(){
     if(overlay) overlay.classList.add('open');
     if(sheet) sheet.classList.add('open');
-    renderIdContacts(true);
+    if(window.renderExactContacts && window.renderExactContacts!==renderIdContacts){ window.renderExactContacts(); } else { renderIdContacts(true); }
   }
   function closeIdSheet(){
     if(overlay) overlay.classList.remove('open');
@@ -7923,6 +7717,7 @@ window.pvViewNotifChat = function(chatTarget){
     d.querySelectorAll('.pv-chooser-row').forEach(function(row){
       row.addEventListener('click', function(){
         var idx=parseInt(row.getAttribute('data-idx'),10); var acc=matches[idx]; d.style.display='none';
+        if(isSaved(acc.userId)){ var _sv=getSavedName(acc.userId, acc.name); if(window.__pvOpenIdPrivateOrig){ window.__pvOpenIdPrivateOrig(_sv, acc.userId); } return; }
         openSaveForAccount(acc);
       });
     });
@@ -7948,6 +7743,7 @@ window.pvViewNotifChat = function(chatTarget){
       return;
     }
     if(matches.length===1){
+      if(isSaved(matches[0].userId)){ var _saved=getSavedName(matches[0].userId, matches[0].name); if(window.__pvOpenIdPrivateOrig){ window.__pvOpenIdPrivateOrig(_saved, matches[0].userId); } return; }
       await openSaveForAccount(matches[0]); return;
     }
     // Multiple — try to narrow by last message uid
@@ -7984,7 +7780,7 @@ window.pvViewNotifChat = function(chatTarget){
       var row=document.createElement('div'); row.className='exact-contact';
       var rightHtml = friend ? '<span style="background:#1f2c34;color:#00e676;border:1px solid #00e67633;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;">Friends ✓</span>' : '<button class="sleek-msg-btn">Message</button>';
       row.innerHTML='<div class="exact-contact-avatar" style="background:'+colorForId(c.userId)+' !important;">'+(display[0]||'?').toUpperCase()+'</div><div class="exact-contact-name"><b>'+String(display).replace(/</g,'&lt;')+'</b></div>'+rightHtml;
-      function go(){ handleTapName(c.name, null, null); if(window.closeIdSheet) window.closeIdSheet(); }
+      function go(){ if(isSaved(c.userId)){ var _s=getSavedName(c.userId, c.name); if(window.__pvOpenIdPrivateOrig){ window.__pvOpenIdPrivateOrig(_s, c.userId); } if(window.closeIdSheet) window.closeIdSheet(); return; } handleTapName(c.name, null, null); if(window.closeIdSheet) window.closeIdSheet(); }
       // In New, tap must go through save (handleTapName shows save dialog)
       var btn=row.querySelector('.sleek-msg-btn');
       if(btn) btn.addEventListener('click', function(e){ e.stopPropagation(); go(); });
