@@ -7173,25 +7173,7 @@ window.pvSendFromNotif = async function(chatTarget, txt){
       }catch(e){}
       return true;
     }
-    // FIX - ID private chats from notifications. Old code treated every private_ target as a NAME and wrote to old
-    // prochat_private_chats, so a reply to a new ID chat went nowhere. private_id_priv_<uid>__<uid> must go to the ID room.
-    if(chatTarget && chatTarget.indexOf('private_id_')===0){
-      try{
-        var idRoom=chatTarget.slice('private_id_'.length);
-        var idParts=idRoom.replace(/^priv_/,'').split('__');
-        var myIdN=localStorage.getItem('pv_user_id')||'';
-        var otherN=(idParts[0]===myIdN ? idParts[1] : idParts[0])||'';
-        if(!otherN || otherN===myIdN) return true;
-        var dispN=otherN;
-        try{ var ar=await fetch(URL_BASE+'/pv_accounts.json'); var aj=await ar.json(); if(aj && aj[otherN] && aj[otherN].name) dispN=aj[otherN].name; else if(aj){ var vv=Object.values(aj); for(var vi=0;vi<vv.length;vi++){ if(vv[vi] && String(vv[vi].userId)===String(otherN)){ dispN=vv[vi].name; break; } } } }catch(e){}
-        var payloadN={uid:localStorage.getItem('pv_user_id')||'', n:myName, m:txt, time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), t:Date.now()};
-        try{ var lc=JSON.parse(localStorage.getItem('pv_id_private_chats')||'{}'); if(!lc[idRoom]) lc[idRoom]=[]; lc[idRoom].push(payloadN); localStorage.setItem('pv_id_private_chats', JSON.stringify(lc)); }catch(e){}
-        try{ await fetch(URL_BASE+'/private_chats/'+encodeURIComponent(idRoom)+'/msgs.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payloadN)}); }catch(e){}
-        try{ var myIdN2=localStorage.getItem('pv_device_id')||''; var topicN='pro-vibes-private-'+idRoom.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase(); await fetch('https://ntfy.sh/'+topicN,{method:'POST',headers:{'Title':myName+' (Private)','Tags':'speech_balloon','Priority':'high'},body:txt+' |from:'+myIdN2}); }catch(e){}
-      }catch(e){}
-      return true;
-    }
-    if(chatTarget && chatTarget.indexOf('private_')===0){
+    if(chatTarget && chatTarget.indexOf('private_')===0){{
       var name=chatTarget.replace('private_','');
       try{
         var pc=JSON.parse(localStorage.getItem('prochat_private_chats')||'{}');
@@ -7212,7 +7194,6 @@ window.pvViewNotifChat = function(chatTarget){
   try{
     if(chatTarget==='all'){ if(typeof openChat==='function') openChat('all'); else if(window.tabNav) window.tabNav('chats'); }
     else if(chatTarget==='ai'){ if(typeof openChat==='function') openChat('ai'); else if(window.tabNav) window.tabNav('chats'); }
-    else if(chatTarget && chatTarget.indexOf('private_id_')===0){ try{ var r2=chatTarget.slice('private_id_'.length); var p2=r2.replace(/^priv_/,'').split('__'); var myI2=''; try{ myI2=localStorage.getItem('pv_user_id')||''; }catch(e){} var o2=(p2[0]===myI2 ? p2[1] : p2[0])||''; if(o2 && o2!==myI2){ if(window.openIdPrivate) window.openIdPrivate(o2, o2); else if(window.openPrivateChat) window.openPrivateChat(o2, o2); } }catch(e){} }
     else if(chatTarget && chatTarget.indexOf('private_')===0){ var n=chatTarget.replace('private_',''); if(window.openPrivateChat) window.openPrivateChat(n); }
   }catch(e){}
 };
@@ -7557,549 +7538,11 @@ window.pvViewNotifChat = function(chatTarget){
 
 
 
-<script id="PV-ID-NEW-REBUILD">
-/* PV-ID-NEW-REBUILD — New + Private rebuilt on ID. Front clean, back na ID.
-   - Contacts come from /pv_accounts/ (ID accounts), NOT from All Users messages.
-   - No #shortId shown, no last-message preview, no count.
-   - Avatar color different per userId, stable, based on ID hash.
-   - Right side sleek: Friends ✓ if don chat before (ID room get message), else Message.
-   - Private room na ID room: priv_id_<sorted userIds>. Message go meet right person even if name same.
-   - Old name-based private chats cleared once: local + old Firebase /private_chats.json ignored. New chats live in /private_chats/priv_.../msgs.json - the main Firebase private path, so both phones find them.
-   - Login / security / All Users / voice untouched.
-*/
-(function(){
-  var URL_BASE = 'https://prochat2026-default-rtdb.firebaseio.com';
-  var PALETTE = ['#00a884','#25D366','#8e24aa','#ff6d00','#039be5','#d32f2f','#7b1fa2','#f9a825','#00897b','#5e35b1','#e65100','#2e7d32'];
-  function hashStr(s){ var h=0; s=String(s||''); for(var i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return Math.abs(h); }
-  function colorForId(uid){ return PALETTE[hashStr(uid) % PALETTE.length]; }
-  function sanitizeId(s){ return String(s||'').replace(/[^a-zA-Z0-9_]/g,'_'); }
-  function myUserId(){ return localStorage.getItem('pv_user_id') || window.__pvUserId || ''; }
-  function myName(){ return localStorage.getItem('prochat_name') || window.NAME || ''; }
-  function myPassHash(){ return localStorage.getItem('pv_pass_hash') || ''; }
-
-  /* --- 1. CLEAR OLD PRIVATE ONCE --- */
-  try{
-    if(localStorage.getItem('pv_id_cleared')!=='1'){
-      // Clear old name-based local private
-      try{ localStorage.removeItem('prochat_private_chats'); }catch(e){}
-      try{ localStorage.setItem('pv_id_private_chats','{}'); }catch(e){}
-      try{ localStorage.setItem('pv_id_friends','[]'); }catch(e){}
-      localStorage.setItem('pv_id_cleared','1');
-      // FIX 1 - NEVER DELETE /private_chats.json. DELETE on that path deletes the WHOLE node,
-      // including NEW priv_ ID rooms. Comment before said 'this no go touch new' but it did.
-      // Old name rooms are simply ignored by ID code now. Only local storage is cleared here.
-      // No Firebase delete happens here, so one phone's first load can never wipe another phone's new chats.
-      // Remove old private rows from main list if any
-      try{ document.querySelectorAll('[data-private], .private-row').forEach(function(n){ n.remove(); }); }catch(e){}
-    }
-  }catch(e){}
-
-  function getIdChats(){ try{ return JSON.parse(localStorage.getItem('pv_id_private_chats')||'{}'); }catch(e){ return {}; } }
-  function saveIdChats(o){ try{ localStorage.setItem('pv_id_private_chats', JSON.stringify(o)); }catch(e){} }
-  function getFriends(){ try{ return JSON.parse(localStorage.getItem('pv_id_friends')||'[]'); }catch(e){ return []; } }
-  function saveFriends(a){ try{ localStorage.setItem('pv_id_friends', JSON.stringify(a)); }catch(e){} }
-  function isFriend(uid){ var f=getFriends(); return f.indexOf(uid)!==-1; }
-  function markFriend(uid){ var f=getFriends(); if(f.indexOf(uid)===-1){ f.push(uid); saveFriends(f); } }
-  function roomIdFor(otherUid){
-    var a = String(myUserId()||''); var b = String(otherUid||'');
-    var arr = [a,b].sort();
-    // Use the app's main private path: priv_ + UID__UID. No sanitizing, UIDs only have letters, numbers, - and _, all allowed in Firebase keys.
-    // Security patch already allows /private_chats/priv_.../msgs.json and passes it through without rewrite.
-    return 'priv_' + arr[0] + '__' + arr[1];
-  }
-  function firebasePrivateUrl(room){ return URL_BASE + '/private_chats/' + encodeURIComponent(room) + '/msgs.json'; }
-
-  var accountsCache = [];
-  async function fetchAccounts(){
-    try{
-      var r = await fetch(URL_BASE + '/pv_accounts.json');
-      var j = await r.json();
-      if(!j || typeof j!=='object') return accountsCache;
-      var me = myUserId();
-      var arr = [];
-      Object.values(j).forEach(function(a){
-        if(!a || !a.userId || !a.name) return;
-        if(me && String(a.userId)===String(me)) return; // no show myself in contacts
-        arr.push({ userId:String(a.userId), name:String(a.name), shortId:String(a.shortId||'') });
-      });
-      // Dedupe by userId only (not by name) — Ghost vs GHOST stay separate, same ID never duplicate
-      var seen={}; var out=[];
-      arr.forEach(function(x){ if(!seen[x.userId]){ seen[x.userId]=1; out.push(x); } });
-      // Stable sort by name lower, then userId — no flicker, no last-message sort
-      out.sort(function(x,y){ var a=x.name.toLowerCase(), b=y.name.toLowerCase(); if(a<b) return -1; if(a>b) return 1; return x.userId<b.userId?-1:1; });
-      accountsCache = out;
-      return out;
-    }catch(e){ return accountsCache; }
-  }
-  window.__pvFetchIdAccounts = fetchAccounts;
-
-  /* --- 2. OVERRIDE Select Contact list (New) --- */
-  var listEl = document.getElementById('exactContactsList');
-  var countEl = document.getElementById('exactCount');
-  var sectionTitle = document.getElementById('exactSectionTitle');
-  var sheet = document.getElementById('newSheet');
-  var overlay = document.getElementById('newSheetOverlay');
-
-  async function renderIdContacts(firstLoad){
-    if(!listEl) return;
-    // First load only show loading, no clear on every poll
-    if(firstLoad){
-      if(countEl) countEl.textContent = 'loading...';
-      listEl.innerHTML = '<div style="padding:40px 16px;text-align:center;color:#8696a0;"><div style="width:24px;height:24px;border:2px solid #2a3942;border-top:2px solid #25D366;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;"></div>Pulling contacts...</div>';
-    }
-    var contacts = await fetchAccounts();
-    if(countEl) countEl.textContent = contacts.length + ' contacts';
-    if(sectionTitle) sectionTitle.textContent = contacts.length ? 'Contacts on PRO VIBES' : 'No contacts yet';
-    // Build without clearing scroll if same data — we rebuild but keep scrollTop
-    var prevScroll = listEl.scrollTop || 0;
-    listEl.innerHTML = '';
-    var myN = myName() || 'You';
-    // Myself row — clean, no last message
-    var myselfRow = document.createElement('div');
-    myselfRow.className='exact-contact';
-    var myColor = colorForId(myUserId()||myN);
-    myselfRow.innerHTML = '<div class="exact-contact-avatar" style="background:'+myColor+' !important;">'+(myN[0]||'Y').toUpperCase()+'</div><div class="exact-contact-name"><b>Myself (You)</b></div><button class="sleek-msg-btn" data-self="1">Message</button>';
-    myselfRow.querySelector('.sleek-msg-btn').addEventListener('click', function(e){ e.stopPropagation(); /* FIX: Myself is not a chat - no priv_<me>__<me> room. Tapping Myself does nothing. */ });
-    listEl.appendChild(myselfRow);
-    if(!contacts.length){
-      var empty=document.createElement('div'); empty.style.cssText='padding:24px 16px;color:#8696a0;font-size:13px;text-align:center;'; empty.innerHTML='No contacts yet.<br/>New person go show here after dem create account.';
-      listEl.appendChild(empty); return;
-    }
-    contacts.forEach(function(c){
-      var row=document.createElement('div'); row.className='exact-contact';
-      var col=colorForId(c.userId);
-      var friend=isFriend(c.userId);
-      // Right sleek: Friends if don chat, else Message. No last message, no count, no #.
-      var rightHtml = friend ? '<span style="background:#1f2c34;color:#00e676;border:1px solid #00e67633;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;">Friends ✓</span>' : '<button class="sleek-msg-btn">Message</button>';
-      row.innerHTML = '<div class="exact-contact-avatar" style="background:'+col+' !important;">'+(c.name[0]||'?').toUpperCase()+'</div><div class="exact-contact-name"><b>'+c.name.replace(/</g,'&lt;')+'</b></div>'+rightHtml;
-      var btn=row.querySelector('.sleek-msg-btn');
-      function go(){ openIdPrivate(c.name, c.userId); closeIdSheet(); }
-      if(btn) btn.addEventListener('click', function(e){ e.stopPropagation(); go(); });
-      row.addEventListener('click', go);
-      listEl.appendChild(row);
-    });
-    try{ listEl.scrollTop = prevScroll; }catch(e){}
-  }
-  // Override global render if it exists — new sheet open uses ID list
-  window.renderExactContacts = function(){ return renderIdContacts(false); };
-
-  function openIdSheet(){
-    if(overlay) overlay.classList.add('open');
-    if(sheet) sheet.classList.add('open');
-    renderIdContacts(true);
-  }
-  function closeIdSheet(){
-    if(overlay) overlay.classList.remove('open');
-    if(sheet) sheet.classList.remove('open');
-  }
-  // Re-wire fab/back/overlay to ID version (keep old listeners harmless, we add new ones)
-  try{
-    var fab=document.getElementById('newFabExact');
-    if(fab){ fab.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openIdSheet(); }); }
-    var back=document.getElementById('exactBack');
-    if(back) back.addEventListener('click', closeIdSheet);
-    if(overlay) overlay.addEventListener('click', closeIdSheet);
-  }catch(e){}
-  window.openIdSheet=openIdSheet; window.closeIdSheet=closeIdSheet;
-
-  /* --- 3. PRIVATE BY ID --- */
-  window.__pvCurrentPrivateUid = null;
-  window.__pvCurrentPrivateRoom = null;
-
-  window.openIdPrivate = function(name, otherUid){
-    // FIX - Never open a chat with yourself. Old code created priv_<me>__<me> and marked you as your own Friend.
-    if(otherUid && String(otherUid)===String(myUserId())){ return; }
-    // FIX - No name_ fallback room. A name_ room never matches the other phone's real ID room (priv_<uid>__<uid>),
-    // so the two phones would end in two different rooms and never see each other. No real UID = stop, no fake room.
-    if(!otherUid || String(otherUid).indexOf('name_')===0){
-      var found2 = accountsCache.find(function(x){ return x.name===name; });
-      if(found2){ otherUid = found2.userId; if(String(otherUid)===String(myUserId())) return; }
-      else { return; }
-    }
-    window.__pvCurrentPrivateUid = otherUid;
-    var room = roomIdFor(otherUid);
-    window.__pvCurrentPrivateRoom = room;
-    window.currentChat = 'private_id_' + room; // internal label only, Firebase path is /private_chats/<room>/msgs.json
-    var chatScreen=document.getElementById('chatScreen');
-    var chatNameEl=document.getElementById('chatName');
-    var chatAvatar=document.getElementById('chatAvatar');
-    var messages=document.getElementById('messages');
-    var listScreen=document.getElementById('listScreen');
-    if(listScreen) listScreen.style.display='none';
-    if(chatScreen){ chatScreen.style.display='flex'; chatScreen.classList.remove('ai-mode'); chatScreen.classList.remove('all-mode'); chatScreen.classList.add('private-mode'); }
-    if(chatNameEl) chatNameEl.innerHTML='<span class="chat-title-main">'+String(name).replace(/</g,'&lt;')+'</span>';
-    if(chatAvatar){ chatAvatar.textContent=(String(name)[0]||'?').toUpperCase(); chatAvatar.style.background=colorForId(otherUid); chatAvatar.style.backgroundColor=colorForId(otherUid); chatAvatar.style.display='flex'; }
-    if(messages) messages.innerHTML='';
-    var inputBar=document.getElementById('inputBar'); if(inputBar) inputBar.style.display='flex';
-    // Load local first
-    var chats=getIdChats(); var local=(chats[room]||[]);
-    local.forEach(function(msg){ appendIdMsg(msg, name, otherUid); });
-    // Then Firebase /private_chats/<priv_room>/msgs.json
-    fetch(firebasePrivateUrl(room) + '?_=' + Date.now()).then(function(r){ return r.json(); }).then(function(j){
-      if(!j || typeof j!=='object') return;
-      var arr=Object.values(j).sort(function(a,b){ return (a.t||0)-(b.t||0); });
-      // If Firebase has more than local, replace view
-      if(arr.length>local.length){
-        if(messages) messages.innerHTML='';
-        chats[room]=arr; saveIdChats(chats);
-        arr.forEach(function(msg){ appendIdMsg(msg, name, otherUid); });
-      }
-    }).catch(function(){});
-    // Mark friend after opening? Only after first message sent, not just open — keep Friends logic on send
-  };
-  // Keep old name for compat — old code calling openPrivateChat(name) will now go through ID
-  window.openPrivateChat = function(name, maybeUid){
-    if(maybeUid) return window.openIdPrivate(name, maybeUid);
-    return window.openIdPrivate(name, null);
-  };
-
-  function appendIdMsg(msg, otherName, otherUid){
-    var messages=document.getElementById('messages'); if(!messages) return;
-    var isMe = String(msg.uid||msg.s||'')===String(myUserId()) || msg.s==='me';
-    var div=document.createElement('div'); div.className = isMe ? 'bubble me' : 'bubble other';
-    var safe = String(msg.m||msg.text||'').replace(/</g,'&lt;');
-    var time = msg.time || (msg.t ? new Date(msg.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '');
-    div.innerHTML = safe + '<span class="msg-meta"><span class="msg-time">'+time+'</span><span class="msg-ticks tick-blue">✓</span></span>';
-    messages.appendChild(div);
-  }
-
-  // Wrap sendMsg: if in ID private, send to /private_id/ with security proof
-  var origSend = window.sendMsg;
-  window.sendMsg = function(){
-    if(window.currentChat && String(window.currentChat).startsWith('private_id_')){
-      var inp=document.getElementById('mInput'); if(!inp) return;
-      var txt=inp.value.trim(); if(!txt) return;
-      // FIX - Same rule as security patch: block if NOT logged in (false OR undefined). Old check only blocked ===false,
-      // so an undefined flag let the bubble show locally while Firebase rejected the POST with 403.
-      if(!window.__pvAuthPassed){ alert('Please login first.'); return; }
-      var room=window.__pvCurrentPrivateRoom; var otherUid=window.__pvCurrentPrivateUid;
-      // FIX - Never send without a real room/uid, and never to yourself.
-      if(!room || !otherUid || String(otherUid)===String(myUserId())) return;
-      var time=new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-      // FIX - No passHash / auth in the stored message. Those are secrets - anyone who can read /private_chats/ would see them.
-      var msg={ uid: myUserId(), n: myName(), m: txt, time: time, t: Date.now() };
-      var chats=getIdChats(); if(!chats[room]) chats[room]=[];
-      chats[room].push(msg); saveIdChats(chats);
-      // Show
-      var messages=document.getElementById('messages');
-      if(messages){ var div=document.createElement('div'); div.className='bubble me'; div.innerHTML=txt.replace(/</g,'&lt;')+'<span class="msg-meta"><span class="msg-time">'+time+'</span><span class="msg-ticks tick-blue">✓</span></span>'; messages.appendChild(div); }
-      inp.value='';
-      try{ if(window.onInputChange) window.onInputChange(); }catch(e){}
-      markFriend(otherUid);
-      // Firebase send to ID room — never to old name room
-      // FIX - Check the POST result. Old code swallowed a 403 so the bubble stayed but receiver never got it.
-      // If Firebase rejects, remove the optimistic bubble + local copy so local and Firebase no diverge.
-      var sentDiv = messages ? messages.lastElementChild : null;
-      fetch(firebasePrivateUrl(room), {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(msg)}).then(function(r){ if(r && !r.ok){ try{ if(sentDiv && sentDiv.parentNode) sentDiv.remove(); }catch(e){} try{ var cc2=getIdChats(); if(cc2[room] && cc2[room].length) cc2[room].pop(); saveIdChats(cc2); }catch(e){} try{ alert('Message not sent - please login first.'); }catch(e){} } }).catch(function(){});
-      return;
-    }
-    if(origSend) return origSend.apply(this, arguments);
-  };
-
-  // Poll ID private while open — every 5s, no clear, only append new
-  setInterval(function(){
-    if(!window.currentChat || !String(window.currentChat).startsWith('private_id_')) return;
-    var room=window.__pvCurrentPrivateRoom; if(!room) return;
-    fetch(firebasePrivateUrl(room) + '?_=' + Date.now()).then(function(r){ return r.json(); }).then(function(j){
-      if(!j || typeof j!=='object') return;
-      var arr=Object.values(j).sort(function(a,b){ return (a.t||0)-(b.t||0); });
-      var chats=getIdChats(); var local=chats[room]||[];
-      if(arr.length>local.length){
-        var messages=document.getElementById('messages'); if(!messages) return;
-        // Append only new ones
-        for(var i=local.length;i<arr.length;i++){ appendIdMsg(arr[i]); }
-        chats[room]=arr; saveIdChats(chats);
-      }
-    }).catch(function(){});
-  }, 5000);
+<script id="PV-ID-NEW-REBUILD">(function(){ /* DELETED PERMANENTLY - Id from Firebase removed: PV-ID-NEW-REBUILD wiped. No fetch /pv_accounts for contacts, no openIdPrivate, no priv_UID__UID rooms, no Id polling/discovery. Old name-based openPrivateChat restored. */ })();</script>
+<script id="PV-ID-FIREBASE-DELETED-CLEANUP">(function(){ try{ localStorage.removeItem('pv_id_private_chats'); localStorage.removeItem('pv_id_friends'); localStorage.removeItem('pv_id_cleared'); }catch(e){} try{ window.openIdPrivate=undefined; window.__pvCurrentPrivateUid=null; window.__pvCurrentPrivateRoom=null; window.__pvFetchIdAccounts=function(){ return Promise.resolve([]); }; }catch(e){} })();</script>
 
 
-  /* DISCOVERY: Receiver can find new private chats even if they never opened that room.
-     Fetch /private_chats.json, find priv_ rooms containing my UID, mark the other UID as Friend.
-     Then when receiver opens New, that person shows Friends, and opening the chat loads messages from Firebase. */
-  async function discoverPrivateChats(){
-    try{
-      var me = myUserId(); if(!me) return;
-      var r = await fetch(URL_BASE + '/private_chats.json?_=' + Date.now());
-      var j = await r.json(); if(!j || typeof j!=='object') return;
-      Object.keys(j).forEach(function(room){
-        if(!room || room.indexOf('priv_')!==0) return;
-        var parts = room.replace('priv_','').split('__');
-        if(parts.length!==2) return;
-        if(parts[0]!==me && parts[1]!==me) return;
-        var other = parts[0]===me ? parts[1] : parts[0];
-        if(!other || other===me) return;
-        // FIX - Robust extraction. ID rooms store as {msgs:{pushId:msg}}, old merged rooms as {pushId:msg}.
-        // Old fallback checked vals[0].m on {msgs:{...}} which is wrong - vals[0] is the whole msgs object, not a message.
-        var msgs = [];
-        try{ var roomVal = j[room] || {}; if(roomVal.msgs && typeof roomVal.msgs==='object') msgs = Object.values(roomVal.msgs); else if(typeof roomVal==='object') msgs = Object.values(roomVal).filter(function(v){ return v && typeof v==='object' && typeof v.m==='string'; }); }catch(e){ msgs = []; }
-        if(msgs.length) markFriend(other);
-      });
-    }catch(e){}
-  }
-  setInterval(discoverPrivateChats, 10000);
-  setTimeout(discoverPrivateChats, 2000);
-
-  // Hide old private rows on main list, keep All Users
-  function hideOldPrivateRows(){
-    try{ document.querySelectorAll('[data-private], .private-row').forEach(function(n){ n.remove(); }); }catch(e){}
-  }
-  setTimeout(hideOldPrivateRows, 500);
-  setTimeout(hideOldPrivateRows, 2000);
-})();
-</script>
-
-
-<script id="PV-SAVE-CONTACTS-FINAL">
-/* PV-SAVE-CONTACTS-FINAL — Save contacts before chat. Local only, not global.
-   - First tap on a contact (from New or from All Users name) must Save before chat.
-   - Saved name is only on YOUR phone (localStorage pv_saved_contacts), not in Firebase, not on their phone.
-   - New list shows YOUR saved name, not global name. No #, no last message in list.
-   - Save screen shows last All Users message preview. Tap that preview -> jump to All Users, highlight that exact message.
-   - Every name in All Users is tappable -> Save -> Chat -> Friends.
-   - If 3 Glories share name, chooser shows each with color + joined date + last message hint, so you pick correct one.
-   - Private still ID-based (previous script), security still on.
-*/
-(function(){
-  var URL_BASE='https://prochat2026-default-rtdb.firebaseio.com';
-  var PALETTE=['#00a884','#25D366','#8e24aa','#ff6d00','#039be5','#d32f2f','#7b1fa2','#f9a825','#00897b','#5e35b1','#e65100','#2e7d32'];
-  function hashStr(s){ var h=0; s=String(s||''); for(var i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; } return Math.abs(h); }
-  function colorForId(uid){ return PALETTE[hashStr(uid)%PALETTE.length]; }
-  function myUid(){ return localStorage.getItem('pv_user_id')||''; }
-  function myName(){ return localStorage.getItem('prochat_name')||''; }
-  function getSavedMap(){ try{ return JSON.parse(localStorage.getItem('pv_saved_contacts')||'{}'); }catch(e){ return {}; } }
-  function saveSavedMap(m){ try{ localStorage.setItem('pv_saved_contacts', JSON.stringify(m)); }catch(e){} }
-  function getSavedName(uid, globalName){ var m=getSavedMap(); return m[uid] || globalName; }
-  function isSaved(uid){ var m=getSavedMap(); return !!m[uid]; }
-  function getFriends(){ try{ return JSON.parse(localStorage.getItem('pv_id_friends')||'[]'); }catch(e){ return []; } }
-  // FIX - Friends = don chat before ONLY. Saved alone must NOT show Friends - saving is not chatting.
-  function isFriend(uid){ return getFriends().indexOf(uid)!==-1; }
-
-  var accountsCache=[];
-  async function fetchAccounts(){
-    if(window.__pvFetchIdAccounts){ try{ var a=await window.__pvFetchIdAccounts(); accountsCache=a||accountsCache; return accountsCache; }catch(e){} }
-    try{
-      var r=await fetch(URL_BASE+'/pv_accounts.json'); var j=await r.json(); var me=myUid(); var arr=[];
-      Object.values(j||{}).forEach(function(a){ if(!a||!a.userId||!a.name) return; if(me && String(a.userId)===String(me)) return; arr.push({userId:String(a.userId), name:String(a.name), shortId:String(a.shortId||''), createdAt:a.createdAt||0}); });
-      var seen={}; var out=[]; arr.forEach(function(x){ if(!seen[x.userId]){ seen[x.userId]=1; out.push(x); } });
-      out.sort(function(x,y){ var a=x.name.toLowerCase(), b=y.name.toLowerCase(); if(a<b) return -1; if(a>b) return 1; return x.userId<y.userId?-1:1; });
-      accountsCache=out; return out;
-    }catch(e){ return accountsCache; }
-  }
-
-  async function fetchLastAllMsgFor(uid, globalName){
-    try{
-      var rs=await Promise.all([fetch(URL_BASE+'/msgs.json').then(function(r){return r.json();}).catch(function(){return null;}), fetch(URL_BASE+'/prochat/rooms/general.json').then(function(r){return r.json();}).catch(function(){return null;})]);
-      var all=[];
-      rs.forEach(function(obj){ if(obj && typeof obj==='object'){ Object.values(obj).forEach(function(m){ if(m && m.n) all.push(m); }); } });
-      // Prefer uid match (new messages have uid), fallback to name match
-      var byUid=all.filter(function(m){ return uid && String(m.uid||'')===String(uid); });
-      var pool=byUid.length?byUid:all.filter(function(m){ return String(m.n||'').toLowerCase()===String(globalName||'').toLowerCase(); });
-      if(!pool.length) return null;
-      pool.sort(function(a,b){ return (Number(a.t)||0)-(Number(b.t)||0); });
-      return pool[pool.length-1];
-    }catch(e){ return null; }
-  }
-
-  /* --- Save dialog --- */
-  function ensureDialog(){
-    var d=document.getElementById('pvSaveDialog');
-    if(d) return d;
-    d=document.createElement('div'); d.id='pvSaveDialog';
-    d.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:flex-end;justify-content:center;';
-    d.innerHTML='<div style="background:#111b21;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 18px 28px;color:#e9edef;"><div style="width:40px;height:4px;background:#374045;border-radius:2px;margin:0 auto 14px;"></div><div id="pvSaveAvatar" style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin:0 auto 10px;"></div><div id="pvSaveGlobal" style="text-align:center;font-weight:700;font-size:17px;"></div><div id="pvSaveHint" style="text-align:center;color:#8696a0;font-size:12px;margin-top:4px;"></div><div id="pvSaveLastWrap" style="display:none;margin-top:14px;background:#202c33;border-radius:12px;padding:12px;cursor:pointer;"><div style="font-size:11px;color:#25D366;font-weight:700;margin-bottom:4px;">Last message in All Users — tap to see in All Users</div><div id="pvSaveLastText" style="font-size:13px;color:#e9edef;line-height:1.4;"></div><div style="font-size:11px;color:#8696a0;margin-top:4px;">Tap to jump to All Users and see this message</div></div><label style="display:block;margin-top:16px;font-size:13px;color:#8696a0;">Save this contact as (only on your phone)</label><input id="pvSaveInput" placeholder="e.g. Glory School" maxlength="24" style="width:100%;margin-top:6px;padding:14px 14px;background:#182830;border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:#fff;font-size:16px;"/><div style="display:flex;gap:10px;margin-top:16px;"><button id="pvSaveCancel" style="flex:1;padding:13px;border-radius:12px;background:#202c33;color:#e9edef;border:none;font-weight:700;">Cancel</button><button id="pvSaveDo" style="flex:1;padding:13px;border-radius:12px;background:#00a884;color:#fff;border:none;font-weight:800;">Save &amp; Chat</button></div></div>';
-    document.body.appendChild(d);
-    d.addEventListener('click', function(e){ if(e.target===d) hideSaveDialog(); });
-    return d;
-  }
-  function hideSaveDialog(){ var d=document.getElementById('pvSaveDialog'); if(d) d.style.display='none'; }
-  function showSaveDialog(account, lastMsg){
-    var d=ensureDialog();
-    var av=document.getElementById('pvSaveAvatar'); var gl=document.getElementById('pvSaveGlobal'); var hint=document.getElementById('pvSaveHint'); var inp=document.getElementById('pvSaveInput');
-    var savedMap=getSavedMap(); var curSaved=savedMap[account.userId]||'';
-    av.style.background=colorForId(account.userId); av.textContent=(account.name[0]||'?').toUpperCase();
-    gl.textContent=account.name;
-    hint.textContent = curSaved ? ('You saved as: '+curSaved) : 'This saved name is only on your phone, not global.';
-    inp.value = curSaved || account.name;
-    var wrap=document.getElementById('pvSaveLastWrap'); var lastTxt=document.getElementById('pvSaveLastText');
-    if(lastMsg && lastMsg.m){ wrap.style.display='block'; lastTxt.textContent='"'+String(lastMsg.m).slice(0,140)+'"';
-      wrap.onclick=function(){ hideSaveDialog(); jumpToAllUsers(account.name, lastMsg.m, lastMsg.t); };
-    } else { wrap.style.display='none'; }
-    d.style.display='flex';
-    setTimeout(function(){ try{ inp.focus(); inp.select(); }catch(e){} }, 100);
-    document.getElementById('pvSaveCancel').onclick=function(){ hideSaveDialog(); };
-    document.getElementById('pvSaveDo').onclick=function(){
-      var v=inp.value.trim(); if(v.length<2){ alert('Please type a name to save, at least 2 letters.'); return; }
-      var m=getSavedMap(); m[account.userId]=v; saveSavedMap(m);
-      hideSaveDialog();
-      // Now open private with saved name displayed
-      if(window.__pvOpenIdPrivateOrig){ window.__pvOpenIdPrivateOrig(v, account.userId); }
-      else if(window.openIdPrivate){ window.openIdPrivate(v, account.userId); }
-      if(window.closeIdSheet) window.closeIdSheet();
-    };
-  }
-
-  function jumpToAllUsers(globalName, text, t){
-    // Close sheets, open All Users
-    try{ if(window.closeIdSheet) window.closeIdSheet(); }catch(e){}
-    try{ var ov=document.getElementById('newSheetOverlay'); if(ov) ov.classList.remove('open'); var sh=document.getElementById('newSheet'); if(sh) sh.classList.remove('open'); }catch(e){}
-    // Try open All Users via known functions
-    try{
-      var row=document.querySelector('[data-room="all"]');
-      if(row){ row.click(); }
-      else if(typeof window.openChat==='function'){ window.openChat('all'); }
-      else if(typeof window.tabNav==='function'){ window.tabNav('chats'); }
-    }catch(e){}
-    // After render, find bubble and highlight
-    setTimeout(function(){
-      try{
-        var box=document.getElementById('messages'); if(!box) return;
-        var bubbles=box.querySelectorAll('.bubble');
-        var target=null;
-        bubbles.forEach(function(b){
-          var txt=b.getAttribute('data-pv-text')||'';
-          var nm=b.getAttribute('data-pv-name')||'';
-          if(txt===String(text) && nm===String(globalName)) target=b;
-        });
-        if(!target && bubbles.length){ // fallback: last bubble with that name
-          for(var i=bubbles.length-1;i>=0;i--){ var b2=bubbles[i]; if((b2.getAttribute('data-pv-name')||'')===String(globalName)){ target=b2; break; } }
-        }
-        if(target){ target.scrollIntoView({behavior:'smooth', block:'center'}); target.style.outline='2px solid #25D366'; target.style.outlineOffset='2px'; setTimeout(function(){ try{ target.style.outline=''; target.style.outlineOffset=''; }catch(e){} }, 4000); }
-      }catch(e){}
-    }, 900);
-  }
-  window.__pvJumpToAllUsers=jumpToAllUsers;
-
-  /* --- Chooser for duplicate names (3 Glories) --- */
-  function showChooser(matches, globalName){
-    var d=document.getElementById('pvChooser');
-    if(!d){ d=document.createElement('div'); d.id='pvChooser'; d.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99998;display:none;align-items:flex-end;justify-content:center;'; document.body.appendChild(d); }
-    var html='<div style="background:#111b21;width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 18px 28px;color:#e9edef;"><div style="text-align:center;font-weight:800;font-size:17px;">Which '+String(globalName).replace(/</g,'&lt;')+'?</div><div style="text-align:center;color:#8696a0;font-size:12px;margin-top:6px;">There are '+matches.length+' people with this name. Pick the correct one by color + joined date.</div>';
-    matches.forEach(function(a, idx){
-      var joined=a.createdAt ? new Date(Number(a.createdAt)).toLocaleDateString() : 'Joined: unknown';
-      html+='<div data-idx="'+idx+'" class="pv-chooser-row" style="display:flex;align-items:center;gap:12px;margin-top:12px;background:#202c33;border-radius:12px;padding:12px;cursor:pointer;"><div style="width:44px;height:44px;border-radius:50%;background:'+colorForId(a.userId)+';display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;">'+(a.name[0]||'?').toUpperCase()+'</div><div style="flex:1;"><div style="font-weight:700;">'+a.name.replace(/</g,'&lt;')+'</div><div style="font-size:12px;color:#8696a0;">Joined: '+joined+' • Color helps tell them apart</div></div><div style="color:#25D366;font-weight:800;">›</div></div>';
-    });
-    html+='<button id="pvChooserCancel" style="width:100%;margin-top:16px;padding:13px;border-radius:12px;background:#202c33;color:#e9edef;border:none;font-weight:700;">Cancel</button></div>';
-    d.innerHTML=html; d.style.display='flex';
-    d.querySelectorAll('.pv-chooser-row').forEach(function(row){
-      row.addEventListener('click', function(){
-        var idx=parseInt(row.getAttribute('data-idx'),10); var acc=matches[idx]; d.style.display='none';
-        openSaveForAccount(acc);
-      });
-    });
-    var c=document.getElementById('pvChooserCancel'); if(c) c.onclick=function(){ d.style.display='none'; };
-    d.addEventListener('click', function(e){ if(e.target===d) d.style.display='none'; });
-  }
-
-  async function openSaveForAccount(account){
-    var last=await fetchLastAllMsgFor(account.userId, account.name);
-    showSaveDialog(account, last);
-  }
-
-  async function handleTapName(globalName, text, t){
-    if(!globalName) return;
-    var me=myName(); if(me && String(globalName).toLowerCase()===String(me).toLowerCase()) return; // don't save yourself
-    var accounts=await fetchAccounts();
-    var matches=accounts.filter(function(a){ return String(a.name).toLowerCase()===String(globalName).toLowerCase(); });
-    if(matches.length===0){
-      // FIX - No temp name_ account. A name_ ID would create a name_ room that never matches the other phone's real ID room,
-      // so messages would go nowhere. If no account exists, there is no real UID to chat with - stop here.
-      try{ alert('This person never create account yet, you no fit chat them for private.'); }catch(e){}
-      return;
-    }
-    if(matches.length===1){
-      await openSaveForAccount(matches[0]); return;
-    }
-    // Multiple — try to narrow by last message uid
-    if(text){
-      try{
-        var rs=await Promise.all([fetch(URL_BASE+'/msgs.json').then(function(r){return r.json();}).catch(function(){return null;}), fetch(URL_BASE+'/prochat/rooms/general.json').then(function(r){return r.json();}).catch(function(){return null;})]);
-        var all=[]; rs.forEach(function(obj){ if(obj && typeof obj==='object'){ Object.values(obj).forEach(function(m){ if(m && m.n) all.push(m); }); } });
-        var found=all.find(function(m){ return String(m.n||'')===String(globalName) && String(m.m||'')===String(text) && Math.abs(Number(m.t||0)-Number(t||0))<10000 && m.uid; });
-        if(found){
-          var exact=matches.find(function(a){ return String(a.userId)===String(found.uid); });
-          if(exact){ await openSaveForAccount(exact); return; }
-        }
-      }catch(e){}
-    }
-    showChooser(matches, globalName);
-  }
-
-  /* --- Override New list to show saved names --- */
-  var origRender = window.renderExactContacts;
-  window.renderExactContacts = async function(){
-    var listEl=document.getElementById('exactContactsList'); var countEl=document.getElementById('exactCount'); var sectionTitle=document.getElementById('exactSectionTitle');
-    if(!listEl){ if(origRender) return origRender(); return; }
-    var contacts=await fetchAccounts();
-    if(countEl) countEl.textContent=contacts.length+' contacts';
-    if(sectionTitle) sectionTitle.textContent=contacts.length?'Contacts on PRO VIBES':'No contacts yet';
-    var prevScroll=listEl.scrollTop||0; listEl.innerHTML='';
-    var myN=myName()||'You'; var myselfRow=document.createElement('div'); myselfRow.className='exact-contact';
-    myselfRow.innerHTML='<div class="exact-contact-avatar" style="background:'+colorForId(myUid()||myN)+' !important;">'+(myN[0]||'Y').toUpperCase()+'</div><div class="exact-contact-name"><b>Myself (You)</b></div><button class="sleek-msg-btn" data-self="1">Message</button>';
-    myselfRow.querySelector('.sleek-msg-btn').addEventListener('click', function(e){ e.stopPropagation(); /* FIX: Myself is not a chat - no priv_<me>__<me> room. */ });
-    listEl.appendChild(myselfRow);
-    contacts.forEach(function(c){
-      var display=getSavedName(c.userId, c.name);
-      var friend=isFriend(c.userId);
-      var row=document.createElement('div'); row.className='exact-contact';
-      var rightHtml = friend ? '<span style="background:#1f2c34;color:#00e676;border:1px solid #00e67633;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;">Friends ✓</span>' : '<button class="sleek-msg-btn">Message</button>';
-      row.innerHTML='<div class="exact-contact-avatar" style="background:'+colorForId(c.userId)+' !important;">'+(display[0]||'?').toUpperCase()+'</div><div class="exact-contact-name"><b>'+String(display).replace(/</g,'&lt;')+'</b></div>'+rightHtml;
-      function go(){ handleTapName(c.name, null, null); if(window.closeIdSheet) window.closeIdSheet(); }
-      // In New, tap must go through save (handleTapName shows save dialog)
-      var btn=row.querySelector('.sleek-msg-btn');
-      if(btn) btn.addEventListener('click', function(e){ e.stopPropagation(); go(); });
-      row.addEventListener('click', go);
-      listEl.appendChild(row);
-    });
-    try{ listEl.scrollTop=prevScroll; }catch(e){}
-  };
-
-  /* --- Wrap openIdPrivate to require save --- */
-  if(window.openIdPrivate && !window.__pvOpenIdPrivateOrig){
-    window.__pvOpenIdPrivateOrig = window.openIdPrivate;
-    window.openIdPrivate = function(name, uid){
-      // FIX - Never open self chat.
-      if(uid && String(uid)===String(myUid())) return;
-      if(!uid){
-        // Old call with name only — go through save chooser
-        handleTapName(name, null, null); return;
-      }
-      if(isSaved(uid)){
-        var saved=getSavedName(uid, name);
-        return window.__pvOpenIdPrivateOrig(saved, uid);
-      }
-      // Not saved — show save dialog for this uid
-      fetchAccounts().then(function(list){
-        var acc=list.find(function(x){ return String(x.userId)===String(uid); }) || {userId:uid, name:name, createdAt:0};
-        openSaveForAccount(acc);
-      });
-    };
-    // Keep openPrivateChat in sync
-    window.openPrivateChat = window.openIdPrivate;
-  }
-
-  /* --- All Users names tappable --- */
-  document.addEventListener('click', function(e){
-    try{
-      var box=document.getElementById('messages'); if(!box || !box.contains(e.target)) return;
-      var chatScreen=document.getElementById('chatScreen'); if(!chatScreen || !chatScreen.classList.contains('all-mode')) return;
-      // Only when in All Users chat
-      var bEl=e.target.closest('b');
-      var bubble=e.target.closest('.bubble');
-      if(!bubble || !bEl) return;
-      // b inside bubble is the sender name (font-size 11px, green)
-      var nm=bubble.getAttribute('data-pv-name') || bEl.textContent.trim();
-      var txt=bubble.getAttribute('data-pv-text') || '';
-      // Parse t from data-pv-id: name|text|t
-      var rid=bubble.getAttribute('data-pv-id')||''; var parts=rid.split('|'); var tt=parts[parts.length-1]||'';
-      e.preventDefault(); e.stopPropagation();
-      handleTapName(nm, txt, tt);
-    }catch(err){}
-  }, true);
-
-  console.log('PV SAVE CONTACTS FINAL ready — save before chat, local only, All Users names tappable');
-})();
-</script>
+<script id="PV-SAVE-CONTACTS-FINAL">(function(){ /* DELETED PERMANENTLY - Id from Firebase removed: PV-SAVE-CONTACTS-FINAL wiped. It fetched /pv_accounts and wrapped openIdPrivate. Save-by-Id gone. Name-based Private remains. */ })();</script>
 
 
 <style id="PV-VOICE-FIX-FINAL-2026">
@@ -11505,7 +10948,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   function isAI(){ try{ if(curChat()==='ai') return true; var cs=document.getElementById('chatScreen'); if(cs && cs.classList.contains('ai-mode')) return true; }catch(e){} return false; }
   function isPrivate(){ try{ return String(curChat()||'').indexOf('private_')===0; }catch(e){ return false; } }
   function roomId(other){ var a=safe(myName()), b=safe(other); return [a,b].sort().join('__'); }
-  function roomForChat(chat){ chat=String(chat||curChat()||''); if(chat.indexOf('private_id_')===0){ var r=chat.slice('private_id_'.length); if(r) return r; try{ if(window.__pvCurrentPrivateRoom) return String(window.__pvCurrentPrivateRoom); }catch(e){} return r; } if(chat.indexOf('private_')===0) return roomId(chat.replace('private_','')); return ''; }
+  function roomForChat(chat){ chat=String(chat||curChat()||''); if(chat.indexOf('private_')===0) return roomId(chat.replace('private_','')); return ''; } /* DELETED - private_id_ / __pvCurrentPrivateRoom removed: Id from Firebase gone */
   function voiceMsgsUrl(chat){ chat=String(chat||curChat()||''); if(chat.indexOf('private_')===0) return FB+'/private_chats/'+roomForChat(chat)+'/msgs.json'; return FB+'/msgs.json'; }
   function inChat(){ try{ var c=curChat(); if(!c) return false; if(isAI()) return false; if(c==='all') return true; if(isPrivate()) return true; return false; }catch(e){ return false; } }
   function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
@@ -12137,22 +11580,41 @@ body:has(#chatScreen.private-as-all) #waDownCount{
             var secData=await secRes.json();
             var secretToOld={}; if(secData){ Object.keys(secData).forEach(function(oldR){ var v=secData[oldR]; if(v && v.secret) secretToOld[v.secret]=oldR; }); }
             var merged={};
+            function mergeRoomPV(targetKey, src){
+              if(!merged[targetKey]) merged[targetKey]={};
+              var tgt=merged[targetKey];
+              if(!src || typeof src!=='object') return;
+              if(src.msgs && typeof src.msgs==='object'){
+                if(!tgt.msgs) tgt.msgs={};
+                Object.keys(src.msgs).forEach(function(pk){ tgt.msgs[pk]=src.msgs[pk]; });
+                Object.keys(src).forEach(function(mk){ if(mk!=='msgs') tgt[mk]=src[mk]; });
+              } else {
+                Object.keys(src).forEach(function(mk){ tgt[mk]=src[mk]; });
+              }
+            }
             Object.keys(baseData).forEach(function(k){
               if(k.indexOf('priv_')===0){
                 // FIX - Two kinds of priv_ rooms share this prefix, do NOT treat them the same:
-                // (a) ID rooms: priv_<uid>__<uid> - they contain '__' and have NO secret entry. Keep them as-is.
-                //     Old code did if(!oldR) return; which DROPPED all ID rooms, so discoverPrivateChats() never saw them.
+                // (a) DELETED - Id rooms: priv_<uid>__<uid> contain '__'. They are dropped, never merged.
                 // (b) Secret rooms: priv_<24 random chars> - no '__', mapped via pv_priv_secrets.json to an old room.
-                if(k.indexOf('__')!==-1){ if(!merged[k]) merged[k]={}; var idMsgs=baseData[k]||{}; Object.keys(idMsgs).forEach(function(mk){ merged[k][mk]=idMsgs[mk]; }); return; }
+                if(k.indexOf('__')!==-1){ return; } /* DELETED PERMANENTLY - Id rooms priv_UID__UID dropped from Firebase list, never merged */
                 var oldR=secretToOld[k];
-                if(!oldR) return;
-                if(!merged[oldR]) merged[oldR]={};
-                var msgs=baseData[k]||{};
-                Object.keys(msgs).forEach(function(mk){ merged[oldR][mk]=msgs[mk]; });
+                if(!oldR){
+                  // FALLBACK - if pv_priv_secrets mapping is missing, infer old room from messages so secret is not dropped
+                  try{
+                    var _src=baseData[k]||{};
+                    var _msgsObj=_src.msgs||_src;
+                    var _me=mySafeName();
+                    var _other=null;
+                    Object.keys(_msgsObj).forEach(function(pk){ var _m=_msgsObj[pk]; if(_m && _m.n){ var _sn=safeName(_m.n); if(_sn && _sn!==_me) _other=_sn; } });
+                    if(_other) oldR=[_me,_other].sort().join('__');
+                  }catch(e){}
+                  if(!oldR) return;
+                }
+                // MERGE, do NOT overwrite - old + secret both keep their msgs, otherwise unread/sort see only one set
+                mergeRoomPV(oldR, baseData[k]||{});
               } else {
-                if(!merged[k]) merged[k]={};
-                var m2=baseData[k]||{};
-                Object.keys(m2).forEach(function(mk){ merged[k][mk]=m2[mk]; });
+                mergeRoomPV(k, baseData[k]||{});
               }
             });
             return fakeRes(merged, true, 200);
@@ -12162,7 +11624,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
         if(isPrivateMsgsGet(urlStr,opts)){
           var m=urlStr.match(/\/private_chats\/([^\/\?]+)\/msgs\.json/);
           var room=m?decodeURIComponent(m[1]):'';
-          if(room.indexOf('priv_')===0) return _origFetch(url,opts);
+          if(room.indexOf('priv_')===0){ if(room.indexOf('__')!==-1) return fakeRes({}, true, 200); return _origFetch(url,opts); } /* DELETED - Id read blocked, secret priv_ (no __) still allowed */
           var oldRes=await _origFetch(url,opts);
           var oldData=null; try{ oldData=await oldRes.json(); }catch(e){ oldData=null; }
           var sec=null; try{ sec=await getSecretFor(room); }catch(e){}
@@ -12181,6 +11643,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
           var privM=urlStr.match(/\/private_chats\/([^\/\?]+)\/msgs\.json/);
           if(privM){
             var oldRoom=decodeURIComponent(privM[1]);
+            if(oldRoom.indexOf('priv_')===0 && oldRoom.indexOf('__')!==-1){ return fakeRes({error:'Id deleted'}, false, 403); } /* DELETED - Id send blocked */
             if(oldRoom.indexOf('priv_')!==0){
               var parts=oldRoom.split('__');
               var me=mySafeName();
@@ -12228,4 +11691,203 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   }catch(e){ console.log('PV SECURITY FIXES fail', e); }
 })();
 </script>
+
+
+
+
+
+
+
+<script id="PV-PRIV-UNREAD-SORT-FIX-V2">
+(function(){
+  // PRIVATE UNREAD + SORT ONLY - does NOT touch All Users, AI, Reels, voice, or any other system.
+  // Root cause for BOTH bugs: LIST fetch (/private_chats.json) drops secret rooms (priv_xxx, no __) and,
+  // when old+secret both exist, overwrites one msgs set with the other. So V13 + sorter see stale data.
+  // READ ONE (/private_chats/<oldRoom>/msgs.json) merges old+secret correctly via security patch.
+  // This fix ONLY uses READ ONE for counting + sorting. It never creates rows, never touches preview/time text (V13 already does that).
+  var FB='https://prochat2026-default-rtdb.firebaseio.com';
+  var SEEN_COUNT_KEY='pv_priv_seen_count_v14';
+  var TS_KEY='whatsapp_last_ts_v1';
+  var OLD_TS_KEY='prochat_last_ts_map_v2';
+  function safe(s){ try{ return String(s||'').replace(/[^a-zA-Z0-9]/g,'_').toLowerCase(); }catch(e){ return ''; } }
+  function appName(){
+    try{ if(typeof getMyName==='function'){ var v=getMyName(); if(v) return String(v).trim(); } }catch(e){}
+    try{ if(window.getMyName){ var v2=window.getMyName(); if(v2) return String(v2).trim(); } }catch(e){}
+    try{ var keys=['prochat_username','pv_username','prochat_name','cospro_name']; for(var i=0;i<keys.length;i++){ var vv=(localStorage.getItem(keys[i])||'').trim(); if(vv && vv.toLowerCase()!=='user') return vv; } if(window.NAME && String(window.NAME).trim()) return String(window.NAME).trim(); }catch(e){}
+    return 'You';
+  }
+  function getMe(){ return safe(appName()); }
+  function getSeenCount(){ try{ var v=sessionStorage.getItem(SEEN_COUNT_KEY); if(v) return JSON.parse(v)||{}; var lv=localStorage.getItem(SEEN_COUNT_KEY); if(lv) return JSON.parse(lv)||{}; }catch(e){} return {}; }
+  function saveSeenCount(m){ try{ sessionStorage.setItem(SEEN_COUNT_KEY, JSON.stringify(m||{})); }catch(e){} try{ localStorage.setItem(SEEN_COUNT_KEY, JSON.stringify(m||{})); }catch(e){} }
+  function getWaTs(){ try{ return JSON.parse(localStorage.getItem(TS_KEY)||'{}')||{}; }catch(e){ return {}; } }
+  function saveWaTs(m){ try{ localStorage.setItem(TS_KEY, JSON.stringify(m||{})); localStorage.setItem(OLD_TS_KEY, JSON.stringify(m||{})); }catch(e){} }
+  function currentPrivName(){
+    try{
+      var cur=String(window.currentChat||'');
+      if(cur && cur.indexOf('private_')===0) return cur.slice(8);
+      var cs=document.getElementById('chatScreen');
+      if(cs && cs.dataset && cs.dataset.pvCurrent){ var pv=String(cs.dataset.pvCurrent||''); if(pv.indexOf('private_')===0) return pv.slice(8); }
+      if(cs && cs.classList && cs.classList.contains('private-mode')){
+        var el=document.querySelector('#chatName .chat-title-main'); if(el && el.textContent.trim()) return el.textContent.trim();
+      }
+    }catch(e){}
+    return '';
+  }
+  function findRow(other){
+    try{
+      var k=safe(other); var rows=document.querySelectorAll('#listScreen .user-row[data-private]');
+      for(var i=0;i<rows.length;i++){ if(safe(rows[i].getAttribute('data-private'))===k) return rows[i]; }
+    }catch(e){}
+    return null;
+  }
+  function applyBadge(row, unread){
+    if(!row) return;
+    try{
+      var badge=row.querySelector('.pv-unread-count');
+      if(!badge){ badge=document.createElement('span'); badge.className='pv-unread-count'; row.appendChild(badge); }
+      if(unread>0){
+        if(!row.classList.contains('has-unread')) row.classList.add('has-unread');
+        try{ row.dataset.unread='1'; }catch(e){ row.setAttribute('data-unread','1'); }
+        row.setAttribute('data-unread-count', unread>99?'99+':String(unread));
+        if(badge.textContent!==String(unread)) badge.textContent=String(unread);
+        if(!badge.classList.contains('show')) badge.classList.add('show');
+      } else {
+        if(row.classList.contains('has-unread')) row.classList.remove('has-unread');
+        try{ delete row.dataset.unread; }catch(e){ row.removeAttribute('data-unread'); }
+        row.removeAttribute('data-unread-count');
+        if(badge.classList.contains('show')) badge.classList.remove('show');
+        if(badge.textContent!=='') badge.textContent='';
+      }
+    }catch(e){}
+  }
+  var _syncing=false;
+  async function syncPrivUnreadSort(){
+    if(_syncing) return; _syncing=true;
+    try{
+      var me=getMe(); if(!me) return;
+      // Step 1: get set of old room ids from LIST + secrets - LIST keys are enough for room ids, NOT for messages
+      var oldRids={};
+      try{
+        var lr=await fetch(FB+'/private_chats.json?_='+Date.now()); var ld=await lr.json(); if(ld && typeof ld==='object'){
+          Object.keys(ld).forEach(function(k){
+            if(k.indexOf('priv_')===0) return; // secret keys are not old rooms, they will be merged via READ ONE
+            if(k.indexOf('__')===-1) return;
+            var pp=k.split('__'); if(pp.length!==2) return; if(pp.indexOf(me)===-1) return;
+            oldRids[k]=1;
+          });
+        }
+      }catch(e){}
+      try{
+        var sr=await fetch(FB+'/pv_priv_secrets.json?_='+Date.now()); var sd=await sr.json();
+        if(sd && typeof sd==='object'){
+          Object.keys(sd).forEach(function(oldR){
+            if(oldR && oldR.indexOf('__')!==-1){ var pp2=oldR.split('__'); if(pp2.length===2 && pp2.indexOf(me)!==-1) oldRids[oldR]=1; }
+          });
+        }
+      }catch(e){}
+      // Also include rooms from existing rows, so a private chat that has no Firebase entry yet still gets sorted by its displayed time
+      try{
+        var rows0=document.querySelectorAll('#listScreen .user-row[data-private]');
+        for(var ri=0;ri<rows0.length;ri++){
+          var nm=rows0[ri].getAttribute('data-private')||''; if(!nm) continue;
+          var oRid=[me, safe(nm)].sort().join('__');
+          if(oRid.indexOf(me)!==-1) oldRids[oRid]=1;
+        }
+      }catch(e){}
+      var seenC=getSeenCount();
+      var waTs=getWaTs();
+      var curPriv=currentPrivName();
+      var curSafe=curPriv?safe(curPriv):'';
+      var isInPrivChat=false;
+      try{ var cs=document.getElementById('chatScreen'); isInPrivChat=!!(cs && getComputedStyle(cs).display!=='none' && cs.style.display!=='none' && curSafe); }catch(e){}
+      var changedSort=false;
+      var keys=Object.keys(oldRids);
+      for(var ki=0; ki<keys.length; ki++){
+        var rid=keys[ki];
+        try{
+          // READ ONE - security patch merges old + secret correctly, unlike LIST which overwrites
+          var r=await fetch(FB+'/private_chats/'+encodeURIComponent(rid)+'/msgs.json?_='+Date.now());
+          var d=await r.json(); if(!d || typeof d!=='object') continue;
+          // d here is flat {pushId: msg} (READ ONE returns merged flat map, not {msgs: ...})
+          var arr=Object.values(d).sort(function(a,b){ return (Number(a.t||0)-Number(b.t||0)); });
+          if(!arr.length) continue;
+          var otherName=null;
+          for(var i=arr.length-1;i>=0;i--){ var nn=arr[i] && arr[i].n ? String(arr[i].n) : ''; if(nn && safe(nn)!==me){ otherName=nn; break; } }
+          if(!otherName){
+            var pp3=rid.split('__'); var o3=pp3[0]===me?pp3[1]:pp3[0]; if(!o3) continue; otherName=o3.charAt(0).toUpperCase()+o3.slice(1);
+          }
+          var otherSafe=safe(otherName); if(!otherSafe || otherSafe===me) continue;
+          var last=arr[arr.length-1];
+          var lastTs=Number(last.t||0)||Date.now();
+          var perUserKey=rid+'__by_'+me;
+          var seenCount=0;
+          if(seenC[perUserKey]!==undefined) seenCount=Number(seenC[perUserKey]||0);
+          else if(seenC[rid+'__by_'+otherSafe]!==undefined) seenCount=Number(seenC[rid+'__by_'+otherSafe]||0);
+          else seenCount=0;
+          var unread=0;
+          if(arr.length>seenCount){
+            for(var k=seenCount;k<arr.length;k++){ var m=arr[k]; if(!m) continue; var sender=''; if(m.n) sender=safe(m.n); else if(m.s) sender=(m.s==='me'?me:safe(m.s)); if(sender && sender!==me) unread++; }
+          }
+          if(isInPrivChat && curSafe===otherSafe){
+            unread=0;
+            try{
+              if(seenCount<arr.length){
+                var nc={}; try{ nc=getSeenCount(); }catch(e){ nc={}; }
+                nc[perUserKey]=arr.length; nc[rid]=arr.length; nc[otherSafe]=arr.length; saveSeenCount(nc); seenC=nc;
+              }
+            }catch(e){}
+          }
+          var row=findRow(otherName);
+          if(row) applyBadge(row, unread);
+          // SORT - update sort key to true last message time, not stale LIST time. This is what moves new chat to top.
+          var chatId='private_'+otherName;
+          // waTs key in WHATSAPP sorter is 'private_'+other (exact case as row data-private), not safe name
+          if((waTs[chatId]||0)!==lastTs){
+            waTs[chatId]=lastTs; changedSort=true;
+          }
+          // Also update dataset.ts so any sorter reading dataset.ts agrees
+          if(row){
+            try{ if(row.dataset.ts!==String(lastTs)) row.dataset.ts=String(lastTs); }catch(e){}
+          }
+        }catch(e){}
+      }
+      if(changedSort) saveWaTs(waTs);
+      // Let the existing sorter do the DOM move - we only fixed its keys, we do not reorder DOM ourselves
+      try{ if(typeof window.__waSortList==='function') window.__waSortList(); }catch(e){}
+      try{ if(typeof window.sortChatListByTime==='function' && window.sortChatListByTime!==window.__waSortList) window.sortChatListByTime(); }catch(e){}
+      try{ if(window.pvApplyFilters && document.querySelector('.filter-pill.active') && document.querySelector('.filter-pill.active').dataset.filter==='unread'){ window.pvApplyFilters(); } }catch(e){}
+    }catch(e){}
+    _syncing=false;
+  }
+  setTimeout(syncPrivUnreadSort, 700);
+  setInterval(syncPrivUnreadSort, 2000);
+  try{ document.addEventListener('visibilitychange', function(){ if(!document.hidden) setTimeout(syncPrivUnreadSort, 300); }); window.addEventListener('focus', function(){ setTimeout(syncPrivUnreadSort, 300); }); }catch(e){}
+  try{
+    if(window.openPrivateChat && !window.openPrivateChat._pvUnreadSortFix){
+      var _o=window.openPrivateChat; var _w=function(){ var res=_o.apply(this, arguments); setTimeout(syncPrivUnreadSort, 800); return res; }; _w._pvUnreadSortFix=true; window.openPrivateChat=_w;
+    }
+  }catch(e){}
+  try{
+    if(window.backToList && !window.backToList._pvUnreadSortFix){
+      var _b=window.backToList; var _wb=function(){ var res=_b.apply(this, arguments); setTimeout(syncPrivUnreadSort, 500); return res; }; _wb._pvUnreadSortFix=true; window.backToList=_wb;
+    }
+  }catch(e){}
+  window.pvSyncPrivUnreadSort=syncPrivUnreadSort;
+  console.log('PV PRIV UNREAD+SORT FIX V2 ready - private unread + sort only, READ ONE');
+})();
+</script>
+
+
+
+<style id="PV-PRIV-UNREAD-COLOR-FIX-V1">
+/* PRIVATE UNREAD COLORS ONLY - WhatsApp style, nothing else touched.
+   Unread: preview white + bold, time GREEN + bold.
+   Read: preview grey, time grey - like All Users / AI.
+   Must be LAST so it beats PV-UNREAD-BOSS-CALM-CSS (which forced time grey even when unread)
+   and beats inline style color:#8696a0 on .pv-priv-time (needs !important). */
+#listScreen .user-row[data-private].has-unread .pv-priv-time{ color:#25D366 !important; font-weight:600 !important; }
+#listScreen .user-row[data-private].has-unread .pv-priv-preview{ color:#e9edef !important; font-weight:600 !important; }
+#listScreen .user-row[data-private]:not(.has-unread) .pv-priv-preview{ color:#8696a0 !important; font-weight:400 !important; }
+#listScreen .user-row[data-private]:not(.has-unread) .pv-priv-time{ color:#8696a0 !important; font-weight:400 !important; }
+</style>
 
