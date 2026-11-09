@@ -11501,10 +11501,13 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function fmt(sec){ sec=Math.max(0, Math.round(Number(sec)||0)); var m=Math.floor(sec/60), s=sec%60; return m+':'+(s<10?'0':'')+s; }
   function fmtTime(t){ try{ if(typeof formatTime==='function') return formatTime(t); }catch(e){} try{ return new Date(Number(t)||Date.now()).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
-  function isAI(){ try{ if(window.currentChat==='ai') return true; var cs=document.getElementById('chatScreen'); if(cs && cs.classList.contains('ai-mode')) return true; }catch(e){} return false; }
-  function isPrivate(){ try{ return String(window.currentChat||'').indexOf('private_')===0; }catch(e){ return false; } }
+  function curChat(){ try{ var cs=document.getElementById('chatScreen'); if(cs && cs.style.display!=='none'){ if(cs.classList.contains('private-mode')||cs.classList.contains('private-as-all')){ if(window.currentChat) return String(window.currentChat); if(cs.dataset && cs.dataset.pvCurrent) return String(cs.dataset.pvCurrent); } if(cs.classList.contains('all-mode')) return 'all'; if(cs.classList.contains('ai-mode')) return 'ai'; if(cs.dataset && cs.dataset.pvCurrent) return String(cs.dataset.pvCurrent); } }catch(e){} try{ if(typeof currentChat!=='undefined' && currentChat) return String(currentChat); }catch(e){} try{ if(window.currentChat) return String(window.currentChat); }catch(e){} return ''; }
+  function isAI(){ try{ if(curChat()==='ai') return true; var cs=document.getElementById('chatScreen'); if(cs && cs.classList.contains('ai-mode')) return true; }catch(e){} return false; }
+  function isPrivate(){ try{ return String(curChat()||'').indexOf('private_')===0; }catch(e){ return false; } }
   function roomId(other){ var a=safe(myName()), b=safe(other); return [a,b].sort().join('__'); }
-  function inChat(){ try{ if(!window.currentChat) return false; if(isAI()) return false; if(window.currentChat==='all') return true; if(isPrivate()) return true; return false; }catch(e){ return false; } }
+  function roomForChat(chat){ chat=String(chat||curChat()||''); if(chat.indexOf('private_id_')===0){ var r=chat.slice('private_id_'.length); if(r) return r; try{ if(window.__pvCurrentPrivateRoom) return String(window.__pvCurrentPrivateRoom); }catch(e){} return r; } if(chat.indexOf('private_')===0) return roomId(chat.replace('private_','')); return ''; }
+  function voiceMsgsUrl(chat){ chat=String(chat||curChat()||''); if(chat.indexOf('private_')===0) return FB+'/private_chats/'+roomForChat(chat)+'/msgs.json'; return FB+'/msgs.json'; }
+  function inChat(){ try{ var c=curChat(); if(!c) return false; if(isAI()) return false; if(c==='all') return true; if(isPrivate()) return true; return false; }catch(e){ return false; } }
   function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
   function toast(msg){ try{ var el=document.getElementById('pvFreshToast'); if(!el){ el=document.createElement('div'); el.id='pvFreshToast'; el.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#111b21;color:#fff;padding:10px 16px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.35);max-width:86%;text-align:center;'; document.body.appendChild(el); } el.textContent=msg; el.style.display='block'; clearTimeout(el._t); el._t=setTimeout(function(){ el.style.display='none'; }, 2600); }catch(e){} }
 
@@ -11604,11 +11607,11 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   /* ---------- Download: memory -> IDB -> inline -> v2 chunks -> v2 full -> legacy ---------- */
   function fetchVoiceUrl(id, inline){
     if(!id && !inline) return Promise.resolve(null);
-    if(inline && isDataUrl(inline)) return Promise.resolve(inline);
+    if(inline && isDataUrl(inline)){ try{ var _clean=inline.replace(/;codecs=[^;]+/, ''); var _b0=b64ToBlob(_clean, _clean.indexOf('audio/mp4')>=0?'audio/mp4':'audio/webm'); return Promise.resolve(blobUrl(id||('inline_'+Date.now()), _b0)); }catch(e){ return Promise.resolve(inline.replace(/;codecs=[^;]+/, '')); } }
     if(inline && typeof inline==='string' && inline.length>100){
-      try{ var b0=b64ToBlob(inline, 'audio/webm;codecs=opus'); return Promise.resolve(blobUrl(id||('inline_'+Date.now()), b0)); }catch(e){}
+      try{ var b0=b64ToBlob(inline, 'audio/webm'); return Promise.resolve(blobUrl(id||('inline_'+Date.now()), b0)); }catch(e){}
     }
-    if(id && inlineMap[id] && isDataUrl(inlineMap[id])) return Promise.resolve(inlineMap[id]);
+    if(id && inlineMap[id] && isDataUrl(inlineMap[id])){ try{ var _c2=inlineMap[id].replace(/;codecs=[^;]+/, ''); var _b2=b64ToBlob(_c2, _c2.indexOf('audio/mp4')>=0?'audio/mp4':'audio/webm'); return Promise.resolve(blobUrl(id, _b2)); }catch(e){ return Promise.resolve(inlineMap[id].replace(/;codecs=[^;]+/, '')); } }
     if(id && mem[id]) return Promise.resolve(mem[id]);
     if(!id) return Promise.resolve(null);
     return idbGet(id).then(function(b){
@@ -11623,12 +11626,12 @@ body:has(#chatScreen.private-as-all) #waDownCount{
           }
           return batch(idx, []).then(function(parts){
             var b64=parts.join(''); if(!b64) return null;
-            var blob=b64ToBlob(b64, meta.type||'audio/webm;codecs=opus');
+            var blob=b64ToBlob(b64, (meta.type||'audio/webm').split(';')[0]);
             idbPut(id, blob); return blobUrl(id, blob);
           });
         }
         return fetch(FB+'/voice_v2/'+encodeURIComponent(id)+'/full.json?_='+Date.now()).then(function(r){ return r.json(); }).then(function(full){
-          if(full && full.data){ var blob2=b64ToBlob(full.data, full.type||'audio/webm'); idbPut(id, blob2); return blobUrl(id, blob2); }
+          if(full && full.data){ var blob2=b64ToBlob(full.data, (full.type||'audio/webm').split(';')[0]); idbPut(id, blob2); return blobUrl(id, blob2); }
           return null;
         });
       }).catch(function(){ return null; });
@@ -11689,9 +11692,9 @@ body:has(#chatScreen.private-as-all) #waDownCount{
     var syncUrl='';
     if(cachedUrl && cachedUrl.indexOf('blob:')===0) syncUrl=cachedUrl;
     else if(fid && mem[fid]) syncUrl=mem[fid];
-    else if(inline && inline.indexOf('data:audio')===0) syncUrl=inline;
+    else if(inline && inline.indexOf('data:audio')===0){ try{ var _cl=inline.replace(/;codecs=[^;]+/, ''); var _bb=b64ToBlob(_cl, _cl.indexOf('audio/mp4')>=0?'audio/mp4':'audio/webm'); syncUrl=blobUrl(fid||('inline_'+Date.now()), _bb); }catch(e){ syncUrl=inline.replace(/;codecs=[^;]+/, ''); } }
     else if(inline && typeof inline==='string' && inline.length>100 && inline.indexOf('blob:')!==0 && inline.indexOf('http')!==0){
-      try{ var _b=b64ToBlob(inline, 'audio/webm;codecs=opus'); syncUrl=blobUrl(fid||('inline_'+Date.now()), _b); }catch(e){}
+      try{ var _b=b64ToBlob(inline, 'audio/webm'); syncUrl=blobUrl(fid||('inline_'+Date.now()), _b); }catch(e){}
     }
     if(syncUrl){
       // V2: if last audio errored, throw it away - a poisoned Audio element never plays again
@@ -11814,8 +11817,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   function syncInlineMaps(){
     try{
       if(isPrivate()){
-        var other=String(window.currentChat).replace('private_','');
-        fetch(FB+'/private_chats/'+roomId(other)+'/msgs.json?_='+Date.now()).then(function(r){ return r.json(); }).then(function(d){
+        fetch(FB+'/private_chats/'+roomForChat(curChat())+'/msgs.json?_='+Date.now()).then(function(r){ return r.json(); }).then(function(d){
           if(!d) return;
           Object.values(d).forEach(function(m){ if(m && m.voiceFile && m.voiceData) inlineMap[m.voiceFile]=m.voiceData; });
           document.querySelectorAll('.bubble[data-pv-voice-file]').forEach(function(b){ var fid=b.getAttribute('data-pv-voice-file'); if(inlineMap[fid]) b.setAttribute('data-pv-voice-inline', inlineMap[fid]); });
@@ -11847,7 +11849,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   /* ---------- Recording presence ---------- */
   var presenceTimer=null;
   function presencePath(){
-    if(isPrivate()) return FB+'/recording_priv/'+roomId(String(window.currentChat).replace('private_',''))+'/'+safe(myName())+'.json';
+    if(isPrivate()) return FB+'/recording_priv/'+roomForChat(curChat())+'/'+safe(myName())+'.json';
     return FB+'/recording_all/'+safe(myName())+'.json';
   }
   function presenceBeat(){ if(!rec || !rec.active) return; try{ fetch(presencePath(), {method:'PUT', body: JSON.stringify({n:myName(), t:Date.now()})}).catch(function(){}); }catch(e){} }
@@ -11855,8 +11857,8 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   function stopPresence(clearServer){ try{ if(presenceTimer) clearInterval(presenceTimer); }catch(e){} presenceTimer=null; if(clearServer){ try{ fetch(presencePath(), {method:'DELETE'}).catch(function(){}); }catch(e){} } }
   function pollRecording(){
     try{
-      if(!window.currentChat || isAI()){ hideRecordingIndicator(); return; }
-      var url=isPrivate() ? FB+'/recording_priv/'+roomId(String(window.currentChat).replace('private_',''))+'.json?_='+Date.now() : FB+'/recording_all.json?_='+Date.now();
+      if(!curChat() || isAI()){ hideRecordingIndicator(); return; }
+      var url=isPrivate() ? FB+'/recording_priv/'+roomForChat(curChat())+'.json?_='+Date.now() : FB+'/recording_all.json?_='+Date.now();
       fetch(url).then(function(r){ return r.json(); }).then(function(d){
         var other=null;
         if(d){ Object.keys(d).forEach(function(k){ var v=d[k]; if(v && v.n && safe(v.n)!==safe(myName()) && (Date.now()-(v.t||0))<5000) other=v.n; }); }
@@ -11892,8 +11894,8 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   function startRecording(){
     if(rec && rec.active) return;
     if(startingMic) return;
-    if(isAI()) return;
-    if(!inChat()) return;
+    if(isAI()){ toast('Voice no dey work for AI chat'); return; }
+    if(!inChat()){ toast('Open All Users or a Private chat first, then tap mic again'); return; }
     stopPlayback();
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ toast('Microphone needs HTTPS - on Vercel it works, on file:// it is blocked'); return; }
     if(window.location.protocol==='file:'){ toast('Open this on Vercel (HTTPS) - mic is blocked on file://'); return; }
@@ -11901,7 +11903,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
     navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
       startingMic=false;
       var mime='';
-      try{ if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mime='audio/webm;codecs=opus'; else if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) mime='audio/ogg;codecs=opus'; else if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/mp4')) mime='audio/mp4'; }catch(e){}
+      try{ if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/mp4')) mime='audio/mp4'; else if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mime='audio/webm;codecs=opus'; else if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) mime='audio/ogg;codecs=opus'; else if(window.MediaRecorder && MediaRecorder.isTypeSupported('audio/webm')) mime='audio/webm'; }catch(e){}
       var recorder;
       try{ recorder=new MediaRecorder(stream, mime?{mimeType:mime, audioBitsPerSecond:64000}:undefined); }catch(e){ try{ recorder=new MediaRecorder(stream); }catch(e2){ toast('Recorder not supported on this browser'); try{ stream.getTracks().forEach(function(tr){ tr.stop(); }); }catch(e3){} return; } }
       rec={active:true, paused:false, stream:stream, recorder:recorder, mime:mime||recorder.mimeType||'audio/webm', chunks:[], base:0, startAt:Date.now(), waveSamples:[], intent:'', timer:null, analyser:null, audioCtx:null, sampleTimer:null};
@@ -11980,7 +11982,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
     var dur=Math.max(1, Math.round(elapsed()));
     var wave=buildWave(rec.waveSamples);
     var mime=rec.mime;
-    var chatAtFinish=window.currentChat;
+    var chatAtFinish=curChat();
     cleanupRec();
     if(intent!=='send') return;
     if(!chatAtFinish || chatAtFinish==='ai') return;
@@ -11997,7 +11999,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
       appendOptimistic(id, dur, wave, chatAtFinish, inline);
       var ok=await sendVoiceMessage(id, dur, wave, chatAtFinish, inline);
       if(!ok){
-        enqueue({kind:'msg', id:id, url: chatAtFinish.indexOf('private_')===0 ? FB+'/private_chats/'+roomId(String(chatAtFinish).replace('private_',''))+'/msgs.json' : FB+'/msgs.json', payload: buildPayload(id, dur, wave, chatAtFinish, inline), t:Date.now()});
+        enqueue({kind:'msg', id:id, url: voiceMsgsUrl(chatAtFinish), payload: buildPayload(id, dur, wave, chatAtFinish, inline), t:Date.now()});
         toast('You are offline - voice will send when back online');
       }
       uploadInBackground(id, blob, dur, wave);
@@ -12018,7 +12020,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   function appendOptimistic(id, dur, wave, chatAtFinish, inline){
     try{
       var box=document.getElementById('messages'); if(!box) return;
-      if(window.currentChat!==chatAtFinish) return;
+      if(curChat()!==chatAtFinish) return;
       var ep=box.querySelector('.empty-placeholder'); if(ep) ep.remove();
       var div=document.createElement('div'); div.className='bubble me';
       div.setAttribute('data-pv-voice-file', id);
@@ -12035,7 +12037,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   }
   function sendVoiceMessage(id, dur, wave, chatAtFinish, inline){
     var payload=buildPayload(id, dur, wave, chatAtFinish, inline);
-    var url=String(chatAtFinish||'').indexOf('private_')===0 ? FB+'/private_chats/'+roomId(String(chatAtFinish).replace('private_',''))+'/msgs.json' : FB+'/msgs.json';
+    var url=voiceMsgsUrl(chatAtFinish);
     function attempt(n){
       return fetch(url, {method:'POST', body: JSON.stringify(payload)}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return true; }).catch(function(e){ if(n>=3) return false; return sleep(800*n).then(function(){ return attempt(n+1); }); });
     }
