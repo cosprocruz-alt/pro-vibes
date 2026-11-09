@@ -7498,7 +7498,8 @@ window.pvViewNotifChat = function(chatTarget){
     if(chatNameEl) chatNameEl.innerHTML='<span class="chat-title-main">'+String(name).replace(/</g,'&lt;')+'</span>';
     if(chatAvatar){ chatAvatar.textContent=(String(name)[0]||'?').toUpperCase(); chatAvatar.style.background=colorForId(otherUid); chatAvatar.style.backgroundColor=colorForId(otherUid); chatAvatar.style.display='flex'; }
     if(messages) messages.innerHTML='';
-    var inputBar=document.getElementById('inputBar'); if(inputBar) inputBar.style.display='flex';
+    var inputBar=document.getElementById('inputBar'); if(inputBar){ inputBar.style.display='flex'; inputBar.style.position='fixed'; inputBar.style.bottom='76px'; inputBar.style.left='0'; inputBar.style.right='0'; inputBar.style.zIndex='1002'; }
+    try{ document.body.classList.add('in-chat-room'); var _bn=document.querySelector('.bottom-nav'); if(_bn) _bn.style.display='none'; var _fab=document.getElementById('newFabExact'); if(_fab) _fab.style.display='none'; }catch(e){}
     // Load local first
     var chats=getIdChats(); var local=(chats[room]||[]);
     local.forEach(function(msg){ appendIdMsg(msg, name, otherUid); });
@@ -7578,7 +7579,22 @@ window.pvViewNotifChat = function(chatTarget){
   function hideOldPrivateRows(){
     try{ document.querySelectorAll('[data-private], .private-row').forEach(function(n){ n.remove(); }); }catch(e){}
   }
+
+  /* FIX: Private chat input bar must sit ABOVE bottom nav, and nav must hide in private chat */
+  try{
+    var _st=document.createElement('style'); _st.id='pv-private-input-fix';
+    _st.textContent = '#chatScreen.private-mode #inputBar, #chatScreen.private-mode #inputBar.input-bar{ display:flex !important; position:fixed !important; bottom:76px !important; left:0 !important; right:0 !important; z-index:1002 !important; background:transparent !important; } body.in-chat-room .bottom-nav{ display:none !important; } body.in-chat-room .fab-stack-right{ display:none !important; }';
+    document.head.appendChild(_st);
+  }catch(e){}
+
   setTimeout(hideOldPrivateRows, 500);
+
+  document.addEventListener('click', function(e){
+    var backBtn=e.target.closest('.chat-back-btn');
+    if(!backBtn) return;
+    try{ var _bn2=document.querySelector('.bottom-nav'); if(_bn2) _bn2.style.display='flex'; document.body.classList.remove('in-chat-room'); var _ib=document.getElementById('inputBar'); if(_ib){ _ib.style.bottom=''; _ib.style.position=''; } }catch(err){}
+  }, true);
+
   setTimeout(hideOldPrivateRows, 2000);
 })();
 </script>
@@ -7812,15 +7828,21 @@ window.pvViewNotifChat = function(chatTarget){
     window.openPrivateChat = window.openIdPrivate;
   }
 
-  /* --- All Users names tappable --- */
+  window.__pvHandleTapName = handleTapName;
+  /* --- All Users names tappable - BIG TAP AREA --- */
   document.addEventListener('click', function(e){
     try{
       var box=document.getElementById('messages'); if(!box || !box.contains(e.target)) return;
       var chatScreen=document.getElementById('chatScreen'); if(!chatScreen || !chatScreen.classList.contains('all-mode')) return;
-      // Only when in All Users chat
       var bEl=e.target.closest('b');
       var bubble=e.target.closest('.bubble');
-      if(!bubble || !bEl) return;
+      if(!bubble) return;
+      // Tap must be on the name OR on the top 44px of the bubble (name area). Tapping the message text below does NOT open save, so reply still works.
+      if(!bEl){
+        try{ var rect=bubble.getBoundingClientRect(); if(e.clientY - rect.top > 44) return; }catch(err){ return; }
+      }
+      // Ignore taps on reply quote, voice, or links inside bubble
+      if(e.target.closest('.pv-reply-quote, button, a, audio')) return;
       // b inside bubble is the sender name (font-size 11px, green)
       var nm=bubble.getAttribute('data-pv-name') || bEl.textContent.trim();
       var txt=bubble.getAttribute('data-pv-text') || '';
@@ -7830,6 +7852,14 @@ window.pvViewNotifChat = function(chatTarget){
       handleTapName(nm, txt, tt);
     }catch(err){}
   }, true);
+
+  
+  /* Make All Users names visibly tappable: bigger, underline, pointer */
+  try{
+    var st=document.createElement('style'); st.id='pv-allusers-name-tap-css';
+    st.textContent = '#chatScreen.all-mode #messages .bubble.other > b{ display:inline-block !important; padding:8px 10px !important; margin:-4px -10px 2px -10px !important; font-size:13px !important; line-height:1.2 !important; cursor:pointer !important; text-decoration:underline !important; text-underline-offset:3px !important; } #chatScreen.all-mode #messages .bubble.other > b::after{ content:"  • Tap to Save"; font-size:11px; color:#8696a0; text-decoration:none; font-weight:600; }';
+    document.head.appendChild(st);
+  }catch(e){}
 
   console.log('PV SAVE CONTACTS FINAL ready — save before chat, local only, All Users names tappable');
 })();
