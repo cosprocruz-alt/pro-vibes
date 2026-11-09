@@ -11697,9 +11697,11 @@ body:has(#chatScreen.private-as-all) #waDownCount{
       // V2: if last audio errored, throw it away - a poisoned Audio element never plays again
       try{ if(a && a._pvHadError){ try{ a.pause(); }catch(e){} audio=null; a=getAudio(); } }catch(e){}
       cur={id:fid, bubble:container, dur:dur, speed:1};
-      try{ try{ a._pvStopping=false; a._pvHadError=false; }catch(e){} a.src=syncUrl; a.playbackRate=1; if(btn && syncUrl.indexOf('blob:')===0) btn.setAttribute('data-voice-url', syncUrl); try{ a.load(); }catch(e){} var pr2=a.play(); if(pr2 && pr2.catch) pr2.catch(function(err){ if(err && err.name==='NotAllowedError') toast('Tap play again to listen'); else if(err) toast('Tap play again to listen'); }); }catch(e){ toast('Tap play again to listen'); }
+      try{ try{ a._pvStopping=false; a._pvHadError=false; }catch(e){} a.src=syncUrl; a.playbackRate=1; if(btn && syncUrl.indexOf('blob:')===0) btn.setAttribute('data-voice-url', syncUrl); try{ a.load(); }catch(e){} var pr2=a.play(); if(pr2 && pr2.catch) pr2.catch(function(err){ try{ if(err && err.name==='NotAllowedError'){ toast('Tap play again to listen'); } else if(err){ toast('Voice failed: '+(err.name||'error')+' - tap again'); } }catch(e){} }); }catch(e){ toast('Tap play again to listen'); }
       return;
     }
+    // SLOW PATH - need to download. First, unlock audio SYNC inside this tap with a tiny silent sound, so the real play after fetch is allowed.
+    try{ var _unlock=getAudio(); _unlock.src='data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='; _unlock.play().catch(function(){}); }catch(e){}
     // SLOW PATH - need to download from Firebase/IDB. Keep cur as PENDING, do NOT set cur yet.
     // When it finishes we cache it, so the NEXT tap plays instantly (sync path above).
     var pendingId=fid;
@@ -11712,8 +11714,7 @@ body:has(#chatScreen.private-as-all) #waDownCount{
       try{ if(u.indexOf('blob:')===0 && btn) btn.setAttribute('data-voice-url', u); }catch(e){}
       try{ if(a && a._pvHadError){ try{ a.pause(); }catch(e){} audio=null; a=getAudio(); } }catch(e){}
       cur={id:fid, bubble:container, dur:dur, speed:1};
-      try{ a._pvStopping=false; a._pvHadError=false; }catch(e){} a.src=u; a.playbackRate=1; try{ a.load(); }catch(e){} var pr3=a.play();
-      if(pr3 && pr3.catch) pr3.catch(function(err){ if(err && err.name==='NotAllowedError') toast('Tap play again to listen'); else if(err) toast('Tap play again to listen'); });
+      try{ a._pvStopping=false; a._pvHadError=false; }catch(e){} a.src=u; a.playbackRate=1; try{ a.load(); }catch(e){} var pr3=a.play(); if(pr3 && pr3.catch) pr3.catch(function(err){ try{ if(err && err.name==='NotAllowedError') toast('Tap play again to listen - now e go play'); else if(err) toast('Voice failed: '+(err.name||'error')+' - tap again'); }catch(e){} });
     });
   }
   function cycleSpeed(container){
@@ -11725,6 +11726,17 @@ body:has(#chatScreen.private-as-all) #waDownCount{
   function wireBubble(container){
     if(!container) return;
     if(container.dataset.pvFreshWired){ refreshPlayingState(container); return; }
+    // V3 PRELOAD: fetch in background NOW, not on tap. By the time user taps, blob URL is already cached -> tap stays SYNC and browser allows play.
+    try{
+      var _fid=container.getAttribute('data-pv-voice-file')||'';
+      var _inline=container.getAttribute('data-pv-voice-inline')||inlineMap[_fid]||'';
+      var _btn=container.querySelector('.pv-voice-sent-play');
+      if(_fid && _btn && !_btn.getAttribute('data-voice-url')){
+        setTimeout(function(){
+          try{ fetchVoiceUrl(_fid, _inline).then(function(u){ if(u && u.indexOf('blob:')===0){ try{ _btn.setAttribute('data-voice-url', u); mem[_fid]=u; }catch(e){} } }); }catch(e){}
+        }, 50);
+      }
+    }catch(e){}
     container.dataset.pvFreshWired='1';
     var play=container.querySelector('.pv-voice-sent-play');
     var speed=container.querySelector('.pv-voice-sent-speed');
