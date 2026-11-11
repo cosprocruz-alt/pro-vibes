@@ -193,6 +193,38 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
 .chat-name{font-size:12px;color:#aaa;margin-bottom:2px}
 
 /* ===== end css/style.css ===== */
+
+/* STICKY HEADER + FILTER - stays fixed, only grid scrolls */
+.home-sticky { position:sticky; top:0; z-index:15; background:#000; padding-bottom:2px; }
+.home-head { position:relative; z-index:2; background:#000; }
+.home-filter-row { position:relative; z-index:2; background:#000; }
+/* Watch sound button */
+#watch-sound { margin-left:auto; background:rgba(0,0,0,.55); color:#fff; border:1px solid rgba(255,255,255,.35); width:38px; height:38px; min-width:38px; border-radius:50%; font-size:19px; display:flex; align-items:center; justify-content:center; padding:0; flex-shrink:0; }
+#watch-sound.muted { opacity:.85; }
+
+/* ===== VOICE RECORDER - EXACTLY like screenshots, ONLY recorder ===== */
+/* Second image: recording bar */
+.voice-rec-bar { flex:1; display:flex; align-items:center; gap:10px; background:#1a1a1a; border-radius:999px; padding:6px 8px 6px 6px; min-height:52px; box-sizing:border-box; }
+.voice-rec-bar.hidden { display:none !important; }
+.voice-rec-delete { width:44px; height:44px; min-width:44px; border-radius:50%; background:#ff3b30; background:#f44336; border:none; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; flex-shrink:0; }
+.voice-rec-delete svg { width:22px; height:22px; display:block; }
+.voice-rec-wave { flex:1; display:flex; align-items:center; gap:2px; height:30px; min-width:0; overflow:hidden; }
+.voice-rec-wave i { display:block; width:3px; min-width:3px; background:#fff; border-radius:99px; height:8px; transition:height .08s; }
+.voice-rec-time { color:#fff; font-size:17px; font-weight:700; min-width:42px; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums; }
+.voice-rec-send { width:46px; height:46px; min-width:46px; border-radius:50%; background:linear-gradient(135deg,#2e86ff 0%,#7b5cff 100%); border:none; color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; flex-shrink:0; }
+.voice-rec-send svg { width:22px; height:22px; display:block; }
+/* First image: sent voice bubble */
+.voice-msg { display:flex; align-items:center; gap:12px; background:#7b5cff; background:linear-gradient(135deg,#7b5cff,#7a5cff); border-radius:999px; padding:7px 16px 7px 7px; width:fit-content; max-width:78%; min-width:210px; min-height:56px; box-sizing:border-box; }
+.voice-msg-play { width:44px; height:44px; min-width:44px; border-radius:50%; background:#fff; border:none; color:#7b5cff; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; flex-shrink:0; }
+.voice-msg-play svg { width:20px; height:20px; display:block; }
+.voice-msg-wave { flex:1; display:flex; align-items:center; gap:2.5px; height:28px; min-width:0; }
+.voice-msg-wave i { display:block; width:3px; min-width:3px; background:rgba(255,255,255,.95); border-radius:99px; }
+.voice-msg-wave.playing i { animation:voiceWavePulse .7s ease-in-out infinite alternate; }
+@keyframes voiceWavePulse { from { opacity:.55; } to { opacity:1; } }
+.voice-msg-time { color:#fff; font-size:17px; font-weight:700; flex-shrink:0; font-variant-numeric:tabular-nums; }
+.dm-input-bar.voice-recording .dm-input-wrap { display:none !important; }
+.dm-input-bar.voice-recording #dm-action { display:none !important; }
+.dm-input-bar.voice-recording .voice-rec-bar { display:flex !important; }
 </style>
 </head>
 <body>
@@ -206,7 +238,7 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
 <div id="app-inside" class="hidden" hidden>
   <main>
     <section id="home-screen">
-            <div class="home-head"><h2>HOME</h2><button id="home-search-btn" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button></div>
+            <div class="home-sticky"><div class="home-head"><h2>HOME</h2><button id="home-search-btn" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button></div>
       <div class="home-filter-row" aria-label="Filter categories">
         <button type="button" class="home-filter-pill active" data-filter="all">All</button>
         <button type="button" class="home-filter-pill" data-filter="trending">Trending</button>
@@ -225,7 +257,7 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
         <button type="button" class="home-filter-pill" data-filter="fashion">Fashion</button>
       </div>
       <div id="home-search-bar" class="hidden" hidden><button id="home-search-close" aria-label="Cancel">✕</button><input id="home-search-input" type="text" placeholder="Search..." autocomplete="off"><button id="home-search-go">Search</button></div>
-      <div id="home-search-label" class="hidden" hidden></div>
+      <div id="home-search-label" class="hidden" hidden></div></div>
       <div id="home-grid" class="home-grid"></div>
     </section>
     <section id="friends-screen" class="hidden">
@@ -301,6 +333,12 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
           <textarea class="dm-input" id="dm-input" placeholder="Message..." rows="1" enterkeyhint="enter"></textarea>
         </div>
         <button class="dm-action" id="dm-action" aria-label="Voice or send"><span class="mic-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="9" y="2.5" width="6" height="11" rx="3" fill="#000"/><path d="M5 11.5 C5 15.5 8.2 18.5 12 18.5 C15.8 18.5 19 15.5 19 11.5" stroke="#000" stroke-width="2.4" stroke-linecap="round"/><path d="M12 18.5 L12 21.5" stroke="#000" stroke-width="2.4" stroke-linecap="round"/></svg></span><span class="send-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M7.2 4.2 L19.8 12 L7.2 19.8 L7.2 15.4 L11.8 12 L7.2 8.6 Z" fill="#000" stroke="#000" stroke-width="0.6" stroke-linejoin="round"/></svg></span></button>
+        <div id="voice-rec-bar" class="voice-rec-bar hidden" hidden>
+          <button id="voice-rec-delete" class="voice-rec-delete" aria-label="Delete recording"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v5M14 11v5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button>
+          <div class="voice-rec-wave" id="voice-rec-wave"></div>
+          <span class="voice-rec-time" id="voice-rec-time">0:00</span>
+          <button id="voice-rec-send" class="voice-rec-send" aria-label="Send voice"><svg viewBox="0 0 24 24" fill="none"><path d="M2.5 12 L21 2.5 L16 21 L12.5 14.5 Z" fill="#fff"/><path d="M12.5 14.5 L21 2.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+        </div>
       </div>
     </section>
     <section id="profile-screen" class="hidden"></section>
@@ -325,7 +363,7 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
   </nav>
 </div>
 <section id="watch-screen" class="hidden" hidden>
-  <div class="watch-top"><button id="watch-back" aria-label="Back">←</button><span id="watch-title-top"></span></div>
+  <div class="watch-top"><button id="watch-back" aria-label="Back">←</button><span id="watch-title-top"></span><button id="watch-sound" aria-label="Toggle sound">🔊</button></div>
   <div id="watch-feed"></div>
   <div class="watch-nav"><button id="watch-prev" aria-label="Previous">↑</button><button id="watch-next" aria-label="Next">↓</button></div>
   <div id="watch-loading" class="watch-loading hidden" hidden>Loading more…</div>
@@ -406,7 +444,7 @@ if(you)you.addEventListener('click',()=>{hideSheet();setNav('profile-screen');sh
 // ===== js/youtube.js =====
 
 (function(){
-const Y=window.ProVibesYouTube={lastError:'', nextPageToken:'', lastMode:'shorts', lastQuery:'', userCountry:'NG', userCountryName:'Nigeria', userCity:'', userLang:'en', locationReady:false, _locPromise:null};
+const Y=window.ProVibesYouTube={lastError:'', nextPageToken:'', lastMode:'shorts', lastQuery:'', quotaExceeded:false, userCountry:'NG', userCountryName:'Nigeria', userCity:'', userLang:'en', locationReady:false, _locPromise:null};
 Y.getRegionCode=function(){ return (Y.userCountry||'NG').toUpperCase(); };
 Y.getLanguage=function(){ return 'en'; };
 Y.detectLocation=async function(force){
@@ -470,6 +508,7 @@ Y.getLocationQueries=function(){
   return list;
 };
 Y.fetchWithKeyRotation=async function(u){
+  if(Y.quotaExceeded) throw new Error('YouTube limit reached - showing saved videos');
   let lastErr='';
   for(let i=0;i<YOUTUBE_API_KEYS.length;i++){
     try{
@@ -477,6 +516,7 @@ Y.fetchWithKeyRotation=async function(u){
       let d=null; try{d=await r.json();}catch(e){}
       if(d && d.error){
         lastErr = (d.error.message||'') + ' ('+(d.error.errors&&d.error.errors[0]&&d.error.errors[0].reason||'')+')';
+        if(lastErr.indexOf('quota')!==-1 || lastErr.indexOf('Quota')!==-1 || lastErr.indexOf('exceed')!==-1){ Y.quotaExceeded=true; Y.lastError='YouTube daily limit reached'; throw new Error('YouTube daily limit reached'); }
         continue;
       }
       if(!r.ok || !d){ lastErr='HTTP '+r.status; continue; }
@@ -673,19 +713,23 @@ Y.getHomeFeed=async function(pageToken){
   Y.lastMode='home'; Y.lastQuery='';
   const localQueries=Y.getLocationQueries();
   let local=[]; let token=pageToken||'';
-  for(let i=0;i<localQueries.length && local.length<28;i++){
+  // QUOTA-SAFE: max 2 local searches - if we already have 12, stop. No more 8 searches per load.
+  for(let i=0;i<Math.min(2, localQueries.length) && local.length<28;i++){
     try{
       const r=await Y.fetchSearchPage(localQueries[i], {order:'date', region:Y.getRegionCode(), pageToken: i===0?token:''});
       r.videos.forEach(v=>{ if(!local.some(x=>x.id===v.id)) local.push(v); });
       if(r.nextPageToken) token=r.nextPageToken;
-    }catch(e){}
-    if(local.length>=20 && i>=1) break;
+    }catch(e){ if(Y.quotaExceeded) break; }
+    if(local.length>=12 && i>=1) break;
   }
   let globalList=[];
-  try{
-    const gr=await Y.fetchSearchPage('viral shorts', {order:'viewCount', region:'US'});
-    globalList=gr.videos;
-  }catch(e){}
+  // Only fetch global if local is weak - saves 1 search every load
+  if(local.length<8){
+    try{
+      const gr=await Y.fetchSearchPage('viral shorts', {order:'viewCount', region:'US'});
+      globalList=gr.videos;
+    }catch(e){}
+  }
   Y.nextPageToken=token;
   if(!local.length && globalList.length) return globalList.slice(0,12);
   return Y.mixLocalGlobal(local, globalList);
@@ -696,13 +740,14 @@ Y.getFilteredVideos=async function(filterKey, pageToken){
   Y.lastMode='filter'; Y.lastQuery=filterKey;
   const localQueries=Y.getLocalQueriesForFilter(filterKey);
   let local=[]; let token=pageToken||'';
-  for(let i=0;i<localQueries.length && local.length<24;i++){
+  // QUOTA-SAFE: max 2 searches per filter, not 5
+  for(let i=0;i<Math.min(2, localQueries.length) && local.length<24;i++){
     try{
       const r=await Y.fetchSearchPage(localQueries[i], {order:cfg.order||'relevance', region:Y.getRegionCode(), categoryId:cfg.categoryId, pageToken: i===0?token:''});
       r.videos.forEach(v=>{ if(!local.some(x=>x.id===v.id)) local.push(v); });
       if(r.nextPageToken) token=r.nextPageToken;
-    }catch(e){}
-    if(local.length>=12 && i>=1) break;
+    }catch(e){ if(Y.quotaExceeded) break; }
+    if(local.length>=10 && i>=1) break;
   }
   if(local.length<10 && cfg.categoryId){
     try{
@@ -711,10 +756,12 @@ Y.getFilteredVideos=async function(filterKey, pageToken){
     }catch(e){}
   }
   let globalList=[];
-  try{
-    const gr=await Y.fetchSearchPage(Y.getGlobalQueryForFilter(filterKey), {order:cfg.order||'relevance', region:'US', categoryId:cfg.categoryId});
-    globalList=gr.videos;
-  }catch(e){}
+  if(local.length<8){
+    try{
+      const gr=await Y.fetchSearchPage(Y.getGlobalQueryForFilter(filterKey), {order:cfg.order||'relevance', region:'US', categoryId:cfg.categoryId});
+      globalList=gr.videos;
+    }catch(e){}
+  }
   Y.nextPageToken=token;
   if(!local.length && globalList.length) return globalList.slice(0,12);
   return Y.mixLocalGlobal(local, globalList);
@@ -730,10 +777,15 @@ Y.loadMore=async function(){
 Y.getPreviewEmbedUrl=function(id){
   return 'https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay=1&mute=1&playsinline=1&controls=0&loop=1&playlist='+encodeURIComponent(id)+'&modestbranding=1&rel=0&disablekb=1&iv_load_policy=3&fs=0';
 };
-Y.getEmbedUrl=function(id){
-  let base='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1&controls=1&loop=1&playlist='+encodeURIComponent(id)+'&iv_load_policy=3';
+Y.getEmbedUrl=function(id, muted, autoplay){
+  const m = muted ? 1 : 0;
+  const ap = (autoplay===0) ? 0 : 1;
+  let base='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay='+ap+'&mute='+m+'&playsinline=1&rel=0&modestbranding=1&controls=1&loop=1&playlist='+encodeURIComponent(id)+'&iv_load_policy=3';
   if(location.origin && location.origin.indexOf('http')===0){ base+='&enablejsapi=1&origin='+encodeURIComponent(location.origin); }
   return base;
+};
+Y.getPreloadEmbedUrl=function(id){
+  return Y.getEmbedUrl(id, true, 0);
 };
 Y.getWatchUrl=function(id){
   return 'https://www.youtube.com/shorts/'+encodeURIComponent(id);
@@ -749,6 +801,30 @@ Y.getWatchUrlLong=function(id){ return 'https://www.youtube.com/watch?v='+encode
 (function(){
 const grid=$('home-grid');let cur=[];let allVideos=[];let currentFilter='all';let filterRequestId=0;
 let previewObserver=null; const previewTimers=new Map(); const playingCards=new Set();
+// NO aggressive preload of all 14 filters - that burns quota. Filters come from All (free, local) + fetch only when tapped + cache.
+let preloadedFilters={};
+let earlyAll=null; let earlyAllPromise=null;
+// ---- CACHE: save last good All so screen never goes blank on quota / network fail ----
+function saveCache(vs){
+  try{ if(vs && vs.length) localStorage.setItem('pro_vibes_cached_all', JSON.stringify({ts:Date.now(), videos:vs.slice(0,30)})); }catch(e){}
+}
+function loadCache(){
+  try{
+    const c=JSON.parse(localStorage.getItem('pro_vibes_cached_all')||'null');
+    if(c && c.videos && c.videos.length) return c.videos;
+  }catch(e){}
+  return [];
+}
+function saveFilterCache(key, vs){
+  try{ if(vs && vs.length) localStorage.setItem('pro_vibes_cached_filter_'+key, JSON.stringify({ts:Date.now(), videos:vs.slice(0,24)})); }catch(e){}
+}
+function loadFilterCache(key){
+  try{
+    const c=JSON.parse(localStorage.getItem('pro_vibes_cached_filter_'+key)||'null');
+    if(c && c.videos && c.videos.length) return c.videos;
+  }catch(e){}
+  return [];
+}
 const isNew=p=>p&&(Date.now()-new Date(p).getTime())<7*24*60*60*1000;
 function setActivePill(key){
   document.querySelectorAll('.home-filter-pill').forEach(p=>{
@@ -812,7 +888,8 @@ function setupPreviewObserver(){
   }, {threshold:[0.55, 0.75], rootMargin:'0px 0px -5% 0px'});
   cards.forEach(c=>previewObserver.observe(c));
 }
-function render(vs){
+function render(vs, opts){
+  opts=opts||{};
   cur=vs||[]; window.ProVibesHome.current=cur;
   stopAllPreviews();
   if(!vs.length){
@@ -823,7 +900,24 @@ function render(vs){
       const b=$('home-filter-show-all'); if(b) b.addEventListener('click',()=>applyFilter('all'));
       return;
     }
-    grid.innerHTML='<div class="home-empty">No Shorts yet.<br>Check connection and tap Home again.</div>';return;
+    // NEVER show blank "No Shorts yet" if we have cache - show cache instead
+    const cached=loadCache();
+    if(cached.length){
+      cur=cached.slice(); allVideos=cur.slice(); window.ProVibesHome.current=cur;
+      grid.innerHTML='';
+      cached.forEach((v,i)=>{
+        const el=document.createElement('article');
+        el.className='home-card'; el.setAttribute('data-idx', String(i));
+        el.innerHTML='<img src="'+esc(v.thumb)+'" alt="" loading="lazy"><div class="home-preview"></div><div class="shade"></div>'+(isNew(v.publishedAt)?'<span class="new-badge">NEW</span>':'')+'<button class="card-dots" aria-label="More">...</button><div class="card-title">'+esc(v.title)+'</div>';
+        el.addEventListener('click',()=>{ const vv=cur[+el.dataset.idx]; if(!vv) return; stopAllPreviews(); if(window.ProVibesWatch) window.ProVibesWatch.open(vv, cur.slice()); });
+        grid.appendChild(el);
+      });
+      setupPreviewObserver();
+      return;
+    }
+    grid.innerHTML='<div class="home-empty">No Shorts yet.<br>Check connection and tap Home again.<br><button class="home-retry" id="home-retry-btn2">Tap to retry</button></div>';
+    const b2=$('home-retry-btn2'); if(b2) b2.addEventListener('click',load);
+    return;
   }
   grid.innerHTML=vs.map((v,i)=>'<article class="home-card" data-idx="'+i+'"><img src="'+esc(v.thumb)+'" alt="" loading="lazy"><div class="home-preview"></div><div class="shade"></div>'+(isNew(v.publishedAt)?'<span class="new-badge">NEW</span>':'')+'<button class="card-dots" aria-label="More">...</button><div class="card-title">'+esc(v.title)+'</div></article>').join('');
   grid.querySelectorAll('.home-card').forEach(c=>{
@@ -838,19 +932,69 @@ function render(vs){
   });
   setupPreviewObserver();
 }
+function startEarlyPreload(){
+  if(earlyAllPromise) return earlyAllPromise;
+  earlyAllPromise=(async()=>{
+    try{
+      try{ await window.ProVibesYouTube.detectLocation(); }catch(e){}
+      const feed=await window.ProVibesYouTube.getHomeFeed();
+      if(feed && feed.length){ earlyAll=feed.slice(); allVideos=earlyAll.slice(); saveCache(earlyAll); window.ProVibesHome.current=earlyAll; window.ProVibesHome.allVideos=allVideos; }
+      return earlyAll||[];
+    }catch(e){
+      // On quota / network fail, fall back to cache so Login still shows videos
+      const cached=loadCache();
+      if(cached.length){ earlyAll=cached.slice(); allVideos=cached.slice(); return cached; }
+      return [];
+    }
+  })();
+  return earlyAllPromise;
+}
 async function load(){
   currentFilter='all'; setActivePill('all');
   const lbl=$('home-search-label'); if(lbl) hide(lbl);
   stopAllPreviews();
+  // 1) If we already have All from early preload (Login screen), show instantly
+  if(earlyAll && earlyAll.length){
+    cur=earlyAll.slice(); allVideos=cur.slice(); window.ProVibesHome.current=cur; window.ProVibesHome.allVideos=allVideos;
+    render(cur); return;
+  }
+  // 2) If early preload still running, wait for it - don't start a second fetch (saves quota)
+  if(earlyAllPromise){
+    grid.innerHTML='<div class="home-skeleton"></div><div class="home-skeleton"></div><div class="home-skeleton"></div><div class="home-skeleton"></div>';
+    try{
+      const feed=await earlyAllPromise;
+      if(feed && feed.length){
+        cur=feed.slice(); allVideos=cur.slice(); window.ProVibesHome.current=cur; window.ProVibesHome.allVideos=allVideos;
+        render(cur); return;
+      }
+    }catch(e){}
+  }
+  // 3) No early data - check cache FIRST so screen never goes blank
+  const cached=loadCache();
+  if(cached.length){
+    cur=cached.slice(); allVideos=cur.slice(); window.ProVibesHome.current=cur; window.ProVibesHome.allVideos=allVideos;
+    render(cur);
+    // Try fresh in background, but keep showing cache if it fails
+    (async()=>{ try{ const fresh=await window.ProVibesYouTube.getHomeFeed(); if(fresh && fresh.length){ cur=fresh.slice(); allVideos=cur.slice(); saveCache(fresh); window.ProVibesHome.current=cur; render(fresh); } }catch(e){} })();
+    return;
+  }
   grid.innerHTML='<div class="home-skeleton"></div><div class="home-skeleton"></div><div class="home-skeleton"></div><div class="home-skeleton"></div>';
   try{
     try{ await window.ProVibesYouTube.detectLocation(); }catch(e){}
     cur=await window.ProVibesYouTube.getHomeFeed();
-    allVideos=cur.slice(); window.ProVibesHome.current=cur; window.ProVibesHome.allVideos=allVideos;
+    if(cur && cur.length){ allVideos=cur.slice(); saveCache(cur); }
+    window.ProVibesHome.current=cur; window.ProVibesHome.allVideos=allVideos;
     render(cur);
   }catch(e){
-    const msg=(e&&e.message)||'YouTube failed';
-    grid.innerHTML='<div class="home-empty">Shorts could not load.<br>'+esc(msg)+'<br><button class="home-retry" id="home-retry-btn">Tap to retry</button></div>';
+    const YT=window.ProVibesYouTube;
+    if(YT && YT.quotaExceeded){
+      const c2=loadCache();
+      if(c2.length){ cur=c2.slice(); allVideos=cur.slice(); render(cur); return; }
+      grid.innerHTML='<div class="home-empty">YouTube daily limit reached.<br>Showing saved videos when you come back.<br>Try again later.<br><button class="home-retry" id="home-retry-btn">Tap to retry</button></div>';
+    } else {
+      const msg=(e&&e.message)||'YouTube failed';
+      grid.innerHTML='<div class="home-empty">Shorts could not load.<br>'+esc(msg)+'<br><button class="home-retry" id="home-retry-btn">Tap to retry</button></div>';
+    }
     const b=$('home-retry-btn'); if(b) b.addEventListener('click',load);
   }
 }
@@ -865,18 +1009,46 @@ async function applyFilter(key){
   const lbl=$('home-search-label'); if(lbl) hide(lbl);
   const YT=window.ProVibesYouTube; const cfg=YT && YT.FILTERS && YT.FILTERS[key];
   if(key==='all'){
-    cur=allVideos.slice(); window.ProVibesHome.current=cur; render(cur);
+    if(allVideos && allVideos.length){
+      cur=allVideos.slice(); window.ProVibesHome.current=cur; render(cur);
+    } else {
+      const c=loadCache();
+      if(c.length){ cur=c.slice(); allVideos=cur.slice(); render(cur); } else return load();
+    }
     try{window.scrollTo({top:0, behavior:'smooth'});}catch(e){}
     return;
   }
+  // 1) INSTANT + FREE: filter from All locally - no API call, no quota
   const local=filterLocal(allVideos, key);
+  // 2) If we already fetched this filter before, show it instantly
+  if(preloadedFilters[key] && preloadedFilters[key].length){
+    const cached=preloadedFilters[key].slice();
+    cur=cached; window.ProVibesHome.current=cur; render(cached); return;
+  }
+  const cachedFilter=loadFilterCache(key);
+  if(cachedFilter.length && local.length<6){
+    cur=cachedFilter.slice(); window.ProVibesHome.current=cur; render(cachedFilter);
+    // Don't fetch again if quota is gone - cached is enough
+    if(YT && YT.quotaExceeded) return;
+  }
   if(local.length>=6){
     render(local);
-    try{
-      const fresh=await YT.getFilteredVideos(key);
-      if(myId!==filterRequestId || currentFilter!==key) return;
-      if(fresh && fresh.length){ render(fresh); }
-    }catch(e){}
+    // Refresh quietly in background ONLY if quota is OK - otherwise local is enough
+    if(YT && YT.quotaExceeded) return;
+    (async()=>{
+      try{
+        const fresh=await YT.getFilteredVideos(key);
+        if(myId!==filterRequestId || currentFilter!==key) return;
+        if(fresh && fresh.length){ preloadedFilters[key]=fresh.slice(); saveFilterCache(key, fresh); cur=fresh.slice(); window.ProVibesHome.current=cur; render(fresh); }
+      }catch(e){}
+    })();
+    return;
+  }
+  // Not enough local - need 1 API fetch for this filter only (not all filters)
+  if(YT && YT.quotaExceeded){
+    if(cachedFilter.length){ render(cachedFilter); return; }
+    if(local.length){ render(local); return; }
+    render([]);
     return;
   }
   stopAllPreviews();
@@ -884,12 +1056,14 @@ async function applyFilter(key){
   try{
     const fresh=await YT.getFilteredVideos(key);
     if(myId!==filterRequestId || currentFilter!==key) return;
-    if(fresh && fresh.length){ render(fresh); }
+    if(fresh && fresh.length){ preloadedFilters[key]=fresh.slice(); saveFilterCache(key, fresh); render(fresh); }
     else if(local.length){ render(local); }
+    else if(cachedFilter.length){ render(cachedFilter); }
     else { render([]); }
   }catch(e){
     if(myId!==filterRequestId || currentFilter!==key) return;
     if(local.length){ render(local); }
+    else if(cachedFilter.length){ render(cachedFilter); }
     else { grid.innerHTML='<div class="home-empty">Could not load '+(cfg?esc(cfg.label):esc(key))+' right now.<br><button class="home-retry" id="home-filter-retry">Tap to retry</button></div>'; const b=$('home-filter-retry'); if(b) b.addEventListener('click',()=>applyFilter(key)); }
   }
 }
@@ -928,7 +1102,9 @@ document.addEventListener('visibilitychange',()=>{
 });
 document.addEventListener('touchstart',()=>{ setTimeout(()=>setupPreviewObserver(), 100); }, {once:true, passive:true});
 document.addEventListener('provibes:entered',load);
-window.ProVibesHome={reload:load, current:cur, allVideos:allVideos, getCurrent:()=>cur, applyFilter:applyFilter, currentFilter:()=>currentFilter, stopPreviews:stopAllPreviews};
+window.ProVibesHome={reload:load, current:cur, allVideos:allVideos, getCurrent:()=>cur, applyFilter:applyFilter, currentFilter:()=>currentFilter, stopPreviews:stopAllPreviews, preloadedFilters:preloadedFilters, startEarlyPreload:startEarlyPreload};
+// START LOADING ALL ONLY while on Login - NOT all filters, to save quota
+startEarlyPreload();
 })();
 
 // ===== end js/home.js =====
@@ -939,7 +1115,26 @@ window.ProVibesHome={reload:load, current:cur, allVideos:allVideos, getCurrent:(
 (function(){
 const sc=$('watch-screen'), feed=$('watch-feed');
 let list=[], idx=0, isOpen=false, loadingMore=false, scrollTimer=null, programmaticScroll=false;
-
+let watchMuted=false;
+function updateSoundBtn(){
+  const btn=$('watch-sound');
+  if(!btn) return;
+  btn.textContent = watchMuted ? '🔇' : '🔊';
+  btn.classList.toggle('muted', watchMuted);
+  btn.setAttribute('aria-label', watchMuted ? 'Unmute' : 'Mute');
+}
+function sendToPlayer(iframe, func){
+  try{
+    if(!iframe || !iframe.contentWindow) return;
+    iframe.contentWindow.postMessage(JSON.stringify({event:'command', func:func, args:''}), '*');
+  }catch(e){}
+}
+function unmutePlayer(iframe){
+  if(!iframe) return;
+  sendToPlayer(iframe, 'unMute');
+  try{ iframe.contentWindow.postMessage(JSON.stringify({event:'command', func:'setVolume', args:[100]}), '*'); }catch(e){}
+  sendToPlayer(iframe, 'playVideo');
+}
 function updateTop(){
   const v=list[idx];
   const top=$('watch-title-top');
@@ -960,7 +1155,6 @@ function buildSlide(v, i){
     '</div>';
   const tap=el.querySelector('.watch-tap-play');
   if(tap) tap.addEventListener('click',()=>{ activate(i, true); });
-
   return el;
 }
 function renderFeed(){
@@ -970,9 +1164,29 @@ function renderFeed(){
 function clearPlayers(exceptIdx){
   feed.querySelectorAll('.watch-slide').forEach((slide, i)=>{
     if(i===exceptIdx) return;
+    if(i===exceptIdx+1 || i===exceptIdx+2) return;
     const p=slide.querySelector('.watch-player'); if(p) p.innerHTML='';
     const tap=slide.querySelector('.watch-tap-play'); if(tap) tap.style.display='flex';
+    if(p) p.removeAttribute('data-preloaded');
   });
+}
+function preloadNextTwo(centerIdx){
+  for(let k=1;k<=2;k++){
+    const ni=centerIdx+k;
+    if(ni<0 || ni>=list.length) continue;
+    const slide=feed.querySelector('.watch-slide[data-idx="'+ni+'"]');
+    if(!slide) continue;
+    const player=slide.querySelector('.watch-player');
+    if(!player) continue;
+    if(player.querySelector('iframe')) continue;
+    const v=list[ni]; if(!v) continue;
+    const yt=window.ProVibesYouTube;
+    try{
+      player.innerHTML='<iframe src="'+esc(yt.getPreloadEmbedUrl(v.id))+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen; accelerometer; gyroscope" allowfullscreen playsinline referrerpolicy="no-referrer-when-downgrade" title="'+esc(v.title)+'"></iframe>';
+      player.setAttribute('data-preloaded','1');
+    }catch(e){}
+  }
+  if(centerIdx >= list.length-4) maybeLoadMore();
 }
 function activate(i, forcePlay){
   if(!list.length) return;
@@ -985,12 +1199,36 @@ function activate(i, forcePlay){
   const player=slide.querySelector('.watch-player');
   const tap=slide.querySelector('.watch-tap-play');
   const v=list[i];
-  if(player && !player.querySelector('iframe')){
-    const yt=window.ProVibesYouTube;
-    player.innerHTML='<iframe src="'+esc(yt.getEmbedUrl(v.id))+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen; accelerometer; gyroscope" allowfullscreen playsinline referrerpolicy="no-referrer-when-downgrade" title="'+esc(v.title)+'"></iframe>';
+  const yt=window.ProVibesYouTube;
+  if(player){
+    const existing=player.querySelector('iframe');
+    const isPreload = player.getAttribute('data-preloaded')==='1';
+    if(!existing){
+      player.innerHTML='<iframe src="'+esc(yt.getEmbedUrl(v.id, watchMuted))+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen; accelerometer; gyroscope" allowfullscreen playsinline referrerpolicy="no-referrer-when-downgrade" title="'+esc(v.title)+'"></iframe>';
+      player.removeAttribute('data-preloaded');
+      const iframe=player.querySelector('iframe');
+      if(!watchMuted && iframe){
+        iframe.addEventListener('load', ()=>{
+          setTimeout(()=>unmutePlayer(iframe), 400);
+          setTimeout(()=>unmutePlayer(iframe), 1200);
+        });
+      }
+    } else if(isPreload){
+      player.innerHTML='<iframe src="'+esc(yt.getEmbedUrl(v.id, watchMuted))+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen; accelerometer; gyroscope" allowfullscreen playsinline referrerpolicy="no-referrer-when-downgrade" title="'+esc(v.title)+'"></iframe>';
+      player.removeAttribute('data-preloaded');
+      const iframe=player.querySelector('iframe');
+      if(!watchMuted && iframe){
+        iframe.addEventListener('load', ()=>{
+          setTimeout(()=>unmutePlayer(iframe), 300);
+          setTimeout(()=>unmutePlayer(iframe), 1000);
+        });
+      }
+    } else {
+      if(!watchMuted) unmutePlayer(existing);
+    }
   }
   if(tap) tap.style.display='none';
-  // Preload next slide thumbnail already in DOM, but only play active one
+  preloadNextTwo(i);
   maybeLoadMore();
 }
 function scrollToIdx(i, smooth){
@@ -998,12 +1236,11 @@ function scrollToIdx(i, smooth){
   if(i<0) i=0; if(i>=list.length) i=list.length-1;
   programmaticScroll=true;
   feed.scrollTo({top: i*feed.clientHeight, behavior: smooth===false?'auto':'smooth'});
-  // Fallback if smooth scroll event is delayed
   setTimeout(()=>{ programmaticScroll=false; activate(i); }, smooth===false?50:450);
 }
 async function maybeLoadMore(){
   if(loadingMore) return;
-  if(idx < list.length-3) return;
+  if(idx < list.length-4) return;
   const YT=window.ProVibesYouTube;
   if(!YT || !YT.nextPageToken) return;
   loadingMore=true;
@@ -1013,13 +1250,12 @@ async function maybeLoadMore(){
     if(more && more.length){
       const start=list.length;
       more.forEach(v=>{ if(!list.some(x=>x.id===v.id)) list.push(v); });
-      // Append only new slides, keep scroll position
       for(let k=start;k<list.length;k++){ feed.appendChild(buildSlide(list[k], k)); }
-      // Fix data-idx after append (in case dedup changed indexes)
       feed.querySelectorAll('.watch-slide').forEach((s,ii)=>{ s.setAttribute('data-idx', String(ii)); });
       updateTop();
+      preloadNextTwo(idx);
     }
-  }catch(e){ /* keep current list, user can still swipe */ }
+  }catch(e){}
   loadingMore=false;
   if(ld){ ld.classList.add('hidden'); ld.setAttribute('hidden',''); }
 }
@@ -1029,11 +1265,10 @@ function open(v, all){
   idx = found>=0 ? found : 0;
   isOpen=true;
   renderFeed();
-  // Show screen without using the global show() name - avoid shadowing bug from old code
   sc.classList.remove('hidden'); sc.removeAttribute('hidden');
   document.body.style.overflow='hidden';
   updateTop();
-  // Wait for layout then jump to tapped video and autoplay it
+  updateSoundBtn();
   requestAnimationFrame(()=>{
     feed.scrollTop = idx*feed.clientHeight;
     activate(idx, true);
@@ -1045,6 +1280,18 @@ function close(){
   sc.classList.add('hidden'); sc.setAttribute('hidden','');
   document.body.style.overflow='';
   list=[]; idx=0;
+}
+function toggleSound(){
+  watchMuted=!watchMuted;
+  updateSoundBtn();
+  const slide=feed.querySelector('.watch-slide[data-idx="'+idx+'"]');
+  if(!slide) return;
+  const player=slide.querySelector('.watch-player');
+  if(!player) return;
+  const iframe=player.querySelector('iframe');
+  if(!iframe) return;
+  if(watchMuted){ sendToPlayer(iframe, 'mute'); }
+  else { unmutePlayer(iframe); }
 }
 if(feed){
   feed.addEventListener('scroll', ()=>{
@@ -1061,6 +1308,8 @@ if(feed){
 }
 const backBtn=$('watch-back');
 if(backBtn) backBtn.addEventListener('click', close);
+const soundBtn=$('watch-sound');
+if(soundBtn) soundBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleSound(); });
 const nextBtn=$('watch-next');
 if(nextBtn) nextBtn.addEventListener('click', ()=>{ if(!list.length) return; const ni=Math.min(list.length-1, idx+1); scrollToIdx(ni, true); });
 const prevBtn=$('watch-prev');
@@ -1071,7 +1320,7 @@ document.addEventListener('keydown', (e)=>{
   if(e.key==='ArrowUp'){ e.preventDefault(); scrollToIdx(Math.max(0, idx-1), true); }
   if(e.key==='Escape'){ close(); }
 });
-window.ProVibesWatch={open:open, close:close, next:()=>scrollToIdx(Math.min(list.length-1, idx+1), true), prev:()=>scrollToIdx(Math.max(0, idx-1), true)};
+window.ProVibesWatch={open:open, close:close, next:()=>scrollToIdx(Math.min(list.length-1, idx+1), true), prev:()=>scrollToIdx(Math.max(0, idx-1), true), toggleSound:toggleSound, isMuted:()=>watchMuted};
 })();
 
 // ===== end js/watch.js =====
@@ -1148,7 +1397,8 @@ function isReal(t){if(!t||typeof t!=='string')return false;t=t.trim();if(!t||t.l
 function renderChat(msg,mode){
 const box=$('dm-messages');if(!box)return;
 const sender=msg.name||msg.sender||msg.user||'User',text=msg.text||msg.message||msg.content||'';
-if(!isReal(text))return;
+const isVoice = !!(msg.voice || msg.audioData || msg.audioUrl);
+if(!isVoice && !isReal(text))return;
 if(mode==='all'){if(!window.AllUsersMessages.some(m=>sameMsg(m,msg)))window.AllUsersMessages.push(msg);addPerson(sender);}
 const mine=window.ProVibesUser&&sender===window.ProVibesUser.name;
 const wrap=el('div','chat-wrap'+(mine?' mine':' other'));let col=null;
@@ -1156,6 +1406,29 @@ if(!mine){const row=el('div','chat-row'),av=el('div','chat-avatar',sender.trim()
 const rq=msg.replyTo||msg.reply||null;
 if(rq){const rt=typeof rq==='object'?(rq.text||rq.message||''):rq,rw=typeof rq==='object'&&rq.who?rq.who:'You';if(rt){const qw=el('div',mine?'dm-reply-quote mine':'dm-reply-quote');qw.appendChild(el('div','dm-reply-quote-line'));const pill=el('div','dm-reply-quote-pill');pill.setAttribute('data-quote-text',rt);pill.setAttribute('data-quote-who',rw);pill.appendChild(el('b','',rw+' : '));pill.appendChild(el('span','',rt));qw.appendChild(pill);if(!mine&&col)col.appendChild(qw);else wrap.appendChild(qw);}}
 const tOnly=fmtTime(msg.timestamp||msg.time||msg.createdAt||Date.now());
+if(isVoice){
+  const vData = msg.voice || {audioData:msg.audioData, audioUrl:msg.audioUrl, duration:msg.duration||0, waveform:msg.waveform||[]};
+  const dur = vData.duration||0;
+  const durText = Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0');
+  const wrap2 = el('div','chat-wrap'+(mine?' mine':' other'));
+  let col2=null;
+  if(!mine){ const row=el('div','chat-row'), av=el('div','chat-avatar',sender.trim().charAt(0).toUpperCase()); col2=el('div','chat-col'); col2.appendChild(el('div','chat-name',sender)); row.appendChild(av); row.appendChild(col2); wrap2.appendChild(row); }
+  const bubble=el('div','voice-msg');
+  bubble.setAttribute('data-voice-duration', String(dur));
+  const playBtn=document.createElement('button'); playBtn.className='voice-msg-play'; playBtn.setAttribute('aria-label','Play voice');
+  playBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M7 4.5 L19 12 L7 19.5 Z" fill="#7b5cff"/></svg>';
+  const wave=document.createElement('div'); wave.className='voice-msg-wave';
+  const peaks = (vData.waveform && vData.waveform.length) ? vData.waveform : [10,14,8,18,12,20,9,16,11,19,13,17,8,15,10];
+  peaks.forEach(h=>{ const bar=document.createElement('i'); bar.style.height=Math.max(5, Math.min(28, h))+'px'; wave.appendChild(bar); });
+  const tm=document.createElement('span'); tm.className='voice-msg-time'; tm.textContent=durText;
+  bubble.appendChild(playBtn); bubble.appendChild(wave); bubble.appendChild(tm);
+  let audioEl=null;
+  const src = vData.audioData || vData.audioUrl || '';
+  if(src){ audioEl=new Audio(src); audioEl.preload='auto'; audioEl.addEventListener('ended', ()=>{ playBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M7 4.5 L19 12 L7 19.5 Z" fill="#7b5cff"/></svg>'; wave.classList.remove('playing'); }); }
+  playBtn.addEventListener('click', ()=>{ if(!audioEl) return; if(audioEl.paused){ document.querySelectorAll('audio').forEach(a=>{ if(a!==audioEl) a.pause(); }); document.querySelectorAll('.voice-msg-wave').forEach(w=>w.classList.remove('playing')); audioEl.play(); playBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><rect x="6" y="5" width="4" height="14" rx="1" fill="#7b5cff"/><rect x="14" y="5" width="4" height="14" rx="1" fill="#7b5cff"/></svg>'; wave.classList.add('playing'); } else { audioEl.pause(); playBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M7 4.5 L19 12 L7 19.5 Z" fill="#7b5cff"/></svg>'; wave.classList.remove('playing'); } });
+  if(mine){ wrap2.appendChild(bubble); wrap2.appendChild(el('div','dm-msg-status',mode==='all'?'Delivered':'Seen')); } else { if(col2) col2.appendChild(bubble); else wrap2.appendChild(bubble); }
+  box.appendChild(wrap2); scrollChat(); return;
+}
 if(mine){const b=el('div','dm-msg');b.setAttribute('data-msg-text',text);b.setAttribute('data-msg-who',sender);b.appendChild(el('span','',text));b.appendChild(el('span','dm-msg-time-in',tOnly));wrap.appendChild(b);wrap.appendChild(el('div','dm-msg-status',mode==='all'?'Delivered':'Seen'));box.appendChild(wrap);scrollChat();}
 else{const b=el('div','dm-msg other');b.appendChild(el('span','',text));const tm=el('span','dm-msg-time-in',tOnly);tm.style.color='#888';b.appendChild(tm);if(col)col.appendChild(b);else wrap.appendChild(b);box.appendChild(wrap);scrollChat();}
 }
@@ -1188,7 +1461,7 @@ const actBtn=$('dm-action'),inp=$('dm-input');
 function updAct(){if(!actBtn||!inp)return;inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,120)+'px';if(inp.value.trim().length){actBtn.classList.add('send-mode');actBtn.setAttribute('aria-label','Send');}else{actBtn.classList.remove('send-mode');actBtn.setAttribute('aria-label','Voice');}}
 if(inp){inp.addEventListener('input',updAct);inp.addEventListener('focus',()=>{const sc=$('dm-screen');if(sc)sc.classList.add('keyboard-open');inp.scrollIntoView({block:'nearest'});scrollChat();});inp.addEventListener('blur',()=>{const sc=$('dm-screen');if(sc){sc.classList.remove('keyboard-open');sc.style.height='';}});}
 if(actBtn)actBtn.addEventListener('click',()=>{
-if(!inp||!inp.value.trim())return;
+if(!inp||!inp.value.trim()){ if(window.ProVibesVoice && window.ProVibesVoice.start) window.ProVibesVoice.start(); return; }
 const text=inp.value.trim(),isAll=window.CurrentDM==='All Users',sender=(window.ProVibesUser&&window.ProVibesUser.name)||'You',payload={name:sender,text,timestamp:Date.now()};
 if(window.ReplyTo)payload.replyTo=window.ReplyTo;
 const base=getBase();
@@ -1228,6 +1501,127 @@ f.addEventListener('animationend',()=>f.classList.remove('dm-msg-highlight'),{on
 removeOwn();
 if(window.loadAllUsersForList)window.loadAllUsersForList();
 })();
+
+
+// ===== VOICE RECORDER - ONLY recorder, real timer, no hardcoded number =====
+(function(){
+const recBar=$('voice-rec-bar'), recWave=$('voice-rec-wave'), recTime=$('voice-rec-time');
+const delBtn=$('voice-rec-delete'), sendBtn=$('voice-rec-send');
+let mediaRecorder=null, stream=null, audioCtx=null, analyser=null, animId=null, timerId=null;
+let chunks=[], startAt=0, peaks=[], isRecording=false;
+function fmtSec(s){ s=Math.max(0, Math.floor(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function buildBars(el, n){
+  if(!el) return;
+  el.innerHTML='';
+  for(let i=0;i<n;i++){ const b=document.createElement('i'); b.style.height='8px'; el.appendChild(b); }
+}
+function start(){
+  if(isRecording) return;
+  const inputBar=document.querySelector('.dm-input-bar');
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert('Microphone no dey available for this browser. Allow mic permission.');
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{
+    stream=s; chunks=[]; peaks=[]; isRecording=true; startAt=Date.now();
+    // Show EXACTLY second image: hide normal input, show recording bar
+    if(inputBar) inputBar.classList.add('voice-recording');
+    if(recBar){ recBar.classList.remove('hidden'); recBar.removeAttribute('hidden'); }
+    buildBars(recWave, 28);
+    if(recTime) recTime.textContent='0:00';
+    // Live waveform from real mic volume
+    try{
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      const src=audioCtx.createMediaStreamSource(stream);
+      analyser=audioCtx.createAnalyser(); analyser.fftSize=256; src.connect(analyser);
+      const data=new Uint8Array(analyser.frequencyBinCount);
+      const draw=()=>{
+        if(!isRecording) return;
+        analyser.getByteFrequencyData(data);
+        let vol=0; for(let i=0;i<data.length;i++) vol+=data[i]; vol=vol/data.length;
+        const bars=recWave?recWave.querySelectorAll('i'):[];
+        bars.forEach((b,i)=>{
+          const v = 6 + Math.abs(Math.sin(i*0.7 + Date.now()/180)) * (6 + vol/6) + (vol/12);
+          b.style.height=Math.max(5, Math.min(30, v))+'px';
+        });
+        animId=requestAnimationFrame(draw);
+      };
+      draw();
+    }catch(e){}
+    // REAL TIMER - counts YOUR own time
+    timerId=setInterval(()=>{
+      const elapsed=(Date.now()-startAt)/1000;
+      if(recTime) recTime.textContent=fmtSec(elapsed);
+      // Sample peak every 120ms for the sent bubble waveform
+      if(analyser){ const d=new Uint8Array(analyser.frequencyBinCount); analyser.getByteFrequencyData(d); let v=0; for(let i=0;i<d.length;i++) v+=d[i]; v=v/d.length; peaks.push(6+Math.min(22, v/8)); } else { peaks.push(8+Math.random()*14); }
+      if(peaks.length>22) peaks=peaks.slice(peaks.length-22);
+    }, 120);
+    try{
+      const mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+      mediaRecorder=new MediaRecorder(stream, mime?{mimeType:mime}:undefined);
+    }catch(e){ mediaRecorder=new MediaRecorder(stream); }
+    mediaRecorder.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+    mediaRecorder.start(100);
+  }).catch(err=>{
+    alert('Mic permission needed to record voice. Allow microphone and try again.');
+  });
+}
+function cleanup(){
+  isRecording=false;
+  if(timerId){ clearInterval(timerId); timerId=null; }
+  if(animId){ cancelAnimationFrame(animId); animId=null; }
+  try{ if(mediaRecorder && mediaRecorder.state!=='inactive') mediaRecorder.stop(); }catch(e){}
+  try{ if(stream) stream.getTracks().forEach(tr=>tr.stop()); }catch(e){}
+  try{ if(audioCtx) audioCtx.close(); }catch(e){}
+  stream=null; audioCtx=null; analyser=null; mediaRecorder=null;
+  const inputBar=document.querySelector('.dm-input-bar');
+  if(inputBar) inputBar.classList.remove('voice-recording');
+  if(recBar){ recBar.classList.add('hidden'); recBar.setAttribute('hidden',''); }
+}
+function discard(){
+  if(!isRecording) return;
+  cleanup(); chunks=[]; peaks=[];
+}
+function send(){
+  if(!isRecording) return;
+  const elapsed=(Date.now()-startAt)/1000;
+  const finalDuration=Math.max(0.5, elapsed);
+  const finalPeaks=peaks.slice();
+  // Stop recorder, then build blob
+  const recorder=mediaRecorder;
+  const onStop=()=>{
+    cleanup();
+    const blob=new Blob(chunks, {type:'audio/webm'});
+    if(!blob.size){ return; }
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const audioData=reader.result;
+      const sender=(window.ProVibesUser&&window.ProVibesUser.name)||'You';
+      const isAll=window.CurrentDM==='All Users';
+      // Waveform for sent bubble: use YOUR real peaks, not example
+      const wave = finalPeaks.length? finalPeaks : [10,14,8,18,12,20,9,16,11,19,13,17,8,15,10];
+      const payload={name:sender, text:'', timestamp:Date.now(), voice:{audioData:audioData, duration:finalDuration, waveform:wave}, duration:finalDuration, waveform:wave};
+      if(window.ReplyTo) payload.replyTo=window.ReplyTo;
+      const key = isAll ? 'pro_vibes_all_users' : 'pro_vibes_private_'+window.getPrivateRoom(window.CurrentDM||'User');
+      try{ const s=lsGet(key); s.push(payload); lsSet(key, s); }catch(e){}
+      // Firebase: only send small metadata (no big audio) so it no break - local is the real audio
+      try{ const base=getBase(); if(base){ const meta={name:sender, text:'', timestamp:payload.timestamp, voiceMeta:{duration:finalDuration, waveform:wave}}; if(isAll) fetch(base+'/prochat/rooms/general.json',{method:'POST',body:JSON.stringify(meta)}).catch(()=>{}); else fetch(base+'/prochat/rooms/private/'+window.getPrivateRoom(window.CurrentDM||'User')+'.json',{method:'POST',body:JSON.stringify(meta)}).catch(()=>{}); } }catch(e){}
+      if(isAll){ renderAll(payload); } else { renderPrivate(payload); }
+      window.ReplyTo=null; const bar=$('dm-reply-bar'); if(bar) bar.classList.remove('show');
+    };
+    reader.readAsDataURL(blob);
+    chunks=[];
+  };
+  if(recorder){
+    recorder.onstop=onStop;
+    try{ recorder.stop(); }catch(e){ onStop(); }
+  } else { onStop(); }
+}
+if(delBtn) delBtn.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); discard(); });
+if(sendBtn) sendBtn.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); send(); });
+window.ProVibesVoice={start:start, discard:discard, send:send};
+})();
+// ===== end VOICE RECORDER =====
 
 // ===== end js/chat.js =====
 </script>
