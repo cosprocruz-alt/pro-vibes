@@ -1410,7 +1410,8 @@ const mine=window.ProVibesUser&&sender===window.ProVibesUser.name;
 const wrap=el('div','chat-wrap'+(mine?' mine':' other'));let col=null;
 if(!mine){const row=el('div','chat-row'),av=el('div','chat-avatar',sender.trim().charAt(0).toUpperCase());col=el('div','chat-col');col.appendChild(el('div','chat-name',sender));row.appendChild(av);row.appendChild(col);wrap.appendChild(row);}
 const rq=msg.replyTo||msg.reply||null;
-if(rq){const rt=typeof rq==='object'?(rq.text||rq.message||''):rq,rw=typeof rq==='object'&&rq.who?rq.who:'You';if(rt){const qw=el('div',mine?'dm-reply-quote mine':'dm-reply-quote');qw.appendChild(el('div','dm-reply-quote-line'));const pill=el('div','dm-reply-quote-pill');pill.setAttribute('data-quote-text',rt);pill.setAttribute('data-quote-who',rw);pill.appendChild(el('b','',rw+' : '));pill.appendChild(el('span','',rt));qw.appendChild(pill);if(!mine&&col)col.appendChild(qw);else wrap.appendChild(qw);}}
+let voiceQuoteEl=null;
+if(rq){const rt=typeof rq==='object'?(rq.text||rq.message||''):rq,rw=typeof rq==='object'&&rq.who?rq.who:'You',rts=typeof rq==='object'?(rq.timestamp||rq.ts||''):'' ,rVoice=typeof rq==='object'?!!(rq.isVoice||rq.voice):false;if(rt){const qw=el('div',mine?'dm-reply-quote mine':'dm-reply-quote');qw.appendChild(el('div','dm-reply-quote-line'));const pill=el('div','dm-reply-quote-pill');pill.setAttribute('data-quote-text',rt);pill.setAttribute('data-quote-who',rw);if(rts)pill.setAttribute('data-quote-timestamp',String(rts));if(rVoice)pill.setAttribute('data-quote-is-voice','1');pill.appendChild(el('b','',rw+' : '));pill.appendChild(el('span','',rt));qw.appendChild(pill);if(isVoice){voiceQuoteEl=qw;}else if(!mine&&col)col.appendChild(qw);else wrap.appendChild(qw);}}
 const tOnly=fmtTime(msg.timestamp||msg.time||msg.createdAt||Date.now());
 if(isVoice){
   const vData = msg.voice || {audioData:msg.audioData, audioUrl:msg.audioUrl, duration:msg.duration||0, waveform:msg.waveform||[]};
@@ -1421,6 +1422,11 @@ if(isVoice){
   if(!mine){ const row=el('div','chat-row'), av=el('div','chat-avatar',sender.trim().charAt(0).toUpperCase()); col2=el('div','chat-col'); col2.appendChild(el('div','chat-name',sender)); row.appendChild(av); row.appendChild(col2); wrap2.appendChild(row); }
   const bubble=el('div','voice-msg'+(mine?'':' voice-receiver'));
   bubble.setAttribute('data-voice-duration', String(dur));
+  bubble.setAttribute('data-msg-text', '🎤 Voice message • '+durText);
+  bubble.setAttribute('data-msg-who', sender);
+  bubble.setAttribute('data-msg-timestamp', String(msg.timestamp||msg.time||msg.createdAt||Date.now()));
+  bubble.setAttribute('data-is-voice', '1');
+  if(voiceQuoteEl){ if(!mine&&col2) col2.appendChild(voiceQuoteEl); else wrap2.appendChild(voiceQuoteEl); }
   const playBtn=document.createElement('button'); playBtn.className='voice-msg-play'; playBtn.setAttribute('aria-label','Play voice');
   const iconColor = mine ? '#7b5cff' : '#1a1a1a';
   playBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M7 4.5 L19 12 L7 19.5 Z" fill="'+iconColor+'"/></svg>';
@@ -1436,8 +1442,8 @@ if(isVoice){
   if(mine){ wrap2.appendChild(bubble); wrap2.appendChild(el('div','dm-msg-status',mode==='all'?'Delivered':'Seen')); } else { if(col2) col2.appendChild(bubble); else wrap2.appendChild(bubble); }
   box.appendChild(wrap2); scrollChat(); return;
 }
-if(mine){const b=el('div','dm-msg');b.setAttribute('data-msg-text',text);b.setAttribute('data-msg-who',sender);b.appendChild(el('span','',text));b.appendChild(el('span','dm-msg-time-in',tOnly));wrap.appendChild(b);wrap.appendChild(el('div','dm-msg-status',mode==='all'?'Delivered':'Seen'));box.appendChild(wrap);scrollChat();}
-else{const b=el('div','dm-msg other');b.appendChild(el('span','',text));const tm=el('span','dm-msg-time-in',tOnly);tm.style.color='#888';b.appendChild(tm);if(col)col.appendChild(b);else wrap.appendChild(b);box.appendChild(wrap);scrollChat();}
+if(mine){const b=el('div','dm-msg');b.setAttribute('data-msg-text',text);b.setAttribute('data-msg-who',sender);b.setAttribute('data-msg-timestamp',String(msg.timestamp||msg.time||msg.createdAt||Date.now()));b.appendChild(el('span','',text));b.appendChild(el('span','dm-msg-time-in',tOnly));wrap.appendChild(b);wrap.appendChild(el('div','dm-msg-status',mode==='all'?'Delivered':'Seen'));box.appendChild(wrap);scrollChat();}
+else{const b=el('div','dm-msg other');b.setAttribute('data-msg-text',text);b.setAttribute('data-msg-who',sender);b.setAttribute('data-msg-timestamp',String(msg.timestamp||msg.time||msg.createdAt||Date.now()));b.appendChild(el('span','',text));const tm=el('span','dm-msg-time-in',tOnly);tm.style.color='#888';b.appendChild(tm);if(col)col.appendChild(b);else wrap.appendChild(b);box.appendChild(wrap);scrollChat();}
 }
 function renderAll(msg){renderChat(msg,'all');}
 function renderPrivate(msg){renderChat(msg,'private');}
@@ -1491,10 +1497,12 @@ if(actBtn)actBtn.addEventListener('touchstart',e=>{if(!inp||!inp.value.trim())re
 (function(){
 const msgs=$('dm-messages');if(!msgs||msgs.dataset.swipe)return;msgs.dataset.swipe='1';
 let sx=0,sy=0,cur=null,sw=false;
-function txt(b){const sp=b.querySelectorAll('span');for(let i=0;i<sp.length;i++){if(!sp[i].className.includes('dm-msg-time'))return sp[i].textContent;}return b.textContent.replace(/\d{1,2}:\d{2} (AM|PM)/g,'').trim();}
-msgs.addEventListener('touchstart',e=>{const b=e.target.closest?e.target.closest('.dm-msg'):null;if(!b)return;cur=b;const t=e.touches[0];sx=t.clientX;sy=t.clientY;sw=false;},{passive:true});
+function txt(b){if(b.classList.contains('voice-msg')){return b.getAttribute('data-msg-text')||'🎤 Voice message';}const sp=b.querySelectorAll('span');for(let i=0;i<sp.length;i++){if(!sp[i].className.includes('dm-msg-time'))return sp[i].textContent;}return b.textContent.replace(/\d{1,2}:\d{2} (AM|PM)/g,'').trim();}
+function whoFor(b){const w=b.getAttribute('data-msg-who');if(w)return w;if(b.classList.contains('other'))return (window.CurrentDM||'User');const wrap=b.closest?b.closest('.chat-wrap'):null;if(wrap&&wrap.classList.contains('other'))return (window.CurrentDM||'User');return (window.ProVibesUser&&window.ProVibesUser.name)||'You';}
+msgs.addEventListener('touchstart',e=>{if(e.target.closest&&e.target.closest('.voice-msg-play'))return;if(e.target.closest&&e.target.closest('.dm-reply-quote-pill'))return;const b=e.target.closest?e.target.closest('.dm-msg, .voice-msg'):null;if(!b)return;cur=b;const t=e.touches[0];sx=t.clientX;sy=t.clientY;sw=false;},{passive:true});
 msgs.addEventListener('touchmove',e=>{if(!cur)return;const t=e.touches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)>30&&Math.abs(dx)>Math.abs(dy)){sw=true;cur.style.transition='none';cur.style.transform='translateX('+Math.max(-60,Math.min(60,dx))+'px)';}},{passive:true});
-msgs.addEventListener('touchend',e=>{if(!cur)return;const dx=e.changedTouches[0].clientX-sx,b=cur;b.style.transition='transform 0.2s';b.style.transform='';if(sw&&Math.abs(dx)>40){const t=txt(b),who=b.className.includes('other')?(window.CurrentDM||'User'):'You';window.ReplyTo={text:t,who};const bar=$('dm-reply-bar'),bt=$('dm-reply-text');if(bar&&bt){bt.textContent=who+' : '+t;bar.classList.add('show');}inp.focus();}cur=null;sw=false;});
+msgs.addEventListener('touchend',e=>{if(!cur)return;const dx=e.changedTouches[0].clientX-sx,b=cur;b.style.transition='transform 0.2s';b.style.transform='';if(sw&&Math.abs(dx)>40){const t=txt(b),who=whoFor(b),ts=b.getAttribute('data-msg-timestamp')||'',isV=b.classList.contains('voice-msg'),vd=b.getAttribute('data-voice-duration')||'';window.ReplyTo={text:t,who:who,timestamp:ts,isVoice:isV,voiceDuration:vd};const bar=$('dm-reply-bar'),bt=$('dm-reply-text');if(bar&&bt){bt.textContent=who+' : '+t;bar.classList.add('show');}if(inp)inp.focus();}cur=null;sw=false;});
+msgs.addEventListener('touchcancel',()=>{if(cur){cur.style.transition='transform 0.2s';cur.style.transform='';}cur=null;sw=false;},{passive:true});
 if($('dm-reply-x'))$('dm-reply-x').addEventListener('click',()=>{window.ReplyTo=null;const bar=$('dm-reply-bar');if(bar)bar.classList.remove('show');});
 })();
 (function(){
@@ -1509,8 +1517,10 @@ const pill=e.target.closest?e.target.closest('.dm-reply-quote-pill'):null;if(!pi
 let qt=pill.getAttribute('data-quote-text')||'',qw=pill.getAttribute('data-quote-who')||'';
 if(!qt){const t=(pill.textContent||'').split(' : ');if(t.length>1){qw=t[0].trim();qt=t.slice(1).join(' : ').trim();}else qt=(pill.textContent||'').trim();}
 if(!qt)return;
-const msgs=$$('#dm-messages .dm-msg');let f=null;
-for(const m of msgs){if((m.getAttribute('data-msg-text')||'')===qt&&(!qw||(m.getAttribute('data-msg-who')||'')===qw)){f=m;break;}}
+const qts=pill.getAttribute('data-quote-timestamp')||'';
+const msgs=$$('#dm-messages .dm-msg, #dm-messages .voice-msg');let f=null;
+if(qts)for(const m of msgs){if(String(m.getAttribute('data-msg-timestamp')||'')===String(qts)){f=m;break;}}
+if(!f)for(const m of msgs){if((m.getAttribute('data-msg-text')||'')===qt&&(!qw||(m.getAttribute('data-msg-who')||'')===qw)){f=m;break;}}
 if(!f)for(const m of msgs){if((m.getAttribute('data-msg-text')||'').trim()===qt.trim()){f=m;break;}}
 if(!f)return;f.scrollIntoView({behavior:'smooth',block:'center'});f.classList.add('dm-msg-highlight');
 f.addEventListener('animationend',()=>f.classList.remove('dm-msg-highlight'),{once:true});
