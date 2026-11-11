@@ -1371,8 +1371,6 @@ function removeOwn(){
 try{const me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';if(!me)return;$$('#new-persons-list [data-person-name]').forEach(b=>{if((b.getAttribute('data-person-name')||'').trim().toLowerCase()===me.trim().toLowerCase())b.remove();});}catch(e){}
 }
 function openDM(btn){
-  // DELETED shared-recorder leak: leaving a room mid-recording no longer carries the recorder into the next room
-  try{ if(window.ProVibesVoice && window.ProVibesVoice.discard) window.ProVibesVoice.discard(); }catch(e){}
 const name=btn?(btn.getAttribute('data-name')||'All Users'):'All Users';
 const init=btn?(btn.getAttribute('data-initial')||'U'):'U';
 const act=btn?(btn.getAttribute('data-active')||'Active now'):'Active now';
@@ -1393,13 +1391,15 @@ try{if(name!=='All Users'){const p=lsGet('pro_vibes_private_names');if(!p.includ
 window.CurrentDM=name;
 showScreen('dm-screen');const nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='none';clearNav();
 try{if(name==='All Users'){if(window.loadAllUsersMessages)window.loadAllUsersMessages();}else if(window.loadPrivateMessages)window.loadPrivateMessages(name);}catch(e){}
+try{startChatPoll();}catch(e){}
 }
-function closeDM(){try{ if(window.ProVibesVoice && window.ProVibesVoice.discard) window.ProVibesVoice.discard(); }catch(e){} const m=$('dm-messages');if(m)m.innerHTML='';showScreen('inbox-screen');const nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';setNav('inbox-screen');}
+function closeDM(){try{stopChatPoll();}catch(e){}const m=$('dm-messages');if(m)m.innerHTML='';showScreen('inbox-screen');const nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';setNav('inbox-screen');}
 function bindFollow(){const f=$('dm-follow');if(f)f.addEventListener('click',()=>{const on=f.classList.contains('following');f.classList.toggle('following',!on);f.textContent=on?'Follow':'Following';});}
 bindFollow();
 if($('dm-back'))$('dm-back').addEventListener('click',closeDM);
 $$('.dm-chat-row').forEach(r=>r.addEventListener('click',()=>openDM(r)));
 function isReal(t){if(!t||typeof t!=='string')return false;t=t.trim();if(!t||t.length>500)return false;if(t.includes('AIza')||t.includes('apiKey')||t.includes('data:image'))return false;if(t.length>80&&!t.includes(' ')&&/[+/=]/.test(t))return false;return true;}
+function normalizeChatMsg(n){if(!n||typeof n!=='object')return null;const s=n.name||n.sender||n.user||n.username;if(!s)return null;const tt=n.text||n.message||n.content||'';const v=n.voice||null;const vm=n.voiceMeta||null;const hasVoice=!!(v||vm||n.audioData||n.audioUrl);if(!hasVoice&&!isReal(tt))return null;const out={name:s,text:tt,timestamp:n.timestamp||n.time||n.createdAt||0};if(n.replyTo||n.reply)out.replyTo=n.replyTo||n.reply;if(v)out.voice=v;else if(vm)out.voice={audioData:n.audioData||n.audioUrl||'',duration:vm.duration||n.duration||0,waveform:vm.waveform||n.waveform||[]};else if(n.audioData||n.audioUrl)out.voice={audioData:n.audioData||n.audioUrl,duration:n.duration||0,waveform:n.waveform||[]};if(out.voice){out.duration=out.voice.duration||0;out.waveform=out.voice.waveform||[];}return out;} window.ProVibesNormalizeChatMsg=normalizeChatMsg;
 function renderChat(msg,mode){
 const box=$('dm-messages');if(!box)return;
 const sender=msg.name||msg.sender||msg.user||'User',text=msg.text||msg.message||msg.content||'';
@@ -1441,19 +1441,19 @@ else{const b=el('div','dm-msg other');b.appendChild(el('span','',text));const tm
 }
 function renderAll(msg){renderChat(msg,'all');}
 function renderPrivate(msg){renderChat(msg,'private');}
+window.ProVibesRenderAll=renderAll; window.ProVibesRenderPrivate=renderPrivate; window.renderAll=renderAll; window.renderPrivate=renderPrivate;
 window.getPrivateRoom=other=>{const me=(window.ProVibesUser&&window.ProVibesUser.name)||'You';return [String(me),String(other||'User')].sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase())).join('__').replace(/[^a-zA-Z0-9_]/g,'_').toLowerCase();};
 window.loadAllUsersForList=function(){
-try{lsGet('pro_vibes_all_users').forEach(m=>{if(m&&m.text&&!window.AllUsersMessages.some(e=>sameMsg(e,m))){window.AllUsersMessages.push(m);addPerson(m.name||m.sender||m.user);}});lsGet('pro_vibes_private_names').forEach(addPerson);}catch(e){}
+try{lsGet('pro_vibes_all_users').forEach(m=>{const nm=normalizeChatMsg(m)||m;if(m&&(m.text||m.voice||m.voiceMeta)&&!window.AllUsersMessages.some(e=>sameMsg(e,m))){window.AllUsersMessages.push(nm);addPerson(m.name||m.sender||m.user);}});lsGet('pro_vibes_private_names').forEach(addPerson);}catch(e){}
 const base=getBase();if(!base)return;
-fetch(base+'/prochat/rooms/general.json').then(r=>r.json()).then(data=>{if(!data)return;const ms=Array.isArray(data)?data:Object.values(data);ms.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));ms.forEach(m=>{if(!m)return; // DELETED: isReal(m.text) filter here - it dropped all voice notes because voice has text:''if(!window.AllUsersMessages.some(e=>sameMsg(e,m))){window.AllUsersMessages.push(m);addPerson(m.name||m.sender||m.user);}});if(window.updateAllUsersActive)window.updateAllUsersActive();}).catch(()=>{});
+fetch(base+'/prochat/rooms/general.json').then(r=>r.json()).then(data=>{if(!data)return;const ms=Array.isArray(data)?data:Object.values(data);ms.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));ms.forEach(m=>{const nm=normalizeChatMsg(m);if(!nm)return;if(!window.AllUsersMessages.some(e=>sameMsg(e,nm))){window.AllUsersMessages.push(nm);addPerson(nm.name);}});if(window.updateAllUsersActive)window.updateAllUsersActive();}).catch(()=>{});
 };
 window.updateAllUsersActive=function(){try{const n={};(window.AllUsersMessages||[]).forEach(m=>{const x=(m.name||m.sender||m.user||'').trim();if(x)n[x]=1;});let c=Object.keys(n).length||1;const e=document.querySelector('[data-all-users-active]')||$('dm-active-count');if(e)e.textContent=c+' active';const h=document.querySelector('.dm-head-active');if(h)h.textContent='\u25cf '+c+' active';}catch(e){}};
 window.loadAllUsersMessages=function(){
 const box=$('dm-messages');if(box&&!box.children.length)lsGet('pro_vibes_all_users').forEach(renderAll);
 const base=getBase();if(!base)return;
-fetch(base+'/prochat/rooms/general.json').then(r=>r.json()).then(data=>{if(!data)return;const tmp=[];const collect=n=>{if(!n)return;if(Array.isArray(n)){n.forEach(collect);return;}if(typeof n==='object'){const t=n.text||n.message||n.content,s=n.name||n.sender||n.user||n.username;if(s && (isReal(t) || n.voice || n.voiceMeta || n.audioData))tmp.push({name:s,text:t||'',timestamp:n.timestamp||n.time||n.createdAt||0,voice:n.voice,voiceMeta:n.voiceMeta,audioData:n.audioData}); // DELETED: isReal-only gate - it dropped voiceelse if(!t)Object.values(n).forEach(v=>{if(v&&typeof v==='object'){const vt=v.text||v.message||v.content,vs=v.name||v.sender||v.user||v.username;if(vs && (isReal(vt) || v.voice || v.voiceMeta))tmp.push({name:vs,text:vt||'',timestamp:v.timestamp||v.time||v.createdAt||0,voice:v.voice,voiceMeta:v.voiceMeta}); // DELETED: isReal-only gate}});}};collect(data);
-tmp.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
-  // DELETED: window.AllUsersMessages=tmp - it wiped voice notes because tmp is text-only. Text messages are merged below without wiping.
+fetch(base+'/prochat/rooms/general.json').then(r=>r.json()).then(data=>{if(!data)return;const tmp=[];const collect=n=>{if(!n)return;if(Array.isArray(n)){n.forEach(collect);return;}if(typeof n==='object'){const one=normalizeChatMsg(n);if(one){tmp.push(one);return;}Object.values(n).forEach(collect);}};collect(data);
+tmp.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));window.AllUsersMessages=tmp;
 const stored=lsGet('pro_vibes_all_users'),merged=[...stored];tmp.forEach(m=>{if(!merged.some(s=>sameMsg(s,m)))merged.push(m);});merged.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));lsSet('pro_vibes_all_users',merged);
 if(window.CurrentDM!=='All Users')return;if(!box||!box.children.length)merged.forEach(renderAll);else tmp.forEach(m=>{if(!stored.some(s=>sameMsg(s,m)))renderAll(m);});
 }).catch(()=>{});
@@ -1463,12 +1463,21 @@ const box=$('dm-messages');if(box)box.innerHTML='';
 const room=window.getPrivateRoom(name),key='pro_vibes_private_'+room;
 lsGet(key).forEach(renderPrivate);
 const base=getBase();if(!base)return;
-fetch(base+'/prochat/rooms/private/'+room+'.json').then(r=>r.json()).then(data=>{if(!data)return;const ms=Array.isArray(data)?data:Object.values(data);ms.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));const ex=lsGet(key);let ch=false;ms.forEach(m=>{if(!m)return; // DELETED: isReal(m.text) filter here - it dropped all voice notes because voice has text:''if(!ex.some(e=>sameMsg(e,m))){ex.push(m);ch=true;renderPrivate(m);}});if(ch)lsSet(key,ex);}).catch(()=>{});
+fetch(base+'/prochat/rooms/private/'+room+'.json').then(r=>r.json()).then(data=>{if(!data)return;const ms=Array.isArray(data)?data:Object.values(data);ms.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));const ex=lsGet(key);let ch=false;ms.forEach(m=>{const nm=normalizeChatMsg(m);if(!nm)return;if(!ex.some(e=>sameMsg(e,nm))){ex.push(nm);ch=true;renderPrivate(nm);}});if(ch)lsSet(key,ex);}).catch(()=>{});
 };
+window.pollPrivateOnce=function(name){
+const room=window.getPrivateRoom(name||window.CurrentDM||'User'),key='pro_vibes_private_'+room;
+const base=getBase();if(!base)return;
+fetch(base+'/prochat/rooms/private/'+room+'.json').then(r=>r.json()).then(data=>{if(!data)return;const ms=Array.isArray(data)?data:Object.values(data);ms.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));const ex=lsGet(key);let ch=false;ms.forEach(m=>{const nm=normalizeChatMsg(m);if(!nm)return;if(!ex.some(e=>sameMsg(e,nm))){ex.push(nm);ch=true;if(window.CurrentDM===name)renderPrivate(nm);}});if(ch)lsSet(key,ex);}).catch(()=>{});
+};
+function startChatPoll(){stopChatPoll();window.ProVibesChatPollId=setInterval(()=>{try{if(window.CurrentDM==='All Users'){if(window.loadAllUsersMessages)window.loadAllUsersMessages();}else if(window.pollPrivateOnce)window.pollPrivateOnce(window.CurrentDM);}catch(e){}},2500);}
+function stopChatPoll(){if(window.ProVibesChatPollId){clearInterval(window.ProVibesChatPollId);window.ProVibesChatPollId=null;}}
+window.ProVibesStartChatPoll=startChatPoll; window.ProVibesStopChatPoll=stopChatPoll;
 const actBtn=$('dm-action'),inp=$('dm-input');
 function updAct(){if(!actBtn||!inp)return;inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,120)+'px';if(inp.value.trim().length){actBtn.classList.add('send-mode');actBtn.setAttribute('aria-label','Send');}else{actBtn.classList.remove('send-mode');actBtn.setAttribute('aria-label','Voice');}}
 if(inp){inp.addEventListener('input',updAct);inp.addEventListener('focus',()=>{const sc=$('dm-screen');if(sc)sc.classList.add('keyboard-open');inp.scrollIntoView({block:'nearest'});scrollChat();});inp.addEventListener('blur',()=>{const sc=$('dm-screen');if(sc){sc.classList.remove('keyboard-open');sc.style.height='';}});}
 if(actBtn)actBtn.addEventListener('click',()=>{
+if(window.ProVibesVoice && window.ProVibesVoice.isRecording && window.ProVibesVoice.isRecording()){ return; }
 if(!inp||!inp.value.trim()){ if(window.ProVibesVoice && window.ProVibesVoice.start) window.ProVibesVoice.start(); return; }
 const text=inp.value.trim(),isAll=window.CurrentDM==='All Users',sender=(window.ProVibesUser&&window.ProVibesUser.name)||'You',payload={name:sender,text,timestamp:Date.now()};
 if(window.ReplyTo)payload.replyTo=window.ReplyTo;
@@ -1515,8 +1524,7 @@ if(window.loadAllUsersForList)window.loadAllUsersForList();
 const recBar=$('voice-rec-bar'), recWave=$('voice-rec-wave'), recTime=$('voice-rec-time');
 const delBtn=$('voice-rec-delete'), sendBtn=$('dm-action');
 let mediaRecorder=null, stream=null, audioCtx=null, analyser=null, animId=null, timerId=null;
-let recordRoom=null; // DELETED shared-room bug: room is now locked at start(), not read live at send()
-let chunks=[], startAt=0, peaks=[], isRecording=false;
+let chunks=[], startAt=0, peaks=[], isRecording=false, isStopping=false;
 function fmtSec(s){ s=Math.max(0, Math.floor(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 function buildBars(el, n){
   if(!el) return;
@@ -1525,14 +1533,13 @@ function buildBars(el, n){
 }
 function start(){
   if(isRecording) return;
-  recordRoom=window.CurrentDM||'All Users'; // Lock All Users vs Private at start - DELETED live CurrentDM sharing
   const inputBar=document.querySelector('.dm-input-bar');
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
     alert('Microphone no dey available for this browser. Allow mic permission.');
     return;
   }
   navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{
-    stream=s; chunks=[]; peaks=[]; isRecording=true; startAt=Date.now();
+    stream=s; chunks=[]; peaks=[]; isRecording=true; isStopping=false; startAt=Date.now();
     // Show EXACTLY second image: hide normal input, show recording bar
     if(inputBar) inputBar.classList.add('voice-recording');
     if(recBar){ recBar.classList.remove('hidden'); recBar.removeAttribute('hidden'); }
@@ -1575,53 +1582,109 @@ function start(){
     alert('Mic permission needed to record voice. Allow microphone and try again.');
   });
 }
-function cleanup(){
+// cleanup(stopRecorder): when called from onStop the recorder is ALREADY stopped,
+// so do NOT call stop() again or onStop fires twice. Discard still needs stop=true.
+function cleanup(stopRecorder){
   isRecording=false;
   if(timerId){ clearInterval(timerId); timerId=null; }
   if(animId){ cancelAnimationFrame(animId); animId=null; }
-  try{ if(mediaRecorder && mediaRecorder.state!=='inactive') mediaRecorder.stop(); }catch(e){}
+  if(stopRecorder!==false){ try{ if(mediaRecorder && mediaRecorder.state!=='inactive') mediaRecorder.stop(); }catch(e){} }
   try{ if(stream) stream.getTracks().forEach(tr=>tr.stop()); }catch(e){}
   try{ if(audioCtx) audioCtx.close(); }catch(e){}
-  stream=null; audioCtx=null; analyser=null; mediaRecorder=null; // recordRoom kept until send()/discard() finishes using it
+  stream=null; audioCtx=null; analyser=null; mediaRecorder=null;
   const inputBar=document.querySelector('.dm-input-bar');
   if(inputBar) inputBar.classList.remove('voice-recording');
   if(recBar){ recBar.classList.add('hidden'); recBar.setAttribute('hidden',''); }
 }
 function discard(){
   if(!isRecording) return;
-  cleanup(); chunks=[]; peaks=[]; recordRoom=null; // DELETED shared state
+  isStopping=false;
+  cleanup(true); chunks=[]; peaks=[];
+}
+function renderVoiceNow(payload, isAll){
+  // Same recorder for All Users (group) + Private DM (private chat) - only room/key differs.
+  // Use the exposed render fns: renderAll/renderPrivate live in the chat IIFE and are NOT
+  // in scope here, so window.ProVibesRenderAll/Private MUST be used (this was the bug:
+  // calling bare renderAll() threw ReferenceError and nothing after it - incl. Firebase - ran).
+  try{
+    if(isAll){ if(window.ProVibesRenderAll) window.ProVibesRenderAll(payload); else if(window.renderAll) window.renderAll(payload); }
+    else { if(window.ProVibesRenderPrivate) window.ProVibesRenderPrivate(payload); else if(window.renderPrivate) window.renderPrivate(payload); }
+  }catch(e){}
 }
 function send(){
   if(!isRecording) return;
+  if(isStopping) return;
+  isStopping=true;
   const elapsed=(Date.now()-startAt)/1000;
   const finalDuration=Math.max(0.5, elapsed);
   const finalPeaks=peaks.slice();
-  // Stop recorder, then build blob
+  // Capture room NOW - CurrentDM may change while FileReader runs
+  const roomAtSend=window.CurrentDM||'User';
+  const isAll=roomAtSend==='All Users';
+  const sender=(window.ProVibesUser&&window.ProVibesUser.name)||'You';
+  const replyAtSend=window.ReplyTo||null;
+  const ts=Date.now();
+  const wave = finalPeaks.length? finalPeaks : [10,14,8,18,12,20,9,16,11,19,13,17,8,15,10];
+  const key = isAll ? 'pro_vibes_all_users' : 'pro_vibes_private_'+window.getPrivateRoom(roomAtSend);
+  let handled=false;
   const recorder=mediaRecorder;
   const onStop=()=>{
-    cleanup();
-    const blob=new Blob(chunks, {type:'audio/webm'});
-    if(!blob.size){ return; }
+    if(handled) return;
+    handled=true;
+    cleanup(false);
+    const myChunks=chunks.slice(); chunks=[];
+    const blob=new Blob(myChunks, {type:'audio/webm'});
+    if(!blob.size){ isStopping=false; return; }
+    // 1) SHOW INSTANTLY like text messages - blob URL, no waiting for FileReader / Firebase.
+    const blobUrl=URL.createObjectURL(blob);
+    const payload={name:sender, text:'', timestamp:ts, voice:{audioData:blobUrl, duration:finalDuration, waveform:wave}, duration:finalDuration, waveform:wave};
+    if(replyAtSend) payload.replyTo=replyAtSend;
+    try{ const s=lsGet(key); s.push(payload); lsSet(key, s); }catch(e){}
+    renderVoiceNow(payload, isAll);
+    window.ReplyTo=null; const bar=$('dm-reply-bar'); if(bar) bar.classList.remove('show');
+    // 2) UPGRADE to base64 in background so it survives reload + can go to Firebase.
+    // Firebase send MUST NOT depend on render - it runs here even if render failed.
     const reader=new FileReader();
     reader.onload=()=>{
       const audioData=reader.result;
-      const sender=(window.ProVibesUser&&window.ProVibesUser.name)||'You';
-      const roomAtStart=recordRoom||window.CurrentDM||'All Users'; // Locked room from start() - DELETED live CurrentDM lookup
-      const isAll=roomAtStart==='All Users';
-      recordRoom=null;
-      // Waveform for sent bubble: use YOUR real peaks, not example
-      const wave = finalPeaks.length? finalPeaks : [10,14,8,18,12,20,9,16,11,19,13,17,8,15,10];
-      const payload={name:sender, text:'', timestamp:Date.now(), voice:{audioData:audioData, duration:finalDuration, waveform:wave}, duration:finalDuration, waveform:wave};
-      if(window.ReplyTo) payload.replyTo=window.ReplyTo;
-      const key = isAll ? 'pro_vibes_all_users' : 'pro_vibes_private_'+window.getPrivateRoom(roomAtStart||'User'); // DELETED: live CurrentDM - uses locked room
-      try{ const s=lsGet(key); s.push(payload); lsSet(key, s); }catch(e){}
-      // Show locally immediately - no need to go and come back
-      if(isAll){ renderAll(payload); } else { renderPrivate(payload); }
-      // DELETED: Firebase voiceMeta / voice queue / flush system - it sent only metadata with no audio, so it could never play. Text Firebase left untouched.
-      window.ReplyTo=null; const bar=$('dm-reply-bar'); if(bar) bar.classList.remove('show');
+      // Replace blob URL in localStorage with base64 (blob URLs die on reload)
+      try{ const s=lsGet(key); for(let i=0;i<s.length;i++){ if(String(s[i].timestamp)===String(ts) && (s[i].name||'')===sender){ s[i].voice={audioData:audioData, duration:finalDuration, waveform:wave}; s[i].duration=finalDuration; s[i].waveform=wave; break; } } lsSet(key, s); }catch(e){}
+      // Replace blob URL in the on-screen bubble's audio (rendered bubble keeps blobUrl, which still plays this session - no re-render needed)
+      function doSendVoice(){
+        const base=getBase(); if(!base) return Promise.resolve();
+        // REAL Firebase voice: send voice.audioData, not just voiceMeta. Before, only
+        // {voiceMeta:{duration,waveform}} was sent, so Firebase never had any sound
+        // and loaders dropped it (text==''). Now receiver gets playable audio.
+        const full={name:sender, text:'', timestamp:ts, voice:{audioData:audioData, duration:finalDuration, waveform:wave}, duration:finalDuration, waveform:wave, voiceMeta:{duration:finalDuration, waveform:wave}};
+        if(replyAtSend) full.replyTo=replyAtSend;
+        const url=isAll? base+'/prochat/rooms/general.json' : base+'/prochat/rooms/private/'+window.getPrivateRoom(roomAtSend)+'.json';
+        return fetch(url,{method:'POST',body:JSON.stringify(full)});
+      }
+      function queueVoiceForRetry(){
+        try{ const q=lsGet('pro_vibes_voice_queue'); if(!q.some(m=>String(m.timestamp)===String(ts))){ q.push({timestamp:ts, sender:sender, isAll:isAll, room:roomAtSend, duration:finalDuration, waveform:wave, audioData:audioData, replyTo:replyAtSend}); lsSet('pro_vibes_voice_queue', q); } }catch(e){}
+      }
+      function flushVoiceQueue(){
+        try{
+          const q=lsGet('pro_vibes_voice_queue'); if(!q.length) return;
+          const base=getBase(); if(!base||!navigator.onLine) return;
+          q.forEach(m=>{
+            const full={name:m.sender, text:'', timestamp:m.timestamp, voice:{audioData:m.audioData||'', duration:m.duration, waveform:m.waveform}, duration:m.duration, waveform:m.waveform, voiceMeta:{duration:m.duration, waveform:m.waveform}};
+            if(m.replyTo) full.replyTo=m.replyTo;
+            const url=m.isAll? base+'/prochat/rooms/general.json' : base+'/prochat/rooms/private/'+window.getPrivateRoom(m.room)+'.json';
+            fetch(url,{method:'POST',body:JSON.stringify(full)}).then(()=>{ try{ const cur=lsGet('pro_vibes_voice_queue'); lsSet('pro_vibes_voice_queue', cur.filter(x=>String(x.timestamp)!==String(m.timestamp))); }catch(e){} }).catch(()=>{});
+          });
+        }catch(e){}
+      }
+      if(!navigator.onLine){ queueVoiceForRetry(); } else { doSendVoice().catch(()=>queueVoiceForRetry()); }
+      if(!window.ProVibesVoiceOnlineBound){
+        window.ProVibesVoiceOnlineBound=true;
+        window.addEventListener('online', flushVoiceQueue);
+        window.addEventListener('load', flushVoiceQueue);
+      }
+      isStopping=false;
     };
+    reader.onerror=()=>{ isStopping=false; };
     reader.readAsDataURL(blob);
-    chunks=[];
   };
   if(recorder){
     recorder.onstop=onStop;
@@ -1630,7 +1693,7 @@ function send(){
 }
 if(delBtn) delBtn.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); discard(); });
 if(sendBtn) sendBtn.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); send(); });
-window.ProVibesVoice={start:start, discard:discard, send:send};
+window.ProVibesVoice={start:start, discard:discard, send:send, isRecording:()=>isRecording};
 })();
 // ===== end VOICE RECORDER =====
 
