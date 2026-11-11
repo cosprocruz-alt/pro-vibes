@@ -166,6 +166,9 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
 .dm-msg-time-in { display:inline; font-size:10px; color:rgba(255,255,255,0.9); white-space:nowrap; margin-left:8px; vertical-align:bottom; }
 .dm-msg.other .dm-msg-time { position:absolute; right:8px; bottom:5px; font-size:10px; color:#888; white-space:nowrap; margin-left:0; } .dm-msg.other .dm-msg-time-in { position:absolute; right:8px; bottom:5px; font-size:10px; color:#888; white-space:nowrap; margin-left:0; }
 .dm-msg-status { font-size:11px; color:#aaa; text-align:right; margin-top:3px; }
+.dm-msg-status.sending { display:flex; align-items:center; gap:6px; justify-content:flex-end; color:#aaa; }
+.voice-spinner { width:13px; height:13px; min-width:13px; min-height:13px; border:2px solid rgba(255,255,255,.25); border-top-color:#fff; border-radius:50%; animation:voiceSpin .7s linear infinite; display:inline-block; flex-shrink:0; }
+@keyframes voiceSpin { to { transform:rotate(360deg); } }
 .dm-reply-quote { display:flex; align-items:center; gap:8px; max-width:92%; width:fit-content; margin-bottom:6px; }
 .dm-reply-quote.mine { flex-direction:row-reverse; align-self:flex-end; margin-left:auto; }
 .dm-reply-quote-line { width:3px; align-self:stretch; min-height:28px; background:#444; border-radius:99px; flex-shrink:0; }
@@ -211,8 +214,6 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
 .voice-rec-wave { flex:1; display:flex; align-items:center; gap:2px; height:30px; min-width:0; overflow:hidden; }
 .voice-rec-wave i { display:block; width:3px; min-width:3px; background:#fff; border-radius:99px; height:8px; transition:height .08s; }
 .voice-rec-time { color:#fff; font-size:17px; font-weight:700; min-width:42px; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums; }
-.voice-rec-send { width:58px !important; height:58px !important; min-width:58px !important; border-radius:50% !important; background:linear-gradient(135deg,#2e86ff 0%,#7b5cff 100%) !important; background:linear-gradient(135deg,#3b82f6 0%,#2e86ff 30%,#7b5cff 100%) !important; border:5px solid #2a2a2e !important; box-shadow:0 0 0 4px #1a1a1a, 0 2px 10px rgba(0,0,0,.5) !important; color:#fff !important; display:flex !important; align-items:center !important; justify-content:center !important; cursor:pointer !important; padding:0 !important; flex-shrink:0 !important; }
-.voice-rec-send svg { width:28px !important; height:28px !important; display:block !important; }
 /* First image: sent voice bubble */
 .voice-msg { display:flex; align-items:center; gap:12px; background:#7b5cff; background:linear-gradient(135deg,#7b5cff,#7a5cff); border-radius:999px; padding:7px 16px 7px 7px; width:fit-content; max-width:78%; min-width:210px; min-height:56px; box-sizing:border-box; }
 .voice-msg-play { width:44px; height:44px; min-width:44px; border-radius:50%; background:#fff; border:none; color:#7b5cff; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; flex-shrink:0; }
@@ -223,9 +224,10 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
 @keyframes voiceWavePulse { from { opacity:.55; } to { opacity:1; } }
 .voice-msg-time { color:#fff; font-size:17px; font-weight:700; flex-shrink:0; font-variant-numeric:tabular-nums; }
 .dm-input-bar.voice-recording .dm-input-wrap { display:none !important; }
-.dm-input-bar.voice-recording #dm-action { display:none !important; visibility:hidden !important; }
-.dm-input-bar.voice-recording .send-icon { display:none !important; }
-.voice-rec-bar .voice-rec-send { display:flex !important; visibility:visible !important; opacity:1 !important; }
+.dm-input-bar.voice-recording #dm-action { display:flex !important; order:2; }
+.dm-input-bar.voice-recording #dm-action .mic-icon { display:none !important; }
+.dm-input-bar.voice-recording #dm-action .send-icon { display:flex !important; }
+.dm-input-bar.voice-recording .voice-rec-bar { order:1; }
 .dm-input-bar.voice-recording .voice-rec-bar { display:flex !important; }
 
 /* ===== RECEIVER voice bubble ONLY - sleek black grey, balanced timer - sender NOT touched ===== */
@@ -346,7 +348,6 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
           <button id="voice-rec-delete" class="voice-rec-delete" aria-label="Delete recording"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v5M14 11v5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button>
           <div class="voice-rec-wave" id="voice-rec-wave"></div>
           <span class="voice-rec-time" id="voice-rec-time">0:00</span>
-          <button id="voice-rec-send" class="voice-rec-send" aria-label="Send voice"><svg viewBox="0 0 24 24" fill="none"><path d="M4.2 11.2 L20 4 L14 20 L11.6 14.6 L4.2 11.2 Z" fill="#fff"/></svg></button>
         </div>
       </div>
     </section>
@@ -451,7 +452,6 @@ if(you)you.addEventListener('click',()=>{hideSheet();setNav('profile-screen');sh
 </script>
 <script>
 // ===== js/youtube.js =====
-
 (function(){
 const Y=window.ProVibesYouTube={lastError:'', nextPageToken:'', lastMode:'shorts', lastQuery:'', quotaExceeded:false, userCountry:'NG', userCountryName:'Nigeria', userCity:'', userLang:'en', locationReady:false, _locPromise:null};
 Y.getRegionCode=function(){ return (Y.userCountry||'NG').toUpperCase(); };
@@ -806,7 +806,6 @@ Y.getWatchUrlLong=function(id){ return 'https://www.youtube.com/watch?v='+encode
 </script>
 <script>
 // ===== js/home.js =====
-
 (function(){
 const grid=$('home-grid');let cur=[];let allVideos=[];let currentFilter='all';let filterRequestId=0;
 let previewObserver=null; const previewTimers=new Map(); const playingCards=new Set();
@@ -1120,7 +1119,6 @@ startEarlyPreload();
 </script>
 <script>
 // ===== js/watch.js =====
-
 (function(){
 const sc=$('watch-screen'), feed=$('watch-feed');
 let list=[], idx=0, isOpen=false, loadingMore=false, scrollTimer=null, programmaticScroll=false;
@@ -1436,7 +1434,7 @@ if(isVoice){
   const src = vData.audioData || vData.audioUrl || '';
   if(src){ audioEl=new Audio(src); audioEl.preload='auto'; audioEl.addEventListener('ended', ()=>{ playBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M7 4.5 L19 12 L7 19.5 Z" fill="'+iconColor+'"/></svg>'; wave.classList.remove('playing'); }); }
   playBtn.addEventListener('click', ()=>{ if(!audioEl) return; if(audioEl.paused){ document.querySelectorAll('audio').forEach(a=>{ if(a!==audioEl) a.pause(); }); document.querySelectorAll('.voice-msg-wave').forEach(w=>w.classList.remove('playing')); audioEl.play(); playBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><rect x="6" y="5" width="4" height="14" rx="1" fill="'+iconColor+'"/><rect x="14" y="5" width="4" height="14" rx="1" fill="'+iconColor+'"/></svg>'; wave.classList.add('playing'); } else { audioEl.pause(); playBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M7 4.5 L19 12 L7 19.5 Z" fill="'+iconColor+'"/></svg>'; wave.classList.remove('playing'); } });
-  if(mine){ wrap2.appendChild(bubble); wrap2.appendChild(el('div','dm-msg-status',mode==='all'?'Delivered':'Seen')); } else { if(col2) col2.appendChild(bubble); else wrap2.appendChild(bubble); }
+  if(mine){ wrap2.appendChild(bubble); wrap2.setAttribute('data-voice-ts', String(msg.timestamp||'')); bubble.setAttribute('data-voice-ts', String(msg.timestamp||'')); if(msg._pending||msg.pending){ const st=el('div','dm-msg-status sending'); const sp=document.createElement('i'); sp.className='voice-spinner'; st.appendChild(sp); st.appendChild(el('span','','Sending...')); st.setAttribute('data-voice-status', String(msg.timestamp||'')); wrap2.appendChild(st); } else { const st=el('div','dm-msg-status',mode==='all'?'Delivered':'Seen'); st.setAttribute('data-voice-status', String(msg.timestamp||'')); wrap2.appendChild(st); } } else { if(col2) col2.appendChild(bubble); else wrap2.appendChild(bubble); }
   box.appendChild(wrap2); scrollChat(); return;
 }
 if(mine){const b=el('div','dm-msg');b.setAttribute('data-msg-text',text);b.setAttribute('data-msg-who',sender);b.appendChild(el('span','',text));b.appendChild(el('span','dm-msg-time-in',tOnly));wrap.appendChild(b);wrap.appendChild(el('div','dm-msg-status',mode==='all'?'Delivered':'Seen'));box.appendChild(wrap);scrollChat();}
@@ -1512,11 +1510,10 @@ removeOwn();
 if(window.loadAllUsersForList)window.loadAllUsersForList();
 })();
 
-
 // ===== VOICE RECORDER - ONLY recorder, real timer, no hardcoded number =====
 (function(){
 const recBar=$('voice-rec-bar'), recWave=$('voice-rec-wave'), recTime=$('voice-rec-time');
-const delBtn=$('voice-rec-delete'), sendBtn=$('voice-rec-send');
+const delBtn=$('voice-rec-delete'), sendBtn=$('dm-action');
 let mediaRecorder=null, stream=null, audioCtx=null, analyser=null, animId=null, timerId=null;
 let chunks=[], startAt=0, peaks=[], isRecording=false;
 function fmtSec(s){ s=Math.max(0, Math.floor(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
@@ -1610,13 +1607,51 @@ function send(){
       const isAll=window.CurrentDM==='All Users';
       // Waveform for sent bubble: use YOUR real peaks, not example
       const wave = finalPeaks.length? finalPeaks : [10,14,8,18,12,20,9,16,11,19,13,17,8,15,10];
-      const payload={name:sender, text:'', timestamp:Date.now(), voice:{audioData:audioData, duration:finalDuration, waveform:wave}, duration:finalDuration, waveform:wave};
+      const payload={name:sender, text:'', timestamp:Date.now(), voice:{audioData:audioData, duration:finalDuration, waveform:wave}, duration:finalDuration, waveform:wave, _pending:!navigator.onLine};
       if(window.ReplyTo) payload.replyTo=window.ReplyTo;
       const key = isAll ? 'pro_vibes_all_users' : 'pro_vibes_private_'+window.getPrivateRoom(window.CurrentDM||'User');
       try{ const s=lsGet(key); s.push(payload); lsSet(key, s); }catch(e){}
-      // Firebase: only send small metadata (no big audio) so it no break - local is the real audio
-      try{ const base=getBase(); if(base){ const meta={name:sender, text:'', timestamp:payload.timestamp, voiceMeta:{duration:finalDuration, waveform:wave}}; if(isAll) fetch(base+'/prochat/rooms/general.json',{method:'POST',body:JSON.stringify(meta)}).catch(()=>{}); else fetch(base+'/prochat/rooms/private/'+window.getPrivateRoom(window.CurrentDM||'User')+'.json',{method:'POST',body:JSON.stringify(meta)}).catch(()=>{}); } }catch(e){}
+      // Show immediately in chat - no need to go and come back
       if(isAll){ renderAll(payload); } else { renderPrivate(payload); }
+      // Actually send to server - if no internet, keep spinner and retry when internet comes
+      function markVoiceSent(ts, isAllFlag, keyFlag){
+        try{ const arr=lsGet(keyFlag); let ch=false; arr.forEach(m=>{ if(String(m.timestamp)===String(ts)&&(m._pending||m.pending)){ delete m._pending; delete m.pending; ch=true; } }); if(ch) lsSet(keyFlag, arr); }catch(e){}
+        const st=document.querySelector('[data-voice-status="'+ts+'"]'); if(st){ st.classList.remove('sending'); st.innerHTML=''; st.textContent=(isAllFlag?'Delivered':'Seen'); }
+      }
+      function markVoicePending(ts){
+        try{ const arr=lsGet(key); let ch=false; arr.forEach(m=>{ if(String(m.timestamp)===String(ts)&&!m._pending){ m._pending=true; ch=true; } }); if(ch) lsSet(key, arr); }catch(e){}
+        const st=document.querySelector('[data-voice-status="'+payload.timestamp+'"]'); if(st&&!st.classList.contains('sending')){ st.classList.add('sending'); st.innerHTML=''; const sp=document.createElement('i'); sp.className='voice-spinner'; st.appendChild(sp); st.appendChild(el('span','','Sending...')); }
+      }
+      function doSendVoiceMeta(){
+        const base=getBase(); if(!base) return Promise.resolve();
+        const meta={name:sender, text:'', timestamp:payload.timestamp, voiceMeta:{duration:finalDuration, waveform:wave}};
+        const url=isAll? base+'/prochat/rooms/general.json' : base+'/prochat/rooms/private/'+window.getPrivateRoom(window.CurrentDM||'User')+'.json';
+        return fetch(url,{method:'POST',body:JSON.stringify(meta)}).then(r=>{ if(!r.ok) throw new Error('send failed'); return r; });
+      }
+      if(!navigator.onLine){
+        // No internet - spinner already showing, will retry on online
+      } else {
+        doSendVoiceMeta().then(()=>markVoiceSent(payload.timestamp, isAll, key)).catch(()=>markVoicePending(payload.timestamp));
+      }
+      if(!window.ProVibesVoiceOnlineBound){
+        window.ProVibesVoiceOnlineBound=true;
+        window.addEventListener('online', ()=>{
+          try{
+            const keys=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&(k==='pro_vibes_all_users'||k.indexOf('pro_vibes_private_')===0)) keys.push(k); }
+            keys.forEach(k=>{
+              const arr=lsGet(k); arr.forEach(m=>{
+                if((m._pending||m.pending)&&m.voice){
+                  const isAllK=k==='pro_vibes_all_users';
+                  const base=getBase(); if(!base) return;
+                  const meta2={name:m.name, text:'', timestamp:m.timestamp, voiceMeta:{duration:(m.voice&&m.voice.duration)||m.duration||0, waveform:(m.voice&&m.voice.waveform)||m.waveform||[]}};
+                  const url2=isAllK? base+'/prochat/rooms/general.json' : base+'/prochat/rooms/private/'+k.replace('pro_vibes_private_','')+'.json';
+                  fetch(url2,{method:'POST',body:JSON.stringify(meta2)}).then(r=>{ if(!r.ok) throw new Error('retry failed'); delete m._pending; delete m.pending; lsSet(k, arr); const st=document.querySelector('[data-voice-status="'+m.timestamp+'"]'); if(st){ st.classList.remove('sending'); st.innerHTML=''; st.textContent=(isAllK?'Delivered':'Seen'); } }).catch(()=>{});
+                }
+              });
+            });
+          }catch(e){}
+        });
+      }
       window.ReplyTo=null; const bar=$('dm-reply-bar'); if(bar) bar.classList.remove('show');
     };
     reader.readAsDataURL(blob);
