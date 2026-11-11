@@ -170,6 +170,13 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
 .dm-reply-quote.mine { flex-direction:row-reverse; align-self:flex-end; margin-left:auto; }
 .dm-reply-quote-line { width:3px; align-self:stretch; min-height:28px; background:#444; border-radius:99px; flex-shrink:0; }
 .dm-reply-quote-pill { background:#222; color:#aaa; font-size:13px; line-height:1.4; padding:7px 12px; border-radius:14px; width:max-content; max-width:280px; word-break:break-word; white-space:normal; overflow:visible; text-overflow:clip; cursor:pointer; }
+.dm-reply-quote-pill.voice-quote { display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:999px; background:#222; }
+.voice-quote-mic { width:26px; height:26px; min-width:26px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.voice-quote-mic svg { width:14px; height:14px; display:block; }
+.voice-quote-text { color:#ccc; font-size:13px; font-weight:500; white-space:nowrap; }
+.dm-reply-bar.voice-reply #dm-reply-text { display:flex; align-items:center; gap:8px; }
+.dm-reply-bar.voice-reply .voice-quote-mic { width:22px; height:22px; min-width:22px; }
+.dm-reply-bar.voice-reply .voice-quote-mic svg { width:12px; height:12px; }
 .dm-reply-quote-pill:active { background:#2a2a2a; }
 .dm-msg-highlight { box-shadow:0 0 0 2px #00bfa5, 0 0 14px rgba(0,191,165,0.5) !important; transform:scale(1.02); animation:highlightFade 1.6s ease forwards; }
 @keyframes highlightFade { to { box-shadow:0 1px 3px rgba(0,0,0,0.25); transform:none; } }
@@ -1411,7 +1418,9 @@ const wrap=el('div','chat-wrap'+(mine?' mine':' other'));let col=null;
 if(!mine){const row=el('div','chat-row'),av=el('div','chat-avatar',sender.trim().charAt(0).toUpperCase());col=el('div','chat-col');col.appendChild(el('div','chat-name',sender));row.appendChild(av);row.appendChild(col);wrap.appendChild(row);}
 const rq=msg.replyTo||msg.reply||null;
 let voiceQuoteEl=null;
-if(rq){const rt=typeof rq==='object'?(rq.text||rq.message||''):rq,rw=typeof rq==='object'&&rq.who?rq.who:'You',rts=typeof rq==='object'?(rq.timestamp||rq.ts||''):'' ,rVoice=typeof rq==='object'?!!(rq.isVoice||rq.voice):false;if(rt){const qw=el('div',mine?'dm-reply-quote mine':'dm-reply-quote');qw.appendChild(el('div','dm-reply-quote-line'));const pill=el('div','dm-reply-quote-pill');pill.setAttribute('data-quote-text',rt);pill.setAttribute('data-quote-who',rw);if(rts)pill.setAttribute('data-quote-timestamp',String(rts));if(rVoice)pill.setAttribute('data-quote-is-voice','1');pill.appendChild(el('b','',rw+' : '));pill.appendChild(el('span','',rt));qw.appendChild(pill);if(isVoice){voiceQuoteEl=qw;}else if(!mine&&col)col.appendChild(qw);else wrap.appendChild(qw);}}
+const MIC_SVG='<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="2.5" width="6" height="11" rx="3" fill="#000"/><path d="M5 11.5 C5 15.5 8.2 18.5 12 18.5 C15.8 18.5 19 15.5 19 11.5" stroke="#000" stroke-width="2.4" stroke-linecap="round"/><path d="M12 18.5 L12 21.5" stroke="#000" stroke-width="2.4" stroke-linecap="round"/></svg>';
+function fmtVoiceDur(s){s=parseFloat(s);if(!isFinite(s)||s<=0)return '';return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
+if(rq){let rt=typeof rq==='object'?(rq.text||rq.message||''):rq,rw=typeof rq==='object'&&rq.who?rq.who:'You',rts=typeof rq==='object'?(rq.timestamp||rq.ts||''):'' ,rVoice=typeof rq==='object'?!!(rq.isVoice||rq.voice):false;let rDur='';if(typeof rq==='object'){const raw=rq.voiceDuration!==undefined?rq.voiceDuration:(rq.duration!==undefined?rq.duration:(rq.voice&&rq.voice.duration!==undefined?rq.voice.duration:(rq.voiceMeta&&rq.voiceMeta.duration!==undefined?rq.voiceMeta.duration:'')));rDur=fmtVoiceDur(raw);}if(!rDur&&rt){const dm=String(rt).match(/(\d+:\d{2})/);if(dm)rDur=dm[1];}if(rt.indexOf('🎤')===0||rt.indexOf('Voice message')>-1||rt.indexOf('Voice Note')===0){rVoice=true;}if(rVoice)rt='Voice Note'+(rDur?' '+rDur:'');if(rt){const qw=el('div',mine?'dm-reply-quote mine':'dm-reply-quote');qw.appendChild(el('div','dm-reply-quote-line'));const pill=el('div',rVoice?'dm-reply-quote-pill voice-quote':'dm-reply-quote-pill');pill.setAttribute('data-quote-text',rt);pill.setAttribute('data-quote-who',rw);if(rts)pill.setAttribute('data-quote-timestamp',String(rts));if(rVoice)pill.setAttribute('data-quote-is-voice','1');if(rVoice){const mic=document.createElement('span');mic.className='voice-quote-mic';mic.innerHTML=MIC_SVG;const lab=document.createElement('span');lab.className='voice-quote-text';lab.textContent=rt;pill.appendChild(mic);pill.appendChild(lab);}else{pill.appendChild(el('b','',rw+' : '));pill.appendChild(el('span','',rt));}qw.appendChild(pill);if(isVoice){voiceQuoteEl=qw;}else if(!mine&&col)col.appendChild(qw);else wrap.appendChild(qw);}}
 const tOnly=fmtTime(msg.timestamp||msg.time||msg.createdAt||Date.now());
 if(isVoice){
   const vData = msg.voice || {audioData:msg.audioData, audioUrl:msg.audioUrl, duration:msg.duration||0, waveform:msg.waveform||[]};
@@ -1422,7 +1431,7 @@ if(isVoice){
   if(!mine){ const row=el('div','chat-row'), av=el('div','chat-avatar',sender.trim().charAt(0).toUpperCase()); col2=el('div','chat-col'); col2.appendChild(el('div','chat-name',sender)); row.appendChild(av); row.appendChild(col2); wrap2.appendChild(row); }
   const bubble=el('div','voice-msg'+(mine?'':' voice-receiver'));
   bubble.setAttribute('data-voice-duration', String(dur));
-  bubble.setAttribute('data-msg-text', '🎤 Voice message • '+durText);
+  bubble.setAttribute('data-msg-text', 'Voice Note'+(durText?' '+durText:''));
   bubble.setAttribute('data-msg-who', sender);
   bubble.setAttribute('data-msg-timestamp', String(msg.timestamp||msg.time||msg.createdAt||Date.now()));
   bubble.setAttribute('data-is-voice', '1');
@@ -1490,20 +1499,22 @@ if(window.ReplyTo)payload.replyTo=window.ReplyTo;
 const base=getBase();
 if(isAll){if(base)fetch(base+'/prochat/rooms/general.json',{method:'POST',body:JSON.stringify(payload)}).catch(()=>{});const s=lsGet('pro_vibes_all_users');s.push(payload);lsSet('pro_vibes_all_users',s);renderAll(payload);}
 else{const room=window.getPrivateRoom(window.CurrentDM||'User'),key='pro_vibes_private_'+room;if(base)fetch(base+'/prochat/rooms/private/'+room+'.json',{method:'POST',body:JSON.stringify(payload)}).catch(()=>{});const s=lsGet(key);s.push(payload);lsSet(key,s);renderPrivate(payload);}
-window.ReplyTo=null;const bar=$('dm-reply-bar');if(bar)bar.classList.remove('show');
+window.ReplyTo=null;const bar=$('dm-reply-bar');if(bar){bar.classList.remove('show');bar.classList.remove('voice-reply');}
 inp.value='';inp.style.height='auto';updAct();
 });
 if(actBtn)actBtn.addEventListener('touchstart',e=>{if(!inp||!inp.value.trim())return;e.preventDefault();actBtn.click();},{passive:false});
 (function(){
 const msgs=$('dm-messages');if(!msgs||msgs.dataset.swipe)return;msgs.dataset.swipe='1';
 let sx=0,sy=0,cur=null,sw=false;
-function txt(b){if(b.classList.contains('voice-msg')){return b.getAttribute('data-msg-text')||'🎤 Voice message';}const sp=b.querySelectorAll('span');for(let i=0;i<sp.length;i++){if(!sp[i].className.includes('dm-msg-time'))return sp[i].textContent;}return b.textContent.replace(/\d{1,2}:\d{2} (AM|PM)/g,'').trim();}
+const MIC_SVG2='<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="2.5" width="6" height="11" rx="3" fill="#000"/><path d="M5 11.5 C5 15.5 8.2 18.5 12 18.5 C15.8 18.5 19 15.5 19 11.5" stroke="#000" stroke-width="2.4" stroke-linecap="round"/><path d="M12 18.5 L12 21.5" stroke="#000" stroke-width="2.4" stroke-linecap="round"/></svg>';
+function fmtDur(s){s=parseFloat(s);if(!isFinite(s)||s<=0)return '';return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
+function txt(b){if(b.classList.contains('voice-msg')){const d=fmtDur(b.getAttribute('data-voice-duration')||'');return 'Voice Note'+(d?' '+d:'');}const sp=b.querySelectorAll('span');for(let i=0;i<sp.length;i++){if(!sp[i].className.includes('dm-msg-time'))return sp[i].textContent;}return b.textContent.replace(/\d{1,2}:\d{2} (AM|PM)/g,'').trim();}
 function whoFor(b){const w=b.getAttribute('data-msg-who');if(w)return w;if(b.classList.contains('other'))return (window.CurrentDM||'User');const wrap=b.closest?b.closest('.chat-wrap'):null;if(wrap&&wrap.classList.contains('other'))return (window.CurrentDM||'User');return (window.ProVibesUser&&window.ProVibesUser.name)||'You';}
 msgs.addEventListener('touchstart',e=>{if(e.target.closest&&e.target.closest('.voice-msg-play'))return;if(e.target.closest&&e.target.closest('.dm-reply-quote-pill'))return;const b=e.target.closest?e.target.closest('.dm-msg, .voice-msg'):null;if(!b)return;cur=b;const t=e.touches[0];sx=t.clientX;sy=t.clientY;sw=false;},{passive:true});
 msgs.addEventListener('touchmove',e=>{if(!cur)return;const t=e.touches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)>30&&Math.abs(dx)>Math.abs(dy)){sw=true;cur.style.transition='none';cur.style.transform='translateX('+Math.max(-60,Math.min(60,dx))+'px)';}},{passive:true});
-msgs.addEventListener('touchend',e=>{if(!cur)return;const dx=e.changedTouches[0].clientX-sx,b=cur;b.style.transition='transform 0.2s';b.style.transform='';if(sw&&Math.abs(dx)>40){const t=txt(b),who=whoFor(b),ts=b.getAttribute('data-msg-timestamp')||'',isV=b.classList.contains('voice-msg'),vd=b.getAttribute('data-voice-duration')||'';window.ReplyTo={text:t,who:who,timestamp:ts,isVoice:isV,voiceDuration:vd};const bar=$('dm-reply-bar'),bt=$('dm-reply-text');if(bar&&bt){bt.textContent=who+' : '+t;bar.classList.add('show');}if(inp)inp.focus();}cur=null;sw=false;});
+msgs.addEventListener('touchend',e=>{if(!cur)return;const dx=e.changedTouches[0].clientX-sx,b=cur;b.style.transition='transform 0.2s';b.style.transform='';if(sw&&Math.abs(dx)>40){const t=txt(b),who=whoFor(b),ts=b.getAttribute('data-msg-timestamp')||'',isV=b.classList.contains('voice-msg'),vd=b.getAttribute('data-voice-duration')||'';window.ReplyTo={text:t,who:who,timestamp:ts,isVoice:isV,voiceDuration:vd,duration:vd};const bar=$('dm-reply-bar'),bt=$('dm-reply-text');if(bar&&bt){if(isV){bt.innerHTML='<span class="voice-quote-mic">'+MIC_SVG2+'</span><span class="voice-quote-text">'+t+'</span>';bar.classList.add('show');bar.classList.add('voice-reply');}else{bar.classList.remove('voice-reply');bt.textContent=who+' : '+t;bar.classList.add('show');}}if(inp)inp.focus();}cur=null;sw=false;});
 msgs.addEventListener('touchcancel',()=>{if(cur){cur.style.transition='transform 0.2s';cur.style.transform='';}cur=null;sw=false;},{passive:true});
-if($('dm-reply-x'))$('dm-reply-x').addEventListener('click',()=>{window.ReplyTo=null;const bar=$('dm-reply-bar');if(bar)bar.classList.remove('show');});
+if($('dm-reply-x'))$('dm-reply-x').addEventListener('click',()=>{window.ReplyTo=null;const bar=$('dm-reply-bar');if(bar){bar.classList.remove('show');bar.classList.remove('voice-reply');}const bt=$('dm-reply-text');if(bt)bt.textContent='';});
 })();
 (function(){
 const c=document.querySelector('.dm-center'),btn=$('dm-scroll-down');if(!c||!btn)return;
@@ -1516,6 +1527,7 @@ document.addEventListener('click',e=>{
 const pill=e.target.closest?e.target.closest('.dm-reply-quote-pill'):null;if(!pill)return;
 let qt=pill.getAttribute('data-quote-text')||'',qw=pill.getAttribute('data-quote-who')||'';
 if(!qt){const t=(pill.textContent||'').split(' : ');if(t.length>1){qw=t[0].trim();qt=t.slice(1).join(' : ').trim();}else qt=(pill.textContent||'').trim();}
+if(qt.indexOf('🎤')===0||qt.indexOf('Voice message')>-1){const dm=qt.match(/(\d+:\d{2})/);qt='Voice Note'+(dm?' '+dm[1]:'');}
 if(!qt)return;
 const qts=pill.getAttribute('data-quote-timestamp')||'';
 const msgs=$$('#dm-messages .dm-msg, #dm-messages .voice-msg');let f=null;
@@ -1651,7 +1663,7 @@ function send(){
     if(replyAtSend) payload.replyTo=replyAtSend;
     try{ const s=lsGet(key); s.push(payload); lsSet(key, s); }catch(e){}
     renderVoiceNow(payload, isAll);
-    window.ReplyTo=null; const bar=$('dm-reply-bar'); if(bar) bar.classList.remove('show');
+    window.ReplyTo=null; const bar=$('dm-reply-bar'); if(bar){ bar.classList.remove('show'); bar.classList.remove('voice-reply'); }
     // 2) UPGRADE to base64 in background so it survives reload + can go to Firebase.
     // Firebase send MUST NOT depend on render - it runs here even if render failed.
     const reader=new FileReader();
