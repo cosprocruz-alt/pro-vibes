@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<title>PRO VIBES - ONE v23 FIXED - private inbox</title>
+<title>PRO VIBES</title>
 <style>
 /* ===== css/style.css ===== */
 body { background:#000; color:#fff; font-family:sans-serif; margin:0; padding:0; }
@@ -21,7 +21,7 @@ button { cursor:pointer; }
 .login-name-input { width:100%; background:#1a1a1a; border:1px solid #333; border-radius:16px; padding:15px 16px; color:#fff; font-size:16px; outline:none; box-sizing:border-box; margin-bottom:14px; }
 .login-name-input::placeholder { color:#888; }
 .login-name-input:focus { border-color:#666; } .login-char-warning{text-align:right;color:#ff5252;font-size:12px;font-weight:600;min-height:16px;margin:-8px 4px 8px;opacity:0;transition:opacity .15s;} .login-char-warning.show{opacity:1;} .login-name-input.pv-over{border-color:#ff5252;}
-#login-btn { width:100%; background:#22c55e; color:#fff; border:none; padding:17px; border-radius:16px; font-size:19px; font-weight:800; } #login-btn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;} #login-btn .pv-btn-spinner{width:22px;height:22px;min-width:22px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-right-color:#fff;animation:pv-spin .7s linear infinite;display:none;} @keyframes pv-spin{to{transform:rotate(360deg);}} #login-btn.pv-loading{pointer-events:auto;} #login-btn.pv-loading #login-btn-text{display:none;} #login-btn.pv-loading .pv-btn-spinner{display:block;}
+#login-btn { width:100%; background:#22c55e; color:#fff; border:none; padding:17px; border-radius:16px; font-size:19px; font-weight:800; } #login-btn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;} #login-btn .pv-btn-spinner{width:22px;height:22px;min-width:22px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-right-color:#fff;animation:pv-spin .7s linear infinite;display:none;} @keyframes pv-spin{to{transform:rotate(360deg);}} #login-btn.pv-loading{pointer-events:none;opacity:.92;} #login-btn.pv-loading #login-btn-text{display:block;} #login-btn.pv-loading .pv-btn-spinner{display:block;}
 #home-screen { background:#000; }
 .home-head { padding:14px 12px 6px; display:flex; align-items:center; justify-content:space-between; }
 .home-head h2 { margin:0; font-size:26px; font-weight:800; }
@@ -44,10 +44,10 @@ button { cursor:pointer; }
 .home-card .home-preview { position:absolute; inset:0; z-index:1; background:#111; }
 .home-card .home-preview iframe { width:100%; height:100%; border:0; display:block; pointer-events:none; object-fit:cover; }
 .home-card.playing .shade { z-index:2; }
-.home-card .card-title, .home-card .new-badge, .home-card .card-dots { z-index:3; }
+.home-card .card-title { z-index:3; }
 .home-card .shade { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.25) 38%, rgba(0,0,0,0) 55%); }
-.home-card .new-badge { position:absolute; top:10px; left:10px; background:#fff; color:#000; font-weight:800; font-size:13px; padding:6px 10px; border-radius:6px; }
-.home-card .card-dots { position:absolute; top:8px; right:8px; background:rgba(0,0,0,.35); color:#fff; border:none; width:30px; height:30px; border-radius:50%; font-size:18px; padding:0; }
+.home-card .new-badge, .home-card .card-dots { display:none !important; }
+
 .home-card .card-title { position:absolute; left:10px; right:10px; bottom:12px; color:#fff; font-size:15px; font-weight:700; line-height:1.25; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
 .home-skeleton { aspect-ratio:9/16; border-radius:14px; background:linear-gradient(100deg,#111 40%,#1c1c1c 50%,#111 60%); background-size:200% 100%; animation:shimmer 1.2s infinite; }
 @keyframes shimmer { to { background-position:-200% 0; } }
@@ -99,7 +99,7 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
 .sheet-option p { margin:6px 0 0; color:#aaa; font-size:13px; line-height:1.4; }
 #watch-screen { position:fixed; inset:0; background:#000; z-index:60; display:flex; flex-direction:column; height:100dvh; height:100svh; overflow:hidden; }
 #watch-screen.hidden { display:none !important; }
-.watch-top { position:absolute; top:0; left:0; right:0; z-index:20; display:flex; align-items:center; gap:10px; padding:12px 12px 8px; background:linear-gradient(to bottom, rgba(0,0,0,.75), transparent); }
+.watch-top { position:absolute; top:0; left:0; right:0; z-index:20; display:flex; align-items:center; gap:10px; padding:14px 12px 10px; background:linear-gradient(to bottom, rgba(0,0,0,.85), rgba(0,0,0,0)); }
 #watch-back { background:none; border:none; color:#fff; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center; width:34px; height:32px; flex-shrink:0; } #watch-back svg { width:32px; height:20px; display:block; }
 #watch-title-top { font-size:14px; font-weight:700; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#fff; }
 #watch-feed { flex:1; overflow-y:auto; overflow-x:hidden; scroll-snap-type:y mandatory; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
@@ -111,10 +111,44 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
 .watch-player iframe { width:100%; height:100%; border:0; display:block; background:#000; }
 .watch-tap-play { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.25); border:none; width:100%; height:100%; cursor:pointer; z-index:3; }
 .watch-tap-play span { width:72px; height:72px; border-radius:50%; background:rgba(0,0,0,.65); border:1px solid rgba(255,255,255,.4); color:#fff; font-size:28px; display:flex; align-items:center; justify-content:center; }
-.watch-nav { display:none !important; } .watch-actions{position:absolute;right:10px;bottom:150px;z-index:20;display:flex;flex-direction:column;gap:14px;align-items:center;} .watch-action{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:#fff;cursor:pointer;padding:0;} .watch-action .wa-icon{width:48px;height:48px;border-radius:50%;background:rgba(26,26,26,.9);border:1px solid #333;display:flex;align-items:center;justify-content:center;} .watch-action .wa-count{font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.8);}
+.watch-nav { display:none !important; } .watch-actions{position:absolute;right:10px;bottom:150px;z-index:20;display:flex;flex-direction:column;gap:14px;align-items:center;} .watch-action{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:#fff;cursor:pointer;padding:0;} .watch-action .wa-icon{width:52px;height:52px;border-radius:50%;background:transparent;border:none;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 2px 8px rgba(0,0,0,.75));}.watch-action .wa-icon svg{width:30px;height:30px;}.watch-action.liked{color:#00d68f;}.watch-action.liked .wa-count{color:#00d68f;} .watch-action .wa-count{font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.8);}
 .watch-nav button { width:44px; height:44px; border-radius:50%; background:rgba(26,26,26,.9); color:#fff; border:1px solid #333; font-size:18px; display:flex; align-items:center; justify-content:center; }
 .watch-nav button:disabled { opacity:.35; }
-.watch-loading { position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:20; background:rgba(0,0,0,.7); border:1px solid #333; color:#fff; font-size:12px; font-weight:700; padding:8px 12px; border-radius:999px; }
+/* ===== PV: Sleek YouTube Comments - blue-green ===== */
+    #pv-yt-comments-sheet{position:fixed;inset:0;z-index:80;display:none;}
+    #pv-yt-comments-sheet.show{display:block;}
+    .pv-yt-c-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);}
+    .pv-yt-c-panel{position:absolute;left:0;right:0;bottom:0;height:74vh;max-height:82vh;background:#0f0f0f;border-top-left-radius:24px;border-top-right-radius:24px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -12px 40px rgba(0,0,0,.6);}
+    .pv-yt-c-grab{width:44px;height:4px;border-radius:99px;background:#333;margin:10px auto 6px;flex-shrink:0;}
+    .pv-yt-c-head{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 10px;flex-shrink:0;}
+    .pv-yt-c-title{font-size:17px;font-weight:800;color:#fff;}
+    .pv-yt-c-sub{font-size:12px;color:#999;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px;}
+    .pv-yt-c-close{background:#222;border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;flex-shrink:0;}
+    .pv-yt-c-line{height:3px;background:linear-gradient(90deg,#0084ff,#00bfa5);flex-shrink:0;}
+    #pv-yt-c-list{flex:1;overflow-y:auto;padding:12px 16px 8px;-webkit-overflow-scrolling:touch;}
+    .pv-yt-c-empty{text-align:center;color:#888;font-size:14px;line-height:1.6;padding:36px 12px;}
+    .pv-yt-c-loading{text-align:center;color:#aaa;font-size:13px;padding:24px;}
+    .pv-yt-c-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #1a1a1a;align-items:flex-start;}
+    .pv-yt-c-row:last-child{border-bottom:none;}
+    .pv-yt-c-ava{width:36px;height:36px;border-radius:50%;flex-shrink:0;overflow:hidden;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:800;}
+    .pv-yt-c-ava img{width:100%;height:100%;object-fit:cover;display:block;}
+    .pv-yt-c-ava.mine{background:linear-gradient(135deg,#0084ff,#00bfa5);}
+    .pv-yt-c-body{flex:1;min-width:0;}
+    .pv-yt-c-name{font-size:13px;font-weight:700;color:#fff;}
+    .pv-yt-c-name span{font-weight:400;color:#888;font-size:11px;margin-left:6px;}
+    .pv-yt-c-mine-badge{display:inline-block;margin-left:6px;font-size:10px;font-weight:800;color:#fff;background:linear-gradient(90deg,#0084ff,#00bfa5);padding:2px 7px;border-radius:999px;vertical-align:middle;}
+    .pv-yt-c-text{font-size:14px;line-height:1.5;color:#eee;margin-top:3px;word-break:break-word;white-space:pre-wrap;}
+    .pv-yt-c-actions{display:flex;gap:16px;margin-top:7px;align-items:center;}
+    .pv-yt-c-like{background:none;border:none;color:#aaa;font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;padding:0;cursor:pointer;}
+    .pv-yt-c-like.liked{color:#00d68f;}
+    .pv-yt-c-reply{color:#888;font-size:12px;font-weight:700;background:none;border:none;padding:0;cursor:pointer;}
+    .pv-yt-c-input-row{display:flex;gap:10px;align-items:center;padding:12px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #222;background:#111;flex-shrink:0;}
+    .pv-yt-c-input-ava{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0084ff,#00bfa5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;}
+    #pv-yt-c-input{flex:1;background:#222;border:1px solid #333;border-radius:999px;padding:11px 14px;color:#fff;font-size:14px;outline:none;min-width:0;}
+    #pv-yt-c-input:focus{border-color:#0084ff;}
+    #pv-yt-c-send{background:linear-gradient(90deg,#0084ff,#00bfa5);color:#fff;border:none;border-radius:999px;padding:11px 18px;font-size:14px;font-weight:800;cursor:pointer;flex-shrink:0;box-shadow:0 4px 14px rgba(0,132,255,.35);}
+    #pv-yt-c-send:disabled{opacity:.45;box-shadow:none;}
+    .watch-loading { position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:20; background:rgba(0,0,0,.7); border:1px solid #333; color:#fff; font-size:12px; font-weight:700; padding:8px 12px; border-radius:999px; }
 .watch-empty { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:30px; text-align:center; color:#aaa; font-size:14px; line-height:1.6; }
 .watch-empty button { background:#fff; color:#000; border:none; padding:12px 18px; border-radius:12px; font-weight:800; }
 .home-retry { background:#fff; color:#000; border:none; padding:12px 16px; border-radius:12px; font-weight:800; margin-top:12px; }
@@ -264,7 +298,21 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
 .viewers-toggle.on .viewers-toggle-knob{left:29px;}
 .viewers-desc{color:#9a9a9a;font-size:15px;line-height:1.55;margin:14px 0 0;}
 .profile-bio{padding:2px 12px 4px;background:#000;color:#fff;font-size:15px;line-height:1.45;white-space:pre-wrap;word-break:break-word;}.profile-bio:empty{display:none;}.profile-actions{display:flex;gap:10px;padding:8px 12px 10px;background:#000;margin-top:4px;}.profile-action-btn{flex:1 1 0;background:#262626;color:#fff;border:none;border-radius:10px;padding:13px 8px;font-size:17px;font-weight:700;line-height:1;cursor:pointer;}.profile-action-icon-btn{width:52px;min-width:52px;background:#262626;color:#fff;border:none;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}.profile-action-icon-btn svg{width:26px;height:26px;display:block;}.profile-front-tabs{display:flex;background:#000;}.profile-front-tab{flex:1 1 0;background:none;border:none;padding:9px 0 8px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;color:#8a8a8a;}.profile-front-tab.active{color:#fff;}.profile-front-tab .tab-line{position:absolute;left:0;right:0;bottom:0;height:2px;background:#fff;display:none;}.profile-front-tab.active .tab-line{display:block;}.profile-front-tab svg{display:block;}.profile-front-tab .grid-ic{width:22px;height:22px;}/* PROFILE POST - CENTERED NOT DOWN - frame centered, img 82vh so down raised up small sleek, balanced top/bottom */
-#pv-posts-screen{position:fixed;top:0;left:0;right:0;bottom:54px;z-index:30;display:flex;flex-direction:column;height:calc(100vh - 54px);height:calc(100dvh - 54px);background:#000;overflow:hidden;overscroll-behavior:none;touch-action:none;} .pv-posts-spacer{flex:1;min-height:0;background:#000;} .pv-left-rail{position:absolute;right:12px;left:auto;top:auto;bottom:92px;transform:none;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:5;pointer-events:none;} .pv-left-profile{position:relative;width:44px;height:44px;border-radius:50%;pointer-events:auto;cursor:pointer;} .pv-left-profile img{width:44px;height:44px;border-radius:50%;object-fit:cover;display:block;background:#222;} .pv-left-profile-letter{width:44px;height:44px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;} .pv-left-plus{position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:#FF2E5A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;line-height:1;pointer-events:none;} .pv-left-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#fff;pointer-events:none;opacity:1;} .pv-left-item svg{width:24px;height:24px;display:block;stroke-width:2.8;} .pv-left-item span{font-size:12px;font-weight:800;line-height:1;} /* Instagram exact - profile only: frame is flex, not absolute */ .pv-posts-frame img{width:100%;height:auto;max-width:100%;max-height:calc(100dvh - 56px - 48px);object-fit:contain;display:block;margin:0 auto;background:#000;} .pv-posts-frame{position:relative !important;top:auto !important;left:auto !important;transform:none !important;flex:0 0 auto !important;width:100% !important;display:flex !important;align-items:center !important;justify-content:center !important;} #pv-posts-screen > .pv-posts-spacer{flex:1 1 0 !important;height:auto !important;min-height:0 !important;} .pv-posts-name-row{flex-shrink:0;display:none;padding:22px 16px 0;background:#000;text-align:left;margin-top:6px;align-items:center;gap:10px;} .pv-posts-name-row.show{display:flex;} .pv-posts-profile{width:30px;height:30px;min-width:30px;border-radius:50%;overflow:hidden;background:#222;flex-shrink:0;border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;} .pv-posts-profile img{width:100%;height:100%;object-fit:cover;display:block;} .pv-posts-profile-letter{font-size:14px;font-weight:800;color:#fff;line-height:1;} .pv-posts-name{color:#fff;font-size:17px;font-weight:900;letter-spacing:.2px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;} body.pv-posts-open{overflow:hidden !important;} .pv-posts-top{display:flex;align-items:center;gap:14px;padding:14px 16px 12px;background:#000;position:relative;z-index:2;flex-shrink:0;height:56px;box-sizing:border-box;} .pv-posts-top-spacer{flex:1;} .pv-posts-cam{display:none !important;} .pv-posts-back{background:none;border:none;color:#fff;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:34px;height:32px;flex-shrink:0;} .pv-posts-back svg{width:32px;height:20px;display:block;} .pv-posts-title{color:#fff;font-size:22px;font-weight:800;letter-spacing:.2px;line-height:1;}      .profile-tagged-empty{display:none;background:#000;text-align:center;padding:48px 36px 40px;}.profile-tagged-empty-title{color:#fff;font-size:20px;font-weight:800;line-height:1.25;margin-bottom:12px;}.profile-tagged-empty-sub{color:#9a9a9a;font-size:15px;line-height:1.45;}.profile-posts-grid{display:grid;grid-template-columns:1.18fr 1fr 1fr;gap:2px;background:#000;padding:0;} .pv-no-posts{grid-column:1 / -1;text-align:center;padding:56px 32px 48px;background:#000;display:flex;flex-direction:column;align-items:center;gap:8px;} .pv-no-posts-title{color:#fff;font-size:19px;font-weight:800;line-height:1.25;} .pv-no-posts-sub{color:#9a9a9a;font-size:15px;line-height:1.45;}.profile-posts-grid .pv-post-tile{aspect-ratio:4/5;background:#111;overflow:hidden;position:relative;border-radius:0 !important;}.profile-posts-grid .pv-post-tile img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0 !important;}.profile-posts-grid .pv-post-tile-avatar img{transform:scale(1.45);}.profile-front-tab .tag-ic{width:27px;height:27px;}
+#pv-posts-screen{position:fixed;top:0;left:0;right:0;bottom:54px;z-index:30;display:flex;flex-direction:column;height:calc(100vh - 54px);height:calc(100dvh - 54px);background:#000;overflow:hidden;overscroll-behavior:none;touch-action:none;} .pv-posts-spacer{flex:1;min-height:0;background:#000;} .pv-left-rail{position:absolute;right:12px;left:auto;top:auto;bottom:92px;transform:none;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:5;pointer-events:none;} .pv-left-profile{position:relative;width:44px;height:44px;border-radius:50%;pointer-events:auto;cursor:pointer;} .pv-left-profile img{width:44px;height:44px;border-radius:50%;object-fit:cover;display:block;background:#222;} .pv-left-profile-letter{width:44px;height:44px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;} .pv-left-plus{position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:#FF2E5A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;line-height:1;pointer-events:none;} .pv-left-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#fff;pointer-events:none;opacity:1;} .pv-left-item svg{width:24px;height:24px;display:block;stroke-width:2.8;} .pv-left-item span{font-size:12px;font-weight:800;line-height:1;} /* Instagram exact - profile only: frame is flex, not absolute */ .pv-posts-frame img{width:100%;height:auto;max-width:100%;max-height:calc(100dvh - 56px - 48px);object-fit:contain;display:block;margin:0 auto;background:#000;} .pv-posts-frame{position:relative !important;top:auto !important;left:auto !important;transform:none !important;flex:0 0 auto !important;width:100% !important;display:flex !important;align-items:center !important;justify-content:center !important;} #pv-posts-screen > .pv-posts-spacer{flex:1 1 0 !important;height:auto !important;min-height:0 !important;} .pv-posts-name-row{flex-shrink:0;display:none;padding:22px 16px 0;background:#000;text-align:left;margin-top:6px;align-items:center;gap:10px;} .pv-posts-name-row.show{display:flex;} .pv-posts-profile{width:30px;height:30px;min-width:30px;border-radius:50%;overflow:hidden;background:#222;flex-shrink:0;border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;} .pv-posts-profile img{width:100%;height:100%;object-fit:cover;display:block;} .pv-posts-profile-letter{font-size:14px;font-weight:800;color:#fff;line-height:1;} .pv-posts-name{color:#fff;font-size:17px;font-weight:900;letter-spacing:.2px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;} body.pv-posts-open{overflow:hidden !important;} .pv-posts-top{display:flex;align-items:center;gap:14px;padding:14px 16px 12px;background:#000;position:relative;z-index:2;flex-shrink:0;height:56px;box-sizing:border-box;} .pv-posts-top-spacer{flex:1;} .pv-posts-cam{display:none !important;} .pv-posts-back{background:none;border:none;color:#fff;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:34px;height:32px;flex-shrink:0;} .pv-posts-back svg{width:32px;height:20px;display:block;} .pv-posts-title{color:#fff;font-size:22px;font-weight:800;letter-spacing:.2px;line-height:1;}      .profile-tagged-empty{display:none;background:#000;text-align:center;padding:48px 36px 40px;}.profile-tagged-empty-title{color:#fff;font-size:20px;font-weight:800;line-height:1.25;margin-bottom:12px;}.profile-tagged-empty-sub{color:#9a9a9a;font-size:15px;line-height:1.45;}.profile-posts-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#000;padding:0;} .pv-no-posts{grid-column:1 / -1;text-align:center;padding:56px 32px 48px;background:#000;display:flex;flex-direction:column;align-items:center;gap:8px;} .pv-no-posts-title{color:#fff;font-size:19px;font-weight:800;line-height:1.25;} .pv-no-posts-sub{color:#9a9a9a;font-size:15px;line-height:1.45;}.profile-posts-grid .pv-post-tile{aspect-ratio:1/1;background:#111;overflow:hidden;position:relative;border-radius:0 !important;touch-action:manipulation;-webkit-user-select:none;user-select:none;}.profile-posts-grid .pv-post-tile img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0 !important;}.profile-posts-grid .pv-post-tile-avatar img{transform:scale(1.45);}
+    .pv-post-del-sheet{position:fixed;inset:0;z-index:9999;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);}
+    .pv-post-del-sheet.show{display:flex;}
+    .pv-post-del-card{width:100%;max-width:480px;background:#1e1e1e;border-top-left-radius:20px;border-top-right-radius:20px;padding:8px 16px calc(20px + env(safe-area-inset-bottom));box-sizing:border-box;}
+    .pv-post-del-grab{width:40px;height:4px;border-radius:99px;background:#444;margin:6px auto 10px;}
+    .pv-post-del-btn{width:100%;background:none;border:none;color:#ff3b30;font-size:17px;font-weight:700;padding:16px 8px;cursor:pointer;border-bottom:1px solid #333;}
+    .pv-post-del-cancel{width:100%;background:none;border:none;color:#fff;font-size:17px;font-weight:600;padding:16px 8px;cursor:pointer;}
+    .pv-del-confirm{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.65);padding:20px;box-sizing:border-box;}
+    .pv-del-confirm.show{display:flex;}
+    .pv-del-confirm-card{width:100%;max-width:340px;background:#1c1c1e;border-radius:20px;padding:22px 20px 18px;box-sizing:border-box;text-align:center;}
+    .pv-del-confirm-title{color:#fff;font-size:19px;font-weight:800;margin-bottom:8px;}
+    .pv-del-confirm-text{color:#aaa;font-size:14px;line-height:1.45;margin-bottom:18px;}
+    .pv-del-confirm-row{display:flex;gap:10px;}
+    .pv-del-confirm-cancel{flex:1;background:#2c2c2e;color:#fff;border:none;border-radius:999px;padding:12px 8px;font-size:16px;font-weight:700;cursor:pointer;}
+    .pv-del-confirm-delete{flex:1;background:#ff3b30;color:#fff;border:none;border-radius:999px;padding:12px 8px;font-size:16px;font-weight:800;cursor:pointer;}.profile-front-tab .tag-ic{width:27px;height:27px;}
 /* --- Avatar gallery + crop (tap + on profile) --- */
 #crop-screen{background:#000;min-height:100%;display:flex;flex-direction:column;}
 .crop-top{display:flex;align-items:center;justify-content:space-between;padding:12px 12px 8px;background:#000;}
@@ -380,7 +428,7 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
       <div class="inbox-page">
         <div class="inbox-head">
           <button class="inbox-head-left" aria-label="People"><img src="data:image/png;base64,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" alt="" style="width:32px;height:auto;display:block;object-fit:contain;" /></button>
-          <h2 class="inbox-head-title">Inbox <span style="font-size:10px;color:#666;font-weight:400">v23</span> <span class="inbox-status-pill" id="inbox-status-pill" role="button"><span class="inbox-head-dot"></span><span class="inbox-head-arrow"><svg class="inbox-arrow-svg" viewBox="0 0 8 5" fill="none"><path d="M1 1 L4 4 L7 1" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></h2>
+          <h2 class="inbox-head-title">Inbox <span class="inbox-status-pill" id="inbox-status-pill" role="button"><span class="inbox-head-dot"></span><span class="inbox-head-arrow"><svg class="inbox-arrow-svg" viewBox="0 0 8 5" fill="none"><path d="M1 1 L4 4 L7 1" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></h2>
           <button class="inbox-head-search" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button>
         </div>
         <div class="inbox-stories" id="inbox-stories">
@@ -476,7 +524,7 @@ main section { transition:opacity 0.18s ease, transform 0.18s ease; }
   <div class="watch-top"><button id="watch-back" aria-label="Back"><svg viewBox="0 0 32 20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M30 10H5"/><path d="M12 3 4 10l8 7"/></svg></button><span id="watch-title-top"></span></div>
   <div id="watch-feed"></div>
   <div id="watch-actions" class="watch-actions"><button class="watch-action" id="watch-like" type="button"><span class="wa-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></span><span class="wa-count" id="watch-like-count">0</span></button><button class="watch-action" id="watch-comment" type="button"><span class="wa-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span><span class="wa-count" id="watch-comment-count">0</span></button><button class="watch-action" id="watch-share" type="button"><span class="wa-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M14 9V5l7 7-7 7v-4c-5 0-8.5 1.6-11 5 1-5 4-10 11-11z"/></svg></span><span class="wa-count">Share</span></button><div class="watch-action"><span class="wa-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></span><span class="wa-count" id="watch-view-count">0</span></div></div>
-  <div id="watch-loading" class="watch-loading hidden" hidden>Loading more…</div><div id="watch-caught-up" class="watch-caught-up hidden" hidden>You are all caught up for today</div>
+  <div id="pv-yt-comments-sheet"><div class="pv-yt-c-backdrop" id="pv-yt-c-backdrop"></div><div class="pv-yt-c-panel"><div class="pv-yt-c-grab"></div><div class="pv-yt-c-head"><div><div class="pv-yt-c-title">Comments</div><div class="pv-yt-c-sub" id="pv-yt-c-sub"></div></div><button class="pv-yt-c-close" id="pv-yt-c-close" aria-label="Close">X</button></div><div class="pv-yt-c-line"></div><div id="pv-yt-c-list"></div><div class="pv-yt-c-input-row"><div class="pv-yt-c-input-ava" id="pv-yt-c-ava">C</div><input id="pv-yt-c-input" type="text" placeholder="Add a comment..." autocomplete="off"><button id="pv-yt-c-send" disabled>Send</button></div></div></div><div id="watch-loading" class="watch-loading hidden" hidden>Loading more…</div><div id="watch-caught-up" class="watch-caught-up hidden" hidden>You are all caught up for today</div>
 </section>
 <div id="viewers-sheet" aria-hidden="true"><div class="viewers-backdrop" id="viewers-backdrop"></div><div class="viewers-panel"><div class="viewers-head"><div class="viewers-title">Viewers</div><button class="viewers-close" id="viewers-close" aria-label="Close">×</button></div><hr class="viewers-divider"><div class="viewers-body"><div class="viewers-row"><div class="viewers-label">Viewer history</div><button class="viewers-toggle on" id="viewers-toggle" aria-label="Toggle viewer history"><span class="viewers-toggle-knob"></span></button></div><p class="viewers-desc">See who viewed your profile in the past 30 days, and which followers viewed your posts within 7 days of the post date. If others have this setting turned on, they will also see that you viewed their profile or posts.</p></div></div></div>
 <script>
@@ -528,7 +576,7 @@ const setNav=s=>{clearNav();const b=document.querySelector('.bottom-nav button[d
 const hideSheet=()=>hide($('inbox-status-sheet'));
 const fmtTime=ts=>{let d=new Date(typeof ts==='number'?ts:Date.parse(ts));if(isNaN(d.getTime()))d=new Date();let h=d.getHours();const m=d.getMinutes(),ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+(m<10?'0'+m:m)+' '+ap;};
 const scrollChat=()=>{const c=document.querySelector('.dm-center');if(c)c.scrollTop=c.scrollHeight;};
-const scopedKey=k=>{try{var userKeys=['pro_vibes_all_users','pro_vibes_private_names','pro_vibes_voice_queue'];if(userKeys.indexOf(k)===-1)return k;var me='';try{me=(window.ProVibesUser&&window.ProVibesUser.name)||localStorage.getItem('pro_vibes_user_name')||'';}catch(e){}me=String(me||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');if(!me)return k;return k+'__u_'+me;}catch(e){return k;}};
+const scopedKey=k=>{try{var userKeys=['pro_vibes_all_users','pro_vibes_private_names','pro_vibes_voice_queue'];if(userKeys.indexOf(k)===-1 && String(k||'').indexOf('pro_vibes_private_')!==0)return k;var me='';try{me=(window.ProVibesUser&&window.ProVibesUser.name)||localStorage.getItem('pro_vibes_user_name')||'';}catch(e){}me=String(me||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');if(!me)return k;return k+'__u_'+me;}catch(e){return k;}};
 const lsGet=k=>{try{return JSON.parse(localStorage.getItem(scopedKey(k))||'[]');}catch(e){return [];}};
 const lsSet=(k,v)=>{try{localStorage.setItem(scopedKey(k),JSON.stringify(v));}catch(e){}};
 const sameMsg=(a,b)=>(a.name||'')===(b.name||'')&&(a.text||'')===(b.text||'')&&String(a.timestamp||'')===String(b.timestamp||'');
@@ -827,15 +875,13 @@ Y.getHomeFeed=async function(pageToken){
   Y.lastMode='home'; Y.lastQuery='';
   const localQueries=Y.getLocationQueries();
   let local=[]; let token=pageToken||'';
-  // QUOTA-SAFE: max 2 local searches - if we already have 12, stop. No more 8 searches per load.
-  for(let i=0;i<Math.min(2, localQueries.length) && local.length<28;i++){
-    try{
-      const r=await Y.fetchSearchPage(localQueries[i], {order:'date', region:Y.getRegionCode(), pageToken: i===0?token:''});
-      r.videos.forEach(v=>{ if(!local.some(x=>x.id===v.id)) local.push(v); });
-      if(r.nextPageToken) token=r.nextPageToken;
-    }catch(e){ if(Y.quotaExceeded) break; }
-    if(local.length>=12 && i>=1) break;
-  }
+  // FAST: 2 local searches in PARALLEL, not one-after-one. Same quota (2 searches), ~half the time.
+  try{
+    const qs=localQueries.slice(0,2);
+    const results=await Promise.all(qs.map((q,i)=> Y.fetchSearchPage(q, {order:'date', region:Y.getRegionCode(), pageToken: i===0?token:''}).catch(e=>({videos:[], nextPageToken:''}))));
+    results.forEach(function(r){ (r.videos||[]).forEach(function(v){ if(!local.some(function(x){return x.id===v.id;})) local.push(v); }); });
+    if(results[0] && results[0].nextPageToken) token=results[0].nextPageToken;
+  }catch(e){}
   let globalList=[];
   // Only fetch global if local is weak - saves 1 search every load
   if(local.length<8){
@@ -895,7 +941,7 @@ Y.getPreviewEmbedUrl=function(id){
 Y.getEmbedUrl=function(id, muted, autoplay){
   const m = muted ? 1 : 0;
   const ap = (autoplay===0) ? 0 : 1;
-  let base='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay='+ap+'&mute='+m+'&playsinline=1&rel=0&modestbranding=1&controls=1&loop=1&playlist='+encodeURIComponent(id)+'&iv_load_policy=3';
+  let base='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay='+ap+'&mute='+m+'&playsinline=1&rel=0&modestbranding=1&controls=0&loop=1&playlist='+encodeURIComponent(id)+'&iv_load_policy=3';
   if(location.origin && location.origin.indexOf('http')===0){ base+='&enablejsapi=1&origin='+encodeURIComponent(location.origin); }
   return base;
 };
@@ -981,7 +1027,8 @@ function startPreview(card){
 }
 function setupPreviewObserver(){
   if(previewObserver){ try{previewObserver.disconnect();}catch(e){} }
-  previewTimers.forEach(t=>clearTimeout(t)); previewTimers.clear(); playingCards.clear();
+  previewTimers.forEach(t=>clearTimeout(t)); previewTimers.clear();
+  // DO NOT clear playingCards here - existing previews stay alive. Clearing it orphaned iframes and forced re-load on scroll back.
   const cards=grid.querySelectorAll('.home-card'); if(!cards.length) return;
   if(!('IntersectionObserver' in window)){
     cards.forEach((c,i)=>{ if(i<3) startPreview(c); });
@@ -995,8 +1042,9 @@ function setupPreviewObserver(){
         const t=setTimeout(()=>{ previewTimers.delete(card); startPreview(card); }, 250);
         previewTimers.set(card, t);
       } else {
+        // Scroll-out: ONLY cancel pending timer. DO NOT destroy iframe. Video stays loaded, scroll back = instant, no loading again.
+        // Old code called stopPreview(card) here - that deleted the iframe, so scroll up/down always re-loaded + showed Error 153 again.
         if(previewTimers.has(card)){ clearTimeout(previewTimers.get(card)); previewTimers.delete(card); }
-        stopPreview(card);
       }
     });
   }, {threshold:[0.55, 0.75], rootMargin:'0px 0px -5% 0px'});
@@ -1004,6 +1052,14 @@ function setupPreviewObserver(){
 }
 function render(vs, opts){
   opts=opts||{};
+  // NO-REBUILD guard: same videos already on screen (same ids, same order) = do NOT destroy cards, do NOT reload previews. Fixes scroll-back + same-filter-tap reloading.
+  try{
+    var _newIds=(vs||[]).map(function(v){return v.id;}).join(',');
+    var _oldIds=Array.prototype.map.call(grid.querySelectorAll('.home-card'), function(c){ return (cur[+c.dataset.idx]||{}).id||''; }).join(',');
+    if(vs && vs.length && _newIds && _newIds===_oldIds && grid.querySelectorAll('.home-card').length===vs.length){
+      cur=vs.slice(); window.ProVibesHome.current=cur; return;
+    }
+  }catch(e){}
   cur=vs||[]; window.ProVibesHome.current=cur;
   stopAllPreviews();
   if(!vs.length){
@@ -1022,7 +1078,7 @@ function render(vs, opts){
       cached.forEach((v,i)=>{
         const el=document.createElement('article');
         el.className='home-card'; el.setAttribute('data-idx', String(i));
-        el.innerHTML='<img src="'+esc(v.thumb)+'" alt="" loading="lazy"><div class="home-preview"></div><div class="shade"></div>'+(isNew(v.publishedAt)?'<span class="new-badge">NEW</span>':'')+'<button class="card-dots" aria-label="More">...</button><div class="card-title">'+esc(v.title)+'</div>';
+        el.innerHTML='<img src="'+esc(v.thumb)+'" alt="" loading="lazy"><div class="home-preview"></div><div class="shade"></div><div class="card-title">'+esc(v.title)+'</div>';
         el.addEventListener('click',()=>{ const vv=cur[+el.dataset.idx]; if(!vv) return; stopAllPreviews(); if(window.ProVibesWatch) window.ProVibesWatch.open(vv, cur.slice()); });
         grid.appendChild(el);
       });
@@ -1033,10 +1089,8 @@ function render(vs, opts){
     const b2=$('home-retry-btn2'); if(b2) b2.addEventListener('click',load);
     return;
   }
-  grid.innerHTML=vs.map((v,i)=>'<article class="home-card" data-idx="'+i+'"><img src="'+esc(v.thumb)+'" alt="" loading="lazy"><div class="home-preview"></div><div class="shade"></div>'+(isNew(v.publishedAt)?'<span class="new-badge">NEW</span>':'')+'<button class="card-dots" aria-label="More">...</button><div class="card-title">'+esc(v.title)+'</div></article>').join('');
+  grid.innerHTML=vs.map((v,i)=>'<article class="home-card" data-idx="'+i+'"><img src="'+esc(v.thumb)+'" alt="" loading="lazy"><div class="home-preview"></div><div class="shade"></div><div class="card-title">'+esc(v.title)+'</div></article>').join('');
   grid.querySelectorAll('.home-card').forEach(c=>{
-    const dots=c.querySelector('.card-dots');
-    if(dots) dots.addEventListener('click',e=>{e.stopPropagation();});
     c.addEventListener('click',()=>{
       const v=cur[+c.dataset.idx];
       if(!v) return;
@@ -1047,49 +1101,37 @@ function render(vs, opts){
   setupPreviewObserver();
 }
 function pvSetLoginLoader(text, done){
+  // Spinner = Home still loading. Button BLOCKED until Home finish, like X/Instagram splash. No entering with half-loaded Home.
   try{
     var btn=document.getElementById('login-btn'); if(!btn) return;
+    var txt=document.getElementById('login-btn-text');
     var isDone=(done===true)||(text===true);
-    if(isDone){ btn.classList.remove('pv-loading'); }
-    else { btn.classList.add('pv-loading'); }
+    if(isDone){ btn.classList.remove('pv-loading'); btn.disabled=false; if(txt) txt.textContent='Login'; }
+    else { btn.classList.add('pv-loading'); btn.disabled=true; if(txt) txt.textContent='Loading videos...'; }
   }catch(e){}
 }
 function pvPreloadThumbs(vs){
-  try{ (vs||[]).slice(0,12).forEach(function(v){ if(v && v.thumb){ var im=new Image(); im.src=v.thumb; } }); }catch(e){}
+  // Preload ALL available thumbs at login, so scroll = instant, no seconds. Thumbs are free (no API quota).
+  try{ (vs||[]).forEach(function(v){ if(v && v.thumb){ var im=new Image(); im.src=v.thumb; } }); }catch(e){}
 }
 let filterPreloadStarted=false; let filterPreloadPromises={};
-function preloadFiltersInBackground(){
-  if(filterPreloadStarted) return;
-  filterPreloadStarted=true;
-  (async()=>{
-    try{
-      var keys=[];
-      try{ document.querySelectorAll('.home-filter-pill[data-filter]').forEach(function(p){ var k=p.getAttribute('data-filter'); if(k && k!=='all' && keys.indexOf(k)===-1) keys.push(k); }); }catch(e){}
-      if(!keys.length && window.ProVibesYouTube && window.ProVibesYouTube.FILTERS) keys=Object.keys(window.ProVibesYouTube.FILTERS);
-      for(var i=0;i<keys.length;i++){
-        var key=keys[i];
-        try{
-          // Spinner only, no text - keep Login spinner if All not ready yet
-          if(window.ProVibesYouTube && window.ProVibesYouTube.quotaExceeded) break;
-          if(preloadedFilters[key] && preloadedFilters[key].length) continue;
-          var cachedF=loadFilterCache(key);
-          if(cachedF && cachedF.length){ preloadedFilters[key]=cachedF.slice(); continue; }
-          var p2=(async function(k){
-            try{
-              var fresh=await window.ProVibesYouTube.getFilteredVideos(k);
-              if(fresh && fresh.length){ preloadedFilters[k]=fresh.slice(); saveFilterCache(k, fresh); }
-              return fresh||[];
-            }catch(e){ return []; }
-          })(key);
-          filterPreloadPromises[key]=p2;
-          await p2;
-          await new Promise(function(r){ setTimeout(r, 350); });
-        }catch(e){}
-      }
-      pvSetLoginLoader(true);
-    }catch(e){}
-  })();
+function pvBuildAllFilters(){
+  // Build EVERY filter instantly from All videos already fetched at login + saved filter cache. 0 API, 0 quota, 0 loading inside app.
+  try{
+    var keys=[];
+    try{ document.querySelectorAll('.home-filter-pill[data-filter]').forEach(function(p){ var k=p.getAttribute('data-filter'); if(k && k!=='all' && keys.indexOf(k)===-1) keys.push(k); }); }catch(e){}
+    if(!keys.length && window.ProVibesYouTube && window.ProVibesYouTube.FILTERS) keys=Object.keys(window.ProVibesYouTube.FILTERS);
+    keys.forEach(function(key){
+      try{
+        var seen={}; var out=[];
+        [filterLocal(allVideos, key), loadFilterCache(key), preloadedFilters[key]||[]].forEach(function(arr){ (arr||[]).forEach(function(v){ if(v && v.id && !seen[v.id]){ seen[v.id]=1; out.push(v); } }); });
+        if(out.length){ preloadedFilters[key]=out.slice(); saveFilterCache(key, out); }
+      }catch(e){}
+    });
+  }catch(e){}
 }
+function preloadFiltersInBackground(){ pvBuildAllFilters(); }
+function pvCachedAllAgeMs(){ try{ var c=JSON.parse(localStorage.getItem('pro_vibes_cached_all')||'null'); if(c && c.ts) return Date.now()-c.ts; }catch(e){} return 999999999; }
 window.PVAllReady=false; window.PVAllPromise=null;
 function startEarlyPreload(){
   if(earlyAllPromise){ try{ earlyAllPromise.then(function(){ preloadFiltersInBackground(); }); }catch(e){} return earlyAllPromise; }
@@ -1098,10 +1140,15 @@ function startEarlyPreload(){
     var cached0=loadCache();
     if(cached0 && cached0.length){
       earlyAll=cached0.slice(); allVideos=earlyAll.slice(); window.ProVibesHome.current=earlyAll; window.ProVibesHome.allVideos=allVideos;
-      window.PVAllReady=true; pvSetLoginLoader(true); pvPreloadThumbs(earlyAll);
+      pvPreloadThumbs(earlyAll);
       try{ preloadFiltersInBackground(); }catch(e){}
+      // QUOTA-SAFE: cache <15 min old = show it, 0 API call. Spinner OFF only now, because no fresh fetch coming.
+      if(pvCachedAllAgeMs()<15*60*1000){ window.PVAllReady=true; pvSetLoginLoader(true); earlyAllPromise=Promise.resolve(earlyAll.slice()); window.PVAllPromise=earlyAllPromise; return earlyAllPromise; }
+      // Cache old: keep spinner ON while fresh fetch runs. Spinner turns OFF inside earlyAllPromise below.
+      pvSetLoginLoader(false);
       earlyAllPromise=(async()=>{
-        try{ try{ await window.ProVibesYouTube.detectLocation(); }catch(e){} var fresh=await window.ProVibesYouTube.getHomeFeed(); if(fresh && fresh.length){ earlyAll=fresh.slice(); allVideos=earlyAll.slice(); saveCache(earlyAll); window.ProVibesHome.current=earlyAll; window.ProVibesHome.allVideos=allVideos; pvPreloadThumbs(earlyAll); } }catch(e){}
+        try{ try{ await window.ProVibesYouTube.detectLocation(); }catch(e){} var fresh=await window.ProVibesYouTube.getHomeFeed(); if(fresh && fresh.length){ earlyAll=fresh.slice(); allVideos=earlyAll.slice(); saveCache(earlyAll); window.ProVibesHome.current=earlyAll; window.ProVibesHome.allVideos=allVideos; pvPreloadThumbs(earlyAll); try{ pvBuildAllFilters(); }catch(e){} } }catch(e){}
+        try{ window.PVAllReady=true; pvSetLoginLoader(true); }catch(e){}
         return earlyAll||[];
       })();
       window.PVAllPromise=earlyAllPromise;
@@ -1113,10 +1160,11 @@ function startEarlyPreload(){
     try{
       try{ await window.ProVibesYouTube.detectLocation(); }catch(e){}
       const feed=await window.ProVibesYouTube.getHomeFeed();
-      if(feed && feed.length){ earlyAll=feed.slice(); allVideos=earlyAll.slice(); saveCache(earlyAll); window.ProVibesHome.current=earlyAll; window.ProVibesHome.allVideos=allVideos; pvPreloadThumbs(earlyAll); window.PVAllReady=true; pvSetLoginLoader(true); }
+      if(feed && feed.length){ earlyAll=feed.slice(); allVideos=earlyAll.slice(); saveCache(earlyAll); window.ProVibesHome.current=earlyAll; window.ProVibesHome.allVideos=allVideos; pvPreloadThumbs(earlyAll); try{ pvBuildAllFilters(); }catch(e){} window.PVAllReady=true; pvSetLoginLoader(true); }
       try{ preloadFiltersInBackground(); }catch(e){}
       return earlyAll||[];
     }catch(e){
+      try{ pvSetLoginLoader(true); }catch(e){}
       const cached=loadCache();
       if(cached.length){ earlyAll=cached.slice(); allVideos=cached.slice(); pvPreloadThumbs(earlyAll); try{ preloadFiltersInBackground(); }catch(e){} return cached; }
       try{ preloadFiltersInBackground(); }catch(e){}
@@ -1126,26 +1174,25 @@ function startEarlyPreload(){
   window.PVAllPromise=earlyAllPromise;
   return earlyAllPromise;
 }
-async function load(){
+async function load(force){
+  // Already showing All with cards on screen = DO NOT rebuild. Tapping Home, or coming back, must NOT destroy + reload Home.
+  if(!force && currentFilter==='all' && cur.length && grid.querySelectorAll('.home-card').length===cur.length){
+    try{ setupPreviewObserver(); }catch(e){}
+    return;
+  }
   currentFilter='all'; setActivePill('all');
   const lbl=$('home-search-label'); if(lbl) hide(lbl);
-  stopAllPreviews();
-  // 1) If we already have All from early preload (Login screen), show instantly
+  // NO loading inside app: Home was already loaded at Login. Never fetch getHomeFeed here. Only use earlyAll / cache / login promise.
   if(earlyAll && earlyAll.length){
     cur=earlyAll.slice(); allVideos=cur.slice(); window.ProVibesHome.current=cur; window.ProVibesHome.allVideos=allVideos;
     render(cur); return;
   }
-  // 1b) If preload never finished when name was entered, show saved All SOONER - don't wait, update when fresh arrives
   var cachedEarly=loadCache();
   if(cachedEarly && cachedEarly.length){
     cur=cachedEarly.slice(); allVideos=cur.slice(); window.ProVibesHome.current=cur; window.ProVibesHome.allVideos=allVideos;
-    render(cur);
-    if(earlyAllPromise){ try{ earlyAllPromise.then(function(feed){ if(feed && feed.length && currentFilter==='all'){ cur=feed.slice(); allVideos=cur.slice(); window.ProVibesHome.current=cur; window.ProVibesHome.allVideos=allVideos; render(cur); } }); }catch(e){} }
-    return;
+    render(cur); return;
   }
-  // 2) If early preload still running, wait for it - don't start a second fetch (saves quota)
   if(earlyAllPromise){
-    grid.innerHTML='<div class="home-skeleton"></div><div class="home-skeleton"></div><div class="home-skeleton"></div><div class="home-skeleton"></div>';
     try{
       const feed=await earlyAllPromise;
       if(feed && feed.length){
@@ -1154,37 +1201,13 @@ async function load(){
       }
     }catch(e){}
   }
-  // 3) No early data - check cache FIRST so screen never goes blank
-  const cached=loadCache();
-  if(cached.length){
-    cur=cached.slice(); allVideos=cur.slice(); window.ProVibesHome.current=cur; window.ProVibesHome.allVideos=allVideos;
-    render(cur);
-    // Try fresh in background, but keep showing cache if it fails
-    (async()=>{ try{ const fresh=await window.ProVibesYouTube.getHomeFeed(); if(fresh && fresh.length){ cur=fresh.slice(); allVideos=cur.slice(); saveCache(fresh); window.ProVibesHome.current=cur; render(fresh); } }catch(e){} })();
-    return;
-  }
-  grid.innerHTML='<div class="home-skeleton"></div><div class="home-skeleton"></div><div class="home-skeleton"></div><div class="home-skeleton"></div>';
-  try{
-    try{ await window.ProVibesYouTube.detectLocation(); }catch(e){}
-    cur=await window.ProVibesYouTube.getHomeFeed();
-    if(cur && cur.length){ allVideos=cur.slice(); saveCache(cur); }
-    window.ProVibesHome.current=cur; window.ProVibesHome.allVideos=allVideos;
-    render(cur);
-  }catch(e){
-    const YT=window.ProVibesYouTube;
-    if(YT && YT.quotaExceeded){
-      const c2=loadCache();
-      if(c2.length){ cur=c2.slice(); allVideos=cur.slice(); render(cur); return; }
-      grid.innerHTML='<div class="home-empty">YouTube daily limit reached.<br>Showing saved videos when you come back.<br>Try again later.<br><button class="home-retry" id="home-retry-btn">Tap to retry</button></div>';
-    } else {
-      const msg=(e&&e.message)||'YouTube failed';
-      grid.innerHTML='<div class="home-empty">Shorts could not load.<br>'+esc(msg)+'<br><button class="home-retry" id="home-retry-btn">Tap to retry</button></div>';
-    }
-    const b=$('home-retry-btn'); if(b) b.addEventListener('click',load);
-  }
+  grid.innerHTML='<div class="home-empty">Videos no load yet.<br>Go back to Login and wait for spinner to finish.<br><button class="home-retry" id="home-retry-btn">Back to Login</button></div>';
+  const b=$('home-retry-btn'); if(b) b.addEventListener('click',function(){ try{ hide($('app-inside')); show($('login-screen')); }catch(e){} });
 }
 async function applyFilter(key){
   if(!key) return;
+  // Same filter already showing = do nothing. No reload.
+  if(key===currentFilter && cur.length && grid.querySelectorAll('.home-card').length===cur.length){ return; }
   const myId=++filterRequestId;
   currentFilter=key; setActivePill(key);
   const pill=document.querySelector('.home-filter-pill[data-filter="'+key+'"]');
@@ -1193,78 +1216,27 @@ async function applyFilter(key){
   const bar=$('home-search-bar'); if(bar && !bar.classList.contains('hidden')) hide(bar);
   const lbl=$('home-search-label'); if(lbl) hide(lbl);
   const YT=window.ProVibesYouTube; const cfg=YT && YT.FILTERS && YT.FILTERS[key];
+  // INSTANT ONLY: everything was already loaded at Login. No API, no skeleton, no loading inside app. Like X/Instagram tabs.
+  function mergeDedup(lists){ var out=[]; var seen={}; lists.forEach(function(arr){ (arr||[]).forEach(function(v){ if(v && v.id && !seen[v.id]){ seen[v.id]=1; out.push(v); } }); }); return out; }
   if(key==='all'){
     if(allVideos && allVideos.length){
       cur=allVideos.slice(); window.ProVibesHome.current=cur; render(cur);
     } else {
       const c=loadCache();
-      if(c.length){ cur=c.slice(); allVideos=cur.slice(); render(cur); } else return load();
+      if(c.length){ cur=c.slice(); allVideos=cur.slice(); render(cur); } else { render([]); }
     }
     try{window.scrollTo({top:0, behavior:'smooth'});}catch(e){}
     return;
   }
-  // 1) INSTANT + FREE: filter from All locally - no API call, no quota
-  const local=filterLocal(allVideos, key);
-  // 2) COMBINED: preloaded + local + cache together, don't throw any away
-  function mergeDedup(lists){ var out=[]; var seen={}; lists.forEach(function(arr){ (arr||[]).forEach(function(v){ if(v && v.id && !seen[v.id]){ seen[v.id]=1; out.push(v); } }); }); return out; }
-  if(preloadedFilters[key] && preloadedFilters[key].length){
-    const cached=mergeDedup([preloadedFilters[key], filterLocal(allVideos, key), loadFilterCache(key)]);
-    cur=cached; window.ProVibesHome.current=cur; render(cached); return;
-  }
-  // 2b) If this filter is already loading in background from Login, wait for THAT load - don't start a second one
-  if(filterPreloadPromises[key]){
-    try{
-      await filterPreloadPromises[key];
-      if(preloadedFilters[key] && preloadedFilters[key].length){
-        const waited=mergeDedup([preloadedFilters[key], filterLocal(allVideos, key), loadFilterCache(key)]);
-        cur=waited; window.ProVibesHome.current=cur; render(waited); return;
-      }
-    }catch(e){}
-  }
-  const cachedFilter=loadFilterCache(key);
-  if(cachedFilter.length && local.length<6){
-    cur=mergeDedup([cachedFilter, local]);
-    window.ProVibesHome.current=cur; render(cur);
-    // Don't fetch again if quota is gone - cached is enough
-    if(YT && YT.quotaExceeded) return;
-  }
-  if(local.length>=6){
-    render(mergeDedup([local, cachedFilter, preloadedFilters[key]||[]]));
-    // If background preload from Login is already fetching this filter, don't fetch it again
-    if(filterPreloadPromises[key]) return;
-    // Refresh quietly in background ONLY if quota is OK - otherwise local is enough
-    if(YT && YT.quotaExceeded) return;
-    (async()=>{
-      try{
-        const fresh=await YT.getFilteredVideos(key);
-        if(myId!==filterRequestId || currentFilter!==key) return;
-        if(fresh && fresh.length){ var combined2=mergeDedup([fresh, local, cachedFilter]); preloadedFilters[key]=combined2.slice(); saveFilterCache(key, combined2); cur=combined2.slice(); window.ProVibesHome.current=cur; render(combined2); }
-      }catch(e){}
-    })();
+  var combined=mergeDedup([preloadedFilters[key]||[], filterLocal(allVideos, key), loadFilterCache(key)]);
+  if(combined.length){
+    cur=combined; window.ProVibesHome.current=cur; render(combined);
+    try{window.scrollTo({top:0, behavior:'smooth'});}catch(e){}
     return;
   }
-  // Not enough local - need 1 API fetch for this filter only (not all filters)
-  if(YT && YT.quotaExceeded){
-    if(cachedFilter.length){ render(cachedFilter); return; }
-    if(local.length){ render(local); return; }
-    render([]);
-    return;
-  }
-  stopAllPreviews();
-  grid.innerHTML='<div class="home-skeleton"></div><div class="home-skeleton"></div><div class="home-skeleton"></div><div class="home-skeleton"></div>';
-  try{
-    const fresh=await YT.getFilteredVideos(key);
-    if(myId!==filterRequestId || currentFilter!==key) return;
-    if(fresh && fresh.length){ var combined=mergeDedup([fresh, local, cachedFilter]); preloadedFilters[key]=combined.slice(); saveFilterCache(key, combined); render(combined); }
-    else if(local.length){ render(local); }
-    else if(cachedFilter.length){ render(cachedFilter); }
-    else { render([]); }
-  }catch(e){
-    if(myId!==filterRequestId || currentFilter!==key) return;
-    if(local.length){ render(local); }
-    else if(cachedFilter.length){ render(cachedFilter); }
-    else { grid.innerHTML='<div class="home-empty">Could not load '+(cfg?esc(cfg.label):esc(key))+' right now.<br><button class="home-retry" id="home-filter-retry">Tap to retry</button></div>'; const b=$('home-filter-retry'); if(b) b.addEventListener('click',()=>applyFilter(key)); }
-  }
+  // No available video for this filter in the already-fetched All = show empty, NO fetch, NO loading. User goes back to All for available ones.
+  render([]);
+  try{window.scrollTo({top:0, behavior:'smooth'});}catch(e){}
 }
 async function search(){
   const q=$('home-search-input').value.trim(); if(!q) return;
@@ -1315,7 +1287,7 @@ const sc=$('watch-screen'), feed=$('watch-feed');
 let list=[], idx=0, isOpen=false, loadingMore=false, scrollTimer=null, programmaticScroll=false;
 let watchMuted=false;
 function updateSoundBtn(){ return; }
-function updateCaughtUp(){ try{ var c=$('watch-caught-up'); if(!c) return; var YT=window.ProVibesYouTube; var noMore=!YT || !YT.nextPageToken; if(isOpen && list.length && idx>=list.length-1 && noMore){ c.classList.remove('hidden'); c.removeAttribute('hidden'); } else { c.classList.add('hidden'); c.setAttribute('hidden',''); } }catch(e){} }
+function updateCaughtUp(){ try{ var c=$('watch-caught-up'); if(!c) return; if(isOpen && list.length && idx>=list.length-1){ c.classList.remove('hidden'); c.removeAttribute('hidden'); } else { c.classList.add('hidden'); c.setAttribute('hidden',''); } }catch(e){} }
 function sendToPlayer(iframe, func){
   try{
     if(!iframe || !iframe.contentWindow) return;
@@ -1329,7 +1301,20 @@ function unmutePlayer(iframe){
   sendToPlayer(iframe, 'playVideo');
 }
 function fmtExact(n){ var num=parseInt(n||'0',10)||0; try{ return num.toLocaleString('en-US'); }catch(e){ return String(num); } }
-function updateActions(){ try{ var v=list[idx]; var lk=$('watch-like-count'), cm=$('watch-comment-count'), vw=$('watch-view-count'); if(lk) lk.textContent=v?fmtExact(v.likeCount):'0'; if(cm) cm.textContent=v?fmtExact(v.commentCount):'0'; if(vw) vw.textContent=v?fmtExact(v.viewCount):'0'; }catch(e){} }
+function pvYtLikedMap(){ try{var m=JSON.parse(localStorage.getItem('pro_vibes_yt_liked')||'{}'); return (m&&typeof m==='object')?m:{};}catch(e){return {};} }
+function pvYtIsLiked(id){ try{return !!pvYtLikedMap()[id];}catch(e){return false;} }
+function pvYtSetLiked(id,liked){ try{var m=pvYtLikedMap(); if(liked) m[id]=1; else delete m[id]; localStorage.setItem('pro_vibes_yt_liked', JSON.stringify(m));}catch(e){} }
+function pvYtLocalKey(id){ return 'pro_vibes_yt_comments_'+id; }
+function pvYtGetLocal(id){ try{var a=JSON.parse(localStorage.getItem(pvYtLocalKey(id))||'[]'); return Array.isArray(a)?a:[];}catch(e){return [];} }
+function pvYtSaveLocal(id,arr){ try{localStorage.setItem(pvYtLocalKey(id), JSON.stringify((arr||[]).slice(0,100)));}catch(e){} }
+function pvYtMyName(){ try{return localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'You';}catch(e){return 'You';} }
+function pvYtTimeAgo(ts){ try{var t=new Date(ts).getTime(); if(!t) return ''; var s=Math.floor((Date.now()-t)/1000); if(s<60) return 'now'; if(s<3600) return Math.floor(s/60)+'m'; if(s<86400) return Math.floor(s/3600)+'h'; if(s<86400*30) return Math.floor(s/86400)+'d'; if(s<86400*365) return Math.floor(s/(86400*30))+'mo'; return Math.floor(s/(86400*365))+'y';}catch(e){return '';} }
+function updateActions(){ try{ var v=list[idx]; var lk=$('watch-like-count'), cm=$('watch-comment-count'), vw=$('watch-view-count'); var likeBtn=$('watch-like'); if(!v){ if(lk) lk.textContent='0'; if(cm) cm.textContent='0'; if(vw) vw.textContent='0'; if(likeBtn) likeBtn.classList.remove('liked'); return; } var baseLike=parseInt(v.likeCount||'0',10)||0; var showLike=baseLike + (pvYtIsLiked(v.id)?1:0); var localCount=pvYtGetLocal(v.id).length; var showComment=(parseInt(v.commentCount||'0',10)||0)+localCount; if(lk) lk.textContent=fmtExact(showLike); if(cm) cm.textContent=fmtExact(showComment); if(vw) vw.textContent=fmtExact(v.viewCount); if(likeBtn){ if(pvYtIsLiked(v.id)) likeBtn.classList.add('liked'); else likeBtn.classList.remove('liked'); } }catch(e){} }
+function pvYtFetchComments(videoId){ return (async function(){ try{ var YT=window.ProVibesYouTube; if(!YT||!YT.fetchWithKeyRotation) return []; var url='https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId='+encodeURIComponent(videoId)+'&maxResults=50&order=relevance&textFormat=plainText'; var d=await YT.fetchWithKeyRotation(url); var out=[]; (d.items||[]).forEach(function(it){ var sn=it.snippet&&it.snippet.topLevelComment&&it.snippet.topLevelComment.snippet; if(!sn) return; out.push({name:sn.authorDisplayName||'YouTube', avatar:sn.authorProfileImageUrl||'', text:sn.textDisplay||sn.textOriginal||'', likes:parseInt(sn.likeCount||'0',10)||0, time:sn.publishedAt||'', isMine:false, id:it.id||('yt_'+out.length)}); }); return out; }catch(e){ return []; } })(); }
+function pvYtRenderComments(ytComments){ try{ var listEl=$('pv-yt-c-list'); if(!listEl) return; var v=list[idx]; var local=pvYtGetLocal(v?v.id:''); var yt=ytComments||window._pvYtLastComments||[]; window._pvYtLastComments=yt; var all=local.concat(yt); var sub=$('pv-yt-c-sub'); if(sub&&v) sub.textContent=(fmtExact((parseInt(v.commentCount||'0',10)||0)+local.length))+' comments - '+v.title; if(!all.length){ listEl.innerHTML='<div class="pv-yt-c-empty">No comments yet.<br>Be the first to comment.</div>'; return; } var cLikes={}; try{cLikes=JSON.parse(localStorage.getItem('pro_vibes_yt_comment_likes')||'{}')||{};}catch(e){cLikes={};} var html=''; all.forEach(function(c,ci){ var ini=String(c.name||'?').trim().slice(0,1).toUpperCase()||'C'; var ava=c.avatar?'<img src="'+esc(c.avatar)+'" alt="">':esc(ini); var liked=!!cLikes[c.id]; var showLikes=(parseInt(c.likes||'0',10)||0)+(liked?1:0); html+='<div class="pv-yt-c-row"><div class="pv-yt-c-ava'+(c.isMine?' mine':'')+'">'+ava+'</div><div class="pv-yt-c-body"><div class="pv-yt-c-name">'+esc(c.name)+(c.isMine?'<span class="pv-yt-c-mine-badge">You</span>':'')+'<span>'+esc(pvYtTimeAgo(c.time))+'</span></div><div class="pv-yt-c-text">'+esc(c.text)+'</div><div class="pv-yt-c-actions"><button class="pv-yt-c-like'+(liked?' liked':'')+'" data-cid="'+esc(c.id)+'" data-idx="'+ci+'">Like '+fmtExact(showLikes)+'</button><button class="pv-yt-c-reply" data-rname="'+esc(c.name)+'">Reply</button></div></div></div>'; }); listEl.innerHTML=html; listEl.querySelectorAll('.pv-yt-c-like').forEach(function(b){ b.addEventListener('click', function(){ try{ var cid=b.getAttribute('data-cid'); var m=JSON.parse(localStorage.getItem('pro_vibes_yt_comment_likes')||'{}')||{}; if(m[cid]) delete m[cid]; else m[cid]=1; localStorage.setItem('pro_vibes_yt_comment_likes', JSON.stringify(m)); pvYtRenderComments(window._pvYtLastComments||[]); }catch(e){} }); }); listEl.querySelectorAll('.pv-yt-c-reply').forEach(function(b){ b.addEventListener('click', function(){ try{ var inp=$('pv-yt-c-input'); if(inp){ inp.value='@'+b.getAttribute('data-rname')+' '; inp.focus(); var snd=$('pv-yt-c-send'); if(snd) snd.disabled=false; } }catch(e){} }); }); }catch(e){} }
+function pvYtOpenComments(){ try{ var v=list[idx]; if(!v) return; var sheet=$('pv-yt-comments-sheet'); if(!sheet) return; var me=pvYtMyName(); var ava=$('pv-yt-c-ava'); if(ava) ava.textContent=String(me||'C').trim().slice(0,1).toUpperCase()||'C'; var listEl=$('pv-yt-c-list'); if(listEl) listEl.innerHTML='<div class="pv-yt-c-loading">Loading comments...</div>'; sheet.classList.add('show'); var inp=$('pv-yt-c-input'); if(inp){ inp.value=''; setTimeout(function(){ try{inp.focus();}catch(e){} },300); } var snd=$('pv-yt-c-send'); if(snd) snd.disabled=true; pvYtFetchComments(v.id).then(function(yt){ try{ if(!$('pv-yt-comments-sheet')||!$('pv-yt-comments-sheet').classList.contains('show')) return; pvYtRenderComments(yt); }catch(e){} }); }catch(e){} }
+function pvYtCloseComments(){ try{ var sheet=$('pv-yt-comments-sheet'); if(sheet) sheet.classList.remove('show'); var inp=$('pv-yt-c-input'); if(inp) inp.blur(); }catch(e){} }
+function pvYtPostComment(){ try{ var inp=$('pv-yt-c-input'); if(!inp) return; var txt=inp.value.trim(); if(!txt) return; var v=list[idx]; if(!v) return; var me=pvYtMyName(); var c={name:me, avatar:'', text:txt, likes:0, time:new Date().toISOString(), isMine:true, id:'mine_'+Date.now()}; var arr=pvYtGetLocal(v.id); arr.unshift(c); pvYtSaveLocal(v.id, arr); inp.value=''; var snd=$('pv-yt-c-send'); if(snd) snd.disabled=true; pvYtRenderComments(window._pvYtLastComments||[]); updateActions(); try{ var le=$('pv-yt-c-list'); if(le) le.scrollTop=0; }catch(e){} }catch(e){} }
 function updateTop(){
   const v=list[idx];
   const top=$('watch-title-top');
@@ -1357,34 +1342,38 @@ function renderFeed(){
 function clearPlayers(exceptIdx){
   feed.querySelectorAll('.watch-slide').forEach((slide, i)=>{
     if(i===exceptIdx) return;
-    if(i===exceptIdx+1 || i===exceptIdx+2) return;
+    // Keep PREV 1 + NEXT 2 alive: swipe up AND swipe back down = instant. Iframe preload costs 0 Data API quota.
+    if(i===exceptIdx-1 || i===exceptIdx+1 || i===exceptIdx+2) return;
     const p=slide.querySelector('.watch-player'); if(p) p.innerHTML='';
     const tap=slide.querySelector('.watch-tap-play'); if(tap) tap.style.display='flex';
     if(p) p.removeAttribute('data-preloaded');
   });
 }
 function preloadNextTwo(centerIdx){
-  for(let k=1;k<=2;k++){
-    const ni=centerIdx+k;
+  // Preload NEXT 2 + PREV 1. Iframe embeds cost 0 YouTube Data API quota, so we can be aggressive here. Swipe up AND down = instant, no re-load.
+  var toPreload=[centerIdx-1, centerIdx+1, centerIdx+2];
+  for(var _pi=0;_pi<toPreload.length;_pi++){
+    var ni=toPreload[_pi];
     if(ni<0 || ni>=list.length) continue;
-    const slide=feed.querySelector('.watch-slide[data-idx="'+ni+'"]');
+    var slide=feed.querySelector('.watch-slide[data-idx="'+ni+'"]');
     if(!slide) continue;
-    const player=slide.querySelector('.watch-player');
+    var player=slide.querySelector('.watch-player');
     if(!player) continue;
     if(player.querySelector('iframe')) continue;
-    const v=list[ni]; if(!v) continue;
-    const yt=window.ProVibesYouTube;
+    var v=list[ni]; if(!v) continue;
+    var yt=window.ProVibesYouTube;
     try{
       player.innerHTML='<iframe src="'+esc(yt.getEmbedUrl(v.id, false, 0))+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen; accelerometer; gyroscope" allowfullscreen playsinline referrerpolicy="no-referrer-when-downgrade" title="'+esc(v.title)+'"></iframe>';
       player.setAttribute('data-preloaded','1');
     }catch(e){}
   }
-  if(centerIdx >= list.length-4) maybeLoadMore();
+  // No maybeLoadMore here - not unlimited, just ones available.
 }
 function activate(i, forcePlay){
   if(!list.length) return;
   if(i<0) i=0; if(i>=list.length) i=list.length-1;
   idx=i;
+  try{pvYtCloseComments();}catch(e){}
   updateTop();
   clearPlayers(i);
   const slide=feed.querySelector('.watch-slide[data-idx="'+i+'"]');
@@ -1416,7 +1405,7 @@ function activate(i, forcePlay){
   }
   if(tap) tap.style.display='none';
   preloadNextTwo(i);
-  maybeLoadMore(); updateCaughtUp();
+  updateCaughtUp();
 }
 function scrollToIdx(i, smooth){
   if(!list.length) return;
@@ -1426,26 +1415,8 @@ function scrollToIdx(i, smooth){
   setTimeout(()=>{ programmaticScroll=false; activate(i); }, smooth===false?50:450);
 }
 async function maybeLoadMore(){
-  if(loadingMore) return;
-  if(idx < list.length-4) return;
-  const YT=window.ProVibesYouTube;
-  if(!YT || !YT.nextPageToken) return;
-  loadingMore=true;
-  const ld=$('watch-loading'); if(ld){ ld.classList.remove('hidden'); ld.removeAttribute('hidden'); }
-  try{
-    const more=await YT.loadMore();
-    if(more && more.length){
-      const start=list.length;
-      more.forEach(v=>{ if(!list.some(x=>x.id===v.id)) list.push(v); });
-      for(let k=start;k<list.length;k++){ feed.appendChild(buildSlide(list[k], k)); }
-      feed.querySelectorAll('.watch-slide').forEach((s,ii)=>{ s.setAttribute('data-idx', String(ii)); });
-      updateTop();
-      preloadNextTwo(idx);
-    }
-  }catch(e){}
-  loadingMore=false;
-  if(ld){ ld.classList.add('hidden'); ld.setAttribute('hidden',''); }
-  updateCaughtUp();
+  // NOT unlimited - just the ones available from Home / Search. No extra API fetch, 0 quota.
+  return;
 }
 function open(v, all){
   list = (all && all.length ? all.slice() : [v]);
@@ -1486,6 +1457,11 @@ if(feed){
 const backBtn=$('watch-back');
 if(backBtn) backBtn.addEventListener('click', close);
 /* Volume button removed - sound always ON once you enter any video */
+const likeBtn2=$('watch-like'); if(likeBtn2) likeBtn2.addEventListener('click', function(){ try{ var v=list[idx]; if(!v) return; var cur=pvYtIsLiked(v.id); pvYtSetLiked(v.id, !cur); updateActions(); var btn=$('watch-like'); if(btn){ btn.style.transform='scale(1.25)'; setTimeout(function(){ btn.style.transform=''; },150); } }catch(e){} });
+const commentBtn2=$('watch-comment'); if(commentBtn2) commentBtn2.addEventListener('click', pvYtOpenComments);
+const cClose2=$('pv-yt-c-close'); if(cClose2) cClose2.addEventListener('click', pvYtCloseComments);
+const cBack2=$('pv-yt-c-backdrop'); if(cBack2) cBack2.addEventListener('click', pvYtCloseComments);
+const cInput2=$('pv-yt-c-input'); const cSend2=$('pv-yt-c-send'); if(cInput2&&cSend2){ cInput2.addEventListener('input', function(){ cSend2.disabled=!cInput2.value.trim(); }); cInput2.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); pvYtPostComment(); } }); cSend2.addEventListener('click', pvYtPostComment); }
 const shareBtn=$('watch-share'); if(shareBtn) shareBtn.addEventListener('click', async ()=>{ try{ var v=list[idx]; if(!v) return; var url='https://www.youtube.com/shorts/'+encodeURIComponent(v.id); if(navigator.share){ try{ await navigator.share({title:v.title, url:url}); }catch(e){} } else if(navigator.clipboard){ await navigator.clipboard.writeText(url); } }catch(e){} });
 document.addEventListener('keydown', (e)=>{
   if(!isOpen) return;
@@ -1546,11 +1522,12 @@ function doLogin(name){
 }
 async function login(){
   var inp=$('login-name'),name=inp.value.trim().slice(0,8);if(inp)inp.value=name;if(!name){inp.focus();return;}
-  // If entered name too fast before All videos load, show spinner IN Login and wait for All (max 8s), then enter
+  // BLOCK: if Home never finish load, spinner dey load am BEFORE user enter. No entering with half-loaded Home. PVAllPromise always resolves (even on fail it returns cache/[]), so this cannot hang forever.
   try{
-    var _btn=document.getElementById('login-btn');
-    if(_btn && _btn.classList.contains('pv-loading') && window.PVAllPromise){
-      try{ await Promise.race([window.PVAllPromise, new Promise(function(r){ setTimeout(r, 8000); })]); }catch(e){}
+    if(!window.PVAllPromise && window.ProVibesHome && window.ProVibesHome.startEarlyPreload){ try{ window.PVAllPromise=window.ProVibesHome.startEarlyPreload(); }catch(e){} }
+    if(window.PVAllPromise){
+      pvSetLoginLoader(false);
+      try{ await window.PVAllPromise; }catch(e){}
       pvSetLoginLoader(true);
     }
   }catch(e){}
@@ -1650,16 +1627,18 @@ function pvUpdateAllUsersBadge(){try{var b=document.getElementById('open-dm-all-
 function pvRestoreUnreadBadges(){try{pvUpdateAllUsersPreview();pvUpdateAllUsersBadge();document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(r){var n=r.getAttribute('data-person-name');if(n)pvSetBadge(r,pvGetUnread(n));});}catch(e){}try{pvSortInboxByTime();}catch(e){}}
 function pvLastMsgTime(name){try{var msgs=[];if(name==='All Users'){try{msgs=lsGet('pro_vibes_all_users')||[];}catch(e){msgs=[];}}else{var room=window.getPrivateRoom?window.getPrivateRoom(name):'';var key='pro_vibes_private_'+room;try{msgs=lsGet(key)||[];}catch(e){msgs=[];}}if(!msgs.length)return 0;var mx=0;msgs.forEach(function(m){var ts=Number(m&&(m.timestamp||0))||0;if(ts>mx)mx=ts;});return mx;}catch(e){return 0;}}
 function pvSortInboxByTime(){try{var list=document.getElementById('new-persons-list');var allBtn=document.getElementById('open-dm-all-users');if(!list||!allBtn)return;if(allBtn.parentNode!==list)list.appendChild(allBtn);var rows=Array.prototype.slice.call(list.children);rows.forEach(function(r){var n=r.getAttribute('data-name')||r.getAttribute('data-person-name')||'All Users';r._pvTime=pvLastMsgTime(n);});rows.sort(function(a,b){return (b._pvTime||0)-(a._pvTime||0);});rows.forEach(function(r){list.appendChild(r);});}catch(e){}}
-function pvMarkNew(name,delta){try{if(!name)return;var inc=(typeof delta==='number'&&delta>0)?delta:1;if(name==='All Users'){var allBtn=document.getElementById('open-dm-all-users');if(!allBtn)return;var cur=pvGetUnread('All Users');pvSetUnread('All Users',cur+inc);pvSetBadge(allBtn,cur+inc);try{pvUpdateAllUsersPreview();}catch(e){}try{pvSortInboxByTime();}catch(e){}return;}var list=document.getElementById('new-persons-list');if(!list)return;var row=list.querySelector('[data-person-name="'+String(name).replace(/"/g,'')+'"]');if(!row){try{addPerson(name);}catch(e){}row=list.querySelector('[data-person-name="'+String(name).replace(/"/g,'')+'"]');}if(!row)return;var cur2=pvGetUnread(name);pvSetUnread(name,cur2+inc);pvSetBadge(row,cur2+inc);try{pvUpdateListPreview(name);}catch(e){}try{pvSortInboxByTime();}catch(e){}}catch(e){}}
+function pvMarkNew(name,delta){try{if(!name)return;var inc=(typeof delta==='number'&&delta>0)?delta:1;if(name==='All Users'){var allBtn=document.getElementById('open-dm-all-users');if(!allBtn)return;var cur=pvGetUnread('All Users');pvSetUnread('All Users',cur+inc);pvSetBadge(allBtn,cur+inc);try{pvUpdateAllUsersPreview();}catch(e){}try{pvSortInboxByTime();}catch(e){}return;}var list=document.getElementById('new-persons-list');if(!list)return;var row=list.querySelector('[data-person-name="'+String(name).replace(/"/g,'')+'"]');if(!row){try{addPerson(name, true);}catch(e){}row=list.querySelector('[data-person-name="'+String(name).replace(/"/g,'')+'"]');}if(!row)return;var cur2=pvGetUnread(name);pvSetUnread(name,cur2+inc);pvSetBadge(row,cur2+inc);try{pvUpdateListPreview(name);}catch(e){}try{pvSortInboxByTime();}catch(e){}}catch(e){}}
 function pvClearNew(name){try{try{var _mx=Date.now();try{var _m=[];if(name==='All Users'){_m=lsGet('pro_vibes_all_users')||[];}else{var _r=window.getPrivateRoom?window.getPrivateRoom(name):'';_m=lsGet('pro_vibes_private_'+_r)||[];}_m.forEach(function(_mm){var _ts=Number(_mm&&(_mm.timestamp||_mm.time||_mm.createdAt||0))||0;if(_ts>_mx)_mx=_ts;});}catch(e){}pvSetLastRead(name,_mx);}catch(e){}if(name==='All Users'){var b=document.getElementById('open-dm-all-users');if(!b)return;pvSetUnread('All Users',0);pvSetBadge(b,0);return;}var row=document.querySelector('#new-persons-list [data-person-name="'+String(name).replace(/"/g,'')+'"]');if(!row)return;pvSetUnread(name,0);pvSetBadge(row,0);}catch(e){}}
 function pvPollGeneralForNew(){try{var base=typeof getBase==='function'?getBase():'';if(!base||!navigator.onLine)return;if(pvIsInChat('All Users'))return;var me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';fetch(base+'/prochat/rooms/general.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var ms=[];var collect=function(n){if(!n)return;if(Array.isArray(n)){n.forEach(collect);return;}if(typeof n==='object'){var one=normalizeChatMsg(n);if(one){ms.push(one);return;}Object.values(n).forEach(collect);}};collect(data);if(!ms.length)return;ms.sort(function(a,b){return (a.timestamp||0)-(b.timestamp||0);});var ex=[];try{ex=lsGet('pro_vibes_all_users')||[];}catch(e){ex=[];}var newMsgs=ms.filter(function(m){return !ex.some(function(e2){return sameMsg(e2,m);});});if(!newMsgs.length)return;var merged=[].concat(ex);newMsgs.forEach(function(m){if(!merged.some(function(s){return sameMsg(s,m);}))merged.push(m);});merged.sort(function(a,b){return (a.timestamp||0)-(b.timestamp||0);});try{lsSet('pro_vibes_all_users',merged);}catch(e){}try{pvUpdateAllUsersPreview();}catch(e){}var unreadNew=newMsgs.filter(function(m){var s=m&&(m.name||m.sender||m.user||'');return !s||String(s).trim().toLowerCase()!==String(me).trim().toLowerCase();});if(unreadNew.length)pvMarkNew('All Users',unreadNew.length);}).catch(function(){});}catch(e){}}
 function pvPollAllPrivateForNew(){try{ pvDiscoverPrivateRooms(); }catch(e){} try{var base=typeof getBase==='function'?getBase():'';if(!base||!navigator.onLine)return;var names=[];try{names=lsGet('pro_vibes_private_names')||[];}catch(e){names=[];}var me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';names.forEach(function(nm){try{if(!nm||nm==='All Users')return;if(pvIsInChat(nm))return;var room=window.getPrivateRoom?window.getPrivateRoom(nm):'';if(!room)return;var key='pro_vibes_private_'+room;fetch(base+'/prochat/rooms/private/'+room+'.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var ms=Array.isArray(data)?data:Object.values(data);if(!ms.length)return;var ex=[];try{ex=lsGet(key)||[];}catch(e){ex=[];}var newMsgs=[];ms.forEach(function(m){var nm2=normalizeChatMsg(m);if(!nm2)return;if(!ex.some(function(e2){return sameMsg(e2,nm2);}))newMsgs.push(nm2);});if(!newMsgs.length)return;var merged=[].concat(ex);newMsgs.forEach(function(m){if(!merged.some(function(s){return sameMsg(s,m);}))merged.push(m);});merged.sort(function(a,b){return (a.timestamp||0)-(b.timestamp||0);});try{lsSet(key,merged);}catch(e){}try{pvUpdateListPreview(nm);}catch(e){}var unreadNew=newMsgs.filter(function(m){var s=m&&(m.name||m.sender||m.user||'');return !s||String(s).trim().toLowerCase()!==String(me).trim().toLowerCase();});if(unreadNew.length)pvMarkNew(nm,unreadNew.length);}).catch(function(){});}catch(e){}});}catch(e){}}
-function addPerson(name){
+function pvIsPrivateFriend(name){try{var _p=lsGet('pro_vibes_private_names')||[];var _low=String(name||'').trim().toLowerCase();for(var _i=0;_i<_p.length;_i++){if(String(_p[_i]||'').trim().toLowerCase()===_low)return true;}return false;}catch(e){return false;}}
+window.pvIsPrivateFriend=pvIsPrivateFriend;
+function addPerson(name, isPrivate){
 if(!name||name==='All Users')return;
 if(name==='Guest')return;
 const me=(window.ProVibesUser&&window.ProVibesUser.name)||localStorage.getItem('pro_vibes_user_name')||'';
 if(me&&name.trim().toLowerCase()===me.trim().toLowerCase())return;
-try{if(window.ProVibesAddStory)window.ProVibesAddStory(name);}catch(e){}const list=$('new-persons-list');if(!list||list.querySelector('[data-person-name="'+name.replace(/"/g,'')+'"]'))return;
+var _isFriend=!!isPrivate||pvIsPrivateFriend(name); if(_isFriend){try{if(window.ProVibesAddStory)window.ProVibesAddStory(name);}catch(e){}} const list=$('new-persons-list');if(!list||list.querySelector('[data-person-name="'+name.replace(/"/g,'')+'"]'))return;
 const b=el('button','dm-chat-row');b.setAttribute('data-name',name);b.setAttribute('data-person-name',name);b.setAttribute('data-initial',avatarText(name));b.setAttribute('data-active','');
 b.innerHTML='<span class="dm-chat-avatar" style="background:'+avatarColor(name)+'">'+avatarText(name)+'</span><span class="dm-chat-info"><span class="dm-chat-name"></span><br><span class="dm-chat-sub">Tap to open DM</span></span><span class="pv-unread-badge" hidden></span>';
 b.querySelector('.dm-chat-name').textContent=name;
@@ -1686,7 +1665,7 @@ if(ha){if(name==='All Users'){try{delete ha.dataset.pvOwner;delete ha.dataset.pv
 if(hac){if(name==='All Users')hac.innerHTML='<span class="active-dot"></span><span>1 active</span>';else hac.innerHTML='<span class="active-dot"></span><span>Active now</span>';}
 const ba=document.querySelector('.dm-big-avatar'),bn2=document.querySelector('.dm-big-name');
 if(ba){if(name==='All Users'){try{delete ba.dataset.pvOwner;delete ba.dataset.pvHadPhoto;}catch(e){}if(ba.style.backgroundImage!=='')ba.style.backgroundImage='';if(ba.textContent!=='AU')ba.textContent='AU';}else{try{ba.dataset.pvOwner=name;if(typeof pvSetAvatarEl==='function')pvSetAvatarEl(ba,name);else ba.textContent=init;}catch(e){ba.textContent=init;}}}if(bn2)bn2.textContent=name;
-try{if(name!=='All Users'){const p=lsGet('pro_vibes_private_names');if(!p.includes(name)){p.push(name);lsSet('pro_vibes_private_names',p);}addPerson(name);}}catch(e){}
+try{if(name!=='All Users'){const p=lsGet('pro_vibes_private_names');if(!p.includes(name)){p.push(name);lsSet('pro_vibes_private_names',p);}addPerson(name, true);}}catch(e){}
 window.CurrentDM=name;try{pvClearNew(name);}catch(e){}
 try{pvTouchPresence();}catch(e){}try{if(name!=='All Users')pvApplyPresence(name);}catch(e){}
 showScreen('dm-screen');const nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='none';clearNav();
@@ -1796,7 +1775,7 @@ function pvDiscoverPrivateRooms(){
             var p = lsGet('pro_vibes_private_names')||[];
             if(p.indexOf(other)===-1){ p.push(other); lsSet('pro_vibes_private_names', p); }
           }catch(e){}
-          try{ addPerson(other); }catch(e){}
+          try{ addPerson(other, true); }catch(e){}
           try{ pvUpdateListPreview(other); }catch(e){}
         }catch(e){}
       });
@@ -1809,9 +1788,8 @@ window.pvDiscoverPrivateRooms = pvDiscoverPrivateRooms;
 window.loadAllUsersForList=function(){
 var list=document.getElementById('new-persons-list');
 var _allBtn=document.getElementById('open-dm-all-users');
-if(list){list.innerHTML='';if(_allBtn)list.appendChild(_allBtn);}
-lsGet('pro_vibes_private_names').forEach(addPerson); try{ pvDiscoverPrivateRooms(); }catch(e){}
-try{ var _seen={}; try{(lsGet('pro_vibes_all_users')||[]).forEach(function(m){ var n=m&&(m.name||m.sender||m.user); if(n) _seen[String(n).trim()]=1; });}catch(e){} Object.keys(_seen).forEach(function(n){ try{ if(n && n!=='All Users') addPerson(n); }catch(e){} }); try{ var _base=typeof getBase==='function'?getBase():''; if(_base && navigator.onLine){ fetch(_base+'/prochat/rooms/general.json').then(function(r){return r.json();}).then(function(data){ if(!data) return; var _names={}; var _collect=function(nn){ if(!nn) return; if(Array.isArray(nn)){ nn.forEach(_collect); return; } if(typeof nn==='object'){ var _one=nn.name||nn.sender||nn.user; if(_one) _names[String(_one).trim()]=1; try{ Object.values(nn).forEach(_collect); }catch(e){} } }; _collect(data); Object.keys(_names).forEach(function(n){ try{ if(n && n!=='All Users') addPerson(n); }catch(e){} }); try{pvRefreshAllListPreviews();}catch(e){} try{pvSortInboxByTime();}catch(e){} }).catch(function(){}); } }catch(e){} }catch(e){}
+if(list){list.innerHTML='';if(_allBtn)list.appendChild(_allBtn);} try{document.querySelectorAll('#inbox-stories [data-person-name]').forEach(function(s){s.remove();});}catch(e){} lsGet('pro_vibes_private_names').forEach(function(n){ addPerson(n, true); }); try{ pvDiscoverPrivateRooms(); }catch(e){}
+try{ var _seen={}; try{(lsGet('pro_vibes_all_users')||[]).forEach(function(m){ var n=m&&(m.name||m.sender||m.user); if(n) _seen[String(n).trim()]=1; });}catch(e){} Object.keys(_seen).forEach(function(n){ try{ if(n && n!=='All Users') addPerson(n, false); }catch(e){} }); try{ var _base=typeof getBase==='function'?getBase():''; if(_base && navigator.onLine){ fetch(_base+'/prochat/rooms/general.json').then(function(r){return r.json();}).then(function(data){ if(!data) return; var _names={}; var _collect=function(nn){ if(!nn) return; if(Array.isArray(nn)){ nn.forEach(_collect); return; } if(typeof nn==='object'){ var _one=nn.name||nn.sender||nn.user; if(_one) _names[String(_one).trim()]=1; try{ Object.values(nn).forEach(_collect); }catch(e){} } }; _collect(data); Object.keys(_names).forEach(function(n){ try{ if(n && n!=='All Users') addPerson(n, false); }catch(e){} }); try{pvRefreshAllListPreviews();}catch(e){} try{pvSortInboxByTime();}catch(e){} }).catch(function(){}); } }catch(e){} }catch(e){}
 try{pvRefreshAllListPreviews();}catch(e){}
 try{pvUpdateAllUsersPreview();}catch(e){}
 try{pvRestoreUnreadBadges();}catch(e){}
@@ -2154,13 +2132,57 @@ function pvRefreshAllAvatars(){try{if(window.__pvRefreshing)return;window.__pvRe
 var pvAvatarObserver=null;function pvStartAvatarObserver(){try{if(pvAvatarObserver)return;if(!window.MutationObserver)return;pvAvatarObserver=new MutationObserver(function(){try{pvRefreshAllAvatars();}catch(e){}});pvAvatarObserver.observe(document.body,{childList:true,subtree:true});}catch(e){}}
 function pvApplyAvatarPublicly(dataUrl,owner){try{var o=String(owner||'').trim();if(!o){try{o=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}}if(!o||!dataUrl)return;try{localStorage.setItem(pvAvatarKeyFor(o),dataUrl);}catch(e){}pvRefreshAllAvatars();try{pvStartAvatarObserver();}catch(e){}}catch(e){}}
 function pvGetProfilePosts(owner){try{var s=pvSlug(owner);var a=[];try{a=JSON.parse(localStorage.getItem('pro_vibes_user_posts__'+s)||'[]');if(!Array.isArray(a))a=[];}catch(e){a=[];}var out=[];a.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:''));if(u)out.push(u);});return out;}catch(e){return [];}}
-function pvRenderProfileGrid(owner,gridId){try{var g=document.getElementById(gridId);if(!g)return;var posts=pvGetProfilePosts(owner);var html='';if(!posts.length){html+='<div class="pv-no-posts"><div class="pv-no-posts-title">No posts yet</div><div class="pv-no-posts-sub">Your posts will appear here</div></div>';}else{posts.forEach(function(u){html+='<div class="pv-post-tile"><img src="'+String(u).replace(/"/g,'')+'" alt=""></div>';});}g.innerHTML=html;try{g.querySelectorAll('.pv-post-tile').forEach(function(t){t.style.cursor='pointer';t.addEventListener('click',function(){var im=t.querySelector('img');var u=im?im.getAttribute('src'):'';if(u)pvOpenPostDetail(u,owner);});});}catch(e){}}catch(e){}}
-function pvOpenPostDetail(imgUrl,owner){try{document.body.classList.add('pv-posts-open');document.body.style.overflow='hidden';}catch(e){}try{var nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';}catch(e){}try{if(typeof setNav==='function')setNav('profile-screen');}catch(e){}try{var img=document.getElementById('pv-posts-img');if(img)img.src=imgUrl||'';}catch(e){}try{var nmEl=document.getElementById('pv-posts-name');if(nmEl){var nm=String(owner||'').trim();if(!nm){try{nm=localStorage.getItem('pro_vibes_user_name')||'';}catch(e){}}if(!nm){try{var bn=document.getElementById('profile-back-name');if(bn)nm=(bn.textContent||'').trim();}catch(e){}}var rowEl=document.getElementById('pv-posts-name-row');if(nm){nmEl.textContent=nm;if(rowEl)rowEl.classList.add('show');}else{nmEl.textContent='';if(rowEl)rowEl.classList.remove('show');}try{var pImg=document.getElementById('pv-posts-profile-img');var pLet=document.getElementById('pv-posts-profile-letter');if(pImg&&pLet){var av='';try{if(typeof pvAvatarFor==='function')av=pvAvatarFor(nm)||pvAvatarFor(owner)||'';}catch(e){}if(!av)av=imgUrl||'';if(av){pImg.src=av;pImg.style.display='block';pLet.style.display='none';}else{pImg.style.display='none';pLet.style.display='block';pLet.textContent=(nm||'C').charAt(0).toUpperCase();}try{var lImg=document.getElementById('pv-left-profile-img');var lLet=document.getElementById('pv-left-profile-letter');if(lImg&&lLet){if(av){lImg.src=av;lImg.style.display='block';lLet.style.display='none';}else if(imgUrl){lImg.src=imgUrl;lImg.style.display='block';lLet.style.display='none';}else{lImg.style.display='none';lLet.style.display='block';lLet.textContent=(nm||'C').charAt(0).toUpperCase();}}}catch(e){}} }catch(e){}}}catch(e){}try{if(typeof showScreen==='function')showScreen('pv-posts-screen');}catch(e){}}
+function pvGetPostOwnerSlug(owner){try{return String(owner||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');}catch(e){return '';}}
+function pvShowDeletePostSheet(imgUrl, owner){
+  try{
+    var me=''; try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}
+    if(!me || String(owner||'').trim().toLowerCase()!==String(me).trim().toLowerCase()) return;
+    var old=document.getElementById('pv-post-del-sheet'); if(old) old.remove();
+    var sheet=document.createElement('div'); sheet.id='pv-post-del-sheet'; sheet.className='pv-post-del-sheet show';
+    sheet.innerHTML='<div class="pv-post-del-card"><div class="pv-post-del-grab"></div><button class="pv-post-del-btn" id="pv-post-del-btn">Delete post</button><button class="pv-post-del-cancel" id="pv-post-del-cancel">Cancel</button></div>';
+    document.body.appendChild(sheet);
+    var close=function(){ try{sheet.classList.remove('show'); sheet.remove();}catch(e){} };
+    sheet.addEventListener('click', function(e){ if(e.target===sheet) close(); });
+    document.getElementById('pv-post-del-cancel').addEventListener('click', close);
+    document.getElementById('pv-post-del-btn').addEventListener('click', function(){ close(); pvShowDeletePostConfirm(imgUrl, owner); });
+  }catch(e){}
+}
+function pvShowDeletePostConfirm(imgUrl, owner){
+  try{
+    var old=document.getElementById('pv-del-confirm'); if(old) old.remove();
+    var ov=document.createElement('div'); ov.id='pv-del-confirm'; ov.className='pv-del-confirm show';
+    ov.innerHTML='<div class="pv-del-confirm-card"><div class="pv-del-confirm-title">Delete post?</div><div class="pv-del-confirm-text">This cannot be undone. This post will be deleted forever.</div><div class="pv-del-confirm-row"><button class="pv-del-confirm-cancel" id="pv-del-cancel-btn">Cancel</button><button class="pv-del-confirm-delete" id="pv-del-delete-btn">Delete</button></div></div>';
+    document.body.appendChild(ov);
+    var close2=function(){ try{ov.classList.remove('show'); ov.remove();}catch(e){} };
+    ov.addEventListener('click', function(e){ if(e.target===ov) close2(); });
+    document.getElementById('pv-del-cancel-btn').addEventListener('click', close2);
+    document.getElementById('pv-del-delete-btn').addEventListener('click', function(){ close2(); pvDeletePostForever(imgUrl, owner); });
+  }catch(e){}
+}
+function pvDeletePostForever(imgUrl, owner){
+  try{
+    var me=''; try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}
+    if(!me || String(owner||'').trim().toLowerCase()!==String(me).trim().toLowerCase()) return;
+    var slug=pvGetPostOwnerSlug(owner);
+    var key='pro_vibes_user_posts__'+slug;
+    var arr=[]; try{arr=JSON.parse(localStorage.getItem(key)||'[]'); if(!Array.isArray(arr)) arr=[];}catch(e){arr=[];}
+    var idx=-1;
+    for(var i=0;i<arr.length;i++){ var it=arr[i]; var u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(u===imgUrl){ idx=i; break; } }
+    if(idx===-1) return;
+    arr.splice(idx,1);
+    try{localStorage.setItem(key, JSON.stringify(arr));}catch(e){}
+    try{if(typeof pvClosePostDetail==='function'){ var _pi=document.getElementById('pv-posts-img'); if(_pi && _pi.getAttribute('src')===imgUrl) pvClosePostDetail(); }}catch(e){}
+    try{pvRenderProfileGrid(owner,'profile-posts-grid');}catch(e){}
+    try{if(typeof pvRefreshCounts==='function') pvRefreshCounts(owner);}catch(e){}
+  }catch(e){}
+}
+window.pvDeletePostForever=pvDeletePostForever; window.pvShowDeletePostSheet=pvShowDeletePostSheet; window.pvShowDeletePostConfirm=pvShowDeletePostConfirm;
+function pvRenderProfileGrid(owner,gridId){try{var g=document.getElementById(gridId||'profile-posts-grid');if(!g)return;var posts=pvGetProfilePosts(owner);var html='';if(!posts.length){html+='<div class="pv-no-posts"><div class="pv-no-posts-title">No posts yet</div><div class="pv-no-posts-sub">Your posts will appear here</div></div>';}else{posts.forEach(function(u){html+='<div class="pv-post-tile"><img src="'+String(u).replace(/"/g,'')+'" alt=""></div>';});}g.innerHTML=html;try{g.querySelectorAll('.pv-post-tile').forEach(function(t){var im=t.querySelector('img');var u=im?im.getAttribute('src'):'';var _me='';try{_me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}var _isMine=_me && String(owner||'').trim().toLowerCase()===String(_me).trim().toLowerCase();var _timer=null;var _long=false;var _start=function(){_long=false;if(!_isMine)return;_timer=setTimeout(function(){_long=true;try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){}pvShowDeletePostSheet(u,owner);},550);};var _clear=function(){if(_timer){clearTimeout(_timer);_timer=null;}};t.style.cursor='pointer';t.addEventListener('touchstart',_start,{passive:true});t.addEventListener('touchend',_clear);t.addEventListener('touchmove',_clear);t.addEventListener('touchcancel',_clear);t.addEventListener('mousedown',function(e){if(e.button!==0)return;_start();});t.addEventListener('mouseup',_clear);t.addEventListener('mouseleave',_clear);t.addEventListener('contextmenu',function(e){if(!_isMine)return;e.preventDefault();_clear();pvShowDeletePostSheet(u,owner);});t.addEventListener('click',function(e){if(_long){e.preventDefault();e.stopPropagation();_long=false;return;}if(u)pvOpenPostDetail(u,owner);});});}catch(e){}}catch(e){}} function pvOpenPostDetail(imgUrl,owner){try{document.body.classList.add('pv-posts-open');document.body.style.overflow='hidden';}catch(e){}try{var nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';}catch(e){}try{if(typeof setNav==='function')setNav('profile-screen');}catch(e){}try{var img=document.getElementById('pv-posts-img');if(img)img.src=imgUrl||'';}catch(e){}try{var nmEl=document.getElementById('pv-posts-name');if(nmEl){var nm=String(owner||'').trim();if(!nm){try{nm=localStorage.getItem('pro_vibes_user_name')||'';}catch(e){}}if(!nm){try{var bn=document.getElementById('profile-back-name');if(bn)nm=(bn.textContent||'').trim();}catch(e){}}var rowEl=document.getElementById('pv-posts-name-row');if(nm){nmEl.textContent=nm;if(rowEl)rowEl.classList.add('show');}else{nmEl.textContent='';if(rowEl)rowEl.classList.remove('show');}try{var pImg=document.getElementById('pv-posts-profile-img');var pLet=document.getElementById('pv-posts-profile-letter');if(pImg&&pLet){var av='';try{if(typeof pvAvatarFor==='function')av=pvAvatarFor(nm)||pvAvatarFor(owner)||'';}catch(e){}if(!av)av=imgUrl||'';if(av){pImg.src=av;pImg.style.display='block';pLet.style.display='none';}else{pImg.style.display='none';pLet.style.display='block';pLet.textContent=(nm||'C').charAt(0).toUpperCase();}try{var lImg=document.getElementById('pv-left-profile-img');var lLet=document.getElementById('pv-left-profile-letter');if(lImg&&lLet){if(av){lImg.src=av;lImg.style.display='block';lLet.style.display='none';}else if(imgUrl){lImg.src=imgUrl;lImg.style.display='block';lLet.style.display='none';}else{lImg.style.display='none';lLet.style.display='block';lLet.textContent=(nm||'C').charAt(0).toUpperCase();}}}catch(e){}} }catch(e){}}}catch(e){}try{if(typeof showScreen==='function')showScreen('pv-posts-screen');}catch(e){}}
 function pvClosePostDetail(){try{document.body.classList.remove('pv-posts-open');document.body.style.overflow='';}catch(e){}try{var nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';}catch(e){}try{if(typeof showScreen==='function')showScreen('profile-screen');}catch(e){}try{if(typeof setNav==='function')setNav('profile-screen');}catch(e){}}
 function setProfile(){var el=document.getElementById('profile-avatar-letter');var nameEl=document.getElementById('profile-name');var n='';try{n=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}if(el){pvSetAvatarEl(el,n);}if(nameEl){nameEl.textContent=n.trim();}var bioEl=document.getElementById('profile-bio');if(bioEl){var b='';try{b=pvBioFor(n);}catch(e){b='';}bioEl.textContent=b;bioEl.style.display=b?'block':'none';}var bEl=document.getElementById('profile-back-avatar-letter');var bName=document.getElementById('profile-back-name');if(bEl&&!bEl.dataset.manual){pvSetAvatarEl(bEl,n);}if(bName&&!bName.dataset.manual){bName.textContent=n.trim();}pvRefreshCounts(n);try{pvRenderProfileGrid(n,'profile-posts-grid');}catch(e){}try{pvRefreshAllAvatars();pvStartAvatarObserver();}catch(e){}var curBack=document.getElementById('profile-back-name');if(curBack&&curBack.textContent)pvRefreshCounts(curBack.textContent.trim());}
 function setProfileLetter(){setProfile();}function openBack(name){var n=(name||'').trim();var me='';try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}if(!n)n=me;try{if(typeof recordProfileView==='function')recordProfileView(n);}catch(e){}var cur='inbox-screen';try{var vis=document.querySelector('main section:not(.hidden)');if(vis&&vis.id)cur=vis.id;}catch(e){}backPrev=cur;var bEl=document.getElementById('profile-back-avatar-letter');var bName=document.getElementById('profile-back-name');if(bEl){pvSetAvatarEl(bEl,n);bEl.dataset.manual='1';}if(bName){bName.textContent=n;bName.dataset.manual='1';}var bBio=document.getElementById('profile-back-bio');if(bBio){var bb=pvBioFor(n);bBio.textContent=bb;bBio.style.display=bb?'block':'none';}pvRefreshCounts(n);pvSyncBackFollowBtn(n);try{if(typeof showScreen==='function'){showScreen('profile-back-screen');}else{document.querySelectorAll('main section').forEach(function(s){if(s.id==='profile-back-screen'){s.classList.remove('hidden');s.removeAttribute('hidden');}else{s.classList.add('hidden');s.setAttribute('hidden','');}});}}catch(e){}var nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';try{if(typeof setNav==='function')setNav('profile-screen');}catch(e){}}
 function closeBack(){var bEl=document.getElementById('profile-back-avatar-letter');var bName=document.getElementById('profile-back-name');if(bEl)delete bEl.dataset.manual;if(bName)delete bName.dataset.manual;setProfile();var targetId=backPrev||'inbox-screen';try{if(typeof showScreen==='function'){showScreen(targetId);}else{document.querySelectorAll('main section').forEach(function(s){if(s.id===targetId){s.classList.remove('hidden');s.removeAttribute('hidden');}else{s.classList.add('hidden');s.setAttribute('hidden','');}});}}catch(e){}var nav=document.querySelector('.bottom-nav');if(nav){if(targetId==='dm-screen'){nav.style.display='none';}else{nav.style.display='';}}try{if(typeof setNav==='function'&&targetId!=='dm-screen')setNav(targetId);}catch(e){}}function addStory(name){if(!name||name==='All Users')return;var me='';try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}if(me&&name.trim().toLowerCase()===me.trim().toLowerCase())return;var container=document.getElementById('inbox-stories')||document.querySelector('.inbox-stories');if(!container)return;var safe=name.replace(/"/g,'');if(container.querySelector('[data-person-name="'+safe+'"]'))return;var div=document.createElement('div');div.className='inbox-story';div.setAttribute('data-person-name',name);var av=document.createElement('div');av.className='inbox-avatar-sleek';var inner=document.createElement('div');inner.className='inbox-avatar-inner';try{inner.dataset.pvOwner=name;pvSetAvatarEl(inner,name);}catch(e){inner.textContent=avatarText(name);}av.appendChild(inner);var label=document.createElement('span');label.textContent=name;div.appendChild(av);div.appendChild(label);container.appendChild(div);}window.ProVibesAddStory=addStory;
-function syncStoriesFromList(){try{document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(b){var nm=b.getAttribute('data-person-name');if(nm)addStory(nm);});}catch(e){}}syncStoriesFromList();function viewsKeyFor(owner){var s=String(owner||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');return 'pro_vibes_profile_views__for_'+s;}
+function syncStoriesFromList(){try{document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(b){var nm=b.getAttribute('data-person-name');if(nm && typeof pvIsPrivateFriend==='function' && pvIsPrivateFriend(nm))addStory(nm);});}catch(e){}}syncStoriesFromList();function viewsKeyFor(owner){var s=String(owner||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');return 'pro_vibes_profile_views__for_'+s;}
 function viewerHistoryKeyFor(name){var s=String(name||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');return 'pro_vibes_viewer_history__u_'+s;}
 function isViewerHistoryOn(name){try{var v=localStorage.getItem(viewerHistoryKeyFor(name));if(v===null||v===undefined||v==='')return true;return v==='1';}catch(e){return true;}}
 function setViewerHistoryOn(name,on){try{localStorage.setItem(viewerHistoryKeyFor(name),on?'1':'0');}catch(e){}}
