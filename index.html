@@ -593,6 +593,24 @@ function pvMsgKey(m){ try{ return String(m&&(m.timestamp||m.time||m.createdAt||0
 function pvIsOnScreen(m){ try{ var box=document.getElementById('dm-messages'); if(!box) return false; var ts=String(m&&(m.timestamp||m.time||m.createdAt||'')); if(!ts) return false; return !!box.querySelector('[data-msg-timestamp="'+ts.replace(/"/g,'')+'"]'); }catch(e){ return false; } }
 function pvMergeIntoLocal(key, firebaseMsgs){ try{ var cur=lsGet(key)||[]; var map={}; cur.forEach(function(x){ map[pvMsgKey(x)]=1; }); var changed=false; (firebaseMsgs||[]).forEach(function(m){ if(!m) return; var nm=null; try{ nm=normalizeChatMsg(m)||m; }catch(e){ nm=m; } if(!nm) return; var k=pvMsgKey(nm); if(!map[k]){ map[k]=1; cur.push(nm); changed=true; } }); cur.sort(function(a,b){ return (Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0); }); if(changed) lsSet(key, cur); return cur; }catch(e){ return lsGet(key)||[]; } }
 
+/* ===== OPEN AT LAST - NOT auto-scroll =====
+   You asked: when you OPEN a chat, start at the last message, not at the top.
+   And: NO auto-scroll while you are chatting.
+   So this function runs ONLY once when you open a chat. It jumps instantly to the bottom.
+   It NEVER runs when a new message arrives later, unless you just opened (900ms window).
+   The scrollable element is .dm-center, not #dm-messages.
+*/
+function pvJumpToLastOnOpen(){
+  try{
+    var c=document.querySelector('.dm-center');
+    if(!c) return;
+    c.scrollTop=c.scrollHeight;
+    try{ requestAnimationFrame(function(){ try{ var cc=document.querySelector('.dm-center'); if(cc) cc.scrollTop=cc.scrollHeight; }catch(e){} }); }catch(e){}
+    setTimeout(function(){ try{ if(window._pvJustOpened){ var cc2=document.querySelector('.dm-center'); if(cc2) cc2.scrollTop=cc2.scrollHeight; } }catch(e){} }, 120);
+  }catch(e){}
+}
+
+
 (function(){
 const pill=$('inbox-status-pill'),sheet=$('inbox-status-sheet');
 if(pill)pill.addEventListener('click',e=>{e.stopPropagation();show(sheet);});
@@ -1582,7 +1600,7 @@ function pvClearNew(name){try{try{var _mx=Date.now();try{var _m=[];if(name==='Al
 function pvPollGeneralForNew(){try{var base=typeof getBase==='function'?getBase():'';if(!base||!navigator.onLine)return;if(pvIsInChat('All Users'))return;var me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';fetch(base+'/prochat/rooms/general.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var ms=[];var collect=function(n){if(!n)return;if(Array.isArray(n)){n.forEach(collect);return;}if(typeof n==='object'){var one=normalizeChatMsg(n);if(one){ms.push(one);return;}Object.values(n).forEach(collect);}};collect(data);if(!ms.length)return;ms.sort(function(a,b){return (a.timestamp||0)-(b.timestamp||0);});var ex=[];try{ex=lsGet('pro_vibes_all_users')||[];}catch(e){ex=[];}var newMsgs=ms.filter(function(m){return !ex.some(function(e2){return sameMsg(e2,m);});});if(!newMsgs.length)return;var merged=[].concat(ex);newMsgs.forEach(function(m){if(!merged.some(function(s){return sameMsg(s,m);}))merged.push(m);});merged.sort(function(a,b){return (a.timestamp||0)-(b.timestamp||0);});try{lsSet('pro_vibes_all_users',merged);}catch(e){}try{pvUpdateAllUsersPreview();}catch(e){}var unreadNew=newMsgs.filter(function(m){var s=m&&(m.name||m.sender||m.user||'');return !s||String(s).trim().toLowerCase()!==String(me).trim().toLowerCase();});if(unreadNew.length)pvMarkNew('All Users',unreadNew.length);}).catch(function(){});}catch(e){}}
 function pvPollAllPrivateForNew(){try{ pvDiscoverPrivateRooms(); }catch(e){} try{var base=typeof getBase==='function'?getBase():'';if(!base||!navigator.onLine)return;var names=[];try{names=lsGet('pro_vibes_private_names')||[];}catch(e){names=[];}var me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';names.forEach(function(nm){try{if(!nm||nm==='All Users')return;if(pvIsInChat(nm))return;var room=window.getPrivateRoom?window.getPrivateRoom(nm):'';if(!room)return;var key='pro_vibes_private_'+room;fetch(base+'/prochat/rooms/private/'+room+'.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var ms=Array.isArray(data)?data:Object.values(data);if(!ms.length)return;var ex=[];try{ex=lsGet(key)||[];}catch(e){ex=[];}var newMsgs=[];ms.forEach(function(m){var nm2=normalizeChatMsg(m);if(!nm2)return;if(!ex.some(function(e2){return sameMsg(e2,nm2);}))newMsgs.push(nm2);});if(!newMsgs.length)return;var merged=[].concat(ex);newMsgs.forEach(function(m){if(!merged.some(function(s){return sameMsg(s,m);}))merged.push(m);});merged.sort(function(a,b){return (a.timestamp||0)-(b.timestamp||0);});try{lsSet(key,merged);}catch(e){}try{pvUpdateListPreview(nm);}catch(e){}var unreadNew=newMsgs.filter(function(m){var s=m&&(m.name||m.sender||m.user||'');return !s||String(s).trim().toLowerCase()!==String(me).trim().toLowerCase();});if(unreadNew.length)pvMarkNew(nm,unreadNew.length);}).catch(function(){});}catch(e){}});}catch(e){}}
 function pvIsPrivateFriend(name){try{var _p=lsGet('pro_vibes_private_names')||[];var _low=String(name||'').trim().toLowerCase();for(var _i=0;_i<_p.length;_i++){if(String(_p[_i]||'').trim().toLowerCase()===_low)return true;}return false;}catch(e){return false;}}
-  // MUTUAL ONLY: ring as friend only if BOTH don chat each other. If person chat you but you never chat am back yet, e no go show for ring. Vice versa - if you chat person but e never chat you back, you no go show for e ring.
+  // MUTUAL ONLY: Show in the friend ring only if both users have messaged each other. If someone messaged you but you have not replied yet, it will not show in the ring. And vice versa - if you messaged someone but they have not replied, you will not show in their ring.
   function pvIsMutualChat(name){ try{ var me=(localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'').trim().toLowerCase(); if(!me||!name) return false; var room=(typeof window.getPrivateRoom==='function'?window.getPrivateRoom(name):''); var key='pro_vibes_private_'+room; var msgs=[]; try{ msgs=lsGet(key)||[]; }catch(e){ msgs=[]; } var iSent=false, theySent=false; for(var i=0;i<msgs.length;i++){ var s=String(msgs[i]&&(msgs[i].name||msgs[i].sender||msgs[i].user||'')).trim().toLowerCase(); if(!s) continue; if(s===me) iSent=true; else if(s===String(name).trim().toLowerCase()) theySent=true; if(iSent&&theySent) return true; } return false; }catch(e){ return false; } }
   window.pvIsMutualChat=pvIsMutualChat;
   function pvSyncFriendRings(){ try{ var container=document.getElementById('inbox-stories')||document.querySelector('.inbox-stories'); if(!container) return; container.querySelectorAll('[data-person-name]').forEach(function(el){ var nm=el.getAttribute('data-person-name'); if(nm && !pvIsMutualChat(nm)){ try{ el.remove(); }catch(e){} } }); document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(b){ var nm=b.getAttribute('data-person-name'); if(nm && pvIsMutualChat(nm)){ try{ if(window.ProVibesAddStory) window.ProVibesAddStory(nm); }catch(e){} } }); }catch(e){} }
@@ -1628,7 +1646,7 @@ try{if(name==='All Users'){if(window.loadAllUsersMessages)window.loadAllUsersMes
 try{startChatPoll();}catch(e){}
 }
 window.ProVibesOpenDM=openDM;
-function closeDM(){try{stopChatPoll();}catch(e){}try{if(window.CurrentDM){pvSetLastRead(window.CurrentDM,Date.now()); pvSetUnread(window.CurrentDM,0);}}catch(e){}const m=$('dm-messages');if(m)m.innerHTML='';try{window._pvOpenedFor='';}catch(e){}showScreen('inbox-screen');const nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';setNav('inbox-screen');try{pvRefreshAllListPreviews();}catch(e){}try{pvUpdateAllUsersPreview();}catch(e){}try{pvRestoreUnreadBadges();}catch(e){}try{pvSortInboxByTime();}catch(e){}}
+function closeDM(){try{stopChatPoll();}catch(e){}try{if(window.CurrentDM){pvSetLastRead(window.CurrentDM,Date.now()); pvSetUnread(window.CurrentDM,0);}}catch(e){}const m=$('dm-messages');if(m)m.innerHTML='';try{window._pvOpenedFor=''; window._pvJustOpened=false;}catch(e){}showScreen('inbox-screen');const nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';setNav('inbox-screen');try{pvRefreshAllListPreviews();}catch(e){}try{pvUpdateAllUsersPreview();}catch(e){}try{pvRestoreUnreadBadges();}catch(e){}try{pvSortInboxByTime();}catch(e){}}
 function bindFollow(){const f=$('dm-follow');if(f&&!f.dataset.realBound){f.dataset.realBound='1';f.addEventListener('click',()=>{try{var me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';var other=window.CurrentDM||'';if(!me||!other||other==='All Users')return;if(String(me).trim().toLowerCase()===String(other).trim().toLowerCase())return;var slug=function(s){return String(s||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');};var fKey='pro_vibes_following__u_'+slug(me);var foKey='pro_vibes_followers__for_'+slug(other);var following=[];var followers=[];try{following=JSON.parse(localStorage.getItem(fKey)||'[]');if(!Array.isArray(following))following=[];}catch(e){following=[];}try{followers=JSON.parse(localStorage.getItem(foKey)||'[]');if(!Array.isArray(followers))followers=[];}catch(e){followers=[];}var isF=following.some(function(v){return String(v||'').toLowerCase()===String(other).toLowerCase();});if(isF){following=following.filter(function(v){return String(v||'').toLowerCase()!==String(other).toLowerCase();});followers=followers.filter(function(v){return String(v||'').toLowerCase()!==String(me).toLowerCase();});f.textContent='Follow';f.classList.remove('following');}else{following.push(other);if(!followers.some(function(v){return String(v||'').toLowerCase()===String(me).toLowerCase();}))followers.push(me);f.textContent='Following';f.classList.add('following');}try{localStorage.setItem(fKey,JSON.stringify(following));}catch(e){}try{localStorage.setItem(foKey,JSON.stringify(followers));}catch(e){}var bf=document.getElementById('profile-back-follow-btn');var bn=document.getElementById('profile-back-name');if(bf&&bn&&String(bn.textContent||'').trim().toLowerCase()===String(other).toLowerCase()){bf.textContent=isF?'Follow':'Following';if(isF)bf.classList.remove('following');else bf.classList.add('following');}}catch(e){}});}}
 bindFollow();
 if($('dm-back'))$('dm-back').addEventListener('click',closeDM);
@@ -1907,6 +1925,10 @@ window.loadAllUsersMessages=function(){
    _local.sort(function(a,b){return (Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0);});
    _local.forEach(renderAll);
    window._pvOpenedFor='All Users';
+   // OPEN AT LAST: jump to last message once on open. No auto-scroll after this.
+   window._pvJustOpened=true;
+   pvJumpToLastOnOpen();
+   setTimeout(function(){ window._pvJustOpened=false; }, 900);
  }
  const base=getBase();if(!base)return;
  fetch(base+'/prochat/rooms/general.json').then(r=>r.json()).then(data=>{if(!data)return;const tmp=[];const collect=n=>{if(!n)return;if(Array.isArray(n)){n.forEach(collect);return;}if(typeof n==='object'){const one=normalizeChatMsg(n);if(one){tmp.push(one);return;}Object.values(n).forEach(collect);}};collect(data);
@@ -1917,6 +1939,8 @@ window.loadAllUsersMessages=function(){
  if(window.CurrentDM!=='All Users')return;
  // Only append messages NOT already on screen - no duplicates, no flicker, no half-half
  merged.forEach(function(mm){ if(!pvIsOnScreen(mm)) renderAll(mm); });
+ // If Firebase added messages right after open, still land at last. After 900ms, never auto-scroll.
+ if(window._pvJustOpened) pvJumpToLastOnOpen();
  try{pvSetLastRead('All Users', Date.now()); pvSetUnread('All Users',0);}catch(e){}
  }).catch(()=>{});
  };
@@ -1927,9 +1951,13 @@ window.loadAllUsersMessages=function(){
    if(box)box.innerHTML='';
    var _pl=lsGet(key)||[]; _pl.sort(function(a,b){return (Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0);}); _pl.forEach(renderPrivate);
    window._pvOpenedFor='private:'+room;
+   // OPEN AT LAST: jump to last message once on open. No auto-scroll after this.
+   window._pvJustOpened=true;
+   pvJumpToLastOnOpen();
+   setTimeout(function(){ window._pvJustOpened=false; }, 900);
  }
 const base=getBase();if(!base)return;
-fetch(base+'/prochat/rooms/private/'+room+'.json').then(r=>r.json()).then(data=>{if(!data)return;const ms=Array.isArray(data)?data:Object.values(data);ms.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));const ex=lsGet(key);let ch=false;ms.forEach(m=>{const nm=normalizeChatMsg(m);if(!nm)return;if(!ex.some(e=>sameMsg(e,nm))){ex.push(nm);ch=true;if(!pvIsOnScreen(nm)) renderPrivate(nm);}});if(ch)lsSet(key,ex);}).catch(()=>{});
+fetch(base+'/prochat/rooms/private/'+room+'.json').then(r=>r.json()).then(data=>{if(!data)return;const ms=Array.isArray(data)?data:Object.values(data);ms.sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));const ex=lsGet(key);let ch=false;ms.forEach(m=>{const nm=normalizeChatMsg(m);if(!nm)return;if(!ex.some(e=>sameMsg(e,nm))){ex.push(nm);ch=true;if(!pvIsOnScreen(nm)) renderPrivate(nm);}});if(ch)lsSet(key,ex); if(window._pvJustOpened) pvJumpToLastOnOpen();}).catch(()=>{});
 };
 window.pollPrivateOnce=function(name){
 const room=window.getPrivateRoom(name||window.CurrentDM||'User'),key='pro_vibes_private_'+room;
@@ -1945,7 +1973,7 @@ function pvBindPresenceInstant(){
   }catch(e){}
 }
 pvBindPresenceInstant();
-function startChatPoll(){stopChatPoll();try{pvTouchPresence();}catch(e){}window.ProVibesChatPollId=setInterval(()=>{try{pvTouchPresence();}catch(e){}try{if(window.CurrentDM==='All Users'){if(window.loadAllUsersMessages)window.loadAllUsersMessages();}else if(window.pollPrivateOnce){window.pollPrivateOnce(window.CurrentDM);if(window.CurrentDM){pvApplyPresence(window.CurrentDM);pvUpdateListPreview(window.CurrentDM);try{pvRefreshMsgStatuses();}catch(e){}}}}catch(e){}try{pvPollAllPrivateForNew();}catch(e){}try{pvPollGeneralForNew();}catch(e){}},1500);}
+function startChatPoll(){stopChatPoll();try{pvTouchPresence();}catch(e){}try{if(window.PVStartInstantStream) window.PVStartInstantStream();}catch(e){}window.ProVibesChatPollId=setInterval(()=>{try{pvTouchPresence();}catch(e){}try{var _streaming=!!(window._pvInstantES && window._pvInstantES.readyState!==2); if(!_streaming){ if(window.CurrentDM==='All Users'){if(window.loadAllUsersMessages)window.loadAllUsersMessages();}else if(window.pollPrivateOnce){window.pollPrivateOnce(window.CurrentDM);if(window.CurrentDM){pvApplyPresence(window.CurrentDM);pvUpdateListPreview(window.CurrentDM);try{pvRefreshMsgStatuses();}catch(e){}}}} }catch(e){}try{pvPollAllPrivateForNew();}catch(e){}try{pvPollGeneralForNew();}catch(e){}},5000);}
 function stopChatPoll(){if(window.ProVibesChatPollId){clearInterval(window.ProVibesChatPollId);window.ProVibesChatPollId=null;}}
 window.ProVibesStartChatPoll=startChatPoll; window.ProVibesStopChatPoll=stopChatPoll;
 const actBtn=$('dm-action'),inp=$('dm-input');
@@ -2123,7 +2151,7 @@ function start(){
   try{ if(window.PVWhatsAppSounds) window.PVWhatsAppSounds.tap(); }catch(e){}
   const inputBar=document.querySelector('.dm-input-bar');
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    alert('Microphone no dey available for this browser. Allow mic permission.');
+    alert('Microphone is not available in this browser. Please allow microphone permission.');
     return;
   }
   navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{
@@ -3069,15 +3097,16 @@ setTimeout(function(){try{setProfile();}catch(e){}},900);})();</script><div clas
       var last=msgs[msgs.length-1];
       var hasLast=false;
       try{ var nodes=box.querySelectorAll('.dm-msg, .voice-msg'); for(var i=0;i<nodes.length;i++){ if(String(nodes[i].getAttribute('data-msg-timestamp')||'')===String(last.timestamp||'')) {hasLast=true; break;} } }catch(e){}
-      if(hasLast) return;
-      if(!box.children.length || !hasLast){
-        // Clear and render from cache instantly - this is the WhatsApp offline open
-        box.innerHTML='';
-        msgs.slice(-80).forEach(function(m){
-          try{ if(mode==='all'){ if(window.ProVibesRenderAll) window.ProVibesRenderAll(m); } else { if(window.ProVibesRenderPrivate) window.ProVibesRenderPrivate(m); } }catch(e){}
-        });
-        pvMarkPendingUI();
-      }
+       // INSTANT FIX: Never return just because box has children, and never clear + re-render all.
+       // Append only messages that are missing from the screen. This removes half-half flicker.
+       msgs.slice(-80).forEach(function(m){
+         try{
+           var _ts=String(m&&(m.timestamp||m.time||m.createdAt||''));
+           var _already=false; try{ _already=!!box.querySelector('[data-msg-timestamp="'+_ts.replace(/"/g,'')+'"]'); }catch(e){}
+           if(!_already){ if(mode==='all'){ if(window.ProVibesRenderAll) window.ProVibesRenderAll(m); } else { if(window.ProVibesRenderPrivate) window.ProVibesRenderPrivate(m); } }
+         }catch(e){}
+       });
+       try{ if(typeof pvMarkPendingUI==='function') pvMarkPendingUI(); }catch(e){}
     }catch(e){}
   }
 
@@ -3285,7 +3314,7 @@ setTimeout(function(){try{setProfile();}catch(e){}},900);})();</script><div clas
     try{
       if(!window.CurrentDM || window.CurrentDM==='All Users') return;
       var box=document.getElementById('dm-messages'); if(!box) return;
-      if(box.children.length) return; // already rendered
+       // INSTANT FIX: Do NOT return just because box has children. That caused half-half - new messages were skipped. We append only missing ones below.
       var room=''; try{ room=window.getPrivateRoom?window.getPrivateRoom(window.CurrentDM):''; }catch(e){}
       if(!room) return;
       var msgs=null;
@@ -3297,9 +3326,13 @@ setTimeout(function(){try{setProfile();}catch(e){}},900);})();</script><div clas
         try{ var raw=localStorage.getItem(candidates[j]); if(raw){ var arr=JSON.parse(raw); if(Array.isArray(arr) && arr.length){ msgs=arr; break; } } }catch(e){}
       }
       if(!msgs || !msgs.length) return;
-      box.innerHTML='';
+      // INSTANT FIX: Append only missing messages, never wipe the screen and re-render all
       msgs.slice(-80).forEach(function(m){
-        try{ if(window.ProVibesRenderPrivate) window.ProVibesRenderPrivate(m); }catch(e){}
+        try{
+          var _ts2=String(m&&(m.timestamp||m.time||m.createdAt||''));
+          var _al=false; try{ _al=!!box.querySelector('[data-msg-timestamp="'+_ts2.replace(/"/g,'')+'"]'); }catch(e){}
+          if(!_al && window.ProVibesRenderPrivate) window.ProVibesRenderPrivate(m);
+        }catch(e){}
       });
       pvEnforcePending();
     }catch(e){}
@@ -4166,5 +4199,142 @@ setTimeout(function(){try{setProfile();}catch(e){}},900);})();</script><div clas
 .chat-wrap.mine .pv-chat-sticker-img,.chat-wrap.mine .pv-chat-gif-img{margin-left:auto!important;margin-right:0!important}
 </style>
 
+
+<script>
+/* ===== INSTANT MESSAGES - Firebase Realtime Streaming (WhatsApp style) =====
+   Before: App asked Firebase every 1.5s "anything new?" by downloading the WHOLE room.
+   That is why you saw old messages first, then new ones later - half-half.
+   Now: Firebase PUSHES the new message the second it is posted, via EventSource streaming.
+   Your phone does not wait for the next poll. It renders instantly.
+   Polling is kept only as a fallback if streaming drops.
+   All toasts / alerts in this block are in English.
+*/
+(function(){
+  var es=null;
+  var currentUrl='';
+  function pvGetStreamUrl(){
+    try{
+      var base=(typeof getBase==='function'?getBase():'');
+      if(!base || !window.CurrentDM) return '';
+      if(window.CurrentDM==='All Users') return base+'/prochat/rooms/general.json';
+      var room=(window.getPrivateRoom?window.getPrivateRoom(window.CurrentDM||'User'):'');
+      if(!room) return '';
+      return base+'/prochat/rooms/private/'+room+'.json';
+    }catch(e){ return ''; }
+  }
+  function pvHandleSingle(raw){
+    try{
+      if(!raw || typeof raw!=='object') return;
+      // Reactions / deletes are special messages - let the existing logic handle them via instant poll
+      if(raw.type==='pv_reaction' || raw.type==='pv_reaction_remove' || raw.type==='pv_delete'){
+        try{ if(window.PVInstantPoll) window.PVInstantPoll(); }catch(e){}
+        return;
+      }
+      var nm=null;
+      try{ nm=normalizeChatMsg(raw); }catch(e){ nm=null; }
+      if(!nm) return;
+      var isAll=(window.CurrentDM==='All Users');
+      var key=isAll?'pro_vibes_all_users':'pro_vibes_private_'+(window.getPrivateRoom?window.getPrivateRoom(window.CurrentDM||'User'):'');
+      // Merge into local storage - Firebase only adds, never deletes local
+      try{ if(typeof pvMergeIntoLocal==='function') pvMergeIntoLocal(key,[nm]); }catch(e){}
+      // Render instantly if not already on screen
+      try{
+        if(typeof pvIsOnScreen==='function' && pvIsOnScreen(nm)) return;
+        if(isAll){ if(window.ProVibesRenderAll) window.ProVibesRenderAll(nm); }
+        else { if(window.ProVibesRenderPrivate) window.ProVibesRenderPrivate(nm); }
+        // OPEN AT LAST only: if this message arrived within 900ms of opening, keep at last. Otherwise NO auto-scroll.
+        if(window._pvJustOpened && typeof pvJumpToLastOnOpen==='function') pvJumpToLastOnOpen();
+      }catch(e){}
+      try{ if(isAll && typeof pvUpdateAllUsersPreview==='function') pvUpdateAllUsersPreview(); }catch(e){}
+      try{ if(!isAll && typeof pvUpdateListPreview==='function') pvUpdateListPreview(window.CurrentDM); }catch(e){}
+    }catch(e){}
+  }
+  function pvHandlePut(path, data){
+    try{
+      if(data==null) return;
+      if(path==='/' || path===''){
+        if(typeof data==='object'){
+          Object.keys(data).forEach(function(k){ pvHandleSingle(data[k]); });
+        }
+        return;
+      }
+      pvHandleSingle(data);
+    }catch(e){}
+  }
+  function pvStartInstantStream(){
+    try{
+      pvStopInstantStream();
+      var url=pvGetStreamUrl();
+      if(!url || !window.EventSource) return;
+      currentUrl=url;
+      es=new EventSource(url);
+      window._pvInstantES=es;
+      es.addEventListener('put', function(e){
+        try{ var d=JSON.parse(e.data); pvHandlePut(d.path, d.data); }catch(err){}
+      });
+      es.addEventListener('patch', function(e){
+        try{
+          var d=JSON.parse(e.data);
+          if(d && d.data && typeof d.data==='object'){
+            Object.keys(d.data).forEach(function(k){ pvHandleSingle(d.data[k]); });
+          }
+        }catch(err){}
+      });
+      es.onerror=function(){ /* EventSource reconnects automatically. Polling fallback keeps running. */ };
+    }catch(e){}
+  }
+  function pvStopInstantStream(){
+    try{
+      if(es){ try{es.close();}catch(e){} es=null; }
+      if(window._pvInstantES){ try{window._pvInstantES.close();}catch(e){} window._pvInstantES=null; }
+      currentUrl='';
+    }catch(e){}
+  }
+  window.PVStartInstantStream=pvStartInstantStream;
+  window.PVStopInstantStream=pvStopInstantStream;
+  // Keep stream on the correct room - check every 2 seconds
+  setInterval(function(){
+    try{
+      var expected=pvGetStreamUrl();
+      if(!expected){ pvStopInstantStream(); return; }
+      if(expected!==currentUrl || !es || es.readyState===2){ pvStartInstantStream(); }
+    }catch(e){}
+  }, 2000);
+  // Start stream when a chat is opened
+  document.addEventListener('click', function(e){
+    try{
+      var t=e.target && e.target.closest ? e.target.closest('.dm-chat-row, #open-dm-all-users') : null;
+      if(t) setTimeout(pvStartInstantStream, 150);
+    }catch(e2){}
+  }, true);
+  // Stop stream when leaving chat
+  document.addEventListener('click', function(e){
+    try{
+      var b=e.target && e.target.closest ? e.target.closest('#dm-back') : null;
+      if(b) setTimeout(pvStopInstantStream, 150);
+    }catch(e2){}
+  }, true);
+})();
+</script>
+
+<script>
+/* If you manually scroll up within 900ms of opening, respect it - stop the open jump. No auto-scroll after that. */
+(function(){
+  try{
+    var c=document.querySelector('.dm-center');
+    if(!c || c.dataset.pvJustOpenedBound) return;
+    c.dataset.pvJustOpenedBound='1';
+    c.addEventListener('scroll', function(){
+      try{
+        if(!window._pvJustOpened) return;
+        var atBottom = (c.scrollTop + c.clientHeight >= c.scrollHeight - 150);
+        if(!atBottom) window._pvJustOpened=false;
+      }catch(e){}
+    }, {passive:true});
+  }catch(e){}
+})();
+</script>
 </body>
+
+
 </html>
