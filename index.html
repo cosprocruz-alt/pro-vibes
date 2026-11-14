@@ -839,7 +839,7 @@ to{transform:translateY(0);opacity:1}
 .pv-video-call-end img{width:34px;height:auto;display:block;object-fit:contain}
 </style>
 <style>
-.pv-incoming{position:fixed;inset:0;z-index:999999;pointer-events:auto;display:flex;flex-direction:column;background:#000;overflow:hidden}
+.pv-incoming{position:fixed;inset:0;z-index:999999;display:flex;flex-direction:column;background:#000;overflow:hidden;pointer-events:auto}
 .pv-incoming.hidden{display:none !important}
 .pv-incoming-bg{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(42px) brightness(.72) saturate(1.05);transform:scale(1.15)}
 .pv-incoming-bg-dim{position:absolute;inset:0;background:rgba(0,0,0,.18)}
@@ -850,7 +850,7 @@ to{transform:translateY(0);opacity:1}
 .pv-incoming-calling svg{width:24px;height:24px;display:block;flex-shrink:0}
 .pv-incoming-bottom{position:relative;z-index:2;display:flex;justify-content:space-between;padding:0 44px 68px}
 .pv-incoming-col{display:flex;flex-direction:column;align-items:center;gap:12px}
-.pv-incoming-btn{width:96px;height:96px;pointer-events:auto;touch-action:manipulation;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.pv-incoming-btn{width:96px;height:96px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;pointer-events:auto;touch-action:manipulation}
 .pv-incoming-btn.decline{background:#ff4b41}
 .pv-incoming-btn.accept{background:#2ed573}
 .pv-incoming-btn svg{width:44px;height:44px;display:block}
@@ -866,12 +866,21 @@ to{transform:translateY(0);opacity:1}
 .pv-voice-remote-audio{display:none}
 .pv-call-muted{opacity:.45 !important}
 .pv-voice-call-btn.active-speaker{outline:2px solid #fff}
-</style>
-
-<style>
 .pv-call-toast{position:fixed;left:50%;bottom:208px;transform:translateX(-50%) translateY(8px);z-index:999999;background:rgba(20,20,20,.92);color:#fff;font-size:14px;font-weight:500;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:11px 16px;border-radius:20px;max-width:92vw;text-align:center;box-shadow:0 8px 28px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease}
 .pv-call-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .pv-call-toast.hidden{display:none !important}
+</style>
+
+<style>
+/* PV SUPER ACTIVE CHAT LIST - new message flash + badge pop + inbox total */
+@keyframes pvRowFlash{0%{background:rgba(0,132,255,.28)}100%{background:transparent}}
+.dm-chat-row.pv-row-flash{animation:pvRowFlash 1.4s ease-out}
+@keyframes pvBadgePop{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+.pv-unread-badge.pv-badge-pop{animation:pvBadgePop .35s ease}
+.bottom-nav button{position:relative}
+.pv-inbox-total-badge{position:absolute;top:2px;right:22%;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#ff3b30;color:#fff;font-size:11px;font-weight:800;line-height:20px;text-align:center;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,59,48,.5);z-index:5}
+.pv-inbox-total-badge.show{display:flex}
+.pv-inbox-total-badge.pv-badge-pop{animation:pvBadgePop .35s ease}
 </style>
 </head>
 <body>
@@ -2217,7 +2226,17 @@ if(!name||name==='All Users')return;
 if(name==='Guest')return;
 const me=(window.ProVibesUser&&window.ProVibesUser.name)||localStorage.getItem('pro_vibes_user_name')||'';
 if(me&&name.trim().toLowerCase()===me.trim().toLowerCase())return;
-var _isFriend=pvIsMutualChat(name);if(_isFriend){try{if(window.ProVibesAddStory)window.ProVibesAddStory(name);}catch(e){}}const list=$('new-persons-list');if(!list||list.querySelector('[data-person-name="'+name.replace(/"/g, '')+'"]'))return;
+var _isFriend=pvIsMutualChat(name);if(_isFriend){try{if(window.ProVibesAddStory)window.ProVibesAddStory(name);}catch(e){}}const list=$('new-persons-list');if(!list)return;
+  // DEDUP: Chisom vs chisom = same person. Check case-insensitively, never create 2nd row.
+  var _dup=null; try{ list.querySelectorAll('[data-person-name]').forEach(function(r){ var _n=r.getAttribute('data-person-name')||''; if(_n.trim().toLowerCase()===name.trim().toLowerCase()) _dup=r; }); }catch(e){}
+  if(_dup){
+    // Upgrade to nicer capitalisation: if existing is all-lowercase and new has capitals, keep new name
+    try{
+      var _oldN=_dup.getAttribute('data-person-name')||''; var _isOldLower=_oldN===_oldN.toLowerCase(); var _isNewBetter=/[A-Z]/.test(name);
+      if(_isOldLower && _isNewBetter){ _dup.setAttribute('data-person-name', name); _dup.setAttribute('data-name', name); var _nm=_dup.querySelector('.dm-chat-name'); if(_nm) _nm.textContent=name; var _av2=_dup.querySelector('.dm-chat-avatar'); if(_av2){ _av2.dataset.pvOwner=name; } }
+    }catch(e){}
+    return;
+  }
 const b=el('button', 'dm-chat-row');b.setAttribute('data-name', name);b.setAttribute('data-person-name', name);b.setAttribute('data-initial', avatarText(name));b.setAttribute('data-active', '');
 b.innerHTML='<span class="dm-chat-avatar" style="background:'+avatarColor(name)+'">'+avatarText(name)+'</span><span class="dm-chat-info"><span class="dm-chat-name"></span><br><span class="dm-chat-sub">Tap to open DM</span></span><span class="pv-unread-badge" hidden></span>';
 b.querySelector('.dm-chat-name').textContent=name;
@@ -2503,7 +2522,7 @@ window.loadAllUsersForList=function(){
 var list=document.getElementById('new-persons-list');
 var _allBtn=document.getElementById('open-dm-all-users');
 if(list){list.innerHTML='';if(_allBtn)list.appendChild(_allBtn);}try{document.querySelectorAll('#inbox-stories [data-person-name]').forEach(function(s){s.remove();});}catch(e){}lsGet('pro_vibes_private_names').forEach(function(n){addPerson(n, true);});try{pvDiscoverPrivateRooms();}catch(e){}
-try{var _seen={};try{(lsGet('pro_vibes_all_users')||[]).forEach(function(m){var n=m&&(m.name||m.sender||m.user);if(n)_seen[String(n).trim()]=1;});}catch(e){}Object.keys(_seen).forEach(function(n){try{if(n&&n!=='All Users')addPerson(n, false);}catch(e){}});try{var _base=typeof getBase==='function'?getBase():'';if(_base&&navigator.onLine){fetch(_base+'/prochat/rooms/general.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var _names={};var _collect=function(nn){if(!nn)return;if(Array.isArray(nn)){nn.forEach(_collect);return;}if(typeof nn==='object'){var _one=nn.name||nn.sender||nn.user;if(_one)_names[String(_one).trim()]=1;try{Object.values(nn).forEach(_collect);}catch(e){}}};_collect(data);Object.keys(_names).forEach(function(n){try{if(n&&n!=='All Users')addPerson(n, false);}catch(e){}});try{pvRefreshAllListPreviews();}catch(e){}try{pvSortInboxByTime();}catch(e){}}).catch(function(){});}}catch(e){}}catch(e){}
+try{var _seen={};try{(lsGet('pro_vibes_all_users')||[]).forEach(function(m){var n=m&&(m.name||m.sender||m.user);if(n)_seen[String(n).trim().toLowerCase()]=String(n).trim();});}catch(e){}Object.keys(_seen).forEach(function(k){try{var n=_seen[k]; if(n&&n!=='All Users')addPerson(n, false);}catch(e){}});try{var _base=typeof getBase==='function'?getBase():'';if(_base&&navigator.onLine){fetch(_base+'/prochat/rooms/general.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var _names={};var _collect=function(nn){if(!nn)return;if(Array.isArray(nn)){nn.forEach(_collect);return;}if(typeof nn==='object'){var _one=nn.name||nn.sender||nn.user;if(_one)_names[String(_one).trim().toLowerCase()]=String(_one).trim();try{Object.values(nn).forEach(_collect);}catch(e){}}};_collect(data);Object.keys(_names).forEach(function(k){try{var n=_names[k]; if(n&&n!=='All Users')addPerson(n, false);}catch(e){}});try{pvRefreshAllListPreviews();}catch(e){}try{pvSortInboxByTime();}catch(e){}}).catch(function(){});}}catch(e){}}catch(e){}
 try{pvRefreshAllListPreviews();}catch(e){}
 try{pvUpdateAllUsersPreview();}catch(e){}
 try{pvRestoreUnreadBadges();}catch(e){}
@@ -3088,7 +3107,12 @@ function pvRenderProfileGrid(owner, gridId){try{var g=document.getElementById(gr
 function pvClosePostDetail(){try{document.body.classList.remove('pv-posts-open');document.body.style.overflow='';}catch(e){}try{var nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';}catch(e){}try{if(typeof showScreen==='function')showScreen('profile-screen');}catch(e){}try{if(typeof setNav==='function')setNav('profile-screen');}catch(e){}}
 function setProfile(){var el=document.getElementById('profile-avatar-letter');var nameEl=document.getElementById('profile-name');var n='';try{n=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}if(el){pvSetAvatarEl(el, n);}if(nameEl){nameEl.textContent=n.trim();}var bioEl=document.getElementById('profile-bio');if(bioEl){var b='';try{b=pvBioFor(n);}catch(e){b='';}bioEl.textContent=b;bioEl.style.display=b?'block':'none';}var bEl=document.getElementById('profile-back-avatar-letter');var bName=document.getElementById('profile-back-name');if(bEl&&!bEl.dataset.manual){pvSetAvatarEl(bEl, n);}if(bName&&!bName.dataset.manual){bName.textContent=n.trim();}pvRefreshCounts(n);try{pvRenderProfileGrid(n, 'profile-posts-grid');}catch(e){}try{pvRefreshAllAvatars();pvStartAvatarObserver();}catch(e){}var curBack=document.getElementById('profile-back-name');if(curBack&&curBack.textContent)pvRefreshCounts(curBack.textContent.trim());}
 function setProfileLetter(){setProfile();}function openBack(name){var n=(name||'').trim();var me='';try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}if(!n)n=me;try{if(typeof recordProfileView==='function')recordProfileView(n);}catch(e){}var cur='inbox-screen';try{var vis=document.querySelector('main section:not(.hidden)');if(vis&&vis.id)cur=vis.id;}catch(e){}backPrev=cur;var bEl=document.getElementById('profile-back-avatar-letter');var bName=document.getElementById('profile-back-name');if(bEl){pvSetAvatarEl(bEl, n);bEl.dataset.manual='1';}if(bName){bName.textContent=n;bName.dataset.manual='1';}var bBio=document.getElementById('profile-back-bio');if(bBio){var bb=pvBioFor(n);bBio.textContent=bb;bBio.style.display=bb?'block':'none';}pvRefreshCounts(n);pvSyncBackFollowBtn(n);try{if(typeof showScreen==='function'){showScreen('profile-back-screen');}else{document.querySelectorAll('main section').forEach(function(s){if(s.id==='profile-back-screen'){s.classList.remove('hidden');s.removeAttribute('hidden');}else{s.classList.add('hidden');s.setAttribute('hidden', '');}});}}catch(e){}var nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';try{if(typeof setNav==='function')setNav('profile-screen');}catch(e){}}
-function closeBack(){var bEl=document.getElementById('profile-back-avatar-letter');var bName=document.getElementById('profile-back-name');if(bEl)delete bEl.dataset.manual;if(bName)delete bName.dataset.manual;setProfile();var targetId=backPrev||'inbox-screen';try{if(typeof showScreen==='function'){showScreen(targetId);}else{document.querySelectorAll('main section').forEach(function(s){if(s.id===targetId){s.classList.remove('hidden');s.removeAttribute('hidden');}else{s.classList.add('hidden');s.setAttribute('hidden', '');}});}}catch(e){}var nav=document.querySelector('.bottom-nav');if(nav){if(targetId==='dm-screen'){nav.style.display='none';}else{nav.style.display='';}}try{if(typeof setNav==='function'&&targetId!=='dm-screen')setNav(targetId);}catch(e){}}function addStory(name){if(!name||name==='All Users')return;try{if(typeof pvIsMutualChat==='function'&&!pvIsMutualChat(name))return;}catch(e){}var me='';try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}if(me&&name.trim().toLowerCase()===me.trim().toLowerCase())return;var container=document.getElementById('inbox-stories')||document.querySelector('.inbox-stories');if(!container)return;var safe=name.replace(/"/g, '');if(container.querySelector('[data-person-name="'+safe+'"]'))return;var div=document.createElement('div');div.className='inbox-story';div.setAttribute('data-person-name', name);var av=document.createElement('div');av.className='inbox-avatar-sleek';var inner=document.createElement('div');inner.className='inbox-avatar-inner';try{inner.dataset.pvOwner=name;pvSetAvatarEl(inner, name);}catch(e){inner.textContent=avatarText(name);}av.appendChild(inner);var label=document.createElement('span');label.textContent=name;div.appendChild(av);div.appendChild(label);container.appendChild(div);}window.ProVibesAddStory=addStory;
+function closeBack(){var bEl=document.getElementById('profile-back-avatar-letter');var bName=document.getElementById('profile-back-name');if(bEl)delete bEl.dataset.manual;if(bName)delete bName.dataset.manual;setProfile();var targetId=backPrev||'inbox-screen';try{if(typeof showScreen==='function'){showScreen(targetId);}else{document.querySelectorAll('main section').forEach(function(s){if(s.id===targetId){s.classList.remove('hidden');s.removeAttribute('hidden');}else{s.classList.add('hidden');s.setAttribute('hidden', '');}});}}catch(e){}var nav=document.querySelector('.bottom-nav');if(nav){if(targetId==='dm-screen'){nav.style.display='none';}else{nav.style.display='';}}try{if(typeof setNav==='function'&&targetId!=='dm-screen')setNav(targetId);}catch(e){}}function addStory(name){if(!name||name==='All Users')return;try{if(typeof pvIsMutualChat==='function'&&!pvIsMutualChat(name))return;}catch(e){}var me='';try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}if(me&&name.trim().toLowerCase()===me.trim().toLowerCase())return;var container=document.getElementById('inbox-stories')||document.querySelector('.inbox-stories');if(!container)return;var safe=name.replace(/"/g, '');
+  var _dupS=null; try{ container.querySelectorAll('[data-person-name]').forEach(function(r){ var _n=r.getAttribute('data-person-name')||''; if(_n.trim().toLowerCase()===name.trim().toLowerCase()) _dupS=r; }); }catch(e){}
+  if(_dupS){
+    try{ var _oldS=_dupS.getAttribute('data-person-name')||''; if(_oldS===_oldS.toLowerCase() && /[A-Z]/.test(name)){ _dupS.setAttribute('data-person-name', name); var _lb=_dupS.querySelector('span'); if(_lb) _lb.textContent=name; } }catch(e){}
+    return;
+  }var div=document.createElement('div');div.className='inbox-story';div.setAttribute('data-person-name', name);var av=document.createElement('div');av.className='inbox-avatar-sleek';var inner=document.createElement('div');inner.className='inbox-avatar-inner';try{inner.dataset.pvOwner=name;pvSetAvatarEl(inner, name);}catch(e){inner.textContent=avatarText(name);}av.appendChild(inner);var label=document.createElement('span');label.textContent=name;div.appendChild(av);div.appendChild(label);container.appendChild(div);}window.ProVibesAddStory=addStory;
 function syncStoriesFromList(){try{if(typeof pvSyncFriendRings==='function')pvSyncFriendRings();else{document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(b){var nm=b.getAttribute('data-person-name');if(nm&&typeof pvIsMutualChat==='function'&&pvIsMutualChat(nm))addStory(nm);});}}catch(e){}}syncStoriesFromList();function viewsKeyFor(owner){var s=String(owner||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');return'pro_vibes_profile_views__for_'+s;}
 function viewerHistoryKeyFor(name){var s=String(name||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');return'pro_vibes_viewer_history__u_'+s;}
 function isViewerHistoryOn(name){try{var v=localStorage.getItem(viewerHistoryKeyFor(name));if(v===null||v===undefined||v==='')return true;return v==='1';}catch(e){return true;}}
@@ -4618,6 +4642,69 @@ if(!atBottom)window._pvJustOpened=false;
 })();
 </script>
 
+<script>
+// PV DEDUP FIX: Chisom vs chisom, Settings vs settings = same person. Never show 2 rows.
+// Runs on load + every 2s, merges duplicates in Inbox list + Stories, keeps best capitalisation.
+(function(){
+  function bestName(a,b){
+    if(!a) return b; if(!b) return a;
+    var aLower = a===a.toLowerCase(), bLower = b===b.toLowerCase();
+    if(aLower && !bLower) return b;
+    if(!aLower && bLower) return a;
+    // Prefer one with capital first letter, else longer / first
+    if(/^[A-Z]/.test(b) && !/^[A-Z]/.test(a)) return b;
+    return a;
+  }
+  function dedupList(){
+    try{
+      var list=document.getElementById('new-persons-list'); if(list){
+        var seen={}; var rows=Array.prototype.slice.call(list.querySelectorAll('[data-person-name]'));
+        rows.forEach(function(r){
+          var n=(r.getAttribute('data-person-name')||'').trim(); if(!n) return;
+          var k=n.toLowerCase();
+          if(!seen[k]){ seen[k]=r; return; }
+          // Duplicate found - keep first, upgrade its name if new is better, remove duplicate
+          var keep=seen[k]; var keepName=keep.getAttribute('data-person-name')||'';
+          var better=bestName(keepName, n);
+          if(better!==keepName){
+            try{ keep.setAttribute('data-person-name', better); keep.setAttribute('data-name', better); var nm=keep.querySelector('.dm-chat-name'); if(nm) nm.textContent=better; }catch(e){}
+          }
+          try{ r.remove(); }catch(e){}
+        });
+      }
+    }catch(e){}
+    try{
+      var st=document.getElementById('inbox-stories')||document.querySelector('.inbox-stories'); if(st){
+        var seen2={}; var srows=Array.prototype.slice.call(st.querySelectorAll('[data-person-name]'));
+        srows.forEach(function(r){
+          var n=(r.getAttribute('data-person-name')||'').trim(); if(!n) return;
+          var k=n.toLowerCase();
+          if(!seen2[k]){ seen2[k]=r; return; }
+          var keep=seen2[k]; var keepName=keep.getAttribute('data-person-name')||''; var better=bestName(keepName, n);
+          if(better!==keepName){ try{ keep.setAttribute('data-person-name', better); var lb=keep.querySelector('span'); if(lb) lb.textContent=better; }catch(e){} }
+          try{ r.remove(); }catch(e){}
+        });
+      }
+    }catch(e){}
+    try{
+      // Clean stored private names: dedup case-insensitively, keep best capitalisation
+      var raw=localStorage.getItem('pro_vibes_private_names'); if(raw){
+        var arr=[]; try{ arr=JSON.parse(raw)||[]; }catch(e){ arr=[]; }
+        if(Array.isArray(arr) && arr.length){
+          var map={}; var order=[];
+          arr.forEach(function(n){ var s=String(n||'').trim(); if(!s) return; var k=s.toLowerCase(); if(!map[k]){ map[k]=s; order.push(k); } else { map[k]=bestName(map[k], s); } });
+          var clean=order.map(function(k){ return map[k]; });
+          if(clean.length!==arr.length || clean.join('|')!==arr.join('|')){ try{ localStorage.setItem('pro_vibes_private_names', JSON.stringify(clean)); }catch(e){} }
+        }
+      }
+    }catch(e){}
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', function(){ dedupList(); setInterval(dedupList, 2000); }); } else { dedupList(); setInterval(dedupList, 2000); }
+  // Also run after any inbox refresh
+  document.addEventListener('click', function(){ setTimeout(dedupList, 400); }, true);
+})();
+</script>
+
 <!-- PV REAL CALL - INCOMING - exactly like photo -->
 <div id="pv-incoming-call" class="pv-incoming hidden" aria-hidden="true">
   <div class="pv-incoming-bg" id="pv-incoming-bg"></div>
@@ -4633,7 +4720,6 @@ if(!atBottom)window._pvJustOpened=false;
   </div>
 </div>
 <div id="pv-call-toast" class="pv-call-toast hidden" aria-live="polite"></div>
-<!-- PeerJS for far calls - Sokoto / anywhere via internet -->
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <script>
@@ -4642,174 +4728,55 @@ if(!atBottom)window._pvJustOpened=false;
   var tabId = '';
   try{ tabId = sessionStorage.getItem('pv_call_tab_id') || ''; if(!tabId){ tabId = 'tab_' + Date.now() + '_' + Math.floor(Math.random()*99999); sessionStorage.setItem('pv_call_tab_id', tabId); } }catch(e){ tabId = 'tab_' + Date.now() + '_' + Math.floor(Math.random()*99999); }
   var myName = '';
-  try{
-    myName = sessionStorage.getItem('pv_call_my_name') || '';
-    if(!myName){ myName = localStorage.getItem('pro_vibes_user_name') || (window.ProVibesUser && window.ProVibesUser.name) || ''; myName = String(myName||'').trim(); if(myName) sessionStorage.setItem('pv_call_my_name', myName); }
-  }catch(e){}
+  try{ myName = sessionStorage.getItem('pv_call_my_name') || ''; if(!myName){ myName = localStorage.getItem('pro_vibes_user_name') || (window.ProVibesUser && window.ProVibesUser.name) || ''; myName = String(myName||'').trim(); if(myName) sessionStorage.setItem('pv_call_my_name', myName); } }catch(e){}
   function pvCallMe(){ return String(myName||'').trim(); }
   function pvCallMeLow(){ return pvCallMe().toLowerCase(); }
-  function pvCallPeerIdFor(name){
-    var s = String(name||'').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    if(!s) s = 'user';
-    return 'pv-' + s;
-  }
+  function pvCallPeerIdFor(name){ var s = String(name||'').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); if(!s) s = 'user'; return 'pv-' + s; }
   var call = { id:null, kind:null, from:null, to:null, role:null, pc:null, local:null, remote:null, state:'idle', muted:false, speaker:true, videoOn:true, timer:null, startTime:0, ack:false, timeout:null, pendingIce:[], facing:'user', mode:'peer', onlineKnown:false, toastShown:false, toastTimer:null, retryTimer:null, dataConn:null };
-  var pvPeer = null, pvPeerReady = false, pvPeerCall = null, pvPeerRetry = 0;
+  var pvPeer = null, pvPeerReady = false, pvPeerCall = null;
   function pvCallInitPeer(){
     try{
       if(typeof Peer === 'undefined'){ return; }
       var id = pvCallPeerIdFor(pvCallMe()); if(!id || id==='pv-user') return;
       try{ if(pvPeer){ try{ pvPeer.destroy(); }catch(e){} } }catch(e){}
-      pvPeerReady = false;
-      pvPeer = new Peer(id);
-      pvPeer.on('open', function(){ pvPeerReady = true; pvPeerRetry = 0; });
+      pvPeerReady = false; pvPeer = new Peer(id);
+      pvPeer.on('open', function(){ pvPeerReady = true; });
       pvPeer.on('call', pvCallOnPeerIncoming);
-      pvPeer.on('connection', function(conn){
-        try{
-          conn.on('open', function(){ try{ conn.send({type:'pv-ringing'}); }catch(e){} });
-          conn.on('data', function(){});
-        }catch(e){}
-      });
       pvPeer.on('disconnected', function(){ try{ pvPeer.reconnect(); }catch(e){} });
-      pvPeer.on('error', function(err){
-        try{
-          if(err && err.type === 'unavailable-id'){
-            // Same user open on another device - retry in 2s, this device takes over
-            setTimeout(function(){ if(call.state==='idle') pvCallInitPeer(); }, 2000);
-          }
-        }catch(e){}
-      });
+      pvPeer.on('connection', function(conn){ try{ conn.on('open', function(){ try{ conn.send({type:'pv-ringing'}); }catch(e){} }); }catch(e){} });
+      pvPeer.on('error', function(err){ try{ if(err && err.type === 'unavailable-id'){ setTimeout(function(){ if(call.state==='idle') pvCallInitPeer(); }, 2000); } }catch(e){} });
       pvPeer.on('close', function(){ pvPeerReady = false; });
     }catch(e){}
   }
-  // Init after load, retry if CDN slow
-  setTimeout(pvCallInitPeer, 800);
-  setTimeout(pvCallInitPeer, 3000);
-  try{
-    var _loginBtn = document.getElementById('login-btn');
-    if(_loginBtn){ _loginBtn.addEventListener('click', function(){ setTimeout(function(){ try{ var n = localStorage.getItem('pro_vibes_user_name')||''; n = String(n||'').trim(); if(n && n !== myName){ myName = n; sessionStorage.setItem('pv_call_my_name', n); pvCallInitPeer(); } }catch(e){} }, 800); }); }
-  }catch(e){}
+  setTimeout(pvCallInitPeer, 800); setTimeout(pvCallInitPeer, 3000);
   var bc = null;
   try{ if('BroadcastChannel' in window){ bc = new BroadcastChannel('pro-vibes-calls'); bc.onmessage = function(ev){ try{ if(ev && ev.data) pvCallHandleLocal(ev.data); }catch(e){} }; } }catch(e){}
   var seenIds = {};
   var ringCtx = null, ringTimer = null, vibTimer = null;
   function pvCallAvatarFor(name){
     try{ if(typeof pvAvatarFor === 'function'){ var u = pvAvatarFor(name); if(u) return u; } }catch(e){}
-    try{
-      var head = document.querySelector('.dm-head-avatar');
-      if(head && head.style && head.style.backgroundImage && head.style.backgroundImage.indexOf('url(')===0) return head.style.backgroundImage.slice(4,-1).replace(/["']/g,'');
-      var big = document.querySelector('.dm-big-avatar');
-      if(big && big.style && big.style.backgroundImage && big.style.backgroundImage.indexOf('url(')===0) return big.style.backgroundImage.slice(4,-1).replace(/["']/g,'');
-    }catch(e){}
+    try{ var head = document.querySelector('.dm-head-avatar'); if(head && head.style && head.style.backgroundImage && head.style.backgroundImage.indexOf('url(')===0) return head.style.backgroundImage.slice(4,-1).replace(/["']/g,''); }catch(e){}
     return '';
   }
-  function pvCallSendLocal(msg){
-    try{
-      msg.fromTab = tabId; msg.at = Date.now(); msg.mid = 'm_' + Date.now() + '_' + Math.floor(Math.random()*999999);
-      if(bc){ try{ bc.postMessage(msg); }catch(e){} }
-      try{ localStorage.setItem('pv_call_signal_latest', JSON.stringify(msg)); }catch(e){}
-    }catch(e){}
-  }
-  function pvCallPoll(){
-    try{
-      var raw = localStorage.getItem('pv_call_signal_latest'); if(!raw) return;
-      var msg = JSON.parse(raw); if(!msg || !msg.mid || seenIds[msg.mid]) return;
-      seenIds[msg.mid] = 1; if(msg.fromTab === tabId) return; pvCallHandleLocal(msg);
-    }catch(e){}
-  }
+  function pvCallSendLocal(msg){ try{ msg.fromTab = tabId; msg.at = Date.now(); msg.mid = 'm_' + Date.now() + '_' + Math.floor(Math.random()*999999); if(bc){ try{ bc.postMessage(msg); }catch(e){} } try{ localStorage.setItem('pv_call_signal_latest', JSON.stringify(msg)); }catch(e){} }catch(e){} }
+  function pvCallPoll(){ try{ var raw = localStorage.getItem('pv_call_signal_latest'); if(!raw) return; var msg = JSON.parse(raw); if(!msg || !msg.mid || seenIds[msg.mid]) return; seenIds[msg.mid] = 1; if(msg.fromTab === tabId) return; pvCallHandleLocal(msg); }catch(e){} }
   setInterval(pvCallPoll, 400);
-  try{
-    document.addEventListener('click', function(){
-      setTimeout(function(){
-        try{
-          var n2 = String(localStorage.getItem('pro_vibes_user_name')||'').trim();
-          var profEl = document.getElementById('profile-name'); var profName = profEl ? String(profEl.textContent||'').trim() : '';
-          if(n2 && n2 !== myName && call && call.state === 'idle' && profName && profName === n2){ myName = n2; try{ sessionStorage.setItem('pv_call_my_name', n2); }catch(e){} pvCallInitPeer(); }
-        }catch(e){}
-      }, 400);
-    }, false);
-  }catch(e){}
-  // ===== SOUNDS: caller sleek, callee personal + vibrate =====
-  function pvCallCtx(){
-    try{ if(!ringCtx){ ringCtx = new (window.AudioContext || window.webkitAudioContext)(); } if(ringCtx.state === 'suspended'){ try{ ringCtx.resume(); }catch(e){} } return ringCtx; }catch(e){ return null; }
-  }
-  function pvCallTone(freq, dur, vol, type, delay){
-    try{
-      var ctx = pvCallCtx(); if(!ctx) return;
-      var t = ctx.currentTime + (delay||0);
-      var g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t+0.03); g.gain.setValueAtTime(vol, t+Math.max(0.05, dur-0.06)); g.gain.linearRampToValueAtTime(0, t+dur);
-      g.connect(ctx.destination);
-      var o = ctx.createOscillator(); o.type = type||'sine'; o.frequency.value = freq;
-      var og = ctx.createGain(); og.gain.value = 1; o.connect(og); og.connect(g); o.start(t); o.stop(t+dur+0.05);
-    }catch(e){}
-  }
+  function pvCallCtx(){ try{ if(!ringCtx){ ringCtx = new (window.AudioContext || window.webkitAudioContext)(); } if(ringCtx.state === 'suspended'){ try{ ringCtx.resume(); }catch(e){} } return ringCtx; }catch(e){ return null; } }
+  function pvCallTone(freq, dur, vol, type, delay){ try{ var ctx = pvCallCtx(); if(!ctx) return; var t = ctx.currentTime + (delay||0); var g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t+0.03); g.gain.setValueAtTime(vol, t+Math.max(0.05, dur-0.06)); g.gain.linearRampToValueAtTime(0, t+dur); g.connect(ctx.destination); var o = ctx.createOscillator(); o.type = type||'sine'; o.frequency.value = freq; var og = ctx.createGain(); og.gain.value = 1; o.connect(og); og.connect(g); o.start(t); o.stop(t+dur+0.05); }catch(e){} }
   function pvCallCallerSleek(){ pvCallTone(520, 0.75, 0.055, 'sine', 0); pvCallTone(660, 0.75, 0.02, 'sine', 0); }
-  function pvCallCalleeRingtone(){
-    var notes = [659.25, 783.99, 880, 783.99, 659.25, 880, 1046.5];
-    for(var i=0;i<notes.length;i++){ pvCallTone(notes[i], 0.22, 0.16, 'triangle', i*0.24); pvCallTone(notes[i]*2, 0.18, 0.04, 'sine', i*0.24); }
-  }
-  function pvCallRingStart(incoming){
-    pvCallRingStop();
-    if(incoming){
-      try{ if(navigator.vibrate){ vibTimer = setInterval(function(){ try{ navigator.vibrate([400,200,400,200,400]); }catch(e){} }, 2800); try{ navigator.vibrate([400,200,400,200,400]); }catch(e){} } }catch(e){}
-      try{ pvCallCalleeRingtone(); ringTimer = setInterval(pvCallCalleeRingtone, 2800); }catch(e){}
-    } else {
-      try{ pvCallCallerSleek(); ringTimer = setInterval(pvCallCallerSleek, 3000); }catch(e){}
-    }
-  }
-  function pvCallRingStop(){
-    try{ if(ringTimer){ clearInterval(ringTimer); ringTimer = null; } }catch(e){}
-    try{ if(vibTimer){ clearInterval(vibTimer); vibTimer = null; } }catch(e){}
-    try{ if(navigator.vibrate) navigator.vibrate(0); }catch(e){}
-  }
+  function pvCallCalleeRingtone(){ var notes = [659.25, 783.99, 880, 783.99, 659.25, 880, 1046.5]; for(var i=0;i<notes.length;i++){ pvCallTone(notes[i], 0.22, 0.16, 'triangle', i*0.24); pvCallTone(notes[i]*2, 0.18, 0.04, 'sine', i*0.24); } }
+  function pvCallRingStart(incoming){ pvCallRingStop(); if(incoming){ try{ if(navigator.vibrate){ vibTimer = setInterval(function(){ try{ navigator.vibrate([400,200,400,200,400]); }catch(e){} }, 2800); try{ navigator.vibrate([400,200,400,200,400]); }catch(e){} } }catch(e){} try{ pvCallCalleeRingtone(); ringTimer = setInterval(pvCallCalleeRingtone, 2800); }catch(e){} } else { try{ pvCallCallerSleek(); ringTimer = setInterval(pvCallCallerSleek, 3000); }catch(e){} } }
+  function pvCallRingStop(){ try{ if(ringTimer){ clearInterval(ringTimer); ringTimer = null; } }catch(e){} try{ if(vibTimer){ clearInterval(vibTimer); vibTimer = null; } }catch(e){} try{ if(navigator.vibrate) navigator.vibrate(0); }catch(e){} }
   function pvCallSetVoiceStatus(txt){ try{ var s = document.querySelector('#pv-voice-call .pv-voice-call-status span'); if(s) s.textContent = txt; }catch(e){} }
   function pvCallSetVideoStatus(txt){ try{ var s = document.querySelector('#pv-video-call .pv-video-call-status'); if(s) s.textContent = txt; }catch(e){} }
   function pvCallSetStatus(txt){ if(call.kind === 'video') pvCallSetVideoStatus(txt); else pvCallSetVoiceStatus(txt); }
   var pvCallToastHideTimer = null;
-  function pvCallShowToast(msg){
-    try{
-      // RELIABLE RULE: toast ONLY if still Calling... (not online / not Ringing... / not connected)
-      if(call.onlineKnown) return;
-      if(call.state!=='outgoing' && call.state!=='connecting') return;
-      var t=document.getElementById('pv-call-toast'); if(!t) return;
-      t.textContent=msg; t.classList.remove('hidden'); requestAnimationFrame(function(){ t.classList.add('show'); });
-      try{ document.body.appendChild(t); }catch(e){}
-      // Show 5-6 seconds only, then hide on its own - never stays, never re-appears
-      try{ if(pvCallToastHideTimer) clearTimeout(pvCallToastHideTimer); }catch(e){}
-      pvCallToastHideTimer=setTimeout(function(){ pvCallHideToast(); }, 5500);
-    }catch(e){}
-  }
-  function pvCallHideToast(){
-    try{ if(pvCallToastHideTimer){ clearTimeout(pvCallToastHideTimer); pvCallToastHideTimer=null; } }catch(e){}
-    try{ var t=document.getElementById('pv-call-toast'); if(t){ t.classList.remove('show'); setTimeout(function(){ try{ t.classList.add('hidden'); }catch(e){} }, 280); } }catch(e){}
-  }
-  function pvCallSetOnline(online){
-    if(call.state!=='outgoing' && call.state!=='connecting') return;
-    if(online){
-      if(!call.onlineKnown){ call.onlineKnown=true; pvCallHideToast(); pvCallSetStatus('Ringing...'); }
-      else { pvCallHideToast(); }
-      if(call.toastTimer){ clearTimeout(call.toastTimer); call.toastTimer=null; }
-      if(call.retryTimer){ clearInterval(call.retryTimer); call.retryTimer=null; }
-    }
-  }
-  function pvCallMaybeOfflineToast(){
-    // Called 4s after dialing if we still haven't heard the other person is online
-    if(call.state!=='outgoing' && call.state!=='connecting') return;
-    if(call.onlineKnown || call.toastShown) return;
-    // If status already flipped to Ringing... (online), no toast at all
-    try{ var st = document.querySelector('#pv-voice-call .pv-voice-call-status span'); var st2 = document.querySelector('#pv-video-call .pv-video-call-status'); var cur = (call.kind==='video' ? (st2?st2.textContent:'') : (st?st.textContent:'')); if(cur && cur.indexOf('Ringing')!==-1) { call.onlineKnown=true; return; } }catch(e){}
-    call.toastShown=true;
-    var name = call.to || 'This person';
-    pvCallShowToast(name + ' might not be online.');
-  }
+  function pvCallShowToast(msg){ try{ if(call.onlineKnown) return; if(call.state!=='outgoing' && call.state!=='connecting') return; var t=document.getElementById('pv-call-toast'); if(!t) return; t.textContent=msg; t.classList.remove('hidden'); requestAnimationFrame(function(){ t.classList.add('show'); }); try{ document.body.appendChild(t); }catch(e){} try{ if(pvCallToastHideTimer) clearTimeout(pvCallToastHideTimer); }catch(e){} pvCallToastHideTimer=setTimeout(function(){ pvCallHideToast(); }, 5500); }catch(e){} }
+  function pvCallHideToast(){ try{ if(pvCallToastHideTimer){ clearTimeout(pvCallToastHideTimer); pvCallToastHideTimer=null; } }catch(e){} try{ var t=document.getElementById('pv-call-toast'); if(t){ t.classList.remove('show'); setTimeout(function(){ try{ t.classList.add('hidden'); }catch(e){} }, 280); } }catch(e){} }
+  function pvCallSetOnline(online){ if(call.state!=='outgoing' && call.state!=='connecting') return; if(online){ if(!call.onlineKnown){ call.onlineKnown=true; pvCallHideToast(); pvCallSetStatus('Ringing...'); } else { pvCallHideToast(); } if(call.toastTimer){ clearTimeout(call.toastTimer); call.toastTimer=null; } if(call.retryTimer){ clearInterval(call.retryTimer); call.retryTimer=null; } } }
+  function pvCallMaybeOfflineToast(){ if(call.state!=='outgoing' && call.state!=='connecting') return; if(call.onlineKnown || call.toastShown) return; try{ var st = document.querySelector('#pv-voice-call .pv-voice-call-status span'); var st2 = document.querySelector('#pv-video-call .pv-video-call-status'); var cur = (call.kind==='video' ? (st2?st2.textContent:'') : (st?st.textContent:'')); if(cur && cur.indexOf('Ringing')!==-1) { call.onlineKnown=true; return; } }catch(e){} call.toastShown=true; var name = call.to || 'This person'; pvCallShowToast(name + ' might not be online.'); }
   function pvCallScheduleOfflineToast(){ try{ if(call.toastTimer) clearTimeout(call.toastTimer); call.toastTimer=setTimeout(pvCallMaybeOfflineToast, 4000); }catch(e){} }
-  function pvCallStartTimer(){
-    pvCallStopTimer(); call.startTime = Date.now();
-    call.timer = setInterval(function(){
-      var el = Math.floor((Date.now()-call.startTime)/1000); var mm = Math.floor(el/60); var ss = el%60;
-      var t = (mm<10?'0'+mm:mm) + ':' + (ss<10?'0'+ss:ss); pvCallSetStatus(t);
-    }, 1000);
-  }
+  function pvCallStartTimer(){ pvCallStopTimer(); call.startTime = Date.now(); call.timer = setInterval(function(){ var el = Math.floor((Date.now()-call.startTime)/1000); var mm = Math.floor(el/60); var ss = el%60; var t = (mm<10?'0'+mm:mm) + ':' + (ss<10?'0'+ss:ss); pvCallSetStatus(t); }, 1000); }
   function pvCallStopTimer(){ try{ if(call.timer){ clearInterval(call.timer); call.timer=null; } }catch(e){} }
   function pvCallShowOutgoing(kind, to){
     try{
@@ -4843,20 +4810,7 @@ if(!atBottom)window._pvJustOpened=false;
     try{ var vd=document.getElementById('pv-video-call'); if(vd){ vd.classList.add('hidden'); vd.setAttribute('aria-hidden','true'); vd.classList.remove('pv-connected'); try{ vd.style.display='none'; }catch(e){} } }catch(e){}
     try{ var inc=document.getElementById('pv-incoming-call'); if(inc){ inc.classList.add('hidden'); inc.setAttribute('aria-hidden','true'); try{ inc.style.display='none'; }catch(e){} } }catch(e){}
   }
-  // GLOBAL GUARD: if a call is ringing / in-call, no other screen can hide it.
-  // Re-show it every 500ms if anything in the app hides it while navigating Home/Friends/Profile.
-  setInterval(function(){
-    try{
-      if(call.state==='incoming'){
-        var inc2=document.getElementById('pv-incoming-call');
-        if(inc2 && (inc2.classList.contains('hidden') || inc2.style.display==='none')){ pvCallShowIncoming(call.from, call.kind); }
-      } else if(call.state==='outgoing' || call.state==='connecting' || call.state==='connected'){
-        var kind2=call.kind; var to2=call.role==='caller'?call.to:call.from;
-        var ov2 = kind2==='video' ? document.getElementById('pv-video-call') : document.getElementById('pv-voice-call');
-        if(ov2 && (ov2.classList.contains('hidden') || ov2.style.display==='none')){ pvCallShowOutgoing(kind2, to2); if(call.state==='connected') pvCallSetStatus('00:00'); }
-      }
-    }catch(e){}
-  }, 500);
+  setInterval(function(){ try{ if(call.state==='incoming'){ var inc2=document.getElementById('pv-incoming-call'); if(inc2 && (inc2.classList.contains('hidden') || inc2.style.display==='none')){ pvCallShowIncoming(call.from, call.kind); } } else if(call.state==='outgoing' || call.state==='connecting' || call.state==='connected'){ var kind2=call.kind; var to2=call.role==='caller'?call.to:call.from; var ov2 = kind2==='video' ? document.getElementById('pv-video-call') : document.getElementById('pv-voice-call'); if(ov2 && (ov2.classList.contains('hidden') || ov2.style.display==='none')){ pvCallShowOutgoing(kind2, to2); if(call.state==='connected') pvCallSetStatus('00:00'); } } }catch(e){} }, 500);
   function pvCallShowIncoming(from, kind){
     try{
       var inc=document.getElementById('pv-incoming-call'); if(!inc) return;
@@ -4881,7 +4835,6 @@ if(!atBottom)window._pvJustOpened=false;
   function pvCallCleanup(){
     pvCallRingStop(); pvCallStopTimer(); pvCallHideToast();
     try{ if(call.toastTimer){ clearTimeout(call.toastTimer); call.toastTimer=null; } }catch(e){}
-    try{ if(typeof pvCallToastHideTimer!=='undefined' && pvCallToastHideTimer){ clearTimeout(pvCallToastHideTimer); pvCallToastHideTimer=null; } }catch(e){}
     try{ if(call.retryTimer){ clearInterval(call.retryTimer); call.retryTimer=null; } }catch(e){}
     try{ if(call.dataConn){ try{ call.dataConn.close(); }catch(e){} call.dataConn=null; } }catch(e){}
     call.onlineKnown=false; call.toastShown=false;
@@ -4896,47 +4849,28 @@ if(!atBottom)window._pvJustOpened=false;
     call.pendingIce=[]; call.muted=false; call.videoOn=true; call.facing='user';
     try{ var mb=document.getElementById('pv-voice-call-mute'); if(mb) mb.classList.remove('pv-call-muted'); var mm=document.getElementById('pv-video-call-mic'); if(mm) mm.classList.remove('pv-call-muted'); var vb=document.getElementById('pv-video-call-video'); if(vb) vb.classList.remove('pv-call-muted'); }catch(e){}
   }
-  function pvCallGetStream(kind){
-    var constraints = (kind==='video') ? {audio:true, video:{facingMode:call.facing}} : {audio:true, video:false};
-    return navigator.mediaDevices.getUserMedia(constraints);
-  }
-  // ===== FAR - PeerJS incoming =====
+  function pvCallGetStream(kind){ var constraints = (kind==='video') ? {audio:true, video:{facingMode:call.facing}} : {audio:true, video:false}; return navigator.mediaDevices.getUserMedia(constraints); }
   function pvCallOnPeerIncoming(incoming){
     try{
       if(call.state !== 'idle'){ try{ incoming.close(); }catch(e){} return; }
-      var md = incoming.metadata || {};
-      var from = md.from || 'User'; var kind = md.kind || 'voice';
+      var md = incoming.metadata || {}; var from = md.from || 'User'; var kind = md.kind || 'voice';
       call.id = 'peer_' + Date.now() + '_' + Math.floor(Math.random()*99999);
       call.kind = kind; call.from = from; call.to = pvCallMe(); call.role='callee'; call.state='incoming'; call.mode='peer'; call.remote=null;
       pvPeerCall = incoming;
       incoming.on('stream', function(s){ pvCallAttachRemote(s); });
-      incoming.on('close', function(){
-        if(call.state==='incoming'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; }
-        else if(call.state!=='idle' && call.mode==='peer'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; call.from=null; call.to=null; call.role=null; }
-      });
+      incoming.on('close', function(){ if(call.state==='incoming'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; } else if(call.state!=='idle' && call.mode==='peer'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; call.from=null; call.to=null; call.role=null; } });
       incoming.on('error', function(){ if(call.state==='incoming'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; } });
       pvCallShowIncoming(from, kind); pvCallRingStart(true);
       if(call.timeout) clearTimeout(call.timeout);
       call.timeout = setTimeout(function(){ if(call.state==='incoming'){ pvCallDecline(); } }, 45000);
     }catch(e){}
   }
-  // ===== FAR - PeerJS outgoing =====
   function pvCallStartPeer(kind, to){
     var me = pvCallMe();
     call.id = 'peer_' + Date.now() + '_' + Math.floor(Math.random()*99999);
     call.kind = kind; call.from = me; call.to = to; call.role='caller'; call.state='outgoing'; call.mode='peer'; call.remote=null; call.onlineKnown=false; call.toastShown=false;
     pvCallShowOutgoing(kind, to); pvCallSetStatus('Calling...'); pvCallRingStart(false); pvCallScheduleOfflineToast();
-    // ONLINE CHECK: DataConnection opens only if the other person is online. If it opens -> Ringing...
-    try{
-      if(pvPeer && pvPeer.open){
-        var dc = pvPeer.connect(pvCallPeerIdFor(to), {metadata:{from:me, kind:kind, type:'pv-presence'}});
-        call.dataConn = dc;
-        dc.on('open', function(){ pvCallSetOnline(true); });
-        dc.on('data', function(d){ if(d && d.type==='pv-ringing'){ pvCallSetOnline(true); } });
-        dc.on('close', function(){ /* keep Calling... if never opened */ });
-        dc.on('error', function(){ /* offline - keep Calling... + toast */ });
-      }
-    }catch(e){}
+    try{ if(pvPeer && pvPeer.open){ var dc = pvPeer.connect(pvCallPeerIdFor(to), {metadata:{from:me, kind:kind, type:'pv-presence'}}); call.dataConn = dc; dc.on('open', function(){ pvCallSetOnline(true); }); dc.on('data', function(d){ if(d && d.type==='pv-ringing'){ pvCallSetOnline(true); } }); } }catch(e){}
     pvCallGetStream(kind).then(function(stream){
       if(call.state!=='outgoing') return; call.local = stream;
       if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } }
@@ -4946,47 +4880,25 @@ if(!atBottom)window._pvJustOpened=false;
         pvPeerCall = mc;
         mc.on('stream', function(s){ pvCallAttachRemote(s); });
         mc.on('close', function(){
-          if(call.state==='outgoing'){
-            if(call.onlineKnown){ pvCallRingStop(); pvCallSetStatus('Declined'); setTimeout(function(){ pvCallEnd(false); }, 1200); }
-            else { // Never rang = person not online - keep Calling... + toast, retry in background
-              pvCallSetStatus('Calling...'); pvCallMaybeOfflineToast();
-              if(!call.retryTimer && call.state==='outgoing'){ call.retryTimer=setInterval(function(){ if(call.state!=='outgoing'){ clearInterval(call.retryTimer); call.retryTimer=null; return; } try{ if(pvPeer && pvPeer.open && call.local){ var rc = pvPeer.call(pvCallPeerIdFor(call.to), call.local, {metadata:{from:call.from, kind:call.kind}}); pvPeerCall=rc; rc.on('stream', function(s){ pvCallAttachRemote(s); }); rc.on('close', function(){ /* handled by retry loop */ }); } }catch(e){} }, 8000); }
-            }
-          }
+          if(call.state==='outgoing'){ if(call.onlineKnown){ pvCallRingStop(); pvCallSetStatus('Declined'); setTimeout(function(){ pvCallEnd(false); }, 1200); } else { pvCallSetStatus('Calling...'); pvCallMaybeOfflineToast(); if(!call.retryTimer && call.state==='outgoing'){ call.retryTimer=setInterval(function(){ if(call.state!=='outgoing'){ clearInterval(call.retryTimer); call.retryTimer=null; return; } try{ if(pvPeer && pvPeer.open && call.local){ var rc = pvPeer.call(pvCallPeerIdFor(call.to), call.local, {metadata:{from:call.from, kind:call.kind}}); pvPeerCall=rc; rc.on('stream', function(s){ pvCallAttachRemote(s); }); } }catch(e){} }, 8000); } } }
           else if(call.state==='connecting'){ pvCallRingStop(); pvCallSetStatus('No answer'); setTimeout(function(){ pvCallEnd(false); }, 1000); }
           else if(call.state==='connected'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; call.from=null; call.to=null; call.role=null; }
         });
-        mc.on('error', function(){
-          if(call.state==='outgoing' || call.state==='connecting'){
-            if(call.onlineKnown){ pvCallRingStop(); pvCallSetStatus('No answer'); setTimeout(function(){ pvCallEnd(false); }, 1200); }
-            else { pvCallSetStatus('Calling...'); pvCallMaybeOfflineToast(); /* keep calling, timeout will end it */ }
-          }
-        });
-      }catch(e){ pvCallSetStatus('User offline'); setTimeout(function(){ pvCallEnd(false); }, 1200); return; }
+        mc.on('error', function(){ if(call.state==='outgoing' || call.state==='connecting'){ if(call.onlineKnown){ pvCallRingStop(); pvCallSetStatus('No answer'); setTimeout(function(){ pvCallEnd(false); }, 1200); } else { pvCallSetStatus('Calling...'); pvCallMaybeOfflineToast(); } } });
+      }catch(e){ pvCallSetStatus('Calling...'); pvCallMaybeOfflineToast(); return; }
       if(call.timeout) clearTimeout(call.timeout);
       call.timeout = setTimeout(function(){ if(call.state==='outgoing' || call.state==='connecting'){ pvCallSetStatus('No answer'); setTimeout(function(){ pvCallEnd(false); }, 1200); } }, 45000);
     }).catch(function(){ pvCallSetStatus('Allow mic/camera'); setTimeout(function(){ pvCallEnd(false); }, 1500); });
   }
-  // ===== LOCAL fallback (same phone / offline) =====
   function pvCallCreatePC(){
     var pc = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]});
     call.pc = pc;
     pc.onicecandidate = function(ev){ if(ev.candidate){ pvCallSendLocal({type:'pv-call-ice', callId:call.id, from:pvCallMe(), to:(call.role==='caller'?call.to:call.from), candidate:ev.candidate}); } };
-    pc.ontrack = function(ev){
-      try{
-        if(!call.remote) call.remote = new MediaStream();
-        ev.streams[0].getTracks().forEach(function(tr){ try{ if(!call.remote.getTracks().some(function(x){ return x.id===tr.id; })) call.remote.addTrack(tr); }catch(e){} });
-        pvCallAttachRemote(call.remote);
-      }catch(e){}
-    };
+    pc.ontrack = function(ev){ try{ if(!call.remote) call.remote = new MediaStream(); ev.streams[0].getTracks().forEach(function(tr){ try{ if(!call.remote.getTracks().some(function(x){ return x.id===tr.id; })) call.remote.addTrack(tr); }catch(e){} }); pvCallAttachRemote(call.remote); }catch(e){} };
     if(call.local){ call.local.getTracks().forEach(function(tr){ try{ pc.addTrack(tr, call.local); }catch(e){} }); }
     return pc;
   }
-  function pvCallFlushIce(){
-    if(!call.pc || !call.pendingIce.length) return;
-    var list = call.pendingIce.slice(); call.pendingIce = [];
-    list.forEach(function(c){ try{ call.pc.addIceCandidate(new RTCIceCandidate(c)); }catch(e){} });
-  }
+  function pvCallFlushIce(){ if(!call.pc || !call.pendingIce.length) return; var list = call.pendingIce.slice(); call.pendingIce = []; list.forEach(function(c){ try{ call.pc.addIceCandidate(new RTCIceCandidate(c)); }catch(e){} }); }
   function pvCallStartLocal(kind, to){
     var me = pvCallMe();
     call.id = 'call_' + Date.now() + '_' + Math.floor(Math.random()*99999);
@@ -5006,7 +4918,6 @@ if(!atBottom)window._pvJustOpened=false;
     if(call.state!=='idle'){ return; }
     if(to.toLowerCase() === me.toLowerCase()){ pvCallSelfLoop(kind, to); return; }
     if(!window.RTCPeerConnection || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ pvCallShowOutgoing(kind, to); pvCallSetStatus('Calls need mic/camera permission'); return; }
-    // FAR first: if PeerJS ready, use internet. Else fallback to same-phone local.
     if(pvPeer && pvPeerReady){ pvCallStartPeer(kind, to); } else { pvCallStartLocal(kind, to); }
   }
   function pvCallSelfLoop(kind, to){
@@ -5015,12 +4926,7 @@ if(!atBottom)window._pvJustOpened=false;
     pvCallGetStream(kind).then(function(stream){
       call.local = stream; call.remote = stream;
       if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } }
-      setTimeout(function(){
-        if(call.state==='outgoing'){ call.state='connected'; pvCallRingStop(); pvCallStartTimer(); pvCallSetStatus('00:00');
-          if(kind==='voice'){ var ra=document.getElementById('pv-voice-remote-audio'); if(ra){ ra.srcObject=stream; ra.muted=true; } }
-          else { var rem=document.getElementById('pv-video-remote'); if(rem){ rem.srcObject=stream; rem.classList.add('show'); try{ rem.play(); }catch(e){} } var ov=document.getElementById('pv-video-call'); if(ov) ov.classList.add('pv-connected'); var pip=document.getElementById('pv-video-local-pip'); if(pip){ pip.srcObject=stream; pip.classList.add('show'); try{ pip.play(); }catch(e){} } }
-        }
-      }, 900);
+      setTimeout(function(){ if(call.state==='outgoing'){ call.state='connected'; pvCallRingStop(); pvCallStartTimer(); pvCallSetStatus('00:00'); if(kind==='voice'){ var ra=document.getElementById('pv-voice-remote-audio'); if(ra){ ra.srcObject=stream; ra.muted=true; } } else { var rem=document.getElementById('pv-video-remote'); if(rem){ rem.srcObject=stream; rem.classList.add('show'); try{ rem.play(); }catch(e){} } var ov=document.getElementById('pv-video-call'); if(ov) ov.classList.add('pv-connected'); var pip=document.getElementById('pv-video-local-pip'); if(pip){ pip.srcObject=stream; pip.classList.add('show'); try{ pip.play(); }catch(e){} } } } }, 900);
     }).catch(function(){ pvCallSetStatus('Allow mic/camera to test'); });
   }
   function pvCallAccept(){
@@ -5028,27 +4934,13 @@ if(!atBottom)window._pvJustOpened=false;
     var kind = call.kind; var from = call.from;
     pvCallHideOverlays(); pvCallShowOutgoing(kind, from); pvCallSetStatus('Connecting...');
     if(call.mode==='peer' && pvPeerCall){
-      pvCallGetStream(kind).then(function(stream){
-        call.local = stream; call.state='connecting';
-        if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } }
-        try{ pvPeerCall.answer(stream); }catch(e){}
-        if(call.timeout) clearTimeout(call.timeout);
-        call.timeout = setTimeout(function(){ if(call.state==='connecting'){ pvCallSetStatus('No connection'); setTimeout(function(){ pvCallEnd(true); }, 1000); } }, 30000);
-      }).catch(function(){});
+      pvCallGetStream(kind).then(function(stream){ call.local = stream; call.state='connecting'; if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } } try{ pvPeerCall.answer(stream); }catch(e){} if(call.timeout) clearTimeout(call.timeout); call.timeout = setTimeout(function(){ if(call.state==='connecting'){ pvCallSetStatus('No connection'); setTimeout(function(){ pvCallEnd(true); }, 1000); } }, 30000); }).catch(function(){});
       return;
     }
-    // Local mode
-    pvCallGetStream(kind).then(function(stream){
-      call.local = stream; call.state='connecting';
-      if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } }
-      pvCallSendLocal({type:'pv-call-accept', callId:call.id, from:pvCallMe(), to:from});
-      if(call.timeout) clearTimeout(call.timeout);
-      call.timeout = setTimeout(function(){ if(call.state==='connecting'){ pvCallSetStatus('No connection'); setTimeout(function(){ pvCallEnd(true); }, 1000); } }, 30000);
-    }).catch(function(){ pvCallSendLocal({type:'pv-call-accept', callId:call.id, from:pvCallMe(), to:from}); });
+    pvCallGetStream(kind).then(function(stream){ call.local = stream; call.state='connecting'; if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } } pvCallSendLocal({type:'pv-call-accept', callId:call.id, from:pvCallMe(), to:from}); if(call.timeout) clearTimeout(call.timeout); call.timeout = setTimeout(function(){ if(call.state==='connecting'){ pvCallSetStatus('No connection'); setTimeout(function(){ pvCallEnd(true); }, 1000); } }, 30000); }).catch(function(){ pvCallSendLocal({type:'pv-call-accept', callId:call.id, from:pvCallMe(), to:from}); });
   }
   function pvCallDecline(){
-    if(call.state!=='incoming') return;
-    var id = call.id; var from = call.from; var mode = call.mode;
+    if(call.state!=='incoming') return; var id = call.id; var from = call.from; var mode = call.mode;
     pvCallRingStop(); pvCallHideOverlays();
     if(mode==='peer' && pvPeerCall){ try{ pvPeerCall.close(); }catch(e){} pvPeerCall=null; }
     pvCallCleanup(); call.state='idle'; call.id=null;
@@ -5060,34 +4952,10 @@ if(!atBottom)window._pvJustOpened=false;
     if(sendSignal && id && peer && mode==='local'){ try{ pvCallSendLocal({type:'pv-call-end', callId:id, from:pvCallMe(), to:peer}); }catch(e){} }
     pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; call.from=null; call.to=null; call.role=null;
   }
-  function pvCallToggleMute(){
-    if(!call.local) return; call.muted = !call.muted;
-    call.local.getAudioTracks().forEach(function(t){ try{ t.enabled = !call.muted; }catch(e){} });
-    try{ var a=document.getElementById('pv-voice-call-mute'); if(a) a.classList.toggle('pv-call-muted', call.muted); var b=document.getElementById('pv-video-call-mic'); if(b) b.classList.toggle('pv-call-muted', call.muted); }catch(e){}
-  }
-  function pvCallToggleSpeaker(){
-    call.speaker = !call.speaker;
-    try{ var ra=document.getElementById('pv-voice-remote-audio'); if(ra) ra.volume = call.speaker ? 1 : 0.35; }catch(e){}
-    try{ var sp=document.getElementById('pv-voice-call-speaker'); if(sp) sp.classList.toggle('active-speaker', call.speaker); }catch(e){}
-  }
-  function pvCallToggleVideo(){
-    if(!call.local) return; call.videoOn = !call.videoOn;
-    call.local.getVideoTracks().forEach(function(t){ try{ t.enabled = call.videoOn; }catch(e){} });
-    try{ var vb=document.getElementById('pv-video-call-video'); if(vb) vb.classList.toggle('pv-call-muted', !call.videoOn); }catch(e){}
-  }
-  function pvCallSwitchCamera(){
-    if(call.kind!=='video' || !call.local) return;
-    call.facing = (call.facing==='user') ? 'environment' : 'user';
-    pvCallGetStream('video').then(function(newStream){
-      var newTrack = newStream.getVideoTracks()[0]; if(!newTrack) return;
-      var oldTrack = call.local.getVideoTracks()[0];
-      if(call.pc){ var sender = call.pc.getSenders().find(function(s){ return s.track && s.track.kind==='video'; }); if(sender){ try{ sender.replaceTrack(newTrack); }catch(e){} } }
-      try{ if(oldTrack) oldTrack.stop(); }catch(e){}
-      try{ call.local.removeTrack(oldTrack); call.local.addTrack(newTrack); }catch(e){}
-      var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=call.local; }
-      var pip=document.getElementById('pv-video-local-pip'); if(pip){ pip.srcObject=call.local; }
-    }).catch(function(){});
-  }
+  function pvCallToggleMute(){ if(!call.local) return; call.muted = !call.muted; call.local.getAudioTracks().forEach(function(t){ try{ t.enabled = !call.muted; }catch(e){} }); try{ var a=document.getElementById('pv-voice-call-mute'); if(a) a.classList.toggle('pv-call-muted', call.muted); var b=document.getElementById('pv-video-call-mic'); if(b) b.classList.toggle('pv-call-muted', call.muted); }catch(e){} }
+  function pvCallToggleSpeaker(){ call.speaker = !call.speaker; try{ var ra=document.getElementById('pv-voice-remote-audio'); if(ra) ra.volume = call.speaker ? 1 : 0.35; }catch(e){} try{ var sp=document.getElementById('pv-voice-call-speaker'); if(sp) sp.classList.toggle('active-speaker', call.speaker); }catch(e){} }
+  function pvCallToggleVideo(){ if(!call.local) return; call.videoOn = !call.videoOn; call.local.getVideoTracks().forEach(function(t){ try{ t.enabled = call.videoOn; }catch(e){} }); try{ var vb=document.getElementById('pv-video-call-video'); if(vb) vb.classList.toggle('pv-call-muted', !call.videoOn); }catch(e){} }
+  function pvCallSwitchCamera(){ if(call.kind!=='video' || !call.local) return; call.facing = (call.facing==='user') ? 'environment' : 'user'; pvCallGetStream('video').then(function(newStream){ var newTrack = newStream.getVideoTracks()[0]; if(!newTrack) return; var oldTrack = call.local.getVideoTracks()[0]; if(call.pc){ var sender = call.pc.getSenders().find(function(s){ return s.track && s.track.kind==='video'; }); if(sender){ try{ sender.replaceTrack(newTrack); }catch(e){} } } try{ if(oldTrack) oldTrack.stop(); }catch(e){} try{ call.local.removeTrack(oldTrack); call.local.addTrack(newTrack); }catch(e){} var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=call.local; } var pip=document.getElementById('pv-video-local-pip'); if(pip){ pip.srcObject=call.local; } }).catch(function(){}); }
   function pvCallHandleLocal(msg){
     if(!msg || !msg.type) return; if(msg.fromTab === tabId) return;
     var meLow = pvCallMeLow();
@@ -5105,38 +4973,20 @@ if(!atBottom)window._pvJustOpened=false;
     if(call.mode !== 'local') return;
     if(msg.type === 'pv-call-invite-ack'){ call.ack = true; pvCallSetOnline(true); return; }
     if(msg.type === 'pv-call-accept'){
-      if(call.state==='outgoing' && call.role==='caller'){
-        if(call.timeout) clearTimeout(call.timeout); call.state='connecting'; pvCallRingStop(); pvCallSetStatus('Connecting...');
-        try{ var pc = pvCallCreatePC(); pc.createOffer().then(function(offer){ return pc.setLocalDescription(offer).then(function(){ pvCallSendLocal({type:'pv-call-offer', callId:call.id, from:pvCallMe(), to:call.to, sdp:offer}); }); }).catch(function(){}); }catch(e){}
-      } return;
+      if(call.state==='outgoing' && call.role==='caller'){ if(call.timeout) clearTimeout(call.timeout); call.state='connecting'; pvCallRingStop(); pvCallSetStatus('Connecting...'); try{ var pc = pvCallCreatePC(); pc.createOffer().then(function(offer){ return pc.setLocalDescription(offer).then(function(){ pvCallSendLocal({type:'pv-call-offer', callId:call.id, from:pvCallMe(), to:call.to, sdp:offer}); }); }).catch(function(){}); }catch(e){} } return;
     }
-    if(msg.type === 'pv-call-offer'){
-      if(call.role==='callee' && (call.state==='connecting' || call.state==='incoming')){
-        try{ var pc2 = pvCallCreatePC(); pc2.setRemoteDescription(new RTCSessionDescription(msg.sdp)).then(function(){ pvCallFlushIce(); return pc2.createAnswer(); }).then(function(ans){ return pc2.setLocalDescription(ans).then(function(){ pvCallSendLocal({type:'pv-call-answer', callId:call.id, from:pvCallMe(), to:call.from, sdp:ans}); }); }).catch(function(){}); }catch(e){}
-      } return;
-    }
-    if(msg.type === 'pv-call-answer'){
-      if(call.role==='caller' && call.state==='connecting'){ try{ call.pc.setRemoteDescription(new RTCSessionDescription(msg.sdp)).then(function(){ pvCallFlushIce(); }).catch(function(){}); }catch(e){} } return;
-    }
-    if(msg.type === 'pv-call-ice'){
-      if(call.pc && call.pc.remoteDescription && call.pc.remoteDescription.type){ try{ call.pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); }catch(e){} } else { call.pendingIce.push(msg.candidate); } return;
-    }
+    if(msg.type === 'pv-call-offer'){ if(call.role==='callee' && (call.state==='connecting' || call.state==='incoming')){ try{ var pc2 = pvCallCreatePC(); pc2.setRemoteDescription(new RTCSessionDescription(msg.sdp)).then(function(){ pvCallFlushIce(); return pc2.createAnswer(); }).then(function(ans){ return pc2.setLocalDescription(ans).then(function(){ pvCallSendLocal({type:'pv-call-answer', callId:call.id, from:pvCallMe(), to:call.from, sdp:ans}); }); }).catch(function(){}); }catch(e){} } return; }
+    if(msg.type === 'pv-call-answer'){ if(call.role==='caller' && call.state==='connecting'){ try{ call.pc.setRemoteDescription(new RTCSessionDescription(msg.sdp)).then(function(){ pvCallFlushIce(); }).catch(function(){}); }catch(e){} } return; }
+    if(msg.type === 'pv-call-ice'){ if(call.pc && call.pc.remoteDescription && call.pc.remoteDescription.type){ try{ call.pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); }catch(e){} } else { call.pendingIce.push(msg.candidate); } return; }
     if(msg.type === 'pv-call-decline'){ if(call.state==='outgoing'){ pvCallRingStop(); pvCallSetStatus('Declined'); setTimeout(function(){ pvCallEnd(false); }, 1200); } return; }
     if(msg.type === 'pv-call-busy'){ if(call.state==='outgoing'){ pvCallRingStop(); pvCallSetStatus('Busy'); setTimeout(function(){ pvCallEnd(false); }, 1200); } return; }
     if(msg.type === 'pv-call-end'){ if(call.state!=='idle'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; call.from=null; call.to=null; call.role=null; } return; }
   }
-  // GLOBAL: while incoming is ringing, block EVERY tap except Accept/Decline - so Home/Friends/Profile cannot swallow the call.
-  // While in a call, block bottom-nav taps so the call overlay stays on top.
   document.addEventListener('click', function(e){
     try{
       var t = e.target; if(!t || !t.closest) return;
-      if(call.state==='incoming'){
-        if(t.closest('#pv-incoming-accept') || t.closest('#pv-incoming-decline')){ return; }
-        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return;
-      }
-      if(call.state==='outgoing' || call.state==='connecting' || call.state==='connected'){
-        if(t.closest('.bottom-nav') && !t.closest('#pv-voice-call') && !t.closest('#pv-video-call') && !t.closest('#pv-incoming-call')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return; }
-      }
+      if(call.state==='incoming'){ if(t.closest('#pv-incoming-accept') || t.closest('#pv-incoming-decline')){ return; } e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return; }
+      if(call.state==='outgoing' || call.state==='connecting' || call.state==='connected'){ if(t.closest('.bottom-nav') && !t.closest('#pv-voice-call') && !t.closest('#pv-video-call') && !t.closest('#pv-incoming-call')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return; } }
     }catch(err){}
   }, true);
   document.addEventListener('click', function(e){
@@ -5154,18 +5004,156 @@ if(!atBottom)window._pvJustOpened=false;
       if(t.closest('#pv-video-call-switch')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvCallSwitchCamera(); return; }
     }catch(err){}
   }, true);
-
-  // Backup: direct listeners on Accept/Decline so they work from ANY screen (Home/Friends/Profile)
-  try{
-    setTimeout(function(){
-      var acc=document.getElementById('pv-incoming-accept'); if(acc && !acc.dataset.pvDirect){ acc.dataset.pvDirect='1'; acc.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); pvCallAccept(); }); }
-      var dec=document.getElementById('pv-incoming-decline'); if(dec && !dec.dataset.pvDirect){ dec.dataset.pvDirect='1'; dec.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); pvCallDecline(); }); }
-    }, 500);
-  }catch(e){}
+  try{ setTimeout(function(){ var acc=document.getElementById('pv-incoming-accept'); if(acc && !acc.dataset.pvDirect){ acc.dataset.pvDirect='1'; acc.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); pvCallAccept(); }); } var dec=document.getElementById('pv-incoming-decline'); if(dec && !dec.dataset.pvDirect){ dec.dataset.pvDirect='1'; dec.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); pvCallDecline(); }); } }, 500); }catch(e){}
   window.PVOpenVoiceCall = function(){ var to = window.CurrentDM||''; if(to) pvCallStartOutgoing('voice', to); };
   window.PVOpenVideoCall = function(){ var to = window.CurrentDM||''; if(to) pvCallStartOutgoing('video', to); };
   window.PVCloseVoiceCall = function(){ pvCallEnd(true); };
   window.PVCloseVideoCall = function(){ pvCallEnd(true); };
+})();
+</script>
+
+<script>
+// ===== PV SUPER ACTIVE CHAT LIST - new messages, previews, badges/count in ~1.5s, no reload =====
+(function(){
+  var lastTotal = -1;
+  var lastRowTimes = {};
+  var refreshPending = false;
+  function isInboxVisible(){
+    try{
+      var inbox = document.getElementById('inbox-page') || document.querySelector('.inbox-page');
+      if(!inbox) return true;
+      if(inbox.classList && (inbox.classList.contains('hidden') || inbox.hasAttribute('hidden'))) return false;
+      // Also check if inbox section is the active tab (bottom nav)
+      return true;
+    }catch(e){ return true; }
+  }
+  function getTotalUnread(){
+    try{
+      var total = 0;
+      try{ if(typeof pvComputeUnread==='function') total += (pvComputeUnread('All Users')||0); }catch(e){}
+      try{
+        var names = [];
+        try{ names = (typeof lsGet==='function' ? (lsGet('pro_vibes_private_names')||[]) : JSON.parse(localStorage.getItem('pro_vibes_private_names')||'[]')); }catch(e){ names=[]; }
+        // Also include rows already in DOM (covers new people not yet in stored names)
+        try{ document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(r){ var n=r.getAttribute('data-person-name'); if(n && names.indexOf(n)===-1) names.push(n); }); }catch(e){}
+        names.forEach(function(n){ try{ if(n && n!=='All Users' && typeof pvComputeUnread==='function') total += (pvComputeUnread(n)||0); }catch(e){} });
+      }catch(e){}
+      return total;
+    }catch(e){ return 0; }
+  }
+  function updateBottomInboxBadge(){
+    try{
+      var total = getTotalUnread();
+      var btn = null;
+      try{
+        var navBtns = document.querySelectorAll('.bottom-nav button');
+        for(var i=0;i<navBtns.length;i++){ var t=(navBtns[i].textContent||'').trim(); if(t.toLowerCase().indexOf('inbox')!==-1){ btn=navBtns[i]; break; } }
+      }catch(e){}
+      if(!btn) return;
+      var badge = btn.querySelector('.pv-inbox-total-badge');
+      if(!badge){ badge=document.createElement('span'); badge.className='pv-inbox-total-badge'; btn.appendChild(badge); }
+      if(!total || total<=0){ badge.classList.remove('show'); badge.textContent=''; lastTotal=0; return; }
+      var txt = total>99 ? '99+' : String(total);
+      if(txt!==badge.textContent){ badge.textContent=txt; badge.classList.remove('pv-badge-pop'); void badge.offsetWidth; badge.classList.add('pv-badge-pop'); }
+      badge.classList.add('show');
+      if(total!==lastTotal){ lastTotal=total; }
+    }catch(e){}
+  }
+  function flashRowIfNew(name, lastTime){
+    try{
+      var prev = lastRowTimes[name]||0;
+      if(lastTime>prev && prev!==0){
+        var row = document.querySelector('#new-persons-list [data-person-name="'+String(name).replace(/"/g,'')+'"]');
+        if(!row && name==='All Users') row=document.getElementById('open-dm-all-users');
+        if(row){ row.classList.remove('pv-row-flash'); void row.offsetWidth; row.classList.add('pv-row-flash'); }
+        var badge = row ? row.querySelector('.pv-unread-badge') : null;
+        if(badge){ badge.classList.remove('pv-badge-pop'); void badge.offsetWidth; badge.classList.add('pv-badge-pop'); }
+      }
+      lastRowTimes[name]=lastTime;
+    }catch(e){}
+  }
+  function superRefresh(){
+    try{
+      // 1) Make sure any new person who messaged you appears - scan localStorage private rooms
+      try{
+        var known = {};
+        try{ document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(r){ known[String(r.getAttribute('data-person-name')||'').trim().toLowerCase()]=1; }); }catch(e){}
+        for(var i=0;i<localStorage.length;i++){
+          try{
+            var k=localStorage.key(i); if(!k || k.indexOf('pro_vibes_private_')!==0) continue;
+            // Room key -> we can't reverse name from room alone, so rely on private_names + All Users messages
+          }catch(e){}
+        }
+        // Ensure rows for every stored private name (covers new chatters)
+        try{
+          var stored=[]; try{ stored = (typeof lsGet==='function' ? (lsGet('pro_vibes_private_names')||[]) : JSON.parse(localStorage.getItem('pro_vibes_private_names')||'[]')); }catch(e){ stored=[]; }
+          if(Array.isArray(stored)) stored.forEach(function(n){ try{ if(n && n!=='All Users' && !known[String(n).trim().toLowerCase()] && typeof addPerson==='function') addPerson(n, true); }catch(e){} });
+        }catch(e){}
+      }catch(e){}
+      // 2) Previews + badges for every row (private) - instant, local only, no network wait
+      try{
+        document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(row){
+          var n=row.getAttribute('data-person-name'); if(!n) return;
+          try{ if(typeof pvUpdateListPreview==='function') pvUpdateListPreview(n); }catch(e){}
+          try{ if(typeof pvComputeUnread==='function' && typeof pvSetBadge==='function'){ var c=pvComputeUnread(n)||0; pvSetBadge(row, c); } }catch(e){}
+          try{ if(typeof pvLastMsgTime==='function'){ var t=pvLastMsgTime(n)||0; flashRowIfNew(n, t); } }catch(e){}
+        });
+      }catch(e){}
+      // 3) All Users preview + badge
+      try{ if(typeof pvUpdateAllUsersPreview==='function') pvUpdateAllUsersPreview(); }catch(e){}
+      try{ var allBtn=document.getElementById('open-dm-all-users'); if(allBtn && typeof pvComputeUnread==='function' && typeof pvSetBadge==='function'){ var ca=pvComputeUnread('All Users')||0; pvSetBadge(allBtn, ca); if(typeof pvLastMsgTime==='function') flashRowIfNew('All Users', pvLastMsgTime('All Users')||0); } }catch(e){}
+      // 4) Queued / waiting badges (outbox)
+      try{ if(window.PVPrivateHardening && window.PVPrivateHardening.updateRow){ /* updated via interval in private-chats.js */ } }catch(e){}
+      // 5) Sort by latest message - only if order actually changed (no flicker)
+      try{
+        if(typeof pvSortInboxByTime==='function'){
+          var list=document.getElementById('new-persons-list'); if(list){
+            var before=[]; try{ Array.prototype.slice.call(list.children).forEach(function(r){ before.push(r.getAttribute('data-name')||r.getAttribute('data-person-name')||'All Users'); }); }catch(e){}
+            pvSortInboxByTime();
+            // pvSortInboxByTime already handles it - we keep it, it's cheap and stable
+          }
+        }
+      }catch(e){}
+      // 6) Bottom nav total
+      updateBottomInboxBadge();
+    }catch(e){}
+  }
+  function scheduleRefresh(){
+    if(refreshPending) return; refreshPending=true;
+    setTimeout(function(){ refreshPending=false; superRefresh(); }, 180);
+  }
+  // FAST local refresh every 1.5s - previews + badges + sort + total, even while you dey Inbox
+  setInterval(superRefresh, 1500);
+  // Instant when storage changes (another tab / same app writes a message)
+  window.addEventListener('storage', function(e){
+    try{ if(!e || !e.key) return; if(e.key.indexOf('pro_vibes_private')===0 || e.key.indexOf('pro_vibes_all_users')===0 || e.key.indexOf('pv_unread')===0 || e.key.indexOf('pv_outbox')===0 || e.key.indexOf('pro_vibes_private_names')===0) scheduleRefresh(); }catch(err){}
+  });
+  // Instant when app comes back / tab focused / online
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) scheduleRefresh(); });
+  window.addEventListener('focus', scheduleRefresh);
+  window.addEventListener('online', scheduleRefresh);
+  // Instant when any part of app broadcasts a new message
+  try{
+    if('BroadcastChannel' in window){
+      var bc2=new BroadcastChannel('pro-vibes-messages');
+      bc2.onmessage=function(){ scheduleRefresh(); };
+    }
+  }catch(e){}
+  // Hook into existing instant poll: after it merges a message, refresh list too
+  try{
+    var _origPoll = window.PVInstantPoll;
+    if(typeof _origPoll==='function'){ window.PVInstantPoll=function(){ try{ _origPoll(); }catch(e){} scheduleRefresh(); }; }
+  }catch(e){}
+  // Hook pvMarkNew / pvClearNew if they exist as globals: they already update one row, we also refresh total
+  document.addEventListener('click', function(e){
+    try{
+      var t=e.target && e.target.closest ? e.target.closest('.dm-chat-row, #open-dm-all-users, .bottom-nav button') : null;
+      if(t) setTimeout(superRefresh, 300);
+    }catch(err){}
+  }, true);
+  // First run
+  setTimeout(superRefresh, 600);
+  setTimeout(superRefresh, 1800);
 })();
 </script>
 </body>
