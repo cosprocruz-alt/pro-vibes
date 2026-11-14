@@ -847,10 +847,9 @@ to{transform:translateY(0);opacity:1}
 .pv-incoming-avatar{width:190px;height:190px;min-width:190px;min-height:190px;border-radius:50%;background-size:cover;background-position:center;background-color:#222;flex-shrink:0}
 .pv-incoming-name{margin-top:28px;font-size:38px;font-weight:800;color:#fff;text-align:center;line-height:1.15;max-width:92vw;word-break:break-word}
 .pv-incoming-calling{display:flex;align-items:center;gap:8px;margin-top:14px;color:#d8d8d8;font-size:22px;font-weight:500}
-.pv-incoming-calling svg{width:24px;height:24px;display:block;flex-shrink:0}
 .pv-incoming-bottom{position:relative;z-index:2;display:flex;justify-content:space-between;padding:0 44px 68px}
 .pv-incoming-col{display:flex;flex-direction:column;align-items:center;gap:12px}
-.pv-incoming-btn{width:96px;height:96px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;pointer-events:auto;touch-action:manipulation}
+.pv-incoming-btn{width:96px;height:96px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .pv-incoming-btn.decline{background:#ff4b41}
 .pv-incoming-btn.accept{background:#2ed573}
 .pv-incoming-btn svg{width:44px;height:44px;display:block}
@@ -862,17 +861,12 @@ to{transform:translateY(0);opacity:1}
 .pv-video-local-pip{position:absolute;right:16px;bottom:96px;width:110px;height:152px;border-radius:14px;object-fit:cover;display:none;z-index:4;border:2px solid rgba(255,255,255,.65);transform:scaleX(-1);background:#222}
 .pv-video-local-pip.show{display:block}
 .pv-video-call.pv-connected .pv-video-call-avatar{display:none}
-.pv-video-call.pv-connected .pv-video-call-center{padding-top:60px}
 .pv-voice-remote-audio{display:none}
 .pv-call-muted{opacity:.45 !important}
 .pv-voice-call-btn.active-speaker{outline:2px solid #fff}
-.pv-call-toast{position:fixed;left:50%;bottom:208px;transform:translateX(-50%) translateY(8px);z-index:999999;background:rgba(20,20,20,.92);color:#fff;font-size:14px;font-weight:500;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:11px 16px;border-radius:20px;max-width:92vw;text-align:center;box-shadow:0 8px 28px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease}
+.pv-call-toast{position:fixed;left:50%;bottom:208px;transform:translateX(-50%) translateY(8px);z-index:999999;background:rgba(20,20,20,.92);color:#fff;font-size:14px;font-weight:500;white-space:nowrap;padding:11px 16px;border-radius:20px;max-width:92vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease}
 .pv-call-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .pv-call-toast.hidden{display:none !important}
-</style>
-
-<style>
-/* PV SUPER ACTIVE CHAT LIST - new message flash + badge pop + inbox total */
 @keyframes pvRowFlash{0%{background:rgba(0,132,255,.28)}100%{background:transparent}}
 .dm-chat-row.pv-row-flash{animation:pvRowFlash 1.4s ease-out}
 @keyframes pvBadgePop{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
@@ -2214,10 +2208,7 @@ function pvSortInboxByTime(){try{var list=document.getElementById('new-persons-l
 function pvMarkNew(name, delta){try{if(!name)return;if(name==='All Users'){var allBtn=document.getElementById('open-dm-all-users');if(!allBtn)return;var cur=pvComputeUnread('All Users');pvSetUnread('All Users', cur);pvSetBadge(allBtn, cur);try{pvUpdateAllUsersPreview();}catch(e){}try{pvSortInboxByTime();}catch(e){}return;}var list=document.getElementById('new-persons-list');if(!list)return;var row=list.querySelector('[data-person-name="'+String(name).replace(/"/g, '')+'"]');if(!row){try{addPerson(name, true);}catch(e){}row=list.querySelector('[data-person-name="'+String(name).replace(/"/g, '')+'"]');}if(!row)return;var cur2=pvComputeUnread(name);pvSetUnread(name, cur2);pvSetBadge(row, cur2);try{pvUpdateListPreview(name);}catch(e){}try{pvSortInboxByTime();}catch(e){}}catch(e){}}
 function pvClearNew(name){try{try{var _mx=Date.now();try{var _m=[];if(name==='All Users'){_m=lsGet('pro_vibes_all_users')||[];}else{var _r=window.getPrivateRoom?window.getPrivateRoom(name):'';_m=lsGet('pro_vibes_private_'+_r)||[];}_m.forEach(function(_mm){var _ts=Number(_mm&&(_mm.timestamp||_mm.time||_mm.createdAt||0))||0;if(_ts>_mx)_mx=_ts;});}catch(e){}pvSetLastRead(name, _mx);try{if(name!=='All Users')pvMarkSeenForPrivate(name);}catch(e){}}catch(e){}if(name==='All Users'){var b=document.getElementById('open-dm-all-users');if(!b)return;pvSetUnread('All Users', 0);pvSetBadge(b, 0);return;}try{pvSetUnread(name, 0);}catch(e){}var row=document.querySelector('#new-persons-list [data-person-name="'+String(name).replace(/"/g, '')+'"]');if(!row)return;pvSetBadge(row, 0);}catch(e){}}
 function pvPollGeneralForNew(){try{var base=typeof getBase==='function'?getBase():'';if(!base||!navigator.onLine)return;if(pvIsInChat('All Users'))return;var me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';fetch(base+'/prochat/rooms/general.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var ms=[];var collect=function(n){if(!n)return;if(Array.isArray(n)){n.forEach(collect);return;}if(typeof n==='object'){var one=normalizeChatMsg(n);if(one){ms.push(one);return;}Object.values(n).forEach(collect);}};collect(data);if(!ms.length)return;ms.sort(function(a, b){return(Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0);});
-try{
-  var _pk2={}; try{ for(var _pj=0; _pj<localStorage.length; _pj++){ var _pkj=localStorage.key(_pj); if(_pkj && _pkj.indexOf('pro_vibes_private_')===0){ try{ var _aj=JSON.parse(localStorage.getItem(_pkj)||'[]'); if(Array.isArray(_aj)) _aj.forEach(function(_mj){ _pk2[String(_mj&&( _mj.timestamp||_mj.time||_mj.createdAt||0))+'|'+String(_mj&&( _mj.name||_mj.sender||_mj.user||''))+'|'+String(_mj&&( _mj.text||_mj.message||''))]=1; }); }catch(e){} } } }catch(e){}
-  ms=ms.filter(function(_m){ var _k=String(_m&&( _m.timestamp||0))+'|'+String(_m&&( _m.name||''))+'|'+String(_m&&( _m.text||'')); return !_pk2[_k]; });
-}catch(e){}
+try{ var _pk2={}; try{ for(var _pj=0; _pj<localStorage.length; _pj++){ var _pkj=localStorage.key(_pj); if(_pkj && _pkj.indexOf('pro_vibes_private_')===0){ try{ var _aj=JSON.parse(localStorage.getItem(_pkj)||'[]'); if(Array.isArray(_aj)) _aj.forEach(function(_mj){ _pk2[String(_mj&&( _mj.timestamp||_mj.time||_mj.createdAt||0))+'|'+String(_mj&&( _mj.name||_mj.sender||_mj.user||''))+'|'+String(_mj&&( _mj.text||_mj.message||''))]=1; }); }catch(e){} } } }catch(e){} ms=ms.filter(function(_m){ var _k=String(_m&&( _m.timestamp||0))+'|'+String(_m&&( _m.name||''))+'|'+String(_m&&( _m.text||'')); return !_pk2[_k]; }); }catch(e){}
 var ex=[];try{ex=lsGet('pro_vibes_all_users')||[];}catch(e){ex=[];}var newMsgs=ms.filter(function(m){return!ex.some(function(e2){return sameMsg(e2, m);});});if(!newMsgs.length)return;var merged=[].concat(ex);newMsgs.forEach(function(m){if(!merged.some(function(s){return sameMsg(s, m);}))merged.push(m);});merged.sort(function(a, b){return(a.timestamp||0)-(b.timestamp||0);});try{lsSet('pro_vibes_all_users', merged);}catch(e){}try{pvUpdateAllUsersPreview();}catch(e){}var unreadNew=newMsgs.filter(function(m){var s=m&&(m.name||m.sender||m.user||'');return!s||String(s).trim().toLowerCase()!==String(me).trim().toLowerCase();});if(unreadNew.length)pvMarkNew('All Users', unreadNew.length);}).catch(function(){});}catch(e){}}
 function pvPollAllPrivateForNew(){try{pvDiscoverPrivateRooms();}catch(e){}try{var base=typeof getBase==='function'?getBase():'';if(!base||!navigator.onLine)return;var names=[];try{names=lsGet('pro_vibes_private_names')||[];}catch(e){names=[];}var me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';names.forEach(function(nm){try{if(!nm||nm==='All Users')return;if(pvIsInChat(nm))return;var room=window.getPrivateRoom?window.getPrivateRoom(nm):'';if(!room)return;var key='pro_vibes_private_'+room;fetch(base+'/prochat/rooms/private/'+room+'.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var ms=Array.isArray(data)?data:Object.values(data);if(!ms.length)return;var ex=[];try{ex=lsGet(key)||[];}catch(e){ex=[];}var newMsgs=[];ms.forEach(function(m){var nm2=normalizeChatMsg(m);if(!nm2)return;if(!ex.some(function(e2){return sameMsg(e2, nm2);}))newMsgs.push(nm2);});if(!newMsgs.length)return;var merged=[].concat(ex);newMsgs.forEach(function(m){if(!merged.some(function(s){return sameMsg(s, m);}))merged.push(m);});merged.sort(function(a, b){return(a.timestamp||0)-(b.timestamp||0);});try{lsSet(key, merged);}catch(e){}try{pvUpdateListPreview(nm);}catch(e){}var unreadNew=newMsgs.filter(function(m){var s=m&&(m.name||m.sender||m.user||'');return!s||String(s).trim().toLowerCase()!==String(me).trim().toLowerCase();});if(unreadNew.length)pvMarkNew(nm, unreadNew.length);}).catch(function(){});}catch(e){}});}catch(e){}}
 function pvIsPrivateFriend(name){try{var _p=lsGet('pro_vibes_private_names')||[];var _low=String(name||'').trim().toLowerCase();for(var _i=0;_i<_p.length;_i++){if(String(_p[_i]||'').trim().toLowerCase()===_low)return true;}return false;}catch(e){return false;}}
@@ -2232,16 +2223,8 @@ if(name==='Guest')return;
 const me=(window.ProVibesUser&&window.ProVibesUser.name)||localStorage.getItem('pro_vibes_user_name')||'';
 if(me&&name.trim().toLowerCase()===me.trim().toLowerCase())return;
 var _isFriend=pvIsMutualChat(name);if(_isFriend){try{if(window.ProVibesAddStory)window.ProVibesAddStory(name);}catch(e){}}const list=$('new-persons-list');if(!list)return;
-  // DEDUP: Chisom vs chisom = same person. Check case-insensitively, never create 2nd row.
   var _dup=null; try{ list.querySelectorAll('[data-person-name]').forEach(function(r){ var _n=r.getAttribute('data-person-name')||''; if(_n.trim().toLowerCase()===name.trim().toLowerCase()) _dup=r; }); }catch(e){}
-  if(_dup){
-    // Upgrade to nicer capitalisation: if existing is all-lowercase and new has capitals, keep new name
-    try{
-      var _oldN=_dup.getAttribute('data-person-name')||''; var _isOldLower=_oldN===_oldN.toLowerCase(); var _isNewBetter=/[A-Z]/.test(name);
-      if(_isOldLower && _isNewBetter){ _dup.setAttribute('data-person-name', name); _dup.setAttribute('data-name', name); var _nm=_dup.querySelector('.dm-chat-name'); if(_nm) _nm.textContent=name; var _av2=_dup.querySelector('.dm-chat-avatar'); if(_av2){ _av2.dataset.pvOwner=name; } }
-    }catch(e){}
-    return;
-  }
+  if(_dup){ try{ var _oldN=_dup.getAttribute('data-person-name')||''; if(_oldN===_oldN.toLowerCase() && /[A-Z]/.test(name)){ _dup.setAttribute('data-person-name', name); _dup.setAttribute('data-name', name); var _nm=_dup.querySelector('.dm-chat-name'); if(_nm) _nm.textContent=name; } }catch(e){} return; }
 const b=el('button', 'dm-chat-row');b.setAttribute('data-name', name);b.setAttribute('data-person-name', name);b.setAttribute('data-initial', avatarText(name));b.setAttribute('data-active', '');
 b.innerHTML='<span class="dm-chat-avatar" style="background:'+avatarColor(name)+'">'+avatarText(name)+'</span><span class="dm-chat-info"><span class="dm-chat-name"></span><br><span class="dm-chat-sub">Tap to open DM</span></span><span class="pv-unread-badge" hidden></span>';
 b.querySelector('.dm-chat-name').textContent=name;
@@ -2549,33 +2532,12 @@ setTimeout(function(){window._pvJustOpened=false;}, 900);
 const base=getBase();if(!base)return;
 fetch(base+'/prochat/rooms/general.json').then(r=>r.json()).then(data=>{if(!data)return;const tmp=[];const collect=n=>{if(!n)return;if(Array.isArray(n)){n.forEach(collect);return;}if(typeof n==='object'){const one=normalizeChatMsg(n);if(one){tmp.push(one);return;}Object.values(n).forEach(collect);}};collect(data);
 tmp.sort((a, b)=>(Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0));
-// LEAK FILTER: drop any general msg that is actually a private msg (same timestamp+name+text exists in a private room)
-try{
-  var _privKeys={};
-  try{ for(var _pi=0; _pi<localStorage.length; _pi++){ var _pk=localStorage.key(_pi); if(_pk && _pk.indexOf('pro_vibes_private_')===0){ try{ var _arr=JSON.parse(localStorage.getItem(_pk)||'[]'); if(Array.isArray(_arr)) _arr.forEach(function(_m){ _privKeys[String(_m&&( _m.timestamp||_m.time||_m.createdAt||0))+'|'+String(_m&&( _m.name||_m.sender||_m.user||''))+'|'+String(_m&&( _m.text||_m.message||''))]=1; }); }catch(e){} } } }catch(e){}
-  tmp=tmp.filter(function(_m){ var _k=String(_m&&( _m.timestamp||0))+'|'+String(_m&&( _m.name||''))+'|'+String(_m&&( _m.text||'')); return !_privKeys[_k]; });
-}catch(e){}
+try{ var _privKeys={}; try{ for(var _pi=0; _pi<localStorage.length; _pi++){ var _pk=localStorage.key(_pi); if(_pk && _pk.indexOf('pro_vibes_private_')===0){ try{ var _arr=JSON.parse(localStorage.getItem(_pk)||'[]'); if(Array.isArray(_arr)) _arr.forEach(function(_m){ _privKeys[String(_m&&( _m.timestamp||_m.time||_m.createdAt||0))+'|'+String(_m&&( _m.name||_m.sender||_m.user||''))+'|'+String(_m&&( _m.text||_m.message||''))]=1; }); }catch(e){} } } }catch(e){} tmp=tmp.filter(function(_m){ var _k=String(_m&&( _m.timestamp||0))+'|'+String(_m&&( _m.name||''))+'|'+String(_m&&( _m.text||'')); return !_privKeys[_k]; }); }catch(e){}
 window.AllUsersMessages=tmp;
 var merged=pvMergeIntoLocal('pro_vibes_all_users', tmp);
 try{pvUpdateAllUsersPreview();}catch(e){}try{if(window.CurrentDM!=='All Users')pvUpdateAllUsersBadge();}catch(e){}try{pvSortInboxByTime();}catch(e){}
 if(window.CurrentDM!=='All Users')return;
-// ORDER FIX: re-render whole list sorted, don't append new msgs at bottom (that made new msgs look scattered / up-down)
-try{
-  var _box=document.getElementById('dm-messages');
-  if(_box){
-    var _onScreenCount=_box.querySelectorAll('[data-msg-timestamp]').length;
-    var _mergedCount=merged.length;
-    // If counts differ, something is missing / out of order - rebuild sorted
-    if(_onScreenCount!==_mergedCount){
-      _box.innerHTML='';
-      merged.slice().sort(function(a,b){return (Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0);}).forEach(function(mm){ try{ renderAll(mm); }catch(e){} });
-    } else {
-      merged.forEach(function(mm){if(!pvIsOnScreen(mm))renderAll(mm);});
-    }
-  } else {
-    merged.forEach(function(mm){if(!pvIsOnScreen(mm))renderAll(mm);});
-  }
-}catch(e){ merged.forEach(function(mm){if(!pvIsOnScreen(mm))renderAll(mm);}); }
+try{ var _box=document.getElementById('dm-messages'); if(_box){ var _on=_box.querySelectorAll('[data-msg-timestamp]').length; if(_on!==merged.length){ _box.innerHTML=''; merged.slice().sort(function(a,b){return (Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0);}).forEach(function(mm){ try{ renderAll(mm); }catch(e){} }); } else { merged.forEach(function(mm){if(!pvIsOnScreen(mm))renderAll(mm);}); } } else { merged.forEach(function(mm){if(!pvIsOnScreen(mm))renderAll(mm);}); } }catch(e){ merged.forEach(function(mm){if(!pvIsOnScreen(mm))renderAll(mm);}); }
 if(window._pvJustOpened)pvJumpToLastOnOpen();
 try{pvSetLastRead('All Users', Date.now());pvSetUnread('All Users', 0);}catch(e){}
 }).catch(()=>{});
@@ -2608,7 +2570,7 @@ window.addEventListener('beforeunload', function(){try{var cur3=localStorage.get
 }catch(e){}
 }
 pvBindPresenceInstant();
-function startChatPoll(){stopChatPoll();try{pvTouchPresence();}catch(e){}try{if(window.PVStartInstantStream)window.PVStartInstantStream();}catch(e){}window.ProVibesChatPollId=setInterval(()=>{try{pvTouchPresence();}catch(e){}try{var _streaming=!!(window._pvInstantES&&window._pvInstantES.readyState!==2);if(!_streaming){if(window.CurrentDM==='All Users'){if(window.loadAllUsersMessages)window.loadAllUsersMessages();}else if(window.pollPrivateOnce){window.pollPrivateOnce(window.CurrentDM);if(window.CurrentDM){pvApplyPresence(window.CurrentDM);pvUpdateListPreview(window.CurrentDM);try{pvRefreshMsgStatuses();}catch(e){}}}}}catch(e){}try{pvPollAllPrivateForNew();}catch(e){}try{pvPollGeneralForNew();}catch(e){}}, 5000);}
+function startChatPoll(){stopChatPoll();try{pvTouchPresence();}catch(e){}try{if(window.PVStartInstantStream)window.PVStartInstantStream();}catch(e){}window.ProVibesChatPollId=setInterval(()=>{try{pvTouchPresence();}catch(e){}try{var _streaming=!!(window._pvInstantES&&window._pvInstantES.readyState!==2);if(!_streaming){if(window.CurrentDM==='All Users'){if(window.loadAllUsersMessages)window.loadAllUsersMessages();}else if(window.pollPrivateOnce){window.pollPrivateOnce(window.CurrentDM);if(window.CurrentDM){pvApplyPresence(window.CurrentDM);pvUpdateListPreview(window.CurrentDM);try{pvRefreshMsgStatuses();}catch(e){}}}}}catch(e){}try{pvPollAllPrivateForNew();}catch(e){}try{pvPollGeneralForNew();}catch(e){}}, 1200);}
 function stopChatPoll(){if(window.ProVibesChatPollId){clearInterval(window.ProVibesChatPollId);window.ProVibesChatPollId=null;}}
 window.ProVibesStartChatPoll=startChatPoll;window.ProVibesStopChatPoll=stopChatPoll;
 const actBtn=$('dm-action'), inp=$('dm-input');
@@ -2620,8 +2582,16 @@ if(!inp||!inp.value.trim()){if(window.ProVibesVoice&&window.ProVibesVoice.start)
 const text=inp.value.trim(), isAll=window.CurrentDM==='All Users', sender=(window.ProVibesUser&&window.ProVibesUser.name)||'You', payload={name:sender, text, timestamp:Date.now()};
 if(window.ReplyTo)payload.replyTo=window.ReplyTo;
 const base=getBase();
-if(isAll){if(base)fetch(base+'/prochat/rooms/general.json', {method:'POST', body:JSON.stringify(payload)}).catch(()=>{});const s=lsGet('pro_vibes_all_users');s.push(payload);lsSet('pro_vibes_all_users', s);renderAll(payload);}
-else{const room=window.getPrivateRoom(window.CurrentDM||'User'), key='pro_vibes_private_'+room;if(base)fetch(base+'/prochat/rooms/private/'+room+'.json', {method:'POST', body:JSON.stringify(payload)}).catch(()=>{});const s=lsGet(key);s.push(payload);lsSet(key, s);renderPrivate(payload);}
+// CHAT LIST FIRST + SPLIT-SECOND: 1) list first, sync, before any network
+try{ if(typeof window.PVChatListFirst==='function') window.PVChatListFirst(window.CurrentDM, payload); }catch(e){}
+// 2) Save locally + render in own room instantly
+if(isAll){const s=lsGet('pro_vibes_all_users');s.push(payload);lsSet('pro_vibes_all_users', s);try{renderAll(payload);}catch(e){}}
+else{const room=window.getPrivateRoom(window.CurrentDM||'User'), key='pro_vibes_private_'+room;const s=lsGet(key);s.push(payload);lsSet(key, s);try{renderPrivate(payload);}catch(e){}}
+// 3) Send in parallel - Firebase + PeerJS data (split-seconds far) + Broadcast (same phone) - no await, no waiting
+try{ if(base){ const _url=isAll?base+'/prochat/rooms/general.json':base+'/prochat/rooms/private/'+window.getPrivateRoom(window.CurrentDM||'User')+'.json'; fetch(_url, {method:'POST', body:JSON.stringify(payload), keepalive:true}).catch(()=>{}); } }catch(e){}
+try{ if(window.PVSendViaPeer) window.PVSendViaPeer(window.CurrentDM, payload, isAll); }catch(e){}
+try{ if(window.PVBroadcastMsg) window.PVBroadcastMsg(window.CurrentDM, payload, isAll); }catch(e){}
+try{ localStorage.setItem('pv_msg_signal_latest', JSON.stringify({at:Date.now(), to:window.CurrentDM, isAll:isAll, msg:payload})); }catch(e){}
 window.ReplyTo=null;const bar=$('dm-reply-bar');if(bar){bar.classList.remove('show');bar.classList.remove('voice-reply');}
 inp.value='';inp.style.height='auto';updAct();
 });
@@ -3137,10 +3107,7 @@ function setProfile(){var el=document.getElementById('profile-avatar-letter');va
 function setProfileLetter(){setProfile();}function openBack(name){var n=(name||'').trim();var me='';try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}if(!n)n=me;try{if(typeof recordProfileView==='function')recordProfileView(n);}catch(e){}var cur='inbox-screen';try{var vis=document.querySelector('main section:not(.hidden)');if(vis&&vis.id)cur=vis.id;}catch(e){}backPrev=cur;var bEl=document.getElementById('profile-back-avatar-letter');var bName=document.getElementById('profile-back-name');if(bEl){pvSetAvatarEl(bEl, n);bEl.dataset.manual='1';}if(bName){bName.textContent=n;bName.dataset.manual='1';}var bBio=document.getElementById('profile-back-bio');if(bBio){var bb=pvBioFor(n);bBio.textContent=bb;bBio.style.display=bb?'block':'none';}pvRefreshCounts(n);pvSyncBackFollowBtn(n);try{if(typeof showScreen==='function'){showScreen('profile-back-screen');}else{document.querySelectorAll('main section').forEach(function(s){if(s.id==='profile-back-screen'){s.classList.remove('hidden');s.removeAttribute('hidden');}else{s.classList.add('hidden');s.setAttribute('hidden', '');}});}}catch(e){}var nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';try{if(typeof setNav==='function')setNav('profile-screen');}catch(e){}}
 function closeBack(){var bEl=document.getElementById('profile-back-avatar-letter');var bName=document.getElementById('profile-back-name');if(bEl)delete bEl.dataset.manual;if(bName)delete bName.dataset.manual;setProfile();var targetId=backPrev||'inbox-screen';try{if(typeof showScreen==='function'){showScreen(targetId);}else{document.querySelectorAll('main section').forEach(function(s){if(s.id===targetId){s.classList.remove('hidden');s.removeAttribute('hidden');}else{s.classList.add('hidden');s.setAttribute('hidden', '');}});}}catch(e){}var nav=document.querySelector('.bottom-nav');if(nav){if(targetId==='dm-screen'){nav.style.display='none';}else{nav.style.display='';}}try{if(typeof setNav==='function'&&targetId!=='dm-screen')setNav(targetId);}catch(e){}}function addStory(name){if(!name||name==='All Users')return;try{if(typeof pvIsMutualChat==='function'&&!pvIsMutualChat(name))return;}catch(e){}var me='';try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}if(me&&name.trim().toLowerCase()===me.trim().toLowerCase())return;var container=document.getElementById('inbox-stories')||document.querySelector('.inbox-stories');if(!container)return;var safe=name.replace(/"/g, '');
   var _dupS=null; try{ container.querySelectorAll('[data-person-name]').forEach(function(r){ var _n=r.getAttribute('data-person-name')||''; if(_n.trim().toLowerCase()===name.trim().toLowerCase()) _dupS=r; }); }catch(e){}
-  if(_dupS){
-    try{ var _oldS=_dupS.getAttribute('data-person-name')||''; if(_oldS===_oldS.toLowerCase() && /[A-Z]/.test(name)){ _dupS.setAttribute('data-person-name', name); var _lb=_dupS.querySelector('span'); if(_lb) _lb.textContent=name; } }catch(e){}
-    return;
-  }var div=document.createElement('div');div.className='inbox-story';div.setAttribute('data-person-name', name);var av=document.createElement('div');av.className='inbox-avatar-sleek';var inner=document.createElement('div');inner.className='inbox-avatar-inner';try{inner.dataset.pvOwner=name;pvSetAvatarEl(inner, name);}catch(e){inner.textContent=avatarText(name);}av.appendChild(inner);var label=document.createElement('span');label.textContent=name;div.appendChild(av);div.appendChild(label);container.appendChild(div);}window.ProVibesAddStory=addStory;
+  if(_dupS){ try{ var _oldS=_dupS.getAttribute('data-person-name')||''; if(_oldS===_oldS.toLowerCase() && /[A-Z]/.test(name)){ _dupS.setAttribute('data-person-name', name); var _lb=_dupS.querySelector('span'); if(_lb) _lb.textContent=name; } }catch(e){} return; }var div=document.createElement('div');div.className='inbox-story';div.setAttribute('data-person-name', name);var av=document.createElement('div');av.className='inbox-avatar-sleek';var inner=document.createElement('div');inner.className='inbox-avatar-inner';try{inner.dataset.pvOwner=name;pvSetAvatarEl(inner, name);}catch(e){inner.textContent=avatarText(name);}av.appendChild(inner);var label=document.createElement('span');label.textContent=name;div.appendChild(av);div.appendChild(label);container.appendChild(div);}window.ProVibesAddStory=addStory;
 function syncStoriesFromList(){try{if(typeof pvSyncFriendRings==='function')pvSyncFriendRings();else{document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(b){var nm=b.getAttribute('data-person-name');if(nm&&typeof pvIsMutualChat==='function'&&pvIsMutualChat(nm))addStory(nm);});}}catch(e){}}syncStoriesFromList();function viewsKeyFor(owner){var s=String(owner||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');return'pro_vibes_profile_views__for_'+s;}
 function viewerHistoryKeyFor(name){var s=String(name||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');return'pro_vibes_viewer_history__u_'+s;}
 function isViewerHistoryOn(name){try{var v=localStorage.getItem(viewerHistoryKeyFor(name));if(v===null||v===undefined||v==='')return true;return v==='1';}catch(e){return true;}}
@@ -4380,21 +4347,12 @@ return;
 var nm=null;
 try{nm=normalizeChatMsg(raw);}catch(e){nm=null;}
 if(!nm)return;
-// LEAK FIX: use the STREAM's room (the room this EventSource is listening to), NOT CurrentDM.
-// CurrentDM can change while the stream is still open - that was dumping private msgs into All Users.
-// The stream URL is fixed at pvStartInstantStream time in window._pvStreamRoom.
 var _streamRoom = window._pvStreamRoom || window.CurrentDM || 'All Users';
 var isAll=(_streamRoom==='All Users');
-// If stream is for a different room than what's on screen, still save to the STREAM's room, but DON'T render it here
-// (rendering happens only when that room is opened). This stops cross-room leaking.
 var key=isAll?'pro_vibes_all_users':'pro_vibes_private_'+(window.getPrivateRoom?window.getPrivateRoom(_streamRoom||'User'):'');
 try{if(typeof pvMergeIntoLocal==='function')pvMergeIntoLocal(key, [nm]);}catch(e){}
 try{
-if(_streamRoom!==window.CurrentDM){
-  // Message is for a different chat than what's open - don't render here, just update that chat's list preview/badge
-  try{ if(isAll){ if(typeof pvUpdateAllUsersPreview==='function') pvUpdateAllUsersPreview(); } else { if(typeof pvUpdateListPreview==='function') pvUpdateListPreview(_streamRoom); if(typeof pvMarkNew==='function') pvMarkNew(_streamRoom, 1); } }catch(e){}
-  return;
-}
+if(_streamRoom!==window.CurrentDM){ try{ if(isAll){ if(typeof pvUpdateAllUsersPreview==='function') pvUpdateAllUsersPreview(); } else { if(typeof pvUpdateListPreview==='function') pvUpdateListPreview(_streamRoom); if(typeof pvMarkNew==='function') pvMarkNew(_streamRoom, 1); } }catch(e){} return; }
 if(typeof pvIsOnScreen==='function'&&pvIsOnScreen(nm))return;
 if(isAll){if(window.ProVibesRenderAll)window.ProVibesRenderAll(nm);}
 else{if(window.ProVibesRenderPrivate)window.ProVibesRenderPrivate(nm);}
@@ -4682,78 +4640,10 @@ if(!atBottom)window._pvJustOpened=false;
 })();
 </script>
 
-<script>
-// PV DEDUP FIX: Chisom vs chisom, Settings vs settings = same person. Never show 2 rows.
-// Runs on load + every 2s, merges duplicates in Inbox list + Stories, keeps best capitalisation.
-(function(){
-  function bestName(a,b){
-    if(!a) return b; if(!b) return a;
-    var aLower = a===a.toLowerCase(), bLower = b===b.toLowerCase();
-    if(aLower && !bLower) return b;
-    if(!aLower && bLower) return a;
-    // Prefer one with capital first letter, else longer / first
-    if(/^[A-Z]/.test(b) && !/^[A-Z]/.test(a)) return b;
-    return a;
-  }
-  function dedupList(){
-    try{
-      var list=document.getElementById('new-persons-list'); if(list){
-        var seen={}; var rows=Array.prototype.slice.call(list.querySelectorAll('[data-person-name]'));
-        rows.forEach(function(r){
-          var n=(r.getAttribute('data-person-name')||'').trim(); if(!n) return;
-          var k=n.toLowerCase();
-          if(!seen[k]){ seen[k]=r; return; }
-          // Duplicate found - keep first, upgrade its name if new is better, remove duplicate
-          var keep=seen[k]; var keepName=keep.getAttribute('data-person-name')||'';
-          var better=bestName(keepName, n);
-          if(better!==keepName){
-            try{ keep.setAttribute('data-person-name', better); keep.setAttribute('data-name', better); var nm=keep.querySelector('.dm-chat-name'); if(nm) nm.textContent=better; }catch(e){}
-          }
-          try{ r.remove(); }catch(e){}
-        });
-      }
-    }catch(e){}
-    try{
-      var st=document.getElementById('inbox-stories')||document.querySelector('.inbox-stories'); if(st){
-        var seen2={}; var srows=Array.prototype.slice.call(st.querySelectorAll('[data-person-name]'));
-        srows.forEach(function(r){
-          var n=(r.getAttribute('data-person-name')||'').trim(); if(!n) return;
-          var k=n.toLowerCase();
-          if(!seen2[k]){ seen2[k]=r; return; }
-          var keep=seen2[k]; var keepName=keep.getAttribute('data-person-name')||''; var better=bestName(keepName, n);
-          if(better!==keepName){ try{ keep.setAttribute('data-person-name', better); var lb=keep.querySelector('span'); if(lb) lb.textContent=better; }catch(e){} }
-          try{ r.remove(); }catch(e){}
-        });
-      }
-    }catch(e){}
-    try{
-      // Clean stored private names: dedup case-insensitively, keep best capitalisation
-      var raw=localStorage.getItem('pro_vibes_private_names'); if(raw){
-        var arr=[]; try{ arr=JSON.parse(raw)||[]; }catch(e){ arr=[]; }
-        if(Array.isArray(arr) && arr.length){
-          var map={}; var order=[];
-          arr.forEach(function(n){ var s=String(n||'').trim(); if(!s) return; var k=s.toLowerCase(); if(!map[k]){ map[k]=s; order.push(k); } else { map[k]=bestName(map[k], s); } });
-          var clean=order.map(function(k){ return map[k]; });
-          if(clean.length!==arr.length || clean.join('|')!==arr.join('|')){ try{ localStorage.setItem('pro_vibes_private_names', JSON.stringify(clean)); }catch(e){} }
-        }
-      }
-    }catch(e){}
-  }
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', function(){ dedupList(); setInterval(dedupList, 2000); }); } else { dedupList(); setInterval(dedupList, 2000); }
-  // Also run after any inbox refresh
-  document.addEventListener('click', function(){ setTimeout(dedupList, 400); }, true);
-})();
-</script>
-
-<!-- PV REAL CALL - INCOMING - exactly like photo -->
 <div id="pv-incoming-call" class="pv-incoming hidden" aria-hidden="true">
   <div class="pv-incoming-bg" id="pv-incoming-bg"></div>
   <div class="pv-incoming-bg-dim"></div>
-  <div class="pv-incoming-center">
-    <div class="pv-incoming-avatar" id="pv-incoming-avatar"></div>
-    <div class="pv-incoming-name" id="pv-incoming-name">User</div>
-    <div class="pv-incoming-calling"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3 C7 3 7.5 3.5 7.5 4.5 L7.5 6 C7.5 6.8 7 7.3 6.2 7.3 L5 7.3 C4.6 8.5 5 10 6.2 11.8 C7.4 13.6 9 14.8 10.7 15.2 L10.7 14 C10.7 13.2 11.2 12.7 12 12.7 L13.5 12.7 C14.5 12.7 15 13.2 15 14.2 L15 15.5 C15 16.5 14.5 17 13.5 17 C10 17 6 14 4.5 10.5 C4 9 4 7.5 4.5 6 L4.5 4.5 C4.5 3.5 5 3 6 3 Z" fill="#d8d8d8"/></svg><span>Calling...</span></div>
-  </div>
+  <div class="pv-incoming-center"><div class="pv-incoming-avatar" id="pv-incoming-avatar"></div><div class="pv-incoming-name" id="pv-incoming-name">User</div><div class="pv-incoming-calling"><span>Calling...</span></div></div>
   <div class="pv-incoming-bottom">
     <div class="pv-incoming-col"><button class="pv-incoming-btn decline" id="pv-incoming-decline" aria-label="Decline"><svg viewBox="0 0 24 24" fill="none"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="#fff"/></svg></button><span>Decline</span></div>
     <div class="pv-incoming-col"><button class="pv-incoming-btn accept" id="pv-incoming-accept" aria-label="Accept"><svg viewBox="0 0 24 24" fill="none"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="#fff"/></svg></button><span>Accept</span></div>
@@ -4763,478 +4653,283 @@ if(!atBottom)window._pvJustOpened=false;
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <script>
-// ===== PV REAL CALLS - FAR: PeerJS via internet (Sokoto / anywhere) + same-phone fallback =====
+// ===== PV CHAT LIST FIRST + SPLIT-SECOND SEND + SUPER ACTIVE LIST + CALLS (PeerJS far) =====
 (function(){
-  var tabId = '';
-  try{ tabId = sessionStorage.getItem('pv_call_tab_id') || ''; if(!tabId){ tabId = 'tab_' + Date.now() + '_' + Math.floor(Math.random()*99999); sessionStorage.setItem('pv_call_tab_id', tabId); } }catch(e){ tabId = 'tab_' + Date.now() + '_' + Math.floor(Math.random()*99999); }
-  var myName = '';
-  try{ myName = sessionStorage.getItem('pv_call_my_name') || ''; if(!myName){ myName = localStorage.getItem('pro_vibes_user_name') || (window.ProVibesUser && window.ProVibesUser.name) || ''; myName = String(myName||'').trim(); if(myName) sessionStorage.setItem('pv_call_my_name', myName); } }catch(e){}
-  function pvCallMe(){ return String(myName||'').trim(); }
-  function pvCallMeLow(){ return pvCallMe().toLowerCase(); }
-  function pvCallPeerIdFor(name){ var s = String(name||'').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); if(!s) s = 'user'; return 'pv-' + s; }
-  var call = { id:null, kind:null, from:null, to:null, role:null, pc:null, local:null, remote:null, state:'idle', muted:false, speaker:true, videoOn:true, timer:null, startTime:0, ack:false, timeout:null, pendingIce:[], facing:'user', mode:'peer', onlineKnown:false, toastShown:false, toastTimer:null, retryTimer:null, dataConn:null };
-  var pvPeer = null, pvPeerReady = false, pvPeerCall = null;
-  function pvCallInitPeer(){
+  // ---------- CHAT LIST FIRST ----------
+  function pvMeName(){ try{ return (window.ProVibesUser&&window.ProVibesUser.name)||localStorage.getItem('pro_vibes_user_name')||''; }catch(e){ return ''; } }
+  function pvChatListFirst(name, msg){
     try{
-      if(typeof Peer === 'undefined'){ return; }
-      var id = pvCallPeerIdFor(pvCallMe()); if(!id || id==='pv-user') return;
-      try{ if(pvPeer){ try{ pvPeer.destroy(); }catch(e){} } }catch(e){}
-      pvPeerReady = false; pvPeer = new Peer(id);
-      pvPeer.on('open', function(){ pvPeerReady = true; });
-      pvPeer.on('call', pvCallOnPeerIncoming);
-      pvPeer.on('disconnected', function(){ try{ pvPeer.reconnect(); }catch(e){} });
-      pvPeer.on('connection', function(conn){ try{ conn.on('open', function(){ try{ conn.send({type:'pv-ringing'}); }catch(e){} }); }catch(e){} });
-      pvPeer.on('error', function(err){ try{ if(err && err.type === 'unavailable-id'){ setTimeout(function(){ if(call.state==='idle') pvCallInitPeer(); }, 2000); } }catch(e){} });
-      pvPeer.on('close', function(){ pvPeerReady = false; });
-    }catch(e){}
-  }
-  setTimeout(pvCallInitPeer, 800); setTimeout(pvCallInitPeer, 3000);
-  var bc = null;
-  try{ if('BroadcastChannel' in window){ bc = new BroadcastChannel('pro-vibes-calls'); bc.onmessage = function(ev){ try{ if(ev && ev.data) pvCallHandleLocal(ev.data); }catch(e){} }; } }catch(e){}
-  var seenIds = {};
-  var ringCtx = null, ringTimer = null, vibTimer = null;
-  function pvCallAvatarFor(name){
-    try{ if(typeof pvAvatarFor === 'function'){ var u = pvAvatarFor(name); if(u) return u; } }catch(e){}
-    try{ var head = document.querySelector('.dm-head-avatar'); if(head && head.style && head.style.backgroundImage && head.style.backgroundImage.indexOf('url(')===0) return head.style.backgroundImage.slice(4,-1).replace(/["']/g,''); }catch(e){}
-    return '';
-  }
-  function pvCallSendLocal(msg){ try{ msg.fromTab = tabId; msg.at = Date.now(); msg.mid = 'm_' + Date.now() + '_' + Math.floor(Math.random()*999999); if(bc){ try{ bc.postMessage(msg); }catch(e){} } try{ localStorage.setItem('pv_call_signal_latest', JSON.stringify(msg)); }catch(e){} }catch(e){} }
-  function pvCallPoll(){ try{ var raw = localStorage.getItem('pv_call_signal_latest'); if(!raw) return; var msg = JSON.parse(raw); if(!msg || !msg.mid || seenIds[msg.mid]) return; seenIds[msg.mid] = 1; if(msg.fromTab === tabId) return; pvCallHandleLocal(msg); }catch(e){} }
-  setInterval(pvCallPoll, 400);
-  function pvCallCtx(){ try{ if(!ringCtx){ ringCtx = new (window.AudioContext || window.webkitAudioContext)(); } if(ringCtx.state === 'suspended'){ try{ ringCtx.resume(); }catch(e){} } return ringCtx; }catch(e){ return null; } }
-  function pvCallTone(freq, dur, vol, type, delay){ try{ var ctx = pvCallCtx(); if(!ctx) return; var t = ctx.currentTime + (delay||0); var g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t+0.03); g.gain.setValueAtTime(vol, t+Math.max(0.05, dur-0.06)); g.gain.linearRampToValueAtTime(0, t+dur); g.connect(ctx.destination); var o = ctx.createOscillator(); o.type = type||'sine'; o.frequency.value = freq; var og = ctx.createGain(); og.gain.value = 1; o.connect(og); og.connect(g); o.start(t); o.stop(t+dur+0.05); }catch(e){} }
-  function pvCallCallerSleek(){ pvCallTone(520, 0.75, 0.055, 'sine', 0); pvCallTone(660, 0.75, 0.02, 'sine', 0); }
-  function pvCallCalleeRingtone(){ var notes = [659.25, 783.99, 880, 783.99, 659.25, 880, 1046.5]; for(var i=0;i<notes.length;i++){ pvCallTone(notes[i], 0.22, 0.16, 'triangle', i*0.24); pvCallTone(notes[i]*2, 0.18, 0.04, 'sine', i*0.24); } }
-  function pvCallRingStart(incoming){ pvCallRingStop(); if(incoming){ try{ if(navigator.vibrate){ vibTimer = setInterval(function(){ try{ navigator.vibrate([400,200,400,200,400]); }catch(e){} }, 2800); try{ navigator.vibrate([400,200,400,200,400]); }catch(e){} } }catch(e){} try{ pvCallCalleeRingtone(); ringTimer = setInterval(pvCallCalleeRingtone, 2800); }catch(e){} } else { try{ pvCallCallerSleek(); ringTimer = setInterval(pvCallCallerSleek, 3000); }catch(e){} } }
-  function pvCallRingStop(){ try{ if(ringTimer){ clearInterval(ringTimer); ringTimer = null; } }catch(e){} try{ if(vibTimer){ clearInterval(vibTimer); vibTimer = null; } }catch(e){} try{ if(navigator.vibrate) navigator.vibrate(0); }catch(e){} }
-  function pvCallSetVoiceStatus(txt){ try{ var s = document.querySelector('#pv-voice-call .pv-voice-call-status span'); if(s) s.textContent = txt; }catch(e){} }
-  function pvCallSetVideoStatus(txt){ try{ var s = document.querySelector('#pv-video-call .pv-video-call-status'); if(s) s.textContent = txt; }catch(e){} }
-  function pvCallSetStatus(txt){ if(call.kind === 'video') pvCallSetVideoStatus(txt); else pvCallSetVoiceStatus(txt); }
-  var pvCallToastHideTimer = null;
-  function pvCallShowToast(msg){ try{ if(call.onlineKnown) return; if(call.state!=='outgoing' && call.state!=='connecting') return; var t=document.getElementById('pv-call-toast'); if(!t) return; t.textContent=msg; t.classList.remove('hidden'); requestAnimationFrame(function(){ t.classList.add('show'); }); try{ document.body.appendChild(t); }catch(e){} try{ if(pvCallToastHideTimer) clearTimeout(pvCallToastHideTimer); }catch(e){} pvCallToastHideTimer=setTimeout(function(){ pvCallHideToast(); }, 5500); }catch(e){} }
-  function pvCallHideToast(){ try{ if(pvCallToastHideTimer){ clearTimeout(pvCallToastHideTimer); pvCallToastHideTimer=null; } }catch(e){} try{ var t=document.getElementById('pv-call-toast'); if(t){ t.classList.remove('show'); setTimeout(function(){ try{ t.classList.add('hidden'); }catch(e){} }, 280); } }catch(e){} }
-  function pvCallSetOnline(online){ if(call.state!=='outgoing' && call.state!=='connecting') return; if(online){ if(!call.onlineKnown){ call.onlineKnown=true; pvCallHideToast(); pvCallSetStatus('Ringing...'); } else { pvCallHideToast(); } if(call.toastTimer){ clearTimeout(call.toastTimer); call.toastTimer=null; } if(call.retryTimer){ clearInterval(call.retryTimer); call.retryTimer=null; } } }
-  function pvCallMaybeOfflineToast(){ if(call.state!=='outgoing' && call.state!=='connecting') return; if(call.onlineKnown || call.toastShown) return; try{ var st = document.querySelector('#pv-voice-call .pv-voice-call-status span'); var st2 = document.querySelector('#pv-video-call .pv-video-call-status'); var cur = (call.kind==='video' ? (st2?st2.textContent:'') : (st?st.textContent:'')); if(cur && cur.indexOf('Ringing')!==-1) { call.onlineKnown=true; return; } }catch(e){} call.toastShown=true; var name = call.to || 'This person'; pvCallShowToast(name + ' might not be online.'); }
-  function pvCallScheduleOfflineToast(){ try{ if(call.toastTimer) clearTimeout(call.toastTimer); call.toastTimer=setTimeout(pvCallMaybeOfflineToast, 4000); }catch(e){} }
-  function pvCallStartTimer(){ pvCallStopTimer(); call.startTime = Date.now(); call.timer = setInterval(function(){ var el = Math.floor((Date.now()-call.startTime)/1000); var mm = Math.floor(el/60); var ss = el%60; var t = (mm<10?'0'+mm:mm) + ':' + (ss<10?'0'+ss:ss); pvCallSetStatus(t); }, 1000); }
-  function pvCallStopTimer(){ try{ if(call.timer){ clearInterval(call.timer); call.timer=null; } }catch(e){} }
-  function pvCallShowOutgoing(kind, to){
-    try{
-      var url = pvCallAvatarFor(to);
-      if(kind === 'voice'){
-        var ov = document.getElementById('pv-voice-call'); if(!ov) return;
-        try{ document.body.appendChild(ov); }catch(e){}
-        try{ ov.style.display='flex'; ov.style.zIndex='999998'; ov.style.visibility='visible'; }catch(e){}
-        var nm = document.getElementById('pv-voice-call-name'); if(nm) nm.textContent = to;
-        var av = document.getElementById('pv-voice-call-avatar'); var bg = document.getElementById('pv-voice-call-bg');
-        if(url){ ov.classList.remove('no-photo'); if(av){ av.style.backgroundImage='url('+url+')'; av.style.display=''; } if(bg){ bg.style.backgroundImage='url('+url+')'; } }
-        else{ ov.classList.add('no-photo'); if(av){ av.style.backgroundImage=''; av.style.display='none'; } if(bg){ bg.style.backgroundImage=''; } }
-        pvCallSetVoiceStatus('Calling...'); ov.classList.remove('hidden'); ov.setAttribute('aria-hidden','false');
+      if(!name) return;
+      if(name==='All Users'){
+        try{ if(typeof pvUpdateAllUsersPreview==='function') pvUpdateAllUsersPreview(); }catch(e){}
+        try{ var ab=document.getElementById('open-dm-all-users'); if(ab && typeof pvComputeUnread==='function' && typeof pvSetBadge==='function'){ pvSetBadge(ab, pvComputeUnread('All Users')||0); } }catch(e){}
       } else {
-        var ov2 = document.getElementById('pv-video-call'); if(!ov2) return; ov2.classList.remove('pv-connected');
-        try{ document.body.appendChild(ov2); }catch(e){}
-        try{ ov2.style.display='flex'; ov2.style.zIndex='999998'; ov2.style.visibility='visible'; }catch(e){}
-        var nm2 = document.getElementById('pv-video-call-name'); if(nm2) nm2.textContent = to;
-        var av2 = document.getElementById('pv-video-call-avatar');
-        if(url){ ov2.classList.remove('no-photo'); if(av2){ av2.style.backgroundImage='url('+url+')'; av2.style.display=''; } }
-        else{ ov2.classList.add('no-photo'); if(av2){ av2.style.backgroundImage=''; av2.style.display='none'; } }
-        pvCallSetVideoStatus('Calling...');
-        var rem = document.getElementById('pv-video-remote'); if(rem){ rem.classList.remove('show'); try{ rem.srcObject=null; }catch(e){} }
-        var pip = document.getElementById('pv-video-local-pip'); if(pip){ pip.classList.remove('show'); }
-        ov2.classList.remove('hidden'); ov2.setAttribute('aria-hidden','false');
+        // Ensure row exists (new chatter appears instantly)
+        try{ if(typeof addPerson==='function'){ var _exists=document.querySelector('#new-persons-list [data-person-name="'+String(name).replace(/"/g,'')+'"]'); if(!_exists) addPerson(name, true); } }catch(e){}
+        // Preview: use the just-sent/received msg directly - don't wait for re-read
+        try{
+          var row=document.querySelector('#new-persons-list [data-person-name="'+String(name).replace(/"/g,'')+'"]');
+          if(row){
+            var sub=row.querySelector('.dm-chat-sub');
+            if(sub && msg){
+              var me=pvMeName(); var who=(msg.name&&String(msg.name).toLowerCase()===String(me).toLowerCase())?'You':(msg.name||'');
+              var t=String(msg.text||msg.message||'').trim();
+              if(msg.voice||msg.audioData) t='(Voice Note)';
+              else if(msg.gif||msg.gifUrl) t='GIF';
+              else if(msg.sticker||msg.stickerUrl) t='Sticker';
+              if(t.length>38) t=t.slice(0,38)+'…';
+              sub.textContent = who+': '+t;
+            }
+            // Badge: recompute from storage (for sent msg, badge stays 0; for received, it goes up)
+            try{ if(typeof pvComputeUnread==='function' && typeof pvSetBadge==='function'){ var c=pvComputeUnread(name)||0; pvSetBadge(row, c); if(c>0){ row.classList.remove('pv-row-flash'); void row.offsetWidth; row.classList.add('pv-row-flash'); } } }catch(e){}
+          }
+        }catch(e){}
+        try{ if(typeof pvUpdateListPreview==='function') pvUpdateListPreview(name); }catch(e){}
       }
+      // Sort: newest to top, instantly
+      try{ if(typeof pvSortInboxByTime==='function') pvSortInboxByTime(); }catch(e){}
+      // Total badge on bottom Inbox tab
+      try{ pvUpdateTotalBadge(); }catch(e){}
+      // Broadcast to other tabs so their list updates too
+      try{ if(window.PVBroadcastMsg && msg && !window._pvListFirstBroadcasting){ /* avoid loop */ } }catch(e){}
     }catch(e){}
   }
-  function pvCallHideOverlays(){
-    try{ var v=document.getElementById('pv-voice-call'); if(v){ v.classList.add('hidden'); v.setAttribute('aria-hidden','true'); try{ v.style.display='none'; }catch(e){} } }catch(e){}
-    try{ var vd=document.getElementById('pv-video-call'); if(vd){ vd.classList.add('hidden'); vd.setAttribute('aria-hidden','true'); vd.classList.remove('pv-connected'); try{ vd.style.display='none'; }catch(e){} } }catch(e){}
-    try{ var inc=document.getElementById('pv-incoming-call'); if(inc){ inc.classList.add('hidden'); inc.setAttribute('aria-hidden','true'); try{ inc.style.display='none'; }catch(e){} } }catch(e){}
-  }
-  setInterval(function(){ try{ if(call.state==='incoming'){ var inc2=document.getElementById('pv-incoming-call'); if(inc2 && (inc2.classList.contains('hidden') || inc2.style.display==='none')){ pvCallShowIncoming(call.from, call.kind); } } else if(call.state==='outgoing' || call.state==='connecting' || call.state==='connected'){ var kind2=call.kind; var to2=call.role==='caller'?call.to:call.from; var ov2 = kind2==='video' ? document.getElementById('pv-video-call') : document.getElementById('pv-voice-call'); if(ov2 && (ov2.classList.contains('hidden') || ov2.style.display==='none')){ pvCallShowOutgoing(kind2, to2); if(call.state==='connected') pvCallSetStatus('00:00'); } } }catch(e){} }, 500);
-  function pvCallShowIncoming(from, kind){
+  window.PVChatListFirst = pvChatListFirst;
+  function pvUpdateTotalBadge(){
     try{
-      var inc=document.getElementById('pv-incoming-call'); if(!inc) return;
-      try{ document.body.appendChild(inc); }catch(e){}
-      try{ inc.style.display='flex'; inc.style.zIndex='999999'; inc.style.visibility='visible'; }catch(e){}
-      var nm=document.getElementById('pv-incoming-name'); if(nm) nm.textContent = from;
-      var av=document.getElementById('pv-incoming-avatar'); var url=pvCallAvatarFor(from);
-      var bg=document.getElementById('pv-incoming-bg');
-      if(av){ if(url){ av.style.backgroundImage='url('+url+')'; } else { av.style.backgroundImage=''; } }
-      if(bg){ if(url){ bg.style.backgroundImage='url('+url+')'; } else { bg.style.backgroundImage=''; } }
-      inc.classList.remove('hidden'); inc.setAttribute('aria-hidden','false');
-    }catch(e){}
-  }
-  function pvCallAttachRemote(stream){
-    try{
-      call.remote = stream;
-      if(call.kind==='voice'){ var ra=document.getElementById('pv-voice-remote-audio'); if(ra){ ra.srcObject=stream; try{ ra.play(); }catch(e){} } }
-      else { var rem=document.getElementById('pv-video-remote'); if(rem){ rem.srcObject=stream; rem.classList.add('show'); try{ rem.play(); }catch(e){} } var ov=document.getElementById('pv-video-call'); if(ov) ov.classList.add('pv-connected'); }
-      if(call.state!=='connected'){ call.state='connected'; pvCallRingStop(); pvCallStartTimer(); pvCallSetStatus('00:00'); }
-    }catch(e){}
-  }
-  function pvCallCleanup(){
-    pvCallRingStop(); pvCallStopTimer(); pvCallHideToast();
-    try{ if(call.toastTimer){ clearTimeout(call.toastTimer); call.toastTimer=null; } }catch(e){}
-    try{ if(call.retryTimer){ clearInterval(call.retryTimer); call.retryTimer=null; } }catch(e){}
-    try{ if(call.dataConn){ try{ call.dataConn.close(); }catch(e){} call.dataConn=null; } }catch(e){}
-    call.onlineKnown=false; call.toastShown=false;
-    try{ if(call.timeout){ clearTimeout(call.timeout); call.timeout=null; } }catch(e){}
-    try{ if(call.local){ call.local.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); call.local=null; } }catch(e){}
-    try{ if(call.pc){ call.pc.close(); call.pc=null; } }catch(e){}
-    try{ if(pvPeerCall){ try{ pvPeerCall.close(); }catch(e){} pvPeerCall=null; } }catch(e){}
-    try{ var ra=document.getElementById('pv-voice-remote-audio'); if(ra){ try{ ra.srcObject=null; }catch(e){} } }catch(e){}
-    try{ var cam=document.getElementById('pv-video-call-camera'); if(cam){ try{ cam.srcObject=null; }catch(e){} } }catch(e){}
-    try{ var rem=document.getElementById('pv-video-remote'); if(rem){ rem.classList.remove('show'); try{ rem.srcObject=null; }catch(e){} } }catch(e){}
-    try{ var pip=document.getElementById('pv-video-local-pip'); if(pip){ pip.classList.remove('show'); try{ pip.srcObject=null; }catch(e){} } }catch(e){}
-    call.pendingIce=[]; call.muted=false; call.videoOn=true; call.facing='user';
-    try{ var mb=document.getElementById('pv-voice-call-mute'); if(mb) mb.classList.remove('pv-call-muted'); var mm=document.getElementById('pv-video-call-mic'); if(mm) mm.classList.remove('pv-call-muted'); var vb=document.getElementById('pv-video-call-video'); if(vb) vb.classList.remove('pv-call-muted'); }catch(e){}
-  }
-  function pvCallGetStream(kind){ var constraints = (kind==='video') ? {audio:true, video:{facingMode:call.facing}} : {audio:true, video:false}; return navigator.mediaDevices.getUserMedia(constraints); }
-  function pvCallOnPeerIncoming(incoming){
-    try{
-      if(call.state !== 'idle'){ try{ incoming.close(); }catch(e){} return; }
-      var md = incoming.metadata || {}; var from = md.from || 'User'; var kind = md.kind || 'voice';
-      call.id = 'peer_' + Date.now() + '_' + Math.floor(Math.random()*99999);
-      call.kind = kind; call.from = from; call.to = pvCallMe(); call.role='callee'; call.state='incoming'; call.mode='peer'; call.remote=null;
-      pvPeerCall = incoming;
-      incoming.on('stream', function(s){ pvCallAttachRemote(s); });
-      incoming.on('close', function(){ if(call.state==='incoming'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; } else if(call.state!=='idle' && call.mode==='peer'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; call.from=null; call.to=null; call.role=null; } });
-      incoming.on('error', function(){ if(call.state==='incoming'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; } });
-      pvCallShowIncoming(from, kind); pvCallRingStart(true);
-      if(call.timeout) clearTimeout(call.timeout);
-      call.timeout = setTimeout(function(){ if(call.state==='incoming'){ pvCallDecline(); } }, 45000);
-    }catch(e){}
-  }
-  function pvCallStartPeer(kind, to){
-    var me = pvCallMe();
-    call.id = 'peer_' + Date.now() + '_' + Math.floor(Math.random()*99999);
-    call.kind = kind; call.from = me; call.to = to; call.role='caller'; call.state='outgoing'; call.mode='peer'; call.remote=null; call.onlineKnown=false; call.toastShown=false;
-    pvCallShowOutgoing(kind, to); pvCallSetStatus('Calling...'); pvCallRingStart(false); pvCallScheduleOfflineToast();
-    try{ if(pvPeer && pvPeer.open){ var dc = pvPeer.connect(pvCallPeerIdFor(to), {metadata:{from:me, kind:kind, type:'pv-presence'}}); call.dataConn = dc; dc.on('open', function(){ pvCallSetOnline(true); }); dc.on('data', function(d){ if(d && d.type==='pv-ringing'){ pvCallSetOnline(true); } }); } }catch(e){}
-    pvCallGetStream(kind).then(function(stream){
-      if(call.state!=='outgoing') return; call.local = stream;
-      if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } }
+      var total=0;
+      try{ if(typeof pvComputeUnread==='function') total+=(pvComputeUnread('All Users')||0); }catch(e){}
       try{
-        var calleeId = pvCallPeerIdFor(to);
-        var mc = pvPeer.call(calleeId, stream, {metadata:{from:me, kind:kind}});
-        pvPeerCall = mc;
-        mc.on('stream', function(s){ pvCallAttachRemote(s); });
-        mc.on('close', function(){
-          if(call.state==='outgoing'){ if(call.onlineKnown){ pvCallRingStop(); pvCallSetStatus('Declined'); setTimeout(function(){ pvCallEnd(false); }, 1200); } else { pvCallSetStatus('Calling...'); pvCallMaybeOfflineToast(); if(!call.retryTimer && call.state==='outgoing'){ call.retryTimer=setInterval(function(){ if(call.state!=='outgoing'){ clearInterval(call.retryTimer); call.retryTimer=null; return; } try{ if(pvPeer && pvPeer.open && call.local){ var rc = pvPeer.call(pvCallPeerIdFor(call.to), call.local, {metadata:{from:call.from, kind:call.kind}}); pvPeerCall=rc; rc.on('stream', function(s){ pvCallAttachRemote(s); }); } }catch(e){} }, 8000); } } }
-          else if(call.state==='connecting'){ pvCallRingStop(); pvCallSetStatus('No answer'); setTimeout(function(){ pvCallEnd(false); }, 1000); }
-          else if(call.state==='connected'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; call.from=null; call.to=null; call.role=null; }
-        });
-        mc.on('error', function(){ if(call.state==='outgoing' || call.state==='connecting'){ if(call.onlineKnown){ pvCallRingStop(); pvCallSetStatus('No answer'); setTimeout(function(){ pvCallEnd(false); }, 1200); } else { pvCallSetStatus('Calling...'); pvCallMaybeOfflineToast(); } } });
-      }catch(e){ pvCallSetStatus('Calling...'); pvCallMaybeOfflineToast(); return; }
-      if(call.timeout) clearTimeout(call.timeout);
-      call.timeout = setTimeout(function(){ if(call.state==='outgoing' || call.state==='connecting'){ pvCallSetStatus('No answer'); setTimeout(function(){ pvCallEnd(false); }, 1200); } }, 45000);
-    }).catch(function(){ pvCallSetStatus('Allow mic/camera'); setTimeout(function(){ pvCallEnd(false); }, 1500); });
-  }
-  function pvCallCreatePC(){
-    var pc = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]});
-    call.pc = pc;
-    pc.onicecandidate = function(ev){ if(ev.candidate){ pvCallSendLocal({type:'pv-call-ice', callId:call.id, from:pvCallMe(), to:(call.role==='caller'?call.to:call.from), candidate:ev.candidate}); } };
-    pc.ontrack = function(ev){ try{ if(!call.remote) call.remote = new MediaStream(); ev.streams[0].getTracks().forEach(function(tr){ try{ if(!call.remote.getTracks().some(function(x){ return x.id===tr.id; })) call.remote.addTrack(tr); }catch(e){} }); pvCallAttachRemote(call.remote); }catch(e){} };
-    if(call.local){ call.local.getTracks().forEach(function(tr){ try{ pc.addTrack(tr, call.local); }catch(e){} }); }
-    return pc;
-  }
-  function pvCallFlushIce(){ if(!call.pc || !call.pendingIce.length) return; var list = call.pendingIce.slice(); call.pendingIce = []; list.forEach(function(c){ try{ call.pc.addIceCandidate(new RTCIceCandidate(c)); }catch(e){} }); }
-  function pvCallStartLocal(kind, to){
-    var me = pvCallMe();
-    call.id = 'call_' + Date.now() + '_' + Math.floor(Math.random()*99999);
-    call.kind = kind; call.from = me; call.to = to; call.role = 'caller'; call.state = 'outgoing'; call.mode='local'; call.ack = false; call.remote = null; call.onlineKnown=false; call.toastShown=false;
-    pvCallShowOutgoing(kind, to); pvCallSetStatus('Calling...'); pvCallRingStart(false); pvCallScheduleOfflineToast();
-    pvCallGetStream(kind).then(function(stream){
-      if(call.state!=='outgoing') return; call.local = stream;
-      if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } }
-      pvCallSendLocal({type:'pv-call-invite', callId:call.id, from:me, to:to, kind:kind});
-      if(call.timeout) clearTimeout(call.timeout);
-      call.timeout = setTimeout(function(){ if(call.state==='outgoing'){ pvCallSetStatus('No answer'); setTimeout(function(){ pvCallEnd(true); }, 1200); pvCallSendLocal({type:'pv-call-end', callId:call.id, from:me, to:to}); } }, 45000);
-    }).catch(function(){ pvCallSendLocal({type:'pv-call-invite', callId:call.id, from:me, to:to, kind:kind}); });
-  }
-  function pvCallStartOutgoing(kind, to){
-    to = String(to||'').trim(); if(!to || to==='All Users') return;
-    var me = pvCallMe(); if(!me) return;
-    if(call.state!=='idle'){ return; }
-    if(to.toLowerCase() === me.toLowerCase()){ pvCallSelfLoop(kind, to); return; }
-    if(!window.RTCPeerConnection || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ pvCallShowOutgoing(kind, to); pvCallSetStatus('Calls need mic/camera permission'); return; }
-    if(pvPeer && pvPeerReady){ pvCallStartPeer(kind, to); } else { pvCallStartLocal(kind, to); }
-  }
-  function pvCallSelfLoop(kind, to){
-    call.id = 'self_' + Date.now(); call.kind = kind; call.from = pvCallMe(); call.to = to; call.role='caller'; call.state='outgoing'; call.mode='local'; call.remote=null;
-    pvCallShowOutgoing(kind, to); pvCallRingStart(false);
-    pvCallGetStream(kind).then(function(stream){
-      call.local = stream; call.remote = stream;
-      if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } }
-      setTimeout(function(){ if(call.state==='outgoing'){ call.state='connected'; pvCallRingStop(); pvCallStartTimer(); pvCallSetStatus('00:00'); if(kind==='voice'){ var ra=document.getElementById('pv-voice-remote-audio'); if(ra){ ra.srcObject=stream; ra.muted=true; } } else { var rem=document.getElementById('pv-video-remote'); if(rem){ rem.srcObject=stream; rem.classList.add('show'); try{ rem.play(); }catch(e){} } var ov=document.getElementById('pv-video-call'); if(ov) ov.classList.add('pv-connected'); var pip=document.getElementById('pv-video-local-pip'); if(pip){ pip.srcObject=stream; pip.classList.add('show'); try{ pip.play(); }catch(e){} } } } }, 900);
-    }).catch(function(){ pvCallSetStatus('Allow mic/camera to test'); });
-  }
-  function pvCallAccept(){
-    if(call.state!=='incoming') return; pvCallRingStop();
-    var kind = call.kind; var from = call.from;
-    pvCallHideOverlays(); pvCallShowOutgoing(kind, from); pvCallSetStatus('Connecting...');
-    if(call.mode==='peer' && pvPeerCall){
-      pvCallGetStream(kind).then(function(stream){ call.local = stream; call.state='connecting'; if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } } try{ pvPeerCall.answer(stream); }catch(e){} if(call.timeout) clearTimeout(call.timeout); call.timeout = setTimeout(function(){ if(call.state==='connecting'){ pvCallSetStatus('No connection'); setTimeout(function(){ pvCallEnd(true); }, 1000); } }, 30000); }).catch(function(){});
-      return;
-    }
-    pvCallGetStream(kind).then(function(stream){ call.local = stream; call.state='connecting'; if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } } pvCallSendLocal({type:'pv-call-accept', callId:call.id, from:pvCallMe(), to:from}); if(call.timeout) clearTimeout(call.timeout); call.timeout = setTimeout(function(){ if(call.state==='connecting'){ pvCallSetStatus('No connection'); setTimeout(function(){ pvCallEnd(true); }, 1000); } }, 30000); }).catch(function(){ pvCallSendLocal({type:'pv-call-accept', callId:call.id, from:pvCallMe(), to:from}); });
-  }
-  function pvCallDecline(){
-    if(call.state!=='incoming') return; var id = call.id; var from = call.from; var mode = call.mode;
-    pvCallRingStop(); pvCallHideOverlays();
-    if(mode==='peer' && pvPeerCall){ try{ pvPeerCall.close(); }catch(e){} pvPeerCall=null; }
-    pvCallCleanup(); call.state='idle'; call.id=null;
-    if(mode==='local'){ pvCallSendLocal({type:'pv-call-decline', callId:id, from:pvCallMe(), to:from}); }
-  }
-  function pvCallEnd(sendSignal){
-    var id = call.id; var peer = (call.role==='caller') ? call.to : call.from; var mode = call.mode;
-    if(mode==='peer' && pvPeerCall){ try{ pvPeerCall.close(); }catch(e){} pvPeerCall=null; }
-    if(sendSignal && id && peer && mode==='local'){ try{ pvCallSendLocal({type:'pv-call-end', callId:id, from:pvCallMe(), to:peer}); }catch(e){} }
-    pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; call.from=null; call.to=null; call.role=null;
-  }
-  function pvCallToggleMute(){ if(!call.local) return; call.muted = !call.muted; call.local.getAudioTracks().forEach(function(t){ try{ t.enabled = !call.muted; }catch(e){} }); try{ var a=document.getElementById('pv-voice-call-mute'); if(a) a.classList.toggle('pv-call-muted', call.muted); var b=document.getElementById('pv-video-call-mic'); if(b) b.classList.toggle('pv-call-muted', call.muted); }catch(e){} }
-  function pvCallToggleSpeaker(){ call.speaker = !call.speaker; try{ var ra=document.getElementById('pv-voice-remote-audio'); if(ra) ra.volume = call.speaker ? 1 : 0.35; }catch(e){} try{ var sp=document.getElementById('pv-voice-call-speaker'); if(sp) sp.classList.toggle('active-speaker', call.speaker); }catch(e){} }
-  function pvCallToggleVideo(){ if(!call.local) return; call.videoOn = !call.videoOn; call.local.getVideoTracks().forEach(function(t){ try{ t.enabled = call.videoOn; }catch(e){} }); try{ var vb=document.getElementById('pv-video-call-video'); if(vb) vb.classList.toggle('pv-call-muted', !call.videoOn); }catch(e){} }
-  function pvCallSwitchCamera(){ if(call.kind!=='video' || !call.local) return; call.facing = (call.facing==='user') ? 'environment' : 'user'; pvCallGetStream('video').then(function(newStream){ var newTrack = newStream.getVideoTracks()[0]; if(!newTrack) return; var oldTrack = call.local.getVideoTracks()[0]; if(call.pc){ var sender = call.pc.getSenders().find(function(s){ return s.track && s.track.kind==='video'; }); if(sender){ try{ sender.replaceTrack(newTrack); }catch(e){} } } try{ if(oldTrack) oldTrack.stop(); }catch(e){} try{ call.local.removeTrack(oldTrack); call.local.addTrack(newTrack); }catch(e){} var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=call.local; } var pip=document.getElementById('pv-video-local-pip'); if(pip){ pip.srcObject=call.local; } }).catch(function(){}); }
-  function pvCallHandleLocal(msg){
-    if(!msg || !msg.type) return; if(msg.fromTab === tabId) return;
-    var meLow = pvCallMeLow();
-    if(msg.type === 'pv-call-invite'){
-      if(String(msg.to).toLowerCase() !== meLow) return;
-      if(call.state !== 'idle'){ pvCallSendLocal({type:'pv-call-busy', callId:msg.callId, from:pvCallMe(), to:msg.from}); return; }
-      call.id = msg.callId; call.kind = msg.kind; call.from = msg.from; call.to = pvCallMe(); call.role='callee'; call.state='incoming'; call.mode='local'; call.remote=null;
-      pvCallSendLocal({type:'pv-call-invite-ack', callId:msg.callId, from:pvCallMe(), to:msg.from});
-      pvCallShowIncoming(msg.from, msg.kind); pvCallRingStart(true);
-      if(call.timeout) clearTimeout(call.timeout);
-      call.timeout = setTimeout(function(){ if(call.state==='incoming'){ pvCallDecline(); } }, 45000);
-      return;
-    }
-    if(!msg.callId || msg.callId !== call.id) return;
-    if(call.mode !== 'local') return;
-    if(msg.type === 'pv-call-invite-ack'){ call.ack = true; pvCallSetOnline(true); return; }
-    if(msg.type === 'pv-call-accept'){
-      if(call.state==='outgoing' && call.role==='caller'){ if(call.timeout) clearTimeout(call.timeout); call.state='connecting'; pvCallRingStop(); pvCallSetStatus('Connecting...'); try{ var pc = pvCallCreatePC(); pc.createOffer().then(function(offer){ return pc.setLocalDescription(offer).then(function(){ pvCallSendLocal({type:'pv-call-offer', callId:call.id, from:pvCallMe(), to:call.to, sdp:offer}); }); }).catch(function(){}); }catch(e){} } return;
-    }
-    if(msg.type === 'pv-call-offer'){ if(call.role==='callee' && (call.state==='connecting' || call.state==='incoming')){ try{ var pc2 = pvCallCreatePC(); pc2.setRemoteDescription(new RTCSessionDescription(msg.sdp)).then(function(){ pvCallFlushIce(); return pc2.createAnswer(); }).then(function(ans){ return pc2.setLocalDescription(ans).then(function(){ pvCallSendLocal({type:'pv-call-answer', callId:call.id, from:pvCallMe(), to:call.from, sdp:ans}); }); }).catch(function(){}); }catch(e){} } return; }
-    if(msg.type === 'pv-call-answer'){ if(call.role==='caller' && call.state==='connecting'){ try{ call.pc.setRemoteDescription(new RTCSessionDescription(msg.sdp)).then(function(){ pvCallFlushIce(); }).catch(function(){}); }catch(e){} } return; }
-    if(msg.type === 'pv-call-ice'){ if(call.pc && call.pc.remoteDescription && call.pc.remoteDescription.type){ try{ call.pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); }catch(e){} } else { call.pendingIce.push(msg.candidate); } return; }
-    if(msg.type === 'pv-call-decline'){ if(call.state==='outgoing'){ pvCallRingStop(); pvCallSetStatus('Declined'); setTimeout(function(){ pvCallEnd(false); }, 1200); } return; }
-    if(msg.type === 'pv-call-busy'){ if(call.state==='outgoing'){ pvCallRingStop(); pvCallSetStatus('Busy'); setTimeout(function(){ pvCallEnd(false); }, 1200); } return; }
-    if(msg.type === 'pv-call-end'){ if(call.state!=='idle'){ pvCallRingStop(); pvCallHideOverlays(); pvCallCleanup(); call.state='idle'; call.id=null; call.from=null; call.to=null; call.role=null; } return; }
-  }
-  document.addEventListener('click', function(e){
-    try{
-      var t = e.target; if(!t || !t.closest) return;
-      if(call.state==='incoming'){ if(t.closest('#pv-incoming-accept') || t.closest('#pv-incoming-decline')){ return; } e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return; }
-      if(call.state==='outgoing' || call.state==='connecting' || call.state==='connected'){ if(t.closest('.bottom-nav') && !t.closest('#pv-voice-call') && !t.closest('#pv-video-call') && !t.closest('#pv-incoming-call')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return; } }
-    }catch(err){}
-  }, true);
-  document.addEventListener('click', function(e){
-    try{
-      var t = e.target; if(!t || !t.closest) return;
-      if(t.closest('.dm-call')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); var to = window.CurrentDM || ''; if(to && to!=='All Users') pvCallStartOutgoing('voice', to); return; }
-      if(t.closest('.dm-video')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); var to2 = window.CurrentDM || ''; if(to2 && to2!=='All Users') pvCallStartOutgoing('video', to2); return; }
-      if(t.closest('#pv-incoming-accept')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvCallAccept(); return; }
-      if(t.closest('#pv-incoming-decline')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvCallDecline(); return; }
-      if(t.closest('#pv-voice-call-end') || t.closest('#pv-voice-call-back')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvCallEnd(true); return; }
-      if(t.closest('#pv-video-call-end') || t.closest('#pv-video-call-back')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvCallEnd(true); return; }
-      if(t.closest('#pv-voice-call-mute') || t.closest('#pv-video-call-mic')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvCallToggleMute(); return; }
-      if(t.closest('#pv-voice-call-speaker')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvCallToggleSpeaker(); return; }
-      if(t.closest('#pv-video-call-video')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvCallToggleVideo(); return; }
-      if(t.closest('#pv-video-call-switch')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvCallSwitchCamera(); return; }
-    }catch(err){}
-  }, true);
-  try{ setTimeout(function(){ var acc=document.getElementById('pv-incoming-accept'); if(acc && !acc.dataset.pvDirect){ acc.dataset.pvDirect='1'; acc.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); pvCallAccept(); }); } var dec=document.getElementById('pv-incoming-decline'); if(dec && !dec.dataset.pvDirect){ dec.dataset.pvDirect='1'; dec.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); pvCallDecline(); }); } }, 500); }catch(e){}
-  window.PVOpenVoiceCall = function(){ var to = window.CurrentDM||''; if(to) pvCallStartOutgoing('voice', to); };
-  window.PVOpenVideoCall = function(){ var to = window.CurrentDM||''; if(to) pvCallStartOutgoing('video', to); };
-  window.PVCloseVoiceCall = function(){ pvCallEnd(true); };
-  window.PVCloseVideoCall = function(){ pvCallEnd(true); };
-})();
-</script>
-
-<script>
-// ===== PV SUPER ACTIVE CHAT LIST - new messages, previews, badges/count in ~1.5s, no reload =====
-(function(){
-  var lastTotal = -1;
-  var lastRowTimes = {};
-  var refreshPending = false;
-  function isInboxVisible(){
-    try{
-      var inbox = document.getElementById('inbox-page') || document.querySelector('.inbox-page');
-      if(!inbox) return true;
-      if(inbox.classList && (inbox.classList.contains('hidden') || inbox.hasAttribute('hidden'))) return false;
-      // Also check if inbox section is the active tab (bottom nav)
-      return true;
-    }catch(e){ return true; }
-  }
-  function getTotalUnread(){
-    try{
-      var total = 0;
-      try{ if(typeof pvComputeUnread==='function') total += (pvComputeUnread('All Users')||0); }catch(e){}
-      try{
-        var names = [];
-        try{ names = (typeof lsGet==='function' ? (lsGet('pro_vibes_private_names')||[]) : JSON.parse(localStorage.getItem('pro_vibes_private_names')||'[]')); }catch(e){ names=[]; }
-        // Also include rows already in DOM (covers new people not yet in stored names)
+        var names=[]; try{ names=(typeof lsGet==='function'?(lsGet('pro_vibes_private_names')||[]):JSON.parse(localStorage.getItem('pro_vibes_private_names')||'[]')); }catch(e){ names=[]; }
         try{ document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(r){ var n=r.getAttribute('data-person-name'); if(n && names.indexOf(n)===-1) names.push(n); }); }catch(e){}
-        names.forEach(function(n){ try{ if(n && n!=='All Users' && typeof pvComputeUnread==='function') total += (pvComputeUnread(n)||0); }catch(e){} });
+        names.forEach(function(n){ try{ if(n && n!=='All Users' && typeof pvComputeUnread==='function') total+=(pvComputeUnread(n)||0); }catch(e){} });
       }catch(e){}
-      return total;
-    }catch(e){ return 0; }
-  }
-  function updateBottomInboxBadge(){
-    try{
-      var total = getTotalUnread();
-      var btn = null;
-      try{
-        var navBtns = document.querySelectorAll('.bottom-nav button');
-        for(var i=0;i<navBtns.length;i++){ var t=(navBtns[i].textContent||'').trim(); if(t.toLowerCase().indexOf('inbox')!==-1){ btn=navBtns[i]; break; } }
-      }catch(e){}
+      var btn=document.querySelector('.bottom-nav button[data-screen="inbox-screen"]');
       if(!btn) return;
-      var badge = btn.querySelector('.pv-inbox-total-badge');
+      var badge=btn.querySelector('.pv-inbox-total-badge');
       if(!badge){ badge=document.createElement('span'); badge.className='pv-inbox-total-badge'; btn.appendChild(badge); }
-      if(!total || total<=0){ badge.classList.remove('show'); badge.textContent=''; lastTotal=0; return; }
-      var txt = total>99 ? '99+' : String(total);
+      if(!total){ badge.classList.remove('show'); badge.textContent=''; return; }
+      var txt=total>99?'99+':String(total);
       if(txt!==badge.textContent){ badge.textContent=txt; badge.classList.remove('pv-badge-pop'); void badge.offsetWidth; badge.classList.add('pv-badge-pop'); }
       badge.classList.add('show');
-      if(total!==lastTotal){ lastTotal=total; }
     }catch(e){}
   }
-  function flashRowIfNew(name, lastTime){
+  window.PVUpdateTotalBadge = pvUpdateTotalBadge;
+  // Super active: fast local refresh every 1s (list only, no network)
+  function pvSuperRefresh(){
     try{
-      var prev = lastRowTimes[name]||0;
-      if(lastTime>prev && prev!==0){
-        var row = document.querySelector('#new-persons-list [data-person-name="'+String(name).replace(/"/g,'')+'"]');
-        if(!row && name==='All Users') row=document.getElementById('open-dm-all-users');
-        if(row){ row.classList.remove('pv-row-flash'); void row.offsetWidth; row.classList.add('pv-row-flash'); }
-        var badge = row ? row.querySelector('.pv-unread-badge') : null;
-        if(badge){ badge.classList.remove('pv-badge-pop'); void badge.offsetWidth; badge.classList.add('pv-badge-pop'); }
-      }
-      lastRowTimes[name]=lastTime;
-    }catch(e){}
-  }
-  function superRefresh(){
-    try{
-      // 1) Make sure any new person who messaged you appears - scan localStorage private rooms
-      try{
-        var known = {};
-        try{ document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(r){ known[String(r.getAttribute('data-person-name')||'').trim().toLowerCase()]=1; }); }catch(e){}
-        for(var i=0;i<localStorage.length;i++){
-          try{
-            var k=localStorage.key(i); if(!k || k.indexOf('pro_vibes_private_')!==0) continue;
-            // Room key -> we can't reverse name from room alone, so rely on private_names + All Users messages
-          }catch(e){}
-        }
-        // Ensure rows for every stored private name (covers new chatters)
-        try{
-          var stored=[]; try{ stored = (typeof lsGet==='function' ? (lsGet('pro_vibes_private_names')||[]) : JSON.parse(localStorage.getItem('pro_vibes_private_names')||'[]')); }catch(e){ stored=[]; }
-          if(Array.isArray(stored)) stored.forEach(function(n){ try{ if(n && n!=='All Users' && !known[String(n).trim().toLowerCase()] && typeof addPerson==='function') addPerson(n, true); }catch(e){} });
-        }catch(e){}
-      }catch(e){}
-      // 2) Previews + badges for every row (private) - instant, local only, no network wait
-      try{
-        document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(row){
-          var n=row.getAttribute('data-person-name'); if(!n) return;
-          try{ if(typeof pvUpdateListPreview==='function') pvUpdateListPreview(n); }catch(e){}
-          try{ if(typeof pvComputeUnread==='function' && typeof pvSetBadge==='function'){ var c=pvComputeUnread(n)||0; pvSetBadge(row, c); } }catch(e){}
-          try{ if(typeof pvLastMsgTime==='function'){ var t=pvLastMsgTime(n)||0; flashRowIfNew(n, t); } }catch(e){}
-        });
-      }catch(e){}
-      // 3) All Users preview + badge
+      try{ document.querySelectorAll('#new-persons-list [data-person-name]').forEach(function(row){ var n=row.getAttribute('data-person-name'); if(!n) return; try{ if(typeof pvUpdateListPreview==='function') pvUpdateListPreview(n); }catch(e){} try{ if(typeof pvComputeUnread==='function' && typeof pvSetBadge==='function') pvSetBadge(row, pvComputeUnread(n)||0); }catch(e){} }); }catch(e){}
       try{ if(typeof pvUpdateAllUsersPreview==='function') pvUpdateAllUsersPreview(); }catch(e){}
-      try{ var allBtn=document.getElementById('open-dm-all-users'); if(allBtn && typeof pvComputeUnread==='function' && typeof pvSetBadge==='function'){ var ca=pvComputeUnread('All Users')||0; pvSetBadge(allBtn, ca); if(typeof pvLastMsgTime==='function') flashRowIfNew('All Users', pvLastMsgTime('All Users')||0); } }catch(e){}
-      // 4) Queued / waiting badges (outbox)
-      try{ if(window.PVPrivateHardening && window.PVPrivateHardening.updateRow){ /* updated via interval in private-chats.js */ } }catch(e){}
-      // 5) Sort by latest message - only if order actually changed (no flicker)
-      try{
-        if(typeof pvSortInboxByTime==='function'){
-          var list=document.getElementById('new-persons-list'); if(list){
-            var before=[]; try{ Array.prototype.slice.call(list.children).forEach(function(r){ before.push(r.getAttribute('data-name')||r.getAttribute('data-person-name')||'All Users'); }); }catch(e){}
-            pvSortInboxByTime();
-            // pvSortInboxByTime already handles it - we keep it, it's cheap and stable
-          }
-        }
-      }catch(e){}
-      // 6) Bottom nav total
-      updateBottomInboxBadge();
+      try{ var ab=document.getElementById('open-dm-all-users'); if(ab && typeof pvComputeUnread==='function' && typeof pvSetBadge==='function') pvSetBadge(ab, pvComputeUnread('All Users')||0); }catch(e){}
+      try{ if(typeof pvSortInboxByTime==='function') pvSortInboxByTime(); }catch(e){}
+      pvUpdateTotalBadge();
     }catch(e){}
   }
-  function scheduleRefresh(){
-    if(refreshPending) return; refreshPending=true;
-    setTimeout(function(){ refreshPending=false; superRefresh(); }, 180);
-  }
-  // FAST local refresh every 1.5s - previews + badges + sort + total, even while you dey Inbox
-  setInterval(superRefresh, 1500);
-  // Instant when storage changes (another tab / same app writes a message)
-  window.addEventListener('storage', function(e){
-    try{ if(!e || !e.key) return; if(e.key.indexOf('pro_vibes_private')===0 || e.key.indexOf('pro_vibes_all_users')===0 || e.key.indexOf('pv_unread')===0 || e.key.indexOf('pv_outbox')===0 || e.key.indexOf('pro_vibes_private_names')===0) scheduleRefresh(); }catch(err){}
-  });
-  // Instant when app comes back / tab focused / online
-  document.addEventListener('visibilitychange', function(){ if(!document.hidden) scheduleRefresh(); });
-  window.addEventListener('focus', scheduleRefresh);
-  window.addEventListener('online', scheduleRefresh);
-  // Instant when any part of app broadcasts a new message
-  try{
-    if('BroadcastChannel' in window){
-      var bc2=new BroadcastChannel('pro-vibes-messages');
-      bc2.onmessage=function(){ scheduleRefresh(); };
-    }
-  }catch(e){}
-  // Hook into existing instant poll: after it merges a message, refresh list too
-  try{
-    var _origPoll = window.PVInstantPoll;
-    if(typeof _origPoll==='function'){ window.PVInstantPoll=function(){ try{ _origPoll(); }catch(e){} scheduleRefresh(); }; }
-  }catch(e){}
-  // Hook pvMarkNew / pvClearNew if they exist as globals: they already update one row, we also refresh total
-  document.addEventListener('click', function(e){
-    try{
-      var t=e.target && e.target.closest ? e.target.closest('.dm-chat-row, #open-dm-all-users, .bottom-nav button') : null;
-      if(t) setTimeout(superRefresh, 300);
-    }catch(err){}
-  }, true);
-  // First run
-  setTimeout(superRefresh, 600);
-  setTimeout(superRefresh, 1800);
-})();
-</script>
+  setInterval(pvSuperRefresh, 1000);
+  window.addEventListener('storage', function(e){ try{ if(!e||!e.key) return; if(e.key.indexOf('pro_vibes_private')===0 || e.key.indexOf('pro_vibes_all_users')===0 || e.key.indexOf('pv_unread')===0 || e.key.indexOf('pv_msg_signal')===0) setTimeout(pvSuperRefresh, 80); }catch(err){} });
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) setTimeout(pvSuperRefresh, 80); });
+  window.addEventListener('focus', function(){ setTimeout(pvSuperRefresh, 80); });
+  window.addEventListener('online', function(){ setTimeout(pvSuperRefresh, 80); });
+  document.addEventListener('click', function(e){ try{ var t=e.target&&e.target.closest?e.target.closest('.dm-chat-row, #open-dm-all-users, .bottom-nav button'):null; if(t) setTimeout(pvSuperRefresh, 300); }catch(err){} }, true);
 
-<script>
-// PV LEAK CLEANUP: remove private msgs already leaked into All Users local storage (same timestamp+name+text exists in private)
-(function(){
-  function clean(){
+  // ---------- SPLIT-SECOND SEND: Broadcast (same phone) + PeerJS data (far) ----------
+  var bcMsg=null;
+  try{ if('BroadcastChannel' in window){ bcMsg=new BroadcastChannel('pro-vibes-messages'); bcMsg.onmessage=function(ev){ try{ if(ev&&ev.data&&ev.data.type==='pv-msg'){ pvHandleIncomingMsg(ev.data.to, ev.data.msg, ev.data.isAll, true); } }catch(e){} }; } }catch(e){}
+  window.PVBroadcastMsg=function(to, msg, isAll){ try{ if(bcMsg) bcMsg.postMessage({type:'pv-msg', to:to, msg:msg, isAll:isAll, at:Date.now()}); }catch(e){} try{ localStorage.setItem('pv_msg_signal_latest', JSON.stringify({at:Date.now(), to:to, isAll:isAll, msg:msg})); }catch(e){} };
+  // Poll signal key every 600ms - catches messages from other tabs / same device in split seconds
+  var _lastSignalAt=0;
+  setInterval(function(){ try{ var raw=localStorage.getItem('pv_msg_signal_latest'); if(!raw) return; var d=JSON.parse(raw); if(!d||!d.msg||!d.at||d.at===_lastSignalAt) return; _lastSignalAt=d.at; var me=pvMeName(); if(d.msg.name && String(d.msg.name).toLowerCase()===String(me).toLowerCase()) return; pvHandleIncomingMsg(d.to, d.msg, d.isAll, true); }catch(e){} }, 600);
+
+  function pvHandleIncomingMsg(to, msg, isAll, fromBroadcast){
     try{
-      var privKeys={};
-      try{ for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k && k.indexOf('pro_vibes_private_')===0){ try{ var arr=JSON.parse(localStorage.getItem(k)||'[]'); if(Array.isArray(arr)) arr.forEach(function(m){ privKeys[String(m&&(m.timestamp||m.time||m.createdAt||0))+'|'+String(m&&(m.name||m.sender||m.user||''))+'|'+String(m&&(m.text||m.message||''))]=1; }); }catch(e){} } } }catch(e){}
-      // Find All Users key (scoped or not) - try both
-      var allKeys=[];
-      try{ for(var j=0;j<localStorage.length;j++){ var kk=localStorage.key(j); if(kk && kk.indexOf('pro_vibes_all_users')===0) allKeys.push(kk); } }catch(e){}
-      if(!allKeys.length) allKeys=['pro_vibes_all_users'];
-      allKeys.forEach(function(ak){
+      if(!msg) return;
+      var me=pvMeName();
+      // Don't double-handle own messages
+      if(msg.name && String(msg.name).toLowerCase()===String(me).toLowerCase()) return;
+      var key, roomName;
+      if(isAll){ key='pro_vibes_all_users'; roomName='All Users'; }
+      else { roomName=to; var room=(window.getPrivateRoom?window.getPrivateRoom(to||'User'):''); key='pro_vibes_private_'+room; }
+      // Merge into local (dedupe by timestamp+name+text)
+      try{
+        var cur=[]; try{ cur=(typeof lsGet==='function'?(lsGet(key)||[]):JSON.parse(localStorage.getItem(key)||'[]')); }catch(e){ cur=[]; }
+        var k2=String(msg.timestamp||0)+'|'+String(msg.name||'')+'|'+String(msg.text||'');
+        var exists=cur.some(function(x){ return String(x.timestamp||0)+'|'+String(x.name||'')+'|'+String(x.text||'')===k2; });
+        if(!exists){ cur.push(msg); cur.sort(function(a,b){ return (Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0); }); try{ if(typeof lsSet==='function') lsSet(key, cur); else localStorage.setItem(key, JSON.stringify(cur)); }catch(e){} }
+        else return; // already have it - don't re-render / re-badge
+      }catch(e){}
+      // CHAT LIST FIRST - before rendering in room
+      pvChatListFirst(roomName, msg);
+      // Then render in room if that room is open
+      try{
+        if(window.CurrentDM===roomName){
+          if(isAll){ if(window.ProVibesRenderAll) window.ProVibesRenderAll(msg); }
+          else { if(window.ProVibesRenderPrivate) window.ProVibesRenderPrivate(msg); }
+          try{ if(typeof pvJumpToLastOnOpen==='function' && window._pvJustOpened) pvJumpToLastOnOpen(); }catch(e){}
+          // If you're inside the chat, mark as read so badge doesn't stay
+          try{ if(typeof pvSetLastRead==='function') pvSetLastRead(roomName, Date.now()); }catch(e){}
+          try{ if(typeof pvSetUnread==='function') pvSetUnread(roomName, 0); }catch(e){}
+        } else {
+          // Not in that chat - badge already updated via list-first, ensure it shows
+          try{ if(typeof pvMarkNew==='function') pvMarkNew(roomName, 1); }catch(e){}
+        }
+      }catch(e){}
+    }catch(e){}
+  }
+  window.PVHandleIncomingMsg = pvHandleIncomingMsg;
+
+  // ---------- PEERJS: far calls + split-second far messages ----------
+  var tabId=''; try{ tabId=sessionStorage.getItem('pv_call_tab_id')||''; if(!tabId){ tabId='tab_'+Date.now()+'_'+Math.floor(Math.random()*99999); sessionStorage.setItem('pv_call_tab_id', tabId); } }catch(e){ tabId='tab_'+Date.now(); }
+  function pvPeerIdFor(name){ var s=String(name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); if(!s) s='user'; return 'pv-'+s; }
+  var pvPeer=null, pvPeerReady=false, pvPeerCall=null, pvDataConns={};
+  function pvInitPeer(){
+    try{
+      if(typeof Peer==='undefined') return;
+      var id=pvPeerIdFor(pvMeName()); if(!id||id==='pv-user') return;
+      try{ if(pvPeer){ try{ pvPeer.destroy(); }catch(e){} } }catch(e){}
+      pvPeerReady=false; pvPeer=new Peer(id);
+      pvPeer.on('open', function(){ pvPeerReady=true; });
+      pvPeer.on('call', function(incoming){ try{ pvOnPeerIncomingCall(incoming); }catch(e){} });
+      pvPeer.on('connection', function(conn){ pvBindDataConn(conn); });
+      pvPeer.on('disconnected', function(){ try{ pvPeer.reconnect(); }catch(e){} });
+      pvPeer.on('error', function(err){ try{ if(err&&err.type==='unavailable-id'){ setTimeout(pvInitPeer, 2000); } }catch(e){} });
+    }catch(e){}
+  }
+  function pvBindDataConn(conn){
+    try{
+      conn.on('open', function(){ try{ pvDataConns[conn.peer]=conn; }catch(e){} });
+      conn.on('data', function(d){
         try{
-          var cur=JSON.parse(localStorage.getItem(ak)||'[]'); if(!Array.isArray(cur)||!cur.length) return;
-          var before=cur.length;
-          var filtered=cur.filter(function(m){ var key=String(m&&(m.timestamp||m.time||m.createdAt||0))+'|'+String(m&&(m.name||m.sender||m.user||''))+'|'+String(m&&(m.text||m.message||'')); return !privKeys[key]; });
-          // Also sort by timestamp so All Users is always chronological, newest at bottom
-          filtered.sort(function(a,b){ return (Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0); });
-          if(filtered.length!==before){ localStorage.setItem(ak, JSON.stringify(filtered)); }
-          else { localStorage.setItem(ak, JSON.stringify(filtered)); }
+          if(!d||!d.type) return;
+          if(d.type==='pv-msg'){ pvHandleIncomingMsg(d.to, d.msg, d.isAll, false); }
+          if(d.type==='pv-ringing'){ /* caller knows callee is online */ try{ if(window.PVCallOnRinging) window.PVCallOnRinging(); }catch(e){} }
+          if(d.type==='pv-call-invite'){ /* handled by call flow below via data */ }
         }catch(e){}
       });
-      // If currently viewing All Users, rebuild the on-screen list sorted if needed
+      conn.on('close', function(){ try{ delete pvDataConns[conn.peer]; }catch(e){} });
+    }catch(e){}
+  }
+  window.PVSendViaPeer=function(to, msg, isAll){
+    try{
+      if(isAll) return; // All Users goes via Firebase only (many people)
+      if(!pvPeer||!pvPeerReady) return;
+      var peerId=pvPeerIdFor(to);
+      var conn=pvDataConns[peerId];
+      if(!conn || !conn.open){
+        try{ conn=pvPeer.connect(peerId, {metadata:{from:pvMeName(), type:'pv-msg'}}); pvBindDataConn(conn); pvDataConns[peerId]=conn; conn.on('open', function(){ try{ conn.send({type:'pv-msg', to:to, msg:msg, isAll:false, from:pvMeName()}); }catch(e){} }); return; }catch(e){ return; }
+      }
+      try{ conn.send({type:'pv-msg', to:to, msg:msg, isAll:false, from:pvMeName()}); }catch(e){}
+    }catch(e){}
+  };
+  setTimeout(pvInitPeer, 800); setTimeout(pvInitPeer, 3000);
+
+  // ---------- CALLS (far, PeerJS) - compact ----------
+  var call={id:null,kind:null,from:null,to:null,role:null,local:null,state:'idle',muted:false,videoOn:true,timer:null,startTime:0,timeout:null,onlineKnown:false,toastShown:false,toastTimer:null,retryTimer:null};
+  function pvAvatarFor(name){ try{ if(typeof pvAvatarFor==='function'){ var u=pvAvatarFor(name); if(u) return u; } }catch(e){} return ''; }
+  function pvTone(freq,dur,vol,type,delay){ try{ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; var ctx=new AC(); var t=ctx.currentTime+(delay||0); var g=ctx.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+0.03); g.gain.setValueAtTime(vol,t+Math.max(0.05,dur-0.06)); g.gain.linearRampToValueAtTime(0,t+dur); g.connect(ctx.destination); var o=ctx.createOscillator(); o.type=type||'sine'; o.frequency.value=freq; o.connect(g); o.start(t); o.stop(t+dur+0.05); }catch(e){} }
+  var ringTimer=null, vibTimer=null;
+  function pvRingStart(incoming){ pvRingStop(); if(incoming){ try{ if(navigator.vibrate){ vibTimer=setInterval(function(){ try{ navigator.vibrate([400,200,400,200,400]); }catch(e){} },2800); } }catch(e){} ringTimer=setInterval(function(){ pvTone(659,0.22,0.16,'triangle',0); pvTone(784,0.22,0.16,'triangle',0.24); pvTone(880,0.22,0.16,'triangle',0.48); },2800); } else { pvTone(520,0.75,0.055,'sine',0); ringTimer=setInterval(function(){ pvTone(520,0.75,0.055,'sine',0); },3000); } }
+  function pvRingStop(){ try{ if(ringTimer){ clearInterval(ringTimer); ringTimer=null; } }catch(e){} try{ if(vibTimer){ clearInterval(vibTimer); vibTimer=null; } }catch(e){} try{ if(navigator.vibrate) navigator.vibrate(0); }catch(e){} }
+  function pvSetStatus(txt){ try{ if(call.kind==='video'){ var s=document.querySelector('#pv-video-call .pv-video-call-status'); if(s) s.textContent=txt; } else { var s2=document.querySelector('#pv-voice-call .pv-voice-call-status span'); if(s2) s2.textContent=txt; } }catch(e){} }
+  function pvShowOutgoing(kind,to){ try{ var url=pvAvatarFor(to); if(kind==='voice'){ var ov=document.getElementById('pv-voice-call'); if(!ov) return; try{ document.body.appendChild(ov); }catch(e){} ov.style.display='flex'; ov.style.zIndex='999998'; ov.style.visibility='visible'; var nm=document.getElementById('pv-voice-call-name'); if(nm) nm.textContent=to; var av=document.getElementById('pv-voice-call-avatar'); var bg=document.getElementById('pv-voice-call-bg'); if(url){ ov.classList.remove('no-photo'); if(av){ av.style.backgroundImage='url('+url+')'; av.style.display=''; } if(bg) bg.style.backgroundImage='url('+url+')'; } else { ov.classList.add('no-photo'); if(av){ av.style.display='none'; } if(bg) bg.style.backgroundImage=''; } pvSetStatus('Calling...'); ov.classList.remove('hidden'); } else { var ov2=document.getElementById('pv-video-call'); if(!ov2) return; ov2.classList.remove('pv-connected'); try{ document.body.appendChild(ov2); }catch(e){} ov2.style.display='flex'; ov2.style.zIndex='999998'; var nm2=document.getElementById('pv-video-call-name'); if(nm2) nm2.textContent=to; var av2=document.getElementById('pv-video-call-avatar'); if(url){ ov2.classList.remove('no-photo'); if(av2){ av2.style.backgroundImage='url('+url+')'; av2.style.display=''; } } else { ov2.classList.add('no-photo'); if(av2) av2.style.display='none'; } pvSetStatus('Calling...'); var rem=document.getElementById('pv-video-remote'); if(rem) rem.classList.remove('show'); var pip=document.getElementById('pv-video-local-pip'); if(pip) pip.classList.remove('show'); ov2.classList.remove('hidden'); } }catch(e){} }
+  function pvHideOverlays(){ try{ var v=document.getElementById('pv-voice-call'); if(v){ v.classList.add('hidden'); v.style.display='none'; } }catch(e){} try{ var vd=document.getElementById('pv-video-call'); if(vd){ vd.classList.add('hidden'); vd.style.display='none'; vd.classList.remove('pv-connected'); } }catch(e){} try{ var inc=document.getElementById('pv-incoming-call'); if(inc){ inc.classList.add('hidden'); inc.style.display='none'; } }catch(e){} }
+  function pvShowIncoming(from,kind){ try{ var inc=document.getElementById('pv-incoming-call'); if(!inc) return; try{ document.body.appendChild(inc); }catch(e){} inc.style.display='flex'; inc.style.zIndex='999999'; var nm=document.getElementById('pv-incoming-name'); if(nm) nm.textContent=from; var av=document.getElementById('pv-incoming-avatar'); var url=pvAvatarFor(from); if(av) av.style.backgroundImage=url?'url('+url+')':''; var bg=document.getElementById('pv-incoming-bg'); if(bg) bg.style.backgroundImage=url?'url('+url+')':''; inc.classList.remove('hidden'); }catch(e){} }
+  function pvStartTimer(){ try{ if(call.timer) clearInterval(call.timer); }catch(e){} call.startTime=Date.now(); call.timer=setInterval(function(){ var el=Math.floor((Date.now()-call.startTime)/1000); var mm=Math.floor(el/60); var ss=el%60; pvSetStatus((mm<10?'0'+mm:mm)+':'+(ss<10?'0'+ss:ss)); },1000); }
+  function pvStopTimer(){ try{ if(call.timer){ clearInterval(call.timer); call.timer=null; } }catch(e){} }
+  var toastTimer2=null;
+  function pvShowToast(msg){ try{ if(call.onlineKnown) return; var t=document.getElementById('pv-call-toast'); if(!t) return; t.textContent=msg; t.classList.remove('hidden'); requestAnimationFrame(function(){ t.classList.add('show'); }); if(toastTimer2) clearTimeout(toastTimer2); toastTimer2=setTimeout(function(){ pvHideToast(); },5500); }catch(e){} }
+  function pvHideToast(){ try{ if(toastTimer2) clearTimeout(toastTimer2); }catch(e){} try{ var t=document.getElementById('pv-call-toast'); if(t){ t.classList.remove('show'); setTimeout(function(){ t.classList.add('hidden'); },280); } }catch(e){} }
+  function pvCleanup(){ pvRingStop(); pvStopTimer(); pvHideToast(); try{ if(call.local){ call.local.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); call.local=null; } }catch(e){} try{ if(pvPeerCall){ try{ pvPeerCall.close(); }catch(e){} pvPeerCall=null; } }catch(e){} try{ var ra=document.getElementById('pv-voice-remote-audio'); if(ra) ra.srcObject=null; }catch(e){} try{ var cam=document.getElementById('pv-video-call-camera'); if(cam) cam.srcObject=null; }catch(e){} try{ var rem=document.getElementById('pv-video-remote'); if(rem){ rem.classList.remove('show'); rem.srcObject=null; } }catch(e){} try{ var pip=document.getElementById('pv-video-local-pip'); if(pip){ pip.classList.remove('show'); pip.srcObject=null; } }catch(e){} }
+  function pvAttachRemote(stream){ try{ if(call.kind==='voice'){ var ra=document.getElementById('pv-voice-remote-audio'); if(ra){ ra.srcObject=stream; try{ ra.play(); }catch(e){} } } else { var rem=document.getElementById('pv-video-remote'); if(rem){ rem.srcObject=stream; rem.classList.add('show'); try{ rem.play(); }catch(e){} } var ov=document.getElementById('pv-video-call'); if(ov) ov.classList.add('pv-connected'); } if(call.state!=='connected'){ call.state='connected'; pvRingStop(); pvStartTimer(); pvSetStatus('00:00'); } }catch(e){} }
+  function pvOnPeerIncomingCall(incoming){
+    try{
+      if(call.state!=='idle'){ try{ incoming.close(); }catch(e){} return; }
+      var md=incoming.metadata||{}; var from=md.from||'User'; var kind=md.kind||'voice';
+      call.id='peer_'+Date.now(); call.kind=kind; call.from=from; call.to=pvMeName(); call.role='callee'; call.state='incoming';
+      pvPeerCall=incoming;
+      incoming.on('stream', function(s){ pvAttachRemote(s); });
+      incoming.on('close', function(){ if(call.state!=='idle'){ pvRingStop(); pvHideOverlays(); pvCleanup(); call.state='idle'; call.id=null; } });
+      pvShowIncoming(from, kind); pvRingStart(true);
+      if(call.timeout) clearTimeout(call.timeout);
+      call.timeout=setTimeout(function(){ if(call.state==='incoming') pvDecline(); },45000);
+    }catch(e){}
+  }
+  function pvStartPeer(kind,to){
+    var me=pvMeName(); call.id='peer_'+Date.now(); call.kind=kind; call.from=me; call.to=to; call.role='caller'; call.state='outgoing'; call.onlineKnown=false; call.toastShown=false;
+    pvShowOutgoing(kind,to); pvSetStatus('Calling...'); pvRingStart(false);
+    if(call.toastTimer) clearTimeout(call.toastTimer); call.toastTimer=setTimeout(function(){ if(call.state==='outgoing' && !call.onlineKnown){ pvShowToast(to+' might not be online.'); } },4000);
+    try{ if(pvPeer&&pvPeer.open){ var dc=pvPeer.connect(pvPeerIdFor(to), {metadata:{from:me,kind:kind}}); dc.on('open', function(){ call.onlineKnown=true; pvHideToast(); pvSetStatus('Ringing...'); }); dc.on('data', function(d){ if(d&&d.type==='pv-ringing'){ call.onlineKnown=true; pvHideToast(); pvSetStatus('Ringing...'); } }); } }catch(e){}
+    navigator.mediaDevices.getUserMedia(kind==='video'?{audio:true,video:true}:{audio:true,video:false}).then(function(stream){
+      if(call.state!=='outgoing') return; call.local=stream;
+      if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } }
+      try{ var mc=pvPeer.call(pvPeerIdFor(to), stream, {metadata:{from:me,kind:kind}}); pvPeerCall=mc; mc.on('stream', function(s){ pvAttachRemote(s); }); mc.on('close', function(){ if(call.state==='outgoing'){ if(call.onlineKnown){ pvRingStop(); pvSetStatus('Declined'); setTimeout(function(){ pvEnd(false); },1200); } else { pvSetStatus('Calling...'); } } else if(call.state==='connected'){ pvRingStop(); pvHideOverlays(); pvCleanup(); call.state='idle'; call.id=null; } }); mc.on('error', function(){ if(call.state==='outgoing'){ pvSetStatus('No answer'); setTimeout(function(){ pvEnd(false); },1200); } }); }catch(e){ pvSetStatus('Calling...'); }
+      if(call.timeout) clearTimeout(call.timeout); call.timeout=setTimeout(function(){ if(call.state==='outgoing'){ pvSetStatus('No answer'); setTimeout(function(){ pvEnd(false); },1200); } },45000);
+    }).catch(function(){ pvSetStatus('Allow mic/camera'); setTimeout(function(){ pvEnd(false); },1500); });
+  }
+  function pvStartOutgoing(kind,to){ to=String(to||'').trim(); if(!to||to==='All Users') return; if(call.state!=='idle') return; if(!window.RTCPeerConnection||!navigator.mediaDevices){ pvShowOutgoing(kind,to); pvSetStatus('Calls need mic/camera permission'); return; } if(pvPeer&&pvPeerReady) pvStartPeer(kind,to); else { pvShowOutgoing(kind,to); pvSetStatus('Connecting...'); setTimeout(function(){ if(pvPeer&&pvPeerReady && call.state==='outgoing') pvStartPeer(kind,to); },1500); } }
+  function pvAccept(){ if(call.state!=='incoming') return; pvRingStop(); var kind=call.kind; var from=call.from; pvHideOverlays(); pvShowOutgoing(kind,from); pvSetStatus('Connecting...'); navigator.mediaDevices.getUserMedia(kind==='video'?{audio:true,video:true}:{audio:true,video:false}).then(function(stream){ call.local=stream; call.state='connecting'; if(kind==='video'){ var cam=document.getElementById('pv-video-call-camera'); if(cam){ cam.srcObject=stream; try{ cam.play(); }catch(e){} } } try{ pvPeerCall.answer(stream); }catch(e){} }).catch(function(){}); }
+  function pvDecline(){ if(call.state!=='incoming') return; pvRingStop(); pvHideOverlays(); if(pvPeerCall){ try{ pvPeerCall.close(); }catch(e){} pvPeerCall=null; } pvCleanup(); call.state='idle'; call.id=null; }
+  function pvEnd(){ pvRingStop(); pvHideOverlays(); if(pvPeerCall){ try{ pvPeerCall.close(); }catch(e){} pvPeerCall=null; } pvCleanup(); call.state='idle'; call.id=null; call.from=null; call.to=null; }
+  function pvToggleMute(){ if(!call.local) return; call.muted=!call.muted; call.local.getAudioTracks().forEach(function(t){ try{ t.enabled=!call.muted; }catch(e){} }); try{ var a=document.getElementById('pv-voice-call-mute'); if(a) a.classList.toggle('pv-call-muted', call.muted); var b=document.getElementById('pv-video-call-mic'); if(b) b.classList.toggle('pv-call-muted', call.muted); }catch(e){} }
+  function pvToggleVideo(){ if(!call.local) return; call.videoOn=!call.videoOn; call.local.getVideoTracks().forEach(function(t){ try{ t.enabled=call.videoOn; }catch(e){} }); }
+  document.addEventListener('click', function(e){
+    try{
+      var t=e.target; if(!t||!t.closest) return;
+      if(call.state==='incoming'){ if(t.closest('#pv-incoming-accept')||t.closest('#pv-incoming-decline')) return; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return; }
+      if(call.state==='outgoing'||call.state==='connecting'||call.state==='connected'){ if(t.closest('.bottom-nav') && !t.closest('#pv-voice-call') && !t.closest('#pv-video-call') && !t.closest('#pv-incoming-call')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return; } }
+    }catch(err){}
+  }, true);
+  document.addEventListener('click', function(e){
+    try{
+      var t=e.target; if(!t||!t.closest) return;
+      if(t.closest('.dm-call')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); var to=window.CurrentDM||''; if(to&&to!=='All Users') pvStartOutgoing('voice', to); return; }
+      if(t.closest('.dm-video')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); var to2=window.CurrentDM||''; if(to2&&to2!=='All Users') pvStartOutgoing('video', to2); return; }
+      if(t.closest('#pv-incoming-accept')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvAccept(); return; }
+      if(t.closest('#pv-incoming-decline')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvDecline(); return; }
+      if(t.closest('#pv-voice-call-end')||t.closest('#pv-voice-call-back')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvEnd(); return; }
+      if(t.closest('#pv-video-call-end')||t.closest('#pv-video-call-back')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvEnd(); return; }
+      if(t.closest('#pv-voice-call-mute')||t.closest('#pv-video-call-mic')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvToggleMute(); return; }
+      if(t.closest('#pv-video-call-video')){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); pvToggleVideo(); return; }
+    }catch(err){}
+  }, true);
+  window.PVOpenVoiceCall=function(){ var to=window.CurrentDM||''; if(to) pvStartOutgoing('voice', to); };
+  window.PVOpenVideoCall=function(){ var to=window.CurrentDM||''; if(to) pvStartOutgoing('video', to); };
+  window.PVCloseVoiceCall=function(){ pvEnd(); };
+  window.PVCloseVideoCall=function(){ pvEnd(); };
+  window.PVCallOnRinging=function(){ try{ call.onlineKnown=true; pvHideToast(); pvSetStatus('Ringing...'); }catch(e){} };
+
+  // ---------- DEDUP + LEAK CLEANUP (runs every 2s) ----------
+  function pvDedupAndClean(){
+    try{
+      function bestName(a,b){ if(!a) return b; if(!b) return a; var aL=a===a.toLowerCase(), bL=b===b.toLowerCase(); if(aL&&!bL) return b; if(!aL&&bL) return a; if(/^[A-Z]/.test(b)&&!/^[A-Z]/.test(a)) return b; return a; }
+      var list=document.getElementById('new-persons-list'); if(list){
+        var seen={}; Array.prototype.slice.call(list.querySelectorAll('[data-person-name]')).forEach(function(r){
+          var n=(r.getAttribute('data-person-name')||'').trim(); if(!n) return; var k=n.toLowerCase();
+          if(!seen[k]){ seen[k]=r; return; }
+          var keep=seen[k]; var keepName=keep.getAttribute('data-person-name')||''; var better=bestName(keepName,n);
+          if(better!==keepName){ try{ keep.setAttribute('data-person-name',better); keep.setAttribute('data-name',better); var nm=keep.querySelector('.dm-chat-name'); if(nm) nm.textContent=better; }catch(e){} }
+          try{ r.remove(); }catch(e){}
+        });
+      }
+      var st=document.getElementById('inbox-stories')||document.querySelector('.inbox-stories'); if(st){
+        var seen2={}; Array.prototype.slice.call(st.querySelectorAll('[data-person-name]')).forEach(function(r){
+          var n=(r.getAttribute('data-person-name')||'').trim(); if(!n) return; var k=n.toLowerCase();
+          if(!seen2[k]){ seen2[k]=r; return; }
+          var keep=seen2[k]; var keepName=keep.getAttribute('data-person-name')||''; var better=bestName(keepName,n);
+          if(better!==keepName){ try{ keep.setAttribute('data-person-name',better); var lb=keep.querySelector('span'); if(lb) lb.textContent=better; }catch(e){} }
+          try{ r.remove(); }catch(e){}
+        });
+      }
+      // Clean All Users local: remove msgs that are actually private (same key exists in private)
       try{
-        if(window.CurrentDM==='All Users'){
-          var box=document.getElementById('dm-messages'); if(box){
-            var onScreen=box.querySelectorAll('[data-msg-timestamp]').length;
-            var stored=[]; try{ stored=JSON.parse(localStorage.getItem(allKeys[0])||'[]')||[]; }catch(e){}
-            if(stored.length && onScreen!==stored.length){
-              // Don't rebuild while user is typing - just leave it, next open will be clean
-            }
-          }
-        }
+        var privKeys={}; for(var i=0;i<localStorage.length;i++){ var kk=localStorage.key(i); if(kk&&kk.indexOf('pro_vibes_private_')===0){ try{ var arr=JSON.parse(localStorage.getItem(kk)||'[]'); if(Array.isArray(arr)) arr.forEach(function(m){ privKeys[String(m&&(m.timestamp||m.time||m.createdAt||0))+'|'+String(m&&(m.name||m.sender||m.user||''))+'|'+String(m&&(m.text||m.message||''))]=1; }); }catch(e){} } }
+        for(var j=0;j<localStorage.length;j++){ var ak=localStorage.key(j); if(ak&&ak.indexOf('pro_vibes_all_users')===0){ try{ var cur=JSON.parse(localStorage.getItem(ak)||'[]'); if(Array.isArray(cur)&&cur.length){ var filt=cur.filter(function(m){ var k=String(m&&(m.timestamp||m.time||m.createdAt||0))+'|'+String(m&&(m.name||m.sender||m.user||''))+'|'+String(m&&(m.text||m.message||'')); return !privKeys[k]; }); filt.sort(function(a,b){ return (Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0); }); if(filt.length!==cur.length) localStorage.setItem(ak, JSON.stringify(filt)); } }catch(e){} } }
+        // Dedup private_names
+        try{ var raw=localStorage.getItem('pro_vibes_private_names'); if(raw){ var a2=JSON.parse(raw)||[]; if(Array.isArray(a2)){ var mp={}; var ord=[]; a2.forEach(function(n){ var s=String(n||'').trim(); if(!s) return; var k=s.toLowerCase(); if(!mp[k]){ mp[k]=s; ord.push(k); } else { mp[k]=bestName(mp[k],s); } }); var cl=ord.map(function(k){ return mp[k]; }); if(cl.join('|')!==a2.join('|')) localStorage.setItem('pro_vibes_private_names', JSON.stringify(cl)); } } }catch(e){}
       }catch(e){}
     }catch(e){}
   }
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', function(){ clean(); setTimeout(clean, 2000); }); } else { clean(); setTimeout(clean, 2000); }
-  setInterval(clean, 8000);
+  setInterval(pvDedupAndClean, 2000);
+  setTimeout(pvDedupAndClean, 800);
 })();
 </script>
 </body>
