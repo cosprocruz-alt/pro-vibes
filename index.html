@@ -1248,7 +1248,7 @@ const lsGet=k=>{try{return JSON.parse(localStorage.getItem(scopedKey(k))||'[]');
 const lsSet=(k, v)=>{try{localStorage.setItem(scopedKey(k), JSON.stringify(v));}catch(e){}};
 const sameMsg=(a, b)=>(a.name||'')===(b.name||'')&&(a.text||'')===(b.text||'')&&String(a.timestamp||'')===String(b.timestamp||'');
 function pvMsgKey(m){try{return String(m&&(m.timestamp||m.time||m.createdAt||0))+'|'+String(m&&(m.name||m.sender||m.user||''))+'|'+String(m&&(m.text||m.message||''));}catch(e){return String(Math.random());}}
-function pvIsOnScreen(m){try{var box=document.getElementById('dm-messages');if(!box)return false;var ts=String(m&&(m.timestamp||m.time||m.createdAt||''));if(!ts)return false;return!!box.querySelector('[data-msg-timestamp="'+ts.replace(/"/g, '')+'"]');}catch(e){return false;}}
+function pvIsOnScreen(m){try{var box=document.getElementById('dm-messages');if(!box)return false;var ts=String(m&&(m.timestamp||m.time||m.createdAt||''));if(!ts)return false;var name=String(m&&(m.name||m.sender||m.user||''));var txt=String(m&&(m.text||m.message||''));var els=box.querySelectorAll('[data-msg-timestamp="'+ts.replace(/"/g,'')+'"]');if(!els.length)return false;for(var i=0;i<els.length;i++){var w=els[i].getAttribute('data-msg-who')||'';var t2=els[i].getAttribute('data-msg-text')||'';if(w===name && (t2===txt || !txt)) return true;}return false;}catch(e){return false;}}
 function pvMergeIntoLocal(key, firebaseMsgs){try{var cur=lsGet(key)||[];var map={};cur.forEach(function(x){map[pvMsgKey(x)]=1;});var changed=false;(firebaseMsgs||[]).forEach(function(m){if(!m)return;var nm=null;try{nm=normalizeChatMsg(m)||m;}catch(e){nm=m;}if(!nm)return;var k=pvMsgKey(nm);if(!map[k]){map[k]=1;cur.push(nm);changed=true;}});cur.sort(function(a, b){return(Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0);});if(changed)lsSet(key, cur);return cur;}catch(e){return lsGet(key)||[];}}
 function pvJumpToLastOnOpen(){
 try{
@@ -2213,7 +2213,12 @@ function pvLastMsgTime(name){try{var msgs=[];if(name==='All Users'){try{msgs=lsG
 function pvSortInboxByTime(){try{var list=document.getElementById('new-persons-list');var allBtn=document.getElementById('open-dm-all-users');if(!list||!allBtn)return;if(allBtn.parentNode!==list)list.appendChild(allBtn);var rows=Array.prototype.slice.call(list.children);rows.forEach(function(r){var n=r.getAttribute('data-name')||r.getAttribute('data-person-name')||'All Users';r._pvTime=pvLastMsgTime(n);});rows.sort(function(a, b){return(b._pvTime||0)-(a._pvTime||0);});rows.forEach(function(r){list.appendChild(r);});}catch(e){}}
 function pvMarkNew(name, delta){try{if(!name)return;if(name==='All Users'){var allBtn=document.getElementById('open-dm-all-users');if(!allBtn)return;var cur=pvComputeUnread('All Users');pvSetUnread('All Users', cur);pvSetBadge(allBtn, cur);try{pvUpdateAllUsersPreview();}catch(e){}try{pvSortInboxByTime();}catch(e){}return;}var list=document.getElementById('new-persons-list');if(!list)return;var row=list.querySelector('[data-person-name="'+String(name).replace(/"/g, '')+'"]');if(!row){try{addPerson(name, true);}catch(e){}row=list.querySelector('[data-person-name="'+String(name).replace(/"/g, '')+'"]');}if(!row)return;var cur2=pvComputeUnread(name);pvSetUnread(name, cur2);pvSetBadge(row, cur2);try{pvUpdateListPreview(name);}catch(e){}try{pvSortInboxByTime();}catch(e){}}catch(e){}}
 function pvClearNew(name){try{try{var _mx=Date.now();try{var _m=[];if(name==='All Users'){_m=lsGet('pro_vibes_all_users')||[];}else{var _r=window.getPrivateRoom?window.getPrivateRoom(name):'';_m=lsGet('pro_vibes_private_'+_r)||[];}_m.forEach(function(_mm){var _ts=Number(_mm&&(_mm.timestamp||_mm.time||_mm.createdAt||0))||0;if(_ts>_mx)_mx=_ts;});}catch(e){}pvSetLastRead(name, _mx);try{if(name!=='All Users')pvMarkSeenForPrivate(name);}catch(e){}}catch(e){}if(name==='All Users'){var b=document.getElementById('open-dm-all-users');if(!b)return;pvSetUnread('All Users', 0);pvSetBadge(b, 0);return;}try{pvSetUnread(name, 0);}catch(e){}var row=document.querySelector('#new-persons-list [data-person-name="'+String(name).replace(/"/g, '')+'"]');if(!row)return;pvSetBadge(row, 0);}catch(e){}}
-function pvPollGeneralForNew(){try{var base=typeof getBase==='function'?getBase():'';if(!base||!navigator.onLine)return;if(pvIsInChat('All Users'))return;var me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';fetch(base+'/prochat/rooms/general.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var ms=[];var collect=function(n){if(!n)return;if(Array.isArray(n)){n.forEach(collect);return;}if(typeof n==='object'){var one=normalizeChatMsg(n);if(one){ms.push(one);return;}Object.values(n).forEach(collect);}};collect(data);if(!ms.length)return;ms.sort(function(a, b){return(a.timestamp||0)-(b.timestamp||0);});var ex=[];try{ex=lsGet('pro_vibes_all_users')||[];}catch(e){ex=[];}var newMsgs=ms.filter(function(m){return!ex.some(function(e2){return sameMsg(e2, m);});});if(!newMsgs.length)return;var merged=[].concat(ex);newMsgs.forEach(function(m){if(!merged.some(function(s){return sameMsg(s, m);}))merged.push(m);});merged.sort(function(a, b){return(a.timestamp||0)-(b.timestamp||0);});try{lsSet('pro_vibes_all_users', merged);}catch(e){}try{pvUpdateAllUsersPreview();}catch(e){}var unreadNew=newMsgs.filter(function(m){var s=m&&(m.name||m.sender||m.user||'');return!s||String(s).trim().toLowerCase()!==String(me).trim().toLowerCase();});if(unreadNew.length)pvMarkNew('All Users', unreadNew.length);}).catch(function(){});}catch(e){}}
+function pvPollGeneralForNew(){try{var base=typeof getBase==='function'?getBase():'';if(!base||!navigator.onLine)return;if(pvIsInChat('All Users'))return;var me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';fetch(base+'/prochat/rooms/general.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var ms=[];var collect=function(n){if(!n)return;if(Array.isArray(n)){n.forEach(collect);return;}if(typeof n==='object'){var one=normalizeChatMsg(n);if(one){ms.push(one);return;}Object.values(n).forEach(collect);}};collect(data);if(!ms.length)return;ms.sort(function(a, b){return(Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0);});
+try{
+  var _pk2={}; try{ for(var _pj=0; _pj<localStorage.length; _pj++){ var _pkj=localStorage.key(_pj); if(_pkj && _pkj.indexOf('pro_vibes_private_')===0){ try{ var _aj=JSON.parse(localStorage.getItem(_pkj)||'[]'); if(Array.isArray(_aj)) _aj.forEach(function(_mj){ _pk2[String(_mj&&( _mj.timestamp||_mj.time||_mj.createdAt||0))+'|'+String(_mj&&( _mj.name||_mj.sender||_mj.user||''))+'|'+String(_mj&&( _mj.text||_mj.message||''))]=1; }); }catch(e){} } } }catch(e){}
+  ms=ms.filter(function(_m){ var _k=String(_m&&( _m.timestamp||0))+'|'+String(_m&&( _m.name||''))+'|'+String(_m&&( _m.text||'')); return !_pk2[_k]; });
+}catch(e){}
+var ex=[];try{ex=lsGet('pro_vibes_all_users')||[];}catch(e){ex=[];}var newMsgs=ms.filter(function(m){return!ex.some(function(e2){return sameMsg(e2, m);});});if(!newMsgs.length)return;var merged=[].concat(ex);newMsgs.forEach(function(m){if(!merged.some(function(s){return sameMsg(s, m);}))merged.push(m);});merged.sort(function(a, b){return(a.timestamp||0)-(b.timestamp||0);});try{lsSet('pro_vibes_all_users', merged);}catch(e){}try{pvUpdateAllUsersPreview();}catch(e){}var unreadNew=newMsgs.filter(function(m){var s=m&&(m.name||m.sender||m.user||'');return!s||String(s).trim().toLowerCase()!==String(me).trim().toLowerCase();});if(unreadNew.length)pvMarkNew('All Users', unreadNew.length);}).catch(function(){});}catch(e){}}
 function pvPollAllPrivateForNew(){try{pvDiscoverPrivateRooms();}catch(e){}try{var base=typeof getBase==='function'?getBase():'';if(!base||!navigator.onLine)return;var names=[];try{names=lsGet('pro_vibes_private_names')||[];}catch(e){names=[];}var me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';names.forEach(function(nm){try{if(!nm||nm==='All Users')return;if(pvIsInChat(nm))return;var room=window.getPrivateRoom?window.getPrivateRoom(nm):'';if(!room)return;var key='pro_vibes_private_'+room;fetch(base+'/prochat/rooms/private/'+room+'.json').then(function(r){return r.json();}).then(function(data){if(!data)return;var ms=Array.isArray(data)?data:Object.values(data);if(!ms.length)return;var ex=[];try{ex=lsGet(key)||[];}catch(e){ex=[];}var newMsgs=[];ms.forEach(function(m){var nm2=normalizeChatMsg(m);if(!nm2)return;if(!ex.some(function(e2){return sameMsg(e2, nm2);}))newMsgs.push(nm2);});if(!newMsgs.length)return;var merged=[].concat(ex);newMsgs.forEach(function(m){if(!merged.some(function(s){return sameMsg(s, m);}))merged.push(m);});merged.sort(function(a, b){return(a.timestamp||0)-(b.timestamp||0);});try{lsSet(key, merged);}catch(e){}try{pvUpdateListPreview(nm);}catch(e){}var unreadNew=newMsgs.filter(function(m){var s=m&&(m.name||m.sender||m.user||'');return!s||String(s).trim().toLowerCase()!==String(me).trim().toLowerCase();});if(unreadNew.length)pvMarkNew(nm, unreadNew.length);}).catch(function(){});}catch(e){}});}catch(e){}}
 function pvIsPrivateFriend(name){try{var _p=lsGet('pro_vibes_private_names')||[];var _low=String(name||'').trim().toLowerCase();for(var _i=0;_i<_p.length;_i++){if(String(_p[_i]||'').trim().toLowerCase()===_low)return true;}return false;}catch(e){return false;}}
 function pvIsMutualChat(name){try{var me=(localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'').trim().toLowerCase();if(!me||!name)return false;var room=(typeof window.getPrivateRoom==='function'?window.getPrivateRoom(name):'');var key='pro_vibes_private_'+room;var msgs=[];try{msgs=lsGet(key)||[];}catch(e){msgs=[];}var iSent=false, theySent=false;for(var i=0;i<msgs.length;i++){var s=String(msgs[i]&&(msgs[i].name||msgs[i].sender||msgs[i].user||'')).trim().toLowerCase();if(!s)continue;if(s===me)iSent=true;else if(s===String(name).trim().toLowerCase())theySent=true;if(iSent&&theySent)return true;}return false;}catch(e){return false;}}
@@ -2543,11 +2548,34 @@ setTimeout(function(){window._pvJustOpened=false;}, 900);
 }
 const base=getBase();if(!base)return;
 fetch(base+'/prochat/rooms/general.json').then(r=>r.json()).then(data=>{if(!data)return;const tmp=[];const collect=n=>{if(!n)return;if(Array.isArray(n)){n.forEach(collect);return;}if(typeof n==='object'){const one=normalizeChatMsg(n);if(one){tmp.push(one);return;}Object.values(n).forEach(collect);}};collect(data);
-tmp.sort((a, b)=>(a.timestamp||0)-(b.timestamp||0));window.AllUsersMessages=tmp;
+tmp.sort((a, b)=>(Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0));
+// LEAK FILTER: drop any general msg that is actually a private msg (same timestamp+name+text exists in a private room)
+try{
+  var _privKeys={};
+  try{ for(var _pi=0; _pi<localStorage.length; _pi++){ var _pk=localStorage.key(_pi); if(_pk && _pk.indexOf('pro_vibes_private_')===0){ try{ var _arr=JSON.parse(localStorage.getItem(_pk)||'[]'); if(Array.isArray(_arr)) _arr.forEach(function(_m){ _privKeys[String(_m&&( _m.timestamp||_m.time||_m.createdAt||0))+'|'+String(_m&&( _m.name||_m.sender||_m.user||''))+'|'+String(_m&&( _m.text||_m.message||''))]=1; }); }catch(e){} } } }catch(e){}
+  tmp=tmp.filter(function(_m){ var _k=String(_m&&( _m.timestamp||0))+'|'+String(_m&&( _m.name||''))+'|'+String(_m&&( _m.text||'')); return !_privKeys[_k]; });
+}catch(e){}
+window.AllUsersMessages=tmp;
 var merged=pvMergeIntoLocal('pro_vibes_all_users', tmp);
 try{pvUpdateAllUsersPreview();}catch(e){}try{if(window.CurrentDM!=='All Users')pvUpdateAllUsersBadge();}catch(e){}try{pvSortInboxByTime();}catch(e){}
 if(window.CurrentDM!=='All Users')return;
-merged.forEach(function(mm){if(!pvIsOnScreen(mm))renderAll(mm);});
+// ORDER FIX: re-render whole list sorted, don't append new msgs at bottom (that made new msgs look scattered / up-down)
+try{
+  var _box=document.getElementById('dm-messages');
+  if(_box){
+    var _onScreenCount=_box.querySelectorAll('[data-msg-timestamp]').length;
+    var _mergedCount=merged.length;
+    // If counts differ, something is missing / out of order - rebuild sorted
+    if(_onScreenCount!==_mergedCount){
+      _box.innerHTML='';
+      merged.slice().sort(function(a,b){return (Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0);}).forEach(function(mm){ try{ renderAll(mm); }catch(e){} });
+    } else {
+      merged.forEach(function(mm){if(!pvIsOnScreen(mm))renderAll(mm);});
+    }
+  } else {
+    merged.forEach(function(mm){if(!pvIsOnScreen(mm))renderAll(mm);});
+  }
+}catch(e){ merged.forEach(function(mm){if(!pvIsOnScreen(mm))renderAll(mm);}); }
 if(window._pvJustOpened)pvJumpToLastOnOpen();
 try{pvSetLastRead('All Users', Date.now());pvSetUnread('All Users', 0);}catch(e){}
 }).catch(()=>{});
@@ -4352,10 +4380,21 @@ return;
 var nm=null;
 try{nm=normalizeChatMsg(raw);}catch(e){nm=null;}
 if(!nm)return;
-var isAll=(window.CurrentDM==='All Users');
-var key=isAll?'pro_vibes_all_users':'pro_vibes_private_'+(window.getPrivateRoom?window.getPrivateRoom(window.CurrentDM||'User'):'');
+// LEAK FIX: use the STREAM's room (the room this EventSource is listening to), NOT CurrentDM.
+// CurrentDM can change while the stream is still open - that was dumping private msgs into All Users.
+// The stream URL is fixed at pvStartInstantStream time in window._pvStreamRoom.
+var _streamRoom = window._pvStreamRoom || window.CurrentDM || 'All Users';
+var isAll=(_streamRoom==='All Users');
+// If stream is for a different room than what's on screen, still save to the STREAM's room, but DON'T render it here
+// (rendering happens only when that room is opened). This stops cross-room leaking.
+var key=isAll?'pro_vibes_all_users':'pro_vibes_private_'+(window.getPrivateRoom?window.getPrivateRoom(_streamRoom||'User'):'');
 try{if(typeof pvMergeIntoLocal==='function')pvMergeIntoLocal(key, [nm]);}catch(e){}
 try{
+if(_streamRoom!==window.CurrentDM){
+  // Message is for a different chat than what's open - don't render here, just update that chat's list preview/badge
+  try{ if(isAll){ if(typeof pvUpdateAllUsersPreview==='function') pvUpdateAllUsersPreview(); } else { if(typeof pvUpdateListPreview==='function') pvUpdateListPreview(_streamRoom); if(typeof pvMarkNew==='function') pvMarkNew(_streamRoom, 1); } }catch(e){}
+  return;
+}
 if(typeof pvIsOnScreen==='function'&&pvIsOnScreen(nm))return;
 if(isAll){if(window.ProVibesRenderAll)window.ProVibesRenderAll(nm);}
 else{if(window.ProVibesRenderPrivate)window.ProVibesRenderPrivate(nm);}
@@ -4380,6 +4419,7 @@ pvHandleSingle(data);
 function pvStartInstantStream(){
 try{
 pvStopInstantStream();
+window._pvStreamRoom = window.CurrentDM || 'All Users';
 var url=pvGetStreamUrl();
 if(!url||!window.EventSource)return;
 currentUrl=url;
@@ -5154,6 +5194,47 @@ if(!atBottom)window._pvJustOpened=false;
   // First run
   setTimeout(superRefresh, 600);
   setTimeout(superRefresh, 1800);
+})();
+</script>
+
+<script>
+// PV LEAK CLEANUP: remove private msgs already leaked into All Users local storage (same timestamp+name+text exists in private)
+(function(){
+  function clean(){
+    try{
+      var privKeys={};
+      try{ for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k && k.indexOf('pro_vibes_private_')===0){ try{ var arr=JSON.parse(localStorage.getItem(k)||'[]'); if(Array.isArray(arr)) arr.forEach(function(m){ privKeys[String(m&&(m.timestamp||m.time||m.createdAt||0))+'|'+String(m&&(m.name||m.sender||m.user||''))+'|'+String(m&&(m.text||m.message||''))]=1; }); }catch(e){} } } }catch(e){}
+      // Find All Users key (scoped or not) - try both
+      var allKeys=[];
+      try{ for(var j=0;j<localStorage.length;j++){ var kk=localStorage.key(j); if(kk && kk.indexOf('pro_vibes_all_users')===0) allKeys.push(kk); } }catch(e){}
+      if(!allKeys.length) allKeys=['pro_vibes_all_users'];
+      allKeys.forEach(function(ak){
+        try{
+          var cur=JSON.parse(localStorage.getItem(ak)||'[]'); if(!Array.isArray(cur)||!cur.length) return;
+          var before=cur.length;
+          var filtered=cur.filter(function(m){ var key=String(m&&(m.timestamp||m.time||m.createdAt||0))+'|'+String(m&&(m.name||m.sender||m.user||''))+'|'+String(m&&(m.text||m.message||'')); return !privKeys[key]; });
+          // Also sort by timestamp so All Users is always chronological, newest at bottom
+          filtered.sort(function(a,b){ return (Number(a&&(a.timestamp||0))||0)-(Number(b&&(b.timestamp||0))||0); });
+          if(filtered.length!==before){ localStorage.setItem(ak, JSON.stringify(filtered)); }
+          else { localStorage.setItem(ak, JSON.stringify(filtered)); }
+        }catch(e){}
+      });
+      // If currently viewing All Users, rebuild the on-screen list sorted if needed
+      try{
+        if(window.CurrentDM==='All Users'){
+          var box=document.getElementById('dm-messages'); if(box){
+            var onScreen=box.querySelectorAll('[data-msg-timestamp]').length;
+            var stored=[]; try{ stored=JSON.parse(localStorage.getItem(allKeys[0])||'[]')||[]; }catch(e){}
+            if(stored.length && onScreen!==stored.length){
+              // Don't rebuild while user is typing - just leave it, next open will be clean
+            }
+          }
+        }
+      }catch(e){}
+    }catch(e){}
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', function(){ clean(); setTimeout(clean, 2000); }); } else { clean(); setTimeout(clean, 2000); }
+  setInterval(clean, 8000);
 })();
 </script>
 </body>
