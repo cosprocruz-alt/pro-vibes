@@ -4699,206 +4699,63 @@ if(!atBottom)window._pvJustOpened=false;
 })();
 </script>
 
-<!-- PV VOICE CALL OVERLAY - private chat only, calls NOT video, two-arrow button has NO function yet -->
+<!-- ===== FILE: css/real-calls.css — separate, do not mix ===== -->
+<style data-file="css/real-calls.css">
+/* css/real-calls.css - REAL calls: remote video full, local PiP, incoming call */
+.pv-video-remote{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;z-index:1;display:block}
+.pv-video-call .pv-video-call-camera.pv-local-pip{position:absolute !important;inset:auto !important;top:70px !important;right:16px !important;width:112px !important;height:152px !important;min-width:0 !important;min-height:0 !important;object-fit:cover !important;border-radius:14px !important;border:2px solid rgba(255,255,255,.7) !important;box-shadow:0 8px 24px rgba(0,0,0,.5) !important;z-index:4 !important;transform:scaleX(-1);background:#111}
+#pv-call-remote-audio{display:none}
+.pv-incoming-call{position:fixed;inset:0;z-index:10001;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.92);padding:24px;text-align:center}
+.pv-incoming-call.hidden{display:none !important}
+.pv-incoming-avatar{width:150px;height:150px;border-radius:50%;background-size:cover;background-position:center;background-color:#222;flex-shrink:0}
+.pv-incoming-name{margin:24px 0 0;font-size:32px;font-weight:800;color:#fff;line-height:1.2;max-width:92vw;word-break:break-word}
+.pv-incoming-type{margin-top:12px;color:#ddd;font-size:18px;font-weight:500}
+.pv-incoming-sub{margin-top:6px;color:#888;font-size:14px}
+.pv-incoming-btns{display:flex;gap:28px;margin-top:36px}
+.pv-incoming-btn{width:76px;height:76px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;font-size:32px;cursor:pointer;flex-shrink:0}
+.pv-incoming-accept{background:#22c55e;color:#fff}
+.pv-incoming-decline{background:#ff3b30;color:#fff}
+.pv-incoming-btn:active{transform:scale(.92)}
+.pv-video-call-ctl{transition:opacity .15s}
+</style>
+
+<!-- PV REAL VOICE CALL OVERLAY - private chat only, Firebase + WebRTC -->
 <div id="pv-voice-call" class="pv-voice-call hidden" aria-hidden="true">
   <div class="pv-voice-call-bg" id="pv-voice-call-bg"></div>
   <div class="pv-voice-call-bg-dim"></div>
   <div class="pv-voice-call-top">
-    <button class="pv-voice-call-back" id="pv-voice-call-back" aria-label="No function yet"><img src="data:image/png;base64,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" alt="" class="pv-top-icon-exact" /></button>
+    <button class="pv-voice-call-back" id="pv-voice-call-back" aria-label="End call"><img src="data:image/png;base64,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" alt="" class="pv-top-icon-exact" /></button>
   </div>
   <div class="pv-voice-call-center">
     <div class="pv-voice-call-avatar" id="pv-voice-call-avatar"></div>
     <div class="pv-voice-call-name" id="pv-voice-call-name">User</div>
-    <div class="pv-voice-call-status"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3 C7 3 7.5 3.5 7.5 4.5 L7.5 6 C7.5 6.8 7 7.3 6.2 7.3 L5 7.3 C4.6 8.5 5 10 6.2 11.8 C7.4 13.6 9 14.8 10.7 15.2 L10.7 14 C10.7 13.2 11.2 12.7 12 12.7 L13.5 12.7 C14.5 12.7 15 13.2 15 14.2 L15 15.5 C15 16.5 14.5 17 13.5 17 C10 17 6 14 4.5 10.5 C4 9 4 7.5 4.5 6 L4.5 4.5 C4.5 3.5 5 3 6 3 Z" fill="#d8d8d8"/></svg><span>Calling...</span></div>
+    <div class="pv-voice-call-status"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3 C7 3 7.5 3.5 7.5 4.5 L7.5 6 C7.5 6.8 7 7.3 6.2 7.3 L5 7.3 C4.6 8.5 5 10 6.2 11.8 C7.4 13.6 9 14.8 10.7 15.2 L10.7 14 C10.7 13.2 11.2 12.7 12 12.7 L13.5 12.7 C14.5 12.7 15 13.2 15 14.2 L15 15.5 C15 16.5 14.5 17 13.5 17 C10 17 6 14 4.5 10.5 C4 9 4 7.5 4.5 6 L4.5 4.5 C4.5 3.5 5 3 6 3 Z" fill="#d8d8d8"/></svg><span id="pv-voice-call-status-text">Calling...</span></div>
   </div>
   <div class="pv-voice-call-bottom">
     <button class="pv-voice-call-item" id="pv-voice-call-speaker" type="button"><span class="pv-voice-call-btn speaker"><svg viewBox="0 0 24 24" fill="none"><path d="M4 9 L8 9 L13 4.5 L13 19.5 L8 15 L4 15 Z" fill="#fff"/><path d="M16 8.5 C17.2 10 17.2 14 16 15.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M18.5 6 C20.2 8.5 20.2 15.5 18.5 18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></span><span class="pv-voice-call-label">Speaker</span></button>
     <button class="pv-voice-call-item" id="pv-voice-call-mute" type="button"><span class="pv-voice-call-btn mute"><svg viewBox="0 0 24 24" fill="none"><rect x="9" y="2.5" width="6" height="11" rx="3" fill="#000"/><path d="M5 11.5 C5 15.5 8.2 18.5 12 18.5 C15.8 18.5 19 15.5 19 11.5" stroke="#000" stroke-width="2.4" stroke-linecap="round"/><path d="M12 18.5 L12 21.5" stroke="#000" stroke-width="2.4" stroke-linecap="round"/></svg></span><span class="pv-voice-call-label">Mute</span></button>
     <button class="pv-voice-call-item" id="pv-voice-call-end" type="button"><span class="pv-voice-call-btn end"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG8AAAA1CAYAAABP0LXxAAABsUlEQVR4nO2a2RLDIAhFk07//5ftQ6fLOC6oIJfknvdU5IjVkDOldJCYPLwDIPNQXmAoLzCUFxjKCwzlBebpHcAE1neb0/j31UCX53EJLY0JKRRNHuobgzwuCJko8lCl1fjE6yrRS140WTVcK3K3vKtIq7G1InfJu7q0nC0SreXdTVqOqUQreXeXlmMi0eINC8XVUc2NZuVRmgy1KtSqPIobZzlnq/KSRhA3Zil3K/IoTYfpApiVR3H6DOd0Rh7F2TGU21F5FGePOMcoXQVNekfwyyzAEXlIk165I7WeRZljOgRzlMrzntSuVks+jue8uwLRt03vjvVnfO/FW0RyYPEK3FvcP16xNHOP+ukfkjhYevK8qg5ym0IDtfLIj+pCRpaHVH1IsXxBlkc6tORBrjbyg5UXg2IhUV5gKK8Pwt9H8d6LLg8hcbC05PEtxxvYPKBXHmziEECXRxogy0OqOs9YqmP3+nk7+1lIskqU4nM9UHk0Y9EljWDdeVfppJ/HXGBXEiVB6/sYUd5GKq+3hd5N1CjSbVecx5ltk5L0WMol8mmTdKC8wFBeYCgvMJQXmBc9T0B9TrBXegAAAABJRU5ErkJggg==" alt="" class="pv-end-icon-exact" /></span><span class="pv-voice-call-label">End</span></button>
   </div>
+  <audio id="pv-call-remote-audio" autoplay playsinline></audio>
 </div>
 
-<script>
-// PV VOICE CALL - private chat only, calls NOT video
-(function(){
-  var pvVoiceMuted = false;
-  var pvVoiceSpeakerOn = true;
-  var pvVoiceCallId = null;
-  var pvVoiceCallPeer = '';
-  var pvVoiceEnding = false;
-  var pvVoiceBC = null;
-  try{ if('BroadcastChannel' in window){ pvVoiceBC = new BroadcastChannel('pro-vibes-voice-call'); pvVoiceBC.onmessage = function(ev){ try{ if(ev && ev.data && ev.data.type === 'pv-voice-call-ended'){ pvHandleRemoteEnd(ev.data.peer); } }catch(e){} }; } }catch(e){}
+<!-- PV REAL INCOMING CALL - shows on any screen when someone calls you -->
+<div id="pv-incoming-call" class="pv-incoming-call hidden" aria-hidden="true">
+  <div class="pv-incoming-avatar" id="pv-incoming-avatar"></div>
+  <div class="pv-incoming-name" id="pv-incoming-name">Someone</div>
+  <div class="pv-incoming-type" id="pv-incoming-type">Incoming voice call...</div>
+  <div class="pv-incoming-sub">PRO VIBES call</div>
+  <div class="pv-incoming-btns">
+    <button class="pv-incoming-btn pv-incoming-decline" id="pv-incoming-decline" type="button" aria-label="Decline">✕</button>
+    <button class="pv-incoming-btn pv-incoming-accept" id="pv-incoming-accept" type="button" aria-label="Accept">☎</button>
+  </div>
+</div>
 
-  function pvGetCallAvatarUrl(name){
-    try{ if(typeof pvAvatarFor==='function'){ var u=pvAvatarFor(name); if(u) return u; } }catch(e){}
-    try{
-      var head=document.querySelector('.dm-head-avatar');
-      if(head && head.style && head.style.backgroundImage && head.style.backgroundImage.indexOf('url(')===0) return head.style.backgroundImage.slice(4,-1).replace(/["']/g,'');
-      var big=document.querySelector('.dm-big-avatar');
-      if(big && big.style && big.style.backgroundImage && big.style.backgroundImage.indexOf('url(')===0) return big.style.backgroundImage.slice(4,-1).replace(/["']/g,'');
-    }catch(e){}
-    return '';
-  }
-
-  // Sleek end sound only - soft descending tone, no other sound
-  function pvPlayVoiceEndSound(){
-    try{
-      var Ctx = window.AudioContext || window.webkitAudioContext;
-      if(!Ctx) return;
-      var ctx = new Ctx();
-      if(ctx.resume) ctx.resume();
-      var t0 = ctx.currentTime;
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(560, t0);
-      osc.frequency.exponentialRampToValueAtTime(270, t0 + 0.38);
-      gain.gain.setValueAtTime(0.0001, t0);
-      gain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.45);
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(t0); osc.stop(t0 + 0.5);
-      setTimeout(function(){ try{ ctx.close(); }catch(e){} }, 600);
-    }catch(e){}
-  }
-
-  function pvRefreshVoiceToggles(){
-    var sp = document.getElementById('pv-voice-call-speaker');
-    var mu = document.getElementById('pv-voice-call-mute');
-    if(sp){
-      var spBtn = sp.querySelector('.pv-voice-call-btn');
-      if(spBtn){
-        spBtn.classList.toggle('is-off', !pvVoiceSpeakerOn);
-        sp.setAttribute('aria-pressed', pvVoiceSpeakerOn ? 'true' : 'false');
-        sp.setAttribute('aria-label', pvVoiceSpeakerOn ? 'Speaker on' : 'Speaker off');
-        if(pvVoiceSpeakerOn){
-          spBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M4 9 L8 9 L13 4.5 L13 19.5 L8 15 L4 15 Z" fill="#fff"/><path d="M16 8.5 C17.2 10 17.2 14 16 15.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M18.5 6 C20.2 8.5 20.2 15.5 18.5 18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>';
-        } else {
-          spBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M4 9 L8 9 L13 4.5 L13 19.5 L8 15 L4 15 Z" fill="#fff" opacity="0.7"/><path d="M3.5 3.5 L20.5 20.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>';
-        }
-      }
-    }
-    if(mu){
-      var muBtn = mu.querySelector('.pv-voice-call-btn');
-      var muLabel = mu.querySelector('.pv-voice-call-label');
-      if(muBtn){
-        muBtn.classList.toggle('is-muted', pvVoiceMuted);
-        mu.setAttribute('aria-pressed', pvVoiceMuted ? 'true' : 'false');
-        mu.setAttribute('aria-label', pvVoiceMuted ? 'Unmute mic' : 'Mute mic');
-        if(pvVoiceMuted){
-          muBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="2.5" width="6" height="11" rx="3" fill="#fff"/><path d="M5 11.5 C5 15.5 8.2 18.5 12 18.5 C15.8 18.5 19 15.5 19 11.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M12 18.5 L12 21.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M3.5 3.5 L20.5 20.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>';
-        } else {
-          muBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="2.5" width="6" height="11" rx="3" fill="#000"/><path d="M5 11.5 C5 15.5 8.2 18.5 12 18.5 C15.8 18.5 19 15.5 19 11.5" stroke="#000" stroke-width="2.4" stroke-linecap="round"/><path d="M12 18.5 L12 21.5" stroke="#000" stroke-width="2.4" stroke-linecap="round"/></svg>';
-        }
-      }
-      if(muLabel) muLabel.textContent = pvVoiceMuted ? 'Unmute' : 'Mute';
-    }
-  }
-
-  function pvOpenVoiceCall(){
-    var name = window.CurrentDM || '';
-    if(!name || name==='All Users') return;
-    var scr=document.getElementById('dm-screen');
-    if(!scr || scr.classList.contains('hidden')) return;
-    var overlay=document.getElementById('pv-voice-call');
-    if(!overlay) return;
-    var nameEl=document.getElementById('pv-voice-call-name');
-    if(nameEl) nameEl.textContent=name;
-    var url=pvGetCallAvatarUrl(name);
-    var av=document.getElementById('pv-voice-call-avatar');
-    var bg=document.getElementById('pv-voice-call-bg');
-    if(url){
-      overlay.classList.remove('no-photo');
-      if(av){ av.style.backgroundImage='url('+url+')'; av.style.display=''; }
-      if(bg){ bg.style.backgroundImage='url('+url+')'; }
-    }else{
-      overlay.classList.add('no-photo');
-      if(av){ av.style.backgroundImage=''; av.style.display='none'; }
-      if(bg){ bg.style.backgroundImage=''; }
-    }
-    pvVoiceCallPeer = name;
-    pvVoiceCallId = Date.now() + '-' + Math.random().toString(36).slice(2, 8);
-    pvVoiceEnding = false;
-    pvVoiceMuted = false;
-    pvVoiceSpeakerOn = true;
-    pvRefreshVoiceToggles();
-    overlay.classList.remove('hidden');
-    overlay.setAttribute('aria-hidden','false');
-  }
-
-  function pvCloseVoiceCall(){
-    var overlay=document.getElementById('pv-voice-call');
-    if(!overlay) return;
-    overlay.classList.add('hidden');
-    overlay.setAttribute('aria-hidden','true');
-    pvVoiceCallId = null;
-  }
-
-  // Anyone ends -> whole call ends for everyone
-  function pvEndVoiceCallForEveryone(){
-    var overlay=document.getElementById('pv-voice-call');
-    if(!overlay || overlay.classList.contains('hidden')) return;
-    if(pvVoiceEnding) return;
-    pvVoiceEnding = true;
-    var peer = pvVoiceCallPeer || (window.CurrentDM || '');
-    var callId = pvVoiceCallId;
-    pvPlayVoiceEndSound();
-    try{ if(pvVoiceBC) pvVoiceBC.postMessage({type:'pv-voice-call-ended', peer:peer, callId:callId, at:Date.now()}); }catch(e){}
-    try{ localStorage.setItem('pv_voice_call_ended', JSON.stringify({peer:peer, callId:callId, at:Date.now()})); }catch(e){}
-    pvCloseVoiceCall();
-    pvVoiceMuted = false; pvVoiceSpeakerOn = true; pvRefreshVoiceToggles();
-    setTimeout(function(){ pvVoiceEnding = false; }, 600);
-  }
-
-  function pvHandleRemoteEnd(peer){
-    var overlay=document.getElementById('pv-voice-call');
-    if(!overlay || overlay.classList.contains('hidden')) return;
-    if(peer && pvVoiceCallPeer && peer !== pvVoiceCallPeer) return;
-    if(pvVoiceEnding) return;
-    pvVoiceEnding = true;
-    pvPlayVoiceEndSound();
-    pvCloseVoiceCall();
-    pvVoiceMuted = false; pvVoiceSpeakerOn = true; pvRefreshVoiceToggles();
-    setTimeout(function(){ pvVoiceEnding = false; }, 600);
-  }
-
-  try{
-    window.addEventListener('storage', function(e){
-      if(!e || e.key !== 'pv_voice_call_ended' || !e.newValue) return;
-      try{ var d = JSON.parse(e.newValue); if(d) pvHandleRemoteEnd(d.peer); }catch(err){}
-    });
-  }catch(e){}
-
-  window.PVOpenVoiceCall=pvOpenVoiceCall;
-  window.PVCloseVoiceCall=pvCloseVoiceCall;
-  window.PVEndVoiceCallForEveryone=pvEndVoiceCallForEveryone;
-  function pvBindCall(){
-    var btn=document.querySelector('.dm-call');
-    if(btn && !btn.dataset.pvCallBound){
-      btn.dataset.pvCallBound='1';
-      btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); pvOpenVoiceCall(); });
-    }
-    // Two-arrow button - NO function yet, tap does nothing
-    var back=document.getElementById('pv-voice-call-back');
-    if(back && !back.dataset.pvBound){ back.dataset.pvBound='1'; back.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); }); }
-    var end=document.getElementById('pv-voice-call-end');
-    if(end && !end.dataset.pvBound){ end.dataset.pvBound='1'; end.addEventListener('click', function(e){ e.preventDefault(); pvEndVoiceCallForEveryone(); }); }
-    // Mic: tap = on / off
-    var mu=document.getElementById('pv-voice-call-mute');
-    if(mu && !mu.dataset.pvBound){ mu.dataset.pvBound='1'; mu.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); pvVoiceMuted = !pvVoiceMuted; pvRefreshVoiceToggles(); }); }
-    // Speaker: tap = loud / not loud
-    var sp=document.getElementById('pv-voice-call-speaker');
-    if(sp && !sp.dataset.pvBound){ sp.dataset.pvBound='1'; sp.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); pvVoiceSpeakerOn = !pvVoiceSpeakerOn; pvRefreshVoiceToggles(); }); }
-  }
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', pvBindCall); } else { pvBindCall(); }
-  setTimeout(pvBindCall, 800);
-  setTimeout(pvBindCall, 2500);
-})();
-</script>
-
-<!-- PV VIDEO CALL OVERLAY - private chat only, exactly like reference: profile + camera on + name -->
+<!-- PV REAL VIDEO CALL OVERLAY - private chat only, Firebase + WebRTC -->
 <div id="pv-video-call" class="pv-video-call hidden" aria-hidden="true">
-  <video id="pv-video-call-camera" class="pv-video-call-camera" autoplay playsinline muted></video>
+  <video id="pv-video-remote" class="pv-video-remote" autoplay playsinline></video>
+  <video id="pv-video-call-camera" class="pv-video-call-camera pv-local-pip" autoplay playsinline muted></video>
+  <audio id="pv-video-remote-audio" autoplay playsinline style="display:none"></audio>
   
   <div class="pv-video-call-top-grad"></div>
   <div class="pv-video-call-top">
@@ -4908,7 +4765,7 @@ if(!atBottom)window._pvJustOpened=false;
   <div class="pv-video-call-center">
     <div class="pv-video-call-avatar" id="pv-video-call-avatar"></div>
     <div class="pv-video-call-name" id="pv-video-call-name">User</div>
-    <div class="pv-video-call-status">Ringing...</div>
+    <div class="pv-video-call-status" id="pv-video-call-status">Ringing...</div>
   </div>
   <div class="pv-video-call-bottom">
     <button class="pv-video-call-ctl" id="pv-video-call-video" type="button"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGUAAABTCAYAAACGX8l/AAAE8ElEQVR4nO2cf4gVVRTHP7uVJFGyJYr9U0RRbCSKrCH+EYVZikEZ9odGEYiRQQkVShQFGu1CbAVRpIJGP4hKsKRtNzbKUJSFxSASpFiIJNswggiMwm5/nF0m3r47c+fembl3H+cDw7Iz8847d77vzP19uowxKGnRHdsBZSYqSoKoKAmioiSIipIgKkqCqCgJoqIkiIqSICpKglxYs/2LgDlTRzfwW83f1xHUIUofcC+wDrixBvuh/A2MA8eAr4Eh4J+oHrXQVeGA5BpgO7AEmFeV0QYYAl4CvoztyDRViNIL9AN3hbsTlcPAE0gURSVUlB5gD/K66gTGgZ3AxzGdCBFlETAMLK7OnSSYAO4jYsSENIkfofMEAbgGeA750UXBN1LWAwdyro8DI8AR4Djwu8+XtNAN/Bto4ypgJbAKuAURwMazwK7A7/PDGONzfGHsfGWMudXTbpNHnzHmo4JydMfwzedDq3MK0m+MuTaBB+56LDDGfJpTnvUx/PKpU/KavoPAD55BG4NfgdeA85brGx1sXIz0zdYAl1XhlE+PfoXl/CAwN8CXWHwGjAJ3tLl2GzJU1Nrjv4KsXlqO1E09wAngNHAUqXP9fqAe4fWLJdRvSuB15HtssJTJtLl3kTHm9Zz7pxk28nos7Y9P68v2gS6vX0U62Mp1OVnrsQ94E1jqaHMSeAD4vIwjOnRfzIKpvxuBQ7gLArAQ2FT2CzVSMmzl2oxU4P3IFIQPDwH7XW9WUTJs5ToBXI1U5L4cBO5xvVlFyfAdBDyAzMtcgrRM23UZ/gQudTWoomT4iHIQGe6fmPq/F/jOcu884A8XoypKRtkHMQC8CpxxtOP8fOqeo+9UBoAdbc5X0qPXSMlweRDnkEmwFz3saKTUxINIPVIr2nl04wgyG/khDax80ddXhq1c3wN3AycD7Tg/H42UYnbiLkglaKRk2Mq1EJl3CbWjkVIhVawvKIWKkiAqSjGNrzNWURJERUkQFSVBVJQEUVESREVJEBUlQVSUYvJW5teCilLMlqa/UCe5itmO7Ch+mYbGwXSUOKPoQewGHg6wo6PENbAFeIYGtt1ppGS4PohRZGrY9irTSInAKuADZKNQLWikZJR9EGPI4u9vHe1opDTAciSPQO//zj1muXeyjGFtEodxJbIqfwj4C9kO3o6zZYyqKMXsQxZPrLVcn4MsQcqjVFoRrVMy2pXrHLJz6yzwFNKRLMskcDPwo+sHqqxTKlncHAnbhqAzwCkkedwO4A0P2wOUEAT8RLElkrFVcrOBDZbzP7f8vxXZKufK08jwTCl8RBmxnH+eCCOqFbAOeNJy7Vibc/uRvC0/5dgcQ+qgvNX5Vnwq+jHkHTu/5fwFSMdqt48jEdkEXGe5dtxyftfUcT2wDEnEMx/4BtnVdTTII89kAO/kbOr/xBizxNNuk8cyI0lxbLwVyzff1FIrke0BNsaBvcim/omc+5qmB3nFrkbqBluEgETQe0041UpIZrwXkIqsExlENphGITSH5DDtE83MZt4F7o/pQGg/5U5mX8WexyHg8dhOVJWX+BUSKEwgo0gzNnri6Kp69NuQJuEQMztcqfM+kqD0dhIQBKrN4D1ND/Ao0nq5oWrjFXAeyQoxArzNzPmQ6NQhihKITnIliIqSICpKgqgoCaKiJIiKkiAqSoKoKAmioiSIipIg/wGFK/g63D+0uAAAAABJRU5ErkJggg==" alt="" /></button>
@@ -4918,88 +4775,337 @@ if(!atBottom)window._pvJustOpened=false;
   </div>
 </div>
 
-<script>
-// PV VIDEO CALL - private chat only, exactly like reference: profile + camera on + name
+
+<!-- ===== FILE: js/real-calls.js — separate, do not mix ===== -->
+<script data-file="js/real-calls.js">
+// js/real-calls.js - REAL voice + video calls. Firebase = signaling, WebRTC = audio/video.
+// Old fake code deleted. This replaces PV VOICE CALL + PV VIDEO CALL.
 (function(){
-  var stream = null;
-  function pvGetVideoAvatarUrl(name){
-    try{ if(typeof pvAvatarFor==='function'){ var u=pvAvatarFor(name); if(u) return u; } }catch(e){}
+  var call = null;
+  var pollTimer = null;
+  var pollBusy = false;
+  var seenIncoming = {};
+  var ringInterval = null;
+  var callTimerId = null;
+  var callStartTime = 0;
+  var lastCandidates = {};
+  function meName(){ try{ return localStorage.getItem('pro_vibes_user_name') || (window.ProVibesUser && window.ProVibesUser.name) || ''; }catch(e){ return ''; } }
+  function baseUrl(){ try{ if(typeof getBase==='function'){ var b=getBase(); if(b) return b; } }catch(e){} try{ if(typeof FIREBASE_URL!=='undefined' && FIREBASE_URL) return FIREBASE_URL; }catch(e){} try{ if(typeof DATABASE_URL!=='undefined' && DATABASE_URL) return DATABASE_URL; }catch(e){} return ''; }
+  function cleanBase(b){ if(!b) return ''; return b.charAt(b.length-1)==='/' ? b.slice(0,-1) : b; }
+  function roomFor(peer){ try{ if(typeof window.getPrivateRoom==='function') return window.getPrivateRoom(peer); }catch(e){} var me=meName(); return [String(me), String(peer)].sort(function(a,b){ return String(a).toLowerCase().localeCompare(String(b).toLowerCase()); }).join('__').replace(/[^a-zA-Z0-9_]/g,'_').toLowerCase(); }
+  function avatarFor(name){ try{ if(typeof pvAvatarFor==='function'){ var u=pvAvatarFor(name); if(u) return u; } }catch(e){} try{ var head=document.querySelector('.dm-head-avatar'); if(head && head.style && head.style.backgroundImage && head.style.backgroundImage.indexOf('url(')===0) return head.style.backgroundImage.slice(4,-1).replace(/["']/g,''); }catch(e){} return ''; }
+  function setStatus(txt){ try{ var v=document.getElementById('pv-voice-call-status-text'); if(v) v.textContent=txt; var vd=document.getElementById('pv-video-call-status'); if(vd) vd.textContent=txt; }catch(e){} }
+  function toast(msg){ try{ if(typeof window.pvToast==='function'){ window.pvToast(msg); return; } }catch(e){} try{ var t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:999px;z-index:20001;font-size:14px;max-width:90vw;text-align:center'; document.body.appendChild(t); setTimeout(function(){ try{ t.remove(); }catch(e){} },2600); }catch(e){} }
+  function startRing(){ stopRing(); try{ if(navigator.vibrate) navigator.vibrate([300,200,300]); }catch(e){} ringInterval=setInterval(function(){ try{ var Ctx=window.AudioContext||window.webkitAudioContext; if(!Ctx) return; var ctx=new Ctx(); var o=ctx.createOscillator(); var g=ctx.createGain(); o.type='sine'; o.frequency.setValueAtTime(880, ctx.currentTime); g.gain.setValueAtTime(0.0001, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime+0.02); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.4); o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.45); setTimeout(function(){ try{ ctx.close(); }catch(e){} },500); }catch(e){} },1300); }
+  function stopRing(){ try{ if(ringInterval){ clearInterval(ringInterval); ringInterval=null; } }catch(e){} }
+  function startTimer(){ stopTimer(); callStartTime=Date.now(); callTimerId=setInterval(function(){ var s=Math.floor((Date.now()-callStartTime)/1000); var mm=String(Math.floor(s/60)).padStart(2,'0'); var ss=String(s%60).padStart(2,'0'); setStatus('Connected - '+mm+':'+ss); },1000); }
+  function stopTimer(){ try{ if(callTimerId){ clearInterval(callTimerId); callTimerId=null; } }catch(e){} }
+  function showVoiceUI(peer){
     try{
-      var head=document.querySelector('.dm-head-avatar');
-      if(head && head.style && head.style.backgroundImage && head.style.backgroundImage.indexOf('url(')===0) return head.style.backgroundImage.slice(4,-1).replace(/["']/g,'');
-      var big=document.querySelector('.dm-big-avatar');
-      if(big && big.style && big.style.backgroundImage && big.style.backgroundImage.indexOf('url(')===0) return big.style.backgroundImage.slice(4,-1).replace(/["']/g,'');
+      var vo=document.getElementById('pv-video-call'); if(vo) vo.classList.add('hidden');
+      var ov=document.getElementById('pv-voice-call'); if(!ov) return;
+      var ne=document.getElementById('pv-voice-call-name'); if(ne) ne.textContent=peer;
+      var url=avatarFor(peer); var av=document.getElementById('pv-voice-call-avatar'); var bg=document.getElementById('pv-voice-call-bg');
+      if(url){ ov.classList.remove('no-photo'); if(av){ av.style.backgroundImage='url('+url+')'; av.style.display=''; } if(bg){ bg.style.backgroundImage='url('+url+')'; } }
+      else{ ov.classList.add('no-photo'); if(av){ av.style.backgroundImage=''; av.style.display='none'; } if(bg){ bg.style.backgroundImage=''; } }
+      ov.classList.remove('hidden'); ov.setAttribute('aria-hidden','false');
     }catch(e){}
-    return '';
   }
-  function pvStartCamera(){
+  function showVideoUI(peer){
     try{
-      var vid=document.getElementById('pv-video-call-camera');
-      if(!vid) return;
-      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-      navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}, audio:false}).then(function(s){
-        stream=s;
-        vid.srcObject=s;
-        try{ vid.play(); }catch(e){}
-      }).catch(function(){});
+      var vo=document.getElementById('pv-voice-call'); if(vo) vo.classList.add('hidden');
+      var ov=document.getElementById('pv-video-call'); if(!ov) return;
+      var ne=document.getElementById('pv-video-call-name'); if(ne) ne.textContent=peer;
+      var url=avatarFor(peer); var av=document.getElementById('pv-video-call-avatar');
+      if(url){ ov.classList.remove('no-photo'); if(av){ av.style.backgroundImage='url('+url+')'; av.style.display=''; } }
+      else{ ov.classList.add('no-photo'); if(av){ av.style.backgroundImage=''; av.style.display='none'; } }
+      ov.classList.remove('hidden'); ov.setAttribute('aria-hidden','false');
     }catch(e){}
   }
-  function pvStopCamera(){
-    try{ if(stream){ stream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); stream=null; } }catch(e){}
-    try{ var vid=document.getElementById('pv-video-call-camera'); if(vid){ vid.srcObject=null; } }catch(e){}
+  function hideAllUI(){
+    try{ var a=document.getElementById('pv-voice-call'); if(a){ a.classList.add('hidden'); a.setAttribute('aria-hidden','true'); } }catch(e){}
+    try{ var b=document.getElementById('pv-video-call'); if(b){ b.classList.add('hidden'); b.setAttribute('aria-hidden','true'); } }catch(e){}
+    try{ var c=document.getElementById('pv-incoming-call'); if(c){ c.classList.add('hidden'); c.setAttribute('aria-hidden','true'); } }catch(e){}
   }
-  function pvOpenVideoCall(){
-    pvStartCamera();
-    var name = window.CurrentDM || '';
-    if(!name || name==='All Users') return;
-    var scr=document.getElementById('dm-screen');
-    if(!scr || scr.classList.contains('hidden')) return;
-    var overlay=document.getElementById('pv-video-call');
-    if(!overlay) return;
-    var nameEl=document.getElementById('pv-video-call-name');
-    if(nameEl) nameEl.textContent=name;
-    var url=pvGetVideoAvatarUrl(name);
-    var av=document.getElementById('pv-video-call-avatar');
-    if(url){
-      overlay.classList.remove('no-photo');
-      if(av){ av.style.backgroundImage='url('+url+')'; av.style.display=''; }
-    }else{
-      overlay.classList.add('no-photo');
-      if(av){ av.style.backgroundImage=''; av.style.display='none'; }
-    }
-    overlay.classList.remove('hidden');
-    overlay.setAttribute('aria-hidden','false');
+  function showIncoming(from, type){
+    try{
+      var ov=document.getElementById('pv-incoming-call'); if(!ov) return;
+      var ne=document.getElementById('pv-incoming-name'); if(ne) ne.textContent=from;
+      var ty=document.getElementById('pv-incoming-type'); if(ty) ty.textContent = (type==='video' ? 'Incoming video call...' : 'Incoming voice call...');
+      var av=document.getElementById('pv-incoming-avatar'); var url=avatarFor(from);
+      if(av){ if(url) av.style.backgroundImage='url('+url+')'; else av.style.backgroundImage=''; }
+      ov.classList.remove('hidden'); ov.setAttribute('aria-hidden','false');
+    }catch(e){}
   }
-  function pvCloseVideoCall(){
-    var overlay=document.getElementById('pv-video-call');
-    if(!overlay) return;
-    overlay.classList.add('hidden');
-    overlay.setAttribute('aria-hidden','true');
-    pvStopCamera();
+  function hideIncoming(){ try{ var c=document.getElementById('pv-incoming-call'); if(c){ c.classList.add('hidden'); c.setAttribute('aria-hidden','true'); } }catch(e){} }
+  function fbPut(path, data){ var b=cleanBase(baseUrl()); if(!b) return Promise.reject(new Error('no base')); return fetch(b+path+'.json',{method:'PUT', body:JSON.stringify(data)}); }
+  function fbPatch(path, data){ var b=cleanBase(baseUrl()); if(!b) return Promise.reject(new Error('no base')); return fetch(b+path+'.json',{method:'PATCH', body:JSON.stringify(data)}); }
+  function fbPost(path, data){ var b=cleanBase(baseUrl()); if(!b) return Promise.reject(new Error('no base')); return fetch(b+path+'.json',{method:'POST', body:JSON.stringify(data)}); }
+  function fbDelete(path){ var b=cleanBase(baseUrl()); if(!b) return Promise.resolve(); return fetch(b+path+'.json',{method:'DELETE'}).catch(function(){}); }
+  function fbGet(path){ var b=cleanBase(baseUrl()); if(!b) return Promise.resolve(null); return fetch(b+path+'.json').then(function(r){ return r.json(); }).catch(function(){ return null; }); }
+  function createPeer(){
+    var pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'turn:openrelay.metered.ca:80', username:'openrelayproject', credential:'openrelayproject'}]});
+    pc.onicecandidate=function(ev){
+      if(ev.candidate && call){
+        var side = call.role==='caller' ? 'callerCandidates' : 'calleeCandidates';
+        var cj = ev.candidate.toJSON ? ev.candidate.toJSON() : {candidate:ev.candidate.candidate, sdpMLineIndex:ev.candidate.sdpMLineIndex, sdpMid:ev.candidate.sdpMid};
+        fbPost('/prochat/calls/'+call.room+'/'+side, cj).catch(function(){});
+      }
+    };
+    pc.ontrack=function(ev){
+      var stream = (ev.streams && ev.streams[0]) ? ev.streams[0] : null;
+      if(!stream){ try{ stream=new MediaStream(); stream.addTrack(ev.track); }catch(e){} }
+      if(!stream) return;
+      if(call && call.type==='video'){
+        var rv=document.getElementById('pv-video-remote'); if(rv){ rv.srcObject=stream; try{ rv.play(); }catch(e){} }
+        var ra2=document.getElementById('pv-video-remote-audio'); if(ra2){ ra2.srcObject=stream; try{ ra2.play(); }catch(e){} }
+      } else {
+        var ra=document.getElementById('pv-call-remote-audio'); if(ra){ ra.srcObject=stream; try{ ra.play(); }catch(e){} }
+      }
+    };
+    pc.onconnectionstatechange=function(){
+      if(!call) return;
+      if(pc.connectionState==='connected'){ setStatus('Connected - 00:00'); startTimer(); }
+    };
+    return pc;
   }
-  window.PVOpenVideoCall=pvOpenVideoCall;
-  window.PVCloseVideoCall=pvCloseVideoCall;
-  function pvBindVideo(){
-    var btn=document.querySelector('.dm-video');
-    if(btn && !btn.dataset.pvVideoBound){
-      btn.dataset.pvVideoBound='1';
-      btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); pvOpenVideoCall(); });
-    }
-    var back=document.getElementById('pv-video-call-back');
-    if(back && !back.dataset.pvBound){ back.dataset.pvBound='1'; back.addEventListener('click', function(e){ e.preventDefault(); pvCloseVideoCall(); }); }
-    var end=document.getElementById('pv-video-call-end');
-    if(end && !end.dataset.pvBound){ end.dataset.pvBound='1'; end.addEventListener('click', function(e){ e.preventDefault(); pvCloseVideoCall(); }); }
-    // Video / Mic / Switch are display only for now - exactly like reference, do not function yet
-    ['pv-video-call-video','pv-video-call-mic','pv-video-call-switch'].forEach(function(id){
-      var b=document.getElementById(id);
-      if(b && !b.dataset.pvBound){ b.dataset.pvBound='1'; b.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); }); }
+  function addCandidates(pc, list, prefix){
+    if(!list) return Promise.resolve();
+    var vals=[]; if(Array.isArray(list)) vals=list; else if(typeof list==='object') vals=Object.keys(list).map(function(k){ return list[k]; });
+    var chain=Promise.resolve();
+    vals.forEach(function(c){
+      chain=chain.then(function(){
+        if(!c || !c.candidate) return;
+        var key=prefix+':'+c.candidate; if(lastCandidates[key]) return; lastCandidates[key]=true;
+        return pc.addIceCandidate(new RTCIceCandidate(c)).catch(function(){});
+      });
+    });
+    return chain;
+  }
+  function startCall(peer, type){
+    if(call){ toast('You are already in a call'); return; }
+    var me=meName(); if(!me){ toast('Log in first to call'); return; }
+    if(!peer || peer==='All Users'){ toast('Open a private chat to call'); return; }
+    if(String(peer).trim().toLowerCase()===String(me).trim().toLowerCase()){ toast('You cannot call yourself'); return; }
+    if(!window.isSecureContext && location.protocol!=='https:' && location.hostname!=='localhost' && location.hostname!=='127.0.0.1'){ toast('Calls need HTTPS. Open your Vercel link.'); return; }
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof RTCPeerConnection==='undefined'){ toast('This browser does not support calls'); return; }
+    var room=roomFor(peer);
+    fbGet('/prochat/calls/'+room).then(function(existing){
+      if(existing && existing.status==='ringing' && existing.from!==me && Date.now()-(existing.createdAt||0)<60000){ toast(peer+' is busy on another call'); return; }
+      var callId=Date.now()+'-'+Math.random().toString(36).slice(2,8);
+      call={id:callId, peer:peer, type:type, role:'caller', status:'calling', room:room, pc:null, localStream:null, muted:false, speakerOn:true, videoOn:true, facingMode:'user', offerSent:false, answerSet:false, timeoutId:null};
+      if(type==='voice') showVoiceUI(peer); else showVideoUI(peer);
+      setStatus('Calling...'); updateToggles(); startRing();
+      var constraints = type==='video' ? {audio:true, video:{facingMode:'user', width:{ideal:1280}, height:{ideal:720}}} : {audio:true, video:false};
+      navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+        if(!call || call.id!==callId) { try{ stream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){} return; }
+        call.localStream=stream;
+        if(type==='video'){ var lv=document.getElementById('pv-video-call-camera'); if(lv){ lv.srcObject=stream; try{ lv.play(); }catch(e){} } }
+        return fbPut('/prochat/calls/'+room, {id:callId, from:me, to:peer, type:type, status:'ringing', createdAt:Date.now(), offer:null, answer:null}).then(function(){
+          call.timeoutId=setTimeout(function(){ if(call && call.id===callId && call.status==='calling'){ toast('No answer'); endCall('timeout'); } }, 45000);
+        });
+      }).catch(function(err){
+        stopRing(); hideAllUI(); cleanupCall();
+        if(err && err.name==='NotAllowedError') toast('Mic / Camera permission needed. Allow and try again.');
+        else if(err && err.name==='NotFoundError') toast('No mic / camera found on this device.');
+        else toast('Could not start call. Check mic / camera permission.');
+      });
     });
   }
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', pvBindVideo); } else { pvBindVideo(); }
-  setTimeout(pvBindVideo, 800);
-  setTimeout(pvBindVideo, 2500);
+  function acceptCall(){
+    if(!call || call.role!=='callee') return;
+    hideIncoming(); stopRing(); setStatus('Connecting...');
+    if(call.type==='voice') showVoiceUI(call.peer); else showVideoUI(call.peer);
+    var room=call.room; var myId=call.id;
+    var constraints = call.type==='video' ? {audio:true, video:{facingMode:'user', width:{ideal:1280}, height:{ideal:720}}} : {audio:true, video:false};
+    navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+      if(!call || call.id!==myId) { try{ stream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){} return; }
+      call.localStream=stream;
+      if(call.type==='video'){ var lv=document.getElementById('pv-video-call-camera'); if(lv){ lv.srcObject=stream; try{ lv.play(); }catch(e){} } }
+      call.status='accepted'; updateToggles();
+      fbPatch('/prochat/calls/'+room, {status:'accepted'}).catch(function(){});
+    }).catch(function(err){
+      fbPatch('/prochat/calls/'+room, {status:'declined'}).catch(function(){});
+      setTimeout(function(){ fbDelete('/prochat/calls/'+room); }, 5000);
+      hideAllUI(); cleanupCall();
+      toast('Mic / Camera permission needed to accept.');
+    });
+  }
+  function declineCall(){
+    if(!call) return;
+    var c=call;
+    if(c.role==='callee' && c.status==='ringing'){
+      fbPatch('/prochat/calls/'+c.room, {status:'declined'}).catch(function(){});
+      setTimeout(function(){ fbDelete('/prochat/calls/'+c.room); }, 5000);
+    }
+    stopRing(); hideAllUI(); cleanupCall();
+  }
+  function endCall(reason){
+    if(!call){ hideAllUI(); return; }
+    var c=call;
+    stopRing(); stopTimer();
+    try{ if(c.timeoutId) clearTimeout(c.timeoutId); }catch(e){}
+    var room=c.room;
+    fbPatch('/prochat/calls/'+room, {status:'ended', endedBy:meName(), endedAt:Date.now()}).catch(function(){});
+    hideAllUI(); cleanupCall();
+    setTimeout(function(){ fbDelete('/prochat/calls/'+room); }, 2000);
+    if(reason==='timeout') { /* already toasted */ }
+  }
+  function cleanupCall(){
+    try{ if(call && call.pc){ try{ call.pc.close(); }catch(e){} } }catch(e){}
+    try{ if(call && call.localStream){ call.localStream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); } }catch(e){}
+    try{ var lv=document.getElementById('pv-video-call-camera'); if(lv) lv.srcObject=null; var rv=document.getElementById('pv-video-remote'); if(rv) rv.srcObject=null; var ra=document.getElementById('pv-call-remote-audio'); if(ra) ra.srcObject=null; var ra2=document.getElementById('pv-video-remote-audio'); if(ra2) ra2.srcObject=null; }catch(e){}
+    call=null; lastCandidates={};
+  }
+  function poll(){
+    if(pollBusy) return; pollBusy=true;
+    var me=meName();
+    if(!me){ pollBusy=false; return; }
+    fbGet('/prochat/calls').then(function(data){
+      pollBusy=false;
+      if(!data) return;
+      var rooms=Object.keys(data);
+      for(var i=0;i<rooms.length;i++){
+        var room=rooms[i]; var doc=data[room]; if(!doc || typeof doc!=='object') continue;
+        if(doc.status==='ringing' && Date.now()-(doc.createdAt||0)>60000){
+          if(!call || call.room!==room){ fbDelete('/prochat/calls/'+room); continue; }
+        }
+        if(doc.to===me && doc.from!==me && doc.status==='ringing'){
+          if(call){ if(call.room!==room){ fbPatch('/prochat/calls/'+room, {status:'busy'}).catch(function(){}); } continue; }
+          if(seenIncoming[doc.id]) continue;
+          seenIncoming[doc.id]=true;
+          call={id:doc.id, peer:doc.from, type:doc.type||'voice', role:'callee', status:'ringing', room:room, pc:null, localStream:null, muted:false, speakerOn:true, videoOn:true, facingMode:'user'};
+          showIncoming(doc.from, doc.type||'voice'); startRing();
+          continue;
+        }
+        if(call && call.room===room && doc.id===call.id){
+          if(doc.status==='declined' || doc.status==='busy'){
+            stopRing(); toast(doc.status==='busy' ? (call.peer+' is busy') : 'Call declined'); hideAllUI(); cleanupCall();
+            setTimeout((function(r){ return function(){ fbDelete('/prochat/calls/'+r); }; })(room), 1000);
+            continue;
+          }
+          if(doc.status==='ended'){
+            stopRing(); stopTimer(); hideAllUI(); cleanupCall();
+            continue;
+          }
+          if(call.role==='caller' && call.status==='calling' && doc.status==='accepted'){
+            call.status='accepted'; stopRing(); setStatus('Connecting...');
+            if(!call.pc && call.localStream){
+              try{
+                call.pc=createPeer();
+                var tracks=call.localStream.getTracks();
+                for(var ti=0;ti<tracks.length;ti++){ try{ call.pc.addTrack(tracks[ti], call.localStream); }catch(e){} }
+                call.pc.createOffer().then(function(offer){ return call.pc.setLocalDescription(offer).then(function(){ return fbPatch('/prochat/calls/'+room, {offer:{type:offer.type, sdp:offer.sdp}}); }); }).then(function(){ call.offerSent=true; }).catch(function(){ toast('Could not connect. Try again.'); endCall('offer-fail'); });
+              }catch(e){ toast('Could not connect. Try again.'); endCall('offer-fail'); }
+            }
+            continue;
+          }
+          if(call.role==='callee' && call.status==='accepted' && doc.offer && !call.pc && call.localStream){
+            (function(offerDoc, r){
+              try{
+                call.pc=createPeer();
+                var tr=call.localStream.getTracks(); for(var k=0;k<tr.length;k++){ try{ call.pc.addTrack(tr[k], call.localStream); }catch(e){} }
+                call.pc.setRemoteDescription(new RTCSessionDescription(offerDoc)).then(function(){ return call.pc.createAnswer(); }).then(function(answer){ return call.pc.setLocalDescription(answer).then(function(){ return fbPatch('/prochat/calls/'+r, {answer:{type:answer.type, sdp:answer.sdp}}); }); }).then(function(){ setStatus('Connecting...'); }).catch(function(){ toast('Could not connect. Try again.'); endCall('answer-fail'); });
+              }catch(e){ toast('Could not connect. Try again.'); endCall('answer-fail'); }
+            })(doc.offer, room);
+            continue;
+          }
+          if(call.role==='caller' && doc.answer && !call.answerSet && call.pc){
+            (function(ans){
+              call.pc.setRemoteDescription(new RTCSessionDescription(ans)).then(function(){ call.answerSet=true; setStatus('Connected - 00:00'); startTimer(); }).catch(function(){});
+            })(doc.answer);
+            continue;
+          }
+          if(call.pc){
+            if(call.role==='caller' && doc.calleeCandidates){ addCandidates(call.pc, doc.calleeCandidates, 'callee'); }
+            if(call.role==='callee' && doc.callerCandidates){ addCandidates(call.pc, doc.callerCandidates, 'caller'); }
+          }
+        }
+      }
+      if(call && (call.status==='accepted') && !data[call.room]){
+        stopRing(); stopTimer(); hideAllUI(); cleanupCall();
+      }
+    }).catch(function(){ pollBusy=false; });
+  }
+  function toggleMute(){
+    if(!call) return;
+    call.muted=!call.muted;
+    try{ if(call.localStream){ call.localStream.getAudioTracks().forEach(function(t){ t.enabled=!call.muted; }); } }catch(e){}
+    updateToggles();
+  }
+  function toggleSpeaker(){
+    if(!call) return;
+    call.speakerOn=!call.speakerOn;
+    try{
+      var ra=document.getElementById('pv-call-remote-audio'); if(ra){ ra.volume=call.speakerOn?1:0.35; }
+      var rv=document.getElementById('pv-video-remote'); if(rv){ rv.volume=call.speakerOn?1:0.35; }
+    }catch(e){}
+    updateToggles();
+  }
+  function toggleVideo(){
+    if(!call || call.type!=='video') return;
+    call.videoOn=!call.videoOn;
+    try{ if(call.localStream){ call.localStream.getVideoTracks().forEach(function(t){ t.enabled=call.videoOn; }); } var lv=document.getElementById('pv-video-call-camera'); if(lv) lv.style.opacity=call.videoOn?'1':'0.2'; }catch(e){}
+    updateToggles();
+  }
+  function switchCamera(){
+    if(!call || call.type!=='video' || !call.localStream) return;
+    var newFacing = call.facingMode==='user' ? 'environment' : 'user';
+    navigator.mediaDevices.getUserMedia({audio:false, video:{facingMode:newFacing}}).then(function(ns){
+      var newTrack=ns.getVideoTracks()[0]; if(!newTrack) return;
+      var oldTrack=call.localStream.getVideoTracks()[0];
+      if(call.pc){
+        var senders=call.pc.getSenders();
+        for(var i=0;i<senders.length;i++){ if(senders[i].track && senders[i].track.kind==='video'){ try{ senders[i].replaceTrack(newTrack); }catch(e){} } }
+      }
+      try{ if(oldTrack) oldTrack.stop(); }catch(e){}
+      try{ call.localStream.removeTrack(oldTrack); call.localStream.addTrack(newTrack); }catch(e){}
+      call.facingMode=newFacing;
+      var lv=document.getElementById('pv-video-call-camera'); if(lv){ lv.srcObject=call.localStream; try{ lv.play(); }catch(e){} lv.style.transform = newFacing==='user' ? 'scaleX(-1)' : 'none'; }
+      toast(newFacing==='user' ? 'Front camera' : 'Back camera');
+    }).catch(function(){ toast('Could not switch camera'); });
+  }
+  function updateToggles(){
+    try{
+      var mu=document.getElementById('pv-voice-call-mute'); if(mu){ var muBtn=mu.querySelector('.pv-voice-call-btn'); if(muBtn) muBtn.classList.toggle('is-muted', !!(call && call.muted)); var muLabel=mu.querySelector('.pv-voice-call-label'); if(muLabel) muLabel.textContent = (call && call.muted) ? 'Unmute' : 'Mute'; }
+      var sp=document.getElementById('pv-voice-call-speaker'); if(sp){ var spBtn=sp.querySelector('.pv-voice-call-btn'); if(spBtn) spBtn.classList.toggle('is-off', !!(call && !call.speakerOn)); }
+    }catch(e){}
+    try{
+      var vm=document.getElementById('pv-video-call-mic'); if(vm) vm.style.opacity = (call && call.muted) ? '0.35' : '1';
+      var vv=document.getElementById('pv-video-call-video'); if(vv) vv.style.opacity = (call && !call.videoOn) ? '0.35' : '1';
+    }catch(e){}
+  }
+  function bind(){
+    try{
+      document.querySelectorAll('.dm-call').forEach(function(btn){ if(btn.dataset.pvRealCallBound) return; btn.dataset.pvRealCallBound='1'; btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var peer=window.CurrentDM||''; if(!peer || peer==='All Users'){ toast('Open a private chat to call'); return; } startCall(peer,'voice'); }); });
+      document.querySelectorAll('.dm-video').forEach(function(btn){ if(btn.dataset.pvRealVideoBound) return; btn.dataset.pvRealVideoBound='1'; btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var peer=window.CurrentDM||''; if(!peer || peer==='All Users'){ toast('Open a private chat to call'); return; } startCall(peer,'video'); }); });
+      var vb=document.getElementById('pv-voice-call-back'); if(vb && !vb.dataset.pvRealBound){ vb.dataset.pvRealBound='1'; vb.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); endCall('back'); }); }
+      var ve=document.getElementById('pv-voice-call-end'); if(ve && !ve.dataset.pvRealBound){ ve.dataset.pvRealBound='1'; ve.addEventListener('click', function(e){ e.preventDefault(); endCall('end'); }); }
+      var vmu=document.getElementById('pv-voice-call-mute'); if(vmu && !vmu.dataset.pvRealBound){ vmu.dataset.pvRealBound='1'; vmu.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); toggleMute(); }); }
+      var vsp=document.getElementById('pv-voice-call-speaker'); if(vsp && !vsp.dataset.pvRealBound){ vsp.dataset.pvRealBound='1'; vsp.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); toggleSpeaker(); }); }
+      var vdb=document.getElementById('pv-video-call-back'); if(vdb && !vdb.dataset.pvRealBound){ vdb.dataset.pvRealBound='1'; vdb.addEventListener('click', function(e){ e.preventDefault(); endCall('back'); }); }
+      var vde=document.getElementById('pv-video-call-end'); if(vde && !vde.dataset.pvRealBound){ vde.dataset.pvRealBound='1'; vde.addEventListener('click', function(e){ e.preventDefault(); endCall('end'); }); }
+      var vdv=document.getElementById('pv-video-call-video'); if(vdv && !vdv.dataset.pvRealBound){ vdv.dataset.pvRealBound='1'; vdv.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); toggleVideo(); }); }
+      var vdm=document.getElementById('pv-video-call-mic'); if(vdm && !vdm.dataset.pvRealBound){ vdm.dataset.pvRealBound='1'; vdm.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); toggleMute(); }); }
+      var vds=document.getElementById('pv-video-call-switch'); if(vds && !vds.dataset.pvRealBound){ vds.dataset.pvRealBound='1'; vds.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); switchCamera(); }); }
+      var ia=document.getElementById('pv-incoming-accept'); if(ia && !ia.dataset.pvRealBound){ ia.dataset.pvRealBound='1'; ia.addEventListener('click', function(e){ e.preventDefault(); acceptCall(); }); }
+      var idc=document.getElementById('pv-incoming-decline'); if(idc && !idc.dataset.pvRealBound){ idc.dataset.pvRealBound='1'; idc.addEventListener('click', function(e){ e.preventDefault(); declineCall(); }); }
+    }catch(e){}
+  }
+  if(!window._pvRealCallPoller){ window._pvRealCallPoller=setInterval(poll, 1000); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); }
+  setTimeout(bind, 800); setTimeout(bind, 2500);
+  try{ window.addEventListener('beforeunload', function(){ if(call){ try{ fbPatch('/prochat/calls/'+call.room, {status:'ended'}); }catch(e){} } }); }catch(e){}
+  window.PVOpenVoiceCall=function(){ var p=window.CurrentDM||''; if(p) startCall(p,'voice'); };
+  window.PVCloseVoiceCall=function(){ endCall('close'); };
+  window.PVEndVoiceCallForEveryone=function(){ endCall('end'); };
+  window.PVOpenVideoCall=function(){ var p=window.CurrentDM||''; if(p) startCall(p,'video'); };
+  window.PVCloseVideoCall=function(){ endCall('close'); };
+  window.PVRealCall={start:startCall, end:endCall, accept:acceptCall, decline:declineCall};
 })();
 </script>
+
+
 
 <script>
 // PV WIPE LEAKED - DELETE PERMANENTLY any message that mistakenly entered All Users
