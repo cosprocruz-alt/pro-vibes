@@ -23,9 +23,9 @@
 }
 </style>
 <meta charset="UTF-8">
-<style>html,body{background:#000}</style>
+<style>html,body{height:100%;background:#000;overflow:hidden;overscroll-behavior:none}</style>
 <meta name="theme-color" content="#000000">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>PRO VIBES</title>
 <!-- FIREBASE SDK - WebSocket realtime (replaces polling / EventSource) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -211,7 +211,7 @@ main section, main > div#profile-screen{transition:opacity 0.18s ease,transform 
 #pv-yt-comments-sheet{position:fixed;inset:0;z-index:80;display:none}
 #pv-yt-comments-sheet.show{display:block}
 .pv-yt-c-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
-.pv-yt-c-panel{position:absolute;left:0;right:0;bottom:0;height:74vh;max-height:82vh;background:#0f0f0f;border-top-left-radius:24px;border-top-right-radius:24px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -12px 40px rgba(0,0,0,.6)}
+.pv-yt-c-panel{position:absolute;left:0;right:0;bottom:0;height:74dvh;max-height:82dvh;background:#0f0f0f;border-top-left-radius:24px;border-top-right-radius:24px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -12px 40px rgba(0,0,0,.6)}
 .pv-yt-c-grab{width:44px;height:4px;border-radius:99px;background:#333;margin:10px auto 6px;flex-shrink:0}
 .pv-yt-c-head{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 10px;flex-shrink:0}
 .pv-yt-c-title{font-size:17px;font-weight:800;color:#fff}
@@ -247,7 +247,7 @@ main section, main > div#profile-screen{transition:opacity 0.18s ease,transform 
 .home-retry{background:#fff;color:#000;border:none;padding:12px 16px;border-radius:12px;font-weight:800;margin-top:12px}
 .dm-screen{position:fixed;inset:0;z-index:100;height:100dvh;height:100svh;background:#000;display:flex;flex-direction:column;overflow:hidden}
 .dm-screen.hidden{display:none}
-.dm-header{display:flex;align-items:center;gap:10px;padding:12px 12px 10px;background:#000;flex-shrink:0;position:fixed !important;top:0 !important;left:0 !important;right:0 !important;z-index:50 !important}
+.dm-header{display:flex;align-items:center;gap:10px;padding:12px 12px 10px;background:#000;flex-shrink:0;position:relative;z-index:2}
 .dm-back{background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:28px;height:28px;flex-shrink:0}
 .dm-back svg{width:24px;height:24px;display:block}
 .dm-head-avatar{width:38px;height:38px;border-radius:50%;background:#222;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0}
@@ -261,7 +261,7 @@ main section, main > div#profile-screen{transition:opacity 0.18s ease,transform 
 .dm-head-more svg{width:22px;height:22px;display:block}
 .dm-call,.dm-video{background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:36px;height:36px;flex-shrink:0}
 .dm-call svg,.dm-video svg{width:26px;height:26px;display:block}
-.dm-center{flex:1;display:flex;flex-direction:column;align-items:center;padding:74px 16px 10px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.dm-center{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;padding:12px 16px 10px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .dm-big-avatar{width:118px;height:118px;min-width:118px;min-height:118px;flex-shrink:0;aspect-ratio:1;border-radius:50%;background:#222;color:#fff;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:800}
 .dm-big-name{margin:22px 0 0;font-size:26px;font-weight:800;text-align:center;color:#fff;line-height:1.2;flex-shrink:0}
 .dm-follow{margin:20px 0 0;background:#0084ff;background:linear-gradient(90deg,#0084ff,#00bfa5);color:#fff;border:none;border-radius:999px;padding:12px 44px;font-size:18px;font-weight:700;cursor:pointer;flex-shrink:0;box-shadow:0 4px 14px rgba(0,132,255,.35)}
@@ -326,7 +326,7 @@ main section, main > div#profile-screen{transition:opacity 0.18s ease,transform 
 .dm-reply-bar b{color:#fff;font-size:12px}
 .dm-reply-bar span{flex:1;white-space:normal;overflow:visible;text-overflow:clip;word-break:break-word;line-height:1.4}
 .dm-reply-x{background:none;border:none;color:#fff;font-size:16px;cursor:pointer}
-.dm-screen.keyboard-open .dm-center{padding-top:74px}
+.dm-screen.keyboard-open .dm-center{padding-top:12px}
 .dm-screen.keyboard-open .dm-big-avatar,.dm-screen.keyboard-open .dm-big-name,.dm-screen.keyboard-open .dm-messages{margin-top:0}
 .dm-screen.keyboard-open .dm-header{display:flex}
 .chat-wrap{display:flex;flex-direction:column;width:100%}
@@ -475,7 +475,7 @@ to{opacity:1}
 .profile-front-tab.active .tab-line{display:block}
 .profile-front-tab svg{display:block}
 .profile-front-tab .grid-ic{width:22px;height:22px}
-#pv-posts-screen{position:fixed;top:0;left:0;right:0;bottom:54px;z-index:30;display:flex;flex-direction:column;height:calc(100vh - 54px);height:calc(100dvh - 54px);background:#000;overflow:hidden;overscroll-behavior:none;touch-action:none}
+#pv-posts-screen{position:fixed;top:0;left:0;right:0;bottom:54px;z-index:30;display:flex;flex-direction:column;height:calc(100dvh - 54px);height:calc(100% - 54px);background:#000;overflow:hidden;overscroll-behavior:none;touch-action:none}
 .pv-posts-spacer{flex:1;min-height:0;background:#000}
 .pv-left-rail{position:absolute;right:12px;left:auto;top:auto;bottom:92px;transform:none;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:5;pointer-events:none}
 .pv-left-profile{position:relative;width:44px;height:44px;border-radius:50%;pointer-events:auto;cursor:pointer}
@@ -1008,7 +1008,7 @@ to{transform:translateY(0);opacity:1}
 </style>
 <style>
 /* PV STORY VIEWER - opens on top of Friends when a friend's ring/card is tapped */
-.pv-story-viewer{position:fixed;inset:0;z-index:300;background:#000;display:flex;flex-direction:column;overflow:hidden;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none}
+.pv-story-viewer{position:fixed;inset:0;z-index:300;background:#000;display:flex;flex-direction:column;overflow:hidden;height:100dvh;height:100%;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none}
 .pv-story-viewer.hidden{display:none !important}
 .pv-story-progress{position:absolute;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.25);z-index:20}
 .pv-story-progress-fill{height:100%;width:0%;background:#fff}
@@ -1120,7 +1120,7 @@ to{transform:translateY(0);opacity:1}
 #pv-ai-pill:active{transform:scale(.94);opacity:.9}
 #pv-ai-pill .pv-ai-star{font-size:14px;line-height:1}
 /* AI screen: black page. Top = back arrow left + this circle top-right. Bottom = exact input bar. Middle stays blank black. */
-#pv-ai-screen{position:fixed;inset:0;z-index:10000;background:#000;display:flex;flex-direction:column}
+#pv-ai-screen{position:fixed;inset:0;z-index:10000;background:#000;display:flex;flex-direction:column;height:100dvh;height:100%;overflow:hidden;overscroll-behavior:none}
 #pv-ai-screen.hidden{display:none !important}
 .pv-ai-spacer{flex:1;min-height:0;background:#000}
 .pv-ai-top-spacer{flex:1;min-width:0}
@@ -1133,7 +1133,7 @@ to{transform:translateY(0);opacity:1}
 #pv-ai-screen .pv-posts-back svg,#pv-ai-back-btn svg{width:28px;height:18px;display:block}
 .pv-ai-messages{flex:1;min-height:0;overflow-y:auto;padding:12px 16px 8px;display:flex;flex-direction:column;gap:12px;background:#000}
 .pv-ai-msg{max-width:85%;padding:10px 14px;border-radius:18px;font-size:16px;line-height:1.45;color:#e4e6eb;white-space:pre-wrap;word-break:break-word}
-.pv-ai-msg.user{align-self:flex-end;background:#0084ff;color:#fff;border-bottom-right-radius:6px}
+.pv-ai-msg.user{align-self:flex-end;background:#ffffff;color:#111111;border-bottom-right-radius:6px}
 .pv-ai-msg.ai{align-self:flex-start;background:#232324;color:#e4e6eb;border-bottom-left-radius:6px}
 .pv-ai-msg.ai img{max-width:100%;border-radius:12px;display:block;margin-top:8px}
 .pv-ai-msg.user img{max-width:100%;border-radius:12px;display:block;margin-bottom:6px}
@@ -1169,7 +1169,7 @@ to{transform:translateY(0);opacity:1}
 .pv-lens-back{background:none;border:none;color:#fff;width:40px;height:40px;min-width:40px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .pv-lens-back svg{width:24px;height:24px;display:block}
 .pv-lens-flash{background:none;border:none;color:#fff;width:40px;height:40px;min-width:40px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.pv-lens-flash svg{width:30px;height:30px;display:block}.pv-lens-flash span{display:flex;align-items:center;justify-content:center}
+.pv-lens-flash svg{width:30px;height:30px;display:block}.pv-lens-flash img{width:30px;height:30px;display:block;object-fit:contain}.pv-lens-flash span{display:flex;align-items:center;justify-content:center}
 .pv-lens-title{font-size:21px;line-height:1;color:#fff;letter-spacing:.1px;white-space:nowrap}
 .pv-lens-title b{font-weight:700}
 .pv-lens-title span{font-weight:400}
@@ -1200,6 +1200,22 @@ to{transform:translateY(0);opacity:1}
 .pv-ai-input-bar.has-text .pv-ai-action{background:#0084ff;background:linear-gradient(90deg,#0084ff,#00bfa5);border-color:transparent}
 .pv-ai-input-bar.has-text .pv-ai-action .pv-ai-voice-icon{display:none}
 .pv-ai-input-bar.has-text .pv-ai-action .pv-ai-send-icon{display:flex}
+</style>
+
+<style data-file="css/layout-root.css">
+/* LAYOUT ROOT - the right way. Every screen with a header + input is the same shape:
+   Screen = fixed flex column, height = dynamic viewport, never scrolls itself.
+   Header = first flex child, never leaves. Middle = only thing that scrolls. Input = last flex child, never moves header.
+   Keyboard works because viewport meta uses interactive-widget=resizes-content, so the screen shrinks naturally. No JS needed. */
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+#pv-ai-screen,#dm-screen,.pv-story-viewer{height:100dvh;height:100%;overflow:hidden}
+#pv-ai-screen > .pv-posts-top,
+#dm-screen > .dm-header,
+.pv-story-viewer > .pv-story-viewer-top{flex:0 0 auto}
+#pv-ai-screen .pv-ai-messages,
+#dm-screen .dm-center{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+#pv-ai-screen .pv-ai-input-wrap,
+#dm-screen .dm-input-bar{flex:0 0 auto}
 </style>
 </head>
 <body>
@@ -1488,11 +1504,7 @@ const FB_REELS_COMMENTS="/reels_comments/";
 const FB_REELS_SAVES="/reels_saves/";
 // Deleted: group typing removed
 const GROQ_API_KEY="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";
-// Cloudflare = LIVE ONLY. Chat + picture still use Groq so chat works from file (Cloudflare blocks browser fetch).
-const CLOUDFLARE_ACCOUNT_ID="9c5c475aa39fa1fee876e219e761a6fb";
-const CLOUDFLARE_API_TOKEN="cfut_PULjwiYmddkY352GqEtuxgkg6YnOizz4gCL7d8XBfb85830c";
-const CLOUDFLARE_CHAT_MODEL="@cf/meta/llama-3.3-70b-instruct-fp8-fast";
-const CLOUDFLARE_WHISPER_MODEL="@cf/openai/whisper";
+// Groq only for AI - chat + picture + Live all use Groq.
 const YOUTUBE_API_KEYS=[
 "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
 "AIzaSyAvwvug-vi4scbjdTXU6j6Tj63UnIt7S7A",
@@ -6791,176 +6803,169 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 
 <!-- PV AI PILL + AI SCREEN - fixed outside main/nav so pill survives every screen switch -->
 <button id="pv-ai-pill" class="hidden" hidden type="button" aria-label="AI"><span class="pv-ai-star" aria-hidden="true">✦</span><span>AI</span></button>
-<div id="pv-ai-screen" class="hidden" hidden aria-label="AI"><div id="pv-ai-plus-backdrop"></div><div id="pv-ai-plus-sheet"><span class="pv-ai-plus-sheet-handle"></span><div class="pv-ai-plus-sheet-row"><button class="pv-ai-plus-opt" type="button" data-opt="gallery"><span class="pv-ai-plus-card"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAACxUlEQVR4Ae3BMXIcVRiF0e9uAEewAyKbSFoIkAAbMBHlxN4EJlJmbwAivBEpwpGXQEZIdPkpTZVHrnfnTff0lHv66RzZJngKvOfzEsswbaJDtgmeAu/5vMQyTJvokG0+8QXwD+sglmHaRIdss+cN8Jz1EMswbaJDttn5BbhhXcQyTJvokG12zPqIZZg20SHb33LvHesjlmHaRIdcyMQ2mDbRIRcysQ2mTXTIhUxcBnMmciETl8GciVzIxGUwZyIXMnEZzJnIhUxcBnMmciETl8GciVzIxDaYNtEhFzKxDaZNdMiFTGyDaRMdciET22DaRIdcyMQ2mDbRIRcysQ2mTXTIhUxsg2kTHXIhE9tg2kSHXMjE4ORCJgYnFzIxOLmQicHJhUwMTi5kYnByIRODkwuZGJxcyMTg5EImBicXMjEGE8iFTIzBBHIhE2MwgVzIxBhMIBcyMQYTyIVMjMEEciET6/MB+Bf4huWYQC5kYl3+Ap7xkViGCeRCJtbFPCSWYQK5kIn1MG3idCaQC5k4jbknTmMOE6cxgVzIxHy3wBX37oBr5nkJvOawO+Ca+UwgFzIxn3lIzGOOI+YzgVzIxDymTUxjphHzmEAuZGI6c5g4jplHTGcCuZCJaX4FXnHYDfCCwz4AXzPPDfCCaUwgFzIxjTmOOMycRkxjArmQieOZaUSbWYY4ngnkQiaOY+YRD5llieOYQC5kou9P4DvmectHPwBPWNY74Hv6TCAXMtFn1k30mUAuZOIwcxnEYSaQC5kYgwnkQibGYAK5kIkxmEAuZGIMJpALmRiDCeRCJsZgArmQiTGYQC5kYgwmkAuZGIMJ5EImxmAC2f6Se3/zaN9XFNlmxzzaJ4pss/MSeM2j/70CfqPINnueA28Y28/AW3Zkm0/8DvzImP4AfmKPbBNcAbeM4Rq4o0G2Ca6AW8ZwDdzR8B+9uHtvWyg78gAAAABJRU5ErkJggg==" alt="" style="width:38px;height:38px;display:block;object-fit:contain;"></span><span class="pv-ai-plus-label">Gallery</span></button><button class="pv-ai-plus-opt" type="button" data-opt="camera"><span class="pv-ai-plus-card"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h2l1.5-2h4L15.5 6h2A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-8Z"/><circle cx="12" cy="12.5" r="3.2"/></svg></span><span class="pv-ai-plus-label">Camera</span></button><button class="pv-ai-plus-opt" type="button" data-opt="files"><span class="pv-ai-plus-card"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAABQCAYAAABbAybgAAABTGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8kZOcW8wkwMCQm1dSFOTupBARGaXA/oiBmUGEgZOBj0E2Mbm4wDfYLYQBCIoTy4uTS4pyGFDAt2sMjCD6sm5GYl7K3IkMtg4NG2wdSnQa5y1V6mPADzhTUouTgfQHIJZJLigqYWBg5AGyecpLCkBsCSBbpAjoKCBbB8ROh7AdQOwkCDsErCYkyBnIzgCyE9KR2ElIbKhdIMBaCvQsskNKUitKQLSzswEDKAwgop9DwH5jFDuJEMtfwMBg8YmBgbkfIZY0jYFheycDg8QthJgKUB1/KwPDtiPJpUVlUGu0gLiG4QfjHKZS5maWk2x+HEJcEjxJfF8Ez4t8k8iS0VNwVlmjmaVXZ/zacrP9NbdwX7OQshjxFNmcttKwut4OnUlmc1Yv79l0e9/MU8evpz4p//jz/38A9Ylkoq8RzkUAAAKcSURBVHic7ZuhchRBEIa/vaIKUKCC4gmQoEgUqHPwAsThiMMhUVgUFhUVHKg4DnU4eACQwQR3qEHcLSzLzk53z8xVi/mqtiqX7enu/3pnZ1Lp6UIIGEkN7KyOLVxR2mtUD22ri5IKMZdtNL6aoEXi/jfyRQwJO5/F6WbmSEkBk7FLOotVpLaI4jGmhOxDRPFYYyHrUo4VnJdwMhZyVzn+mO2zPryOlT4eKO0nGU52aZl/AjeFtpfADWkuQrtJUq/fMUvkItjZLpUxTPQVkVQj5xu7CmxqxtBWxMqv2gGkQkosXlX3WwvgrGYAJeZcupDex38G7lkDjLgk/RYzVU4iJObY1bh9TfbqNCHeaEK80YR4ownxRhPijSbEG02IN5oQbzQh3mhCvNGEeKMJ8UYT4o0mxBtNiDeaEG80Id5oQrxRU8j9ir7/o+a/pwGu8bd94zbwXZKTJV5ORSRNBJtdAgGZiANrMjkVgfJtg+ZYnib7KmewRMijmXslO36OZu6lKr/pQgh3gC8Jw1TCuY9Yrv9uAXzNTEKSSM5YUcOodI5IWwU1HaZ9V2oKUQtvL+SlIoE53rJNbq4nSyoAZNXoQN8uu9czIShyGj5a7wSDnpjSsSERcdH/MD6t4KUqr4DnArs/uYwn+wfB4AC8VySlZY1MxOHww9T5EemacAK8FtpK0axH/zwZsYMwZocZaGIeAp+Gv4itIyfKBHJWdu34JSMRWy8hxC4rH2d89tczo+91zOfcGav+2/LCBrgeu5naoux7AYyxYkYEyPZaHfCiSDo2Tpnf4gPzx/fGPAXe5GRk4AD4ITHUCOk5p9C5qASqx9oipKfGi+ACuGUZmPM3e78d16w5MfrTcyYRkFeRGGfA44TNCnhIwSNLvwFbT0Lsian/AwAAAABJRU5ErkJggg==" alt="" style="width:24px;height:38px;display:block;object-fit:contain;"></span><span class="pv-ai-plus-label">Files</span></button></div></div><div class="pv-posts-top"><button class="pv-posts-back" id="pv-ai-back-btn" aria-label="Back"><svg viewBox="0 0 32 20" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M30 10H5"/><path d="M12 3 4 10l8 7"/></svg></button><div id="pv-ai-title" class="pv-ai-title">COSPRO AI</div><div class="pv-ai-top-spacer"></div><div class="pv-ai-top-right"><button class="pv-ai-circle-btn" id="pv-ai-upright" type="button" aria-label="New chat"><span class="pv-ai-upright-new-icon" aria-hidden="true"><img class="pv-ai-upright-pencil-img" src="data:image/png;base64,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" alt=""></span></button><button class="pv-ai-circle-btn" id="pv-ai-menu-btn" type="button" aria-label="Menu"><span class="pv-ai-upright-lines" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h18"/><path d="M3 16h18"/></svg></span></button></div></div><div class="pv-ai-messages" id="pv-ai-messages"></div><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt=""><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-icon-btn" id="pv-ai-cam" type="button" aria-label="Camera"><img class="pv-ai-lens-img" src="data:image/png;base64,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" alt=""></button><button class="pv-ai-voice-note-btn" id="pv-ai-voice-note-btn" type="button" aria-label="Voice note"><svg viewBox="0 0 24 24" fill="none"><rect x="9" y="2.5" width="6" height="11" rx="3" fill="#fff"/><path d="M5 11.5 C5 15.5 8.2 18.5 12 18.5 C15.8 18.5 19 15.5 19 11.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M12 18.5 L12 21.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Live chat or send"><span class="pv-ai-live-icon"><i></i><i></i><i></i><i></i></span><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
+<div id="pv-ai-screen" class="hidden" hidden aria-label="AI"><div id="pv-ai-plus-backdrop"></div><div id="pv-ai-plus-sheet"><span class="pv-ai-plus-sheet-handle"></span><div class="pv-ai-plus-sheet-row"><button class="pv-ai-plus-opt" type="button" data-opt="gallery"><span class="pv-ai-plus-card"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAACxUlEQVR4Ae3BMXIcVRiF0e9uAEewAyKbSFoIkAAbMBHlxN4EJlJmbwAivBEpwpGXQEZIdPkpTZVHrnfnTff0lHv66RzZJngKvOfzEsswbaJDtgmeAu/5vMQyTJvokG0+8QXwD+sglmHaRIdss+cN8Jz1EMswbaJDttn5BbhhXcQyTJvokG12zPqIZZg20SHb33LvHesjlmHaRIdcyMQ2mDbRIRcysQ2mTXTIhUxcBnMmciETl8GciVzIxGUwZyIXMnEZzJnIhUxcBnMmciETl8GciVzIxDaYNtEhFzKxDaZNdMiFTGyDaRMdciET22DaRIdcyMQ2mDbRIRcysQ2mTXTIhUxsg2kTHXIhE9tg2kSHXMjE4ORCJgYnFzIxOLmQicHJhUwMTi5kYnByIRODkwuZGJxcyMTg5EImBicXMjEGE8iFTIzBBHIhE2MwgVzIxBhMIBcyMQYTyIVMjMEEciET6/MB+Bf4huWYQC5kYl3+Ap7xkViGCeRCJtbFPCSWYQK5kIn1MG3idCaQC5k4jbknTmMOE6cxgVzIxHy3wBX37oBr5nkJvOawO+Ca+UwgFzIxn3lIzGOOI+YzgVzIxDymTUxjphHzmEAuZGI6c5g4jplHTGcCuZCJaX4FXnHYDfCCwz4AXzPPDfCCaUwgFzIxjTmOOMycRkxjArmQieOZaUSbWYY4ngnkQiaOY+YRD5llieOYQC5kou9P4DvmectHPwBPWNY74Hv6TCAXMtFn1k30mUAuZOIwcxnEYSaQC5kYgwnkQibGYAK5kIkxmEAuZGIMJpALmRiDCeRCJsZgArmQiTGYQC5kYgwmkAuZGIMJ5EImxmAC2f6Se3/zaN9XFNlmxzzaJ4pss/MSeM2j/70CfqPINnueA28Y28/AW3Zkm0/8DvzImP4AfmKPbBNcAbeM4Rq4o0G2Ca6AW8ZwDdzR8B+9uHtvWyg78gAAAABJRU5ErkJggg==" alt="" style="width:38px;height:38px;display:block;object-fit:contain;"></span><span class="pv-ai-plus-label">Gallery</span></button><button class="pv-ai-plus-opt" type="button" data-opt="camera"><span class="pv-ai-plus-card"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h2l1.5-2h4L15.5 6h2A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-8Z"/><circle cx="12" cy="12.5" r="3.2"/></svg></span><span class="pv-ai-plus-label">Camera</span></button><button class="pv-ai-plus-opt" type="button" data-opt="files"><span class="pv-ai-plus-card"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAABQCAYAAABbAybgAAABTGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8kZOcW8wkwMCQm1dSFOTupBARGaXA/oiBmUGEgZOBj0E2Mbm4wDfYLYQBCIoTy4uTS4pyGFDAt2sMjCD6sm5GYl7K3IkMtg4NG2wdSnQa5y1V6mPADzhTUouTgfQHIJZJLigqYWBg5AGyecpLCkBsCSBbpAjoKCBbB8ROh7AdQOwkCDsErCYkyBnIzgCyE9KR2ElIbKhdIMBaCvQsskNKUitKQLSzswEDKAwgop9DwH5jFDuJEMtfwMBg8YmBgbkfIZY0jYFheycDg8QthJgKUB1/KwPDtiPJpUVlUGu0gLiG4QfjHKZS5maWk2x+HEJcEjxJfF8Ez4t8k8iS0VNwVlmjmaVXZ/zacrP9NbdwX7OQshjxFNmcttKwut4OnUlmc1Yv79l0e9/MU8evpz4p//jz/38A9Ylkoq8RzkUAAAKcSURBVHic7ZuhchRBEIa/vaIKUKCC4gmQoEgUqHPwAsThiMMhUVgUFhUVHKg4DnU4eACQwQR3qEHcLSzLzk53z8xVi/mqtiqX7enu/3pnZ1Lp6UIIGEkN7KyOLVxR2mtUD22ri5IKMZdtNL6aoEXi/jfyRQwJO5/F6WbmSEkBk7FLOotVpLaI4jGmhOxDRPFYYyHrUo4VnJdwMhZyVzn+mO2zPryOlT4eKO0nGU52aZl/AjeFtpfADWkuQrtJUq/fMUvkItjZLpUxTPQVkVQj5xu7CmxqxtBWxMqv2gGkQkosXlX3WwvgrGYAJeZcupDex38G7lkDjLgk/RYzVU4iJObY1bh9TfbqNCHeaEK80YR4ownxRhPijSbEG02IN5oQbzQh3mhCvNGEeKMJ8UYT4o0mxBtNiDeaEG80Id5oQrxRU8j9ir7/o+a/pwGu8bd94zbwXZKTJV5ORSRNBJtdAgGZiANrMjkVgfJtg+ZYnib7KmewRMijmXslO36OZu6lKr/pQgh3gC8Jw1TCuY9Yrv9uAXzNTEKSSM5YUcOodI5IWwU1HaZ9V2oKUQtvL+SlIoE53rJNbq4nSyoAZNXoQN8uu9czIShyGj5a7wSDnpjSsSERcdH/MD6t4KUqr4DnArs/uYwn+wfB4AC8VySlZY1MxOHww9T5EemacAK8FtpK0axH/zwZsYMwZocZaGIeAp+Gv4itIyfKBHJWdu34JSMRWy8hxC4rH2d89tczo+91zOfcGav+2/LCBrgeu5naoux7AYyxYkYEyPZaHfCiSDo2Tpnf4gPzx/fGPAXe5GRk4AD4ITHUCOk5p9C5qASqx9oipKfGi+ACuGUZmPM3e78d16w5MfrTcyYRkFeRGGfA44TNCnhIwSNLvwFbT0Lsian/AwAAAABJRU5ErkJggg==" alt="" style="width:24px;height:38px;display:block;object-fit:contain;"></span><span class="pv-ai-plus-label">Files</span></button></div></div><div class="pv-posts-top"><button class="pv-posts-back" id="pv-ai-back-btn" aria-label="Back"><svg viewBox="0 0 32 20" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M30 10H5"/><path d="M12 3 4 10l8 7"/></svg></button><div id="pv-ai-title" class="pv-ai-title">COSPRO AI</div><div class="pv-ai-top-spacer"></div><div class="pv-ai-top-right"><button class="pv-ai-circle-btn" id="pv-ai-upright" type="button" aria-label="New chat"><span class="pv-ai-upright-new-icon" aria-hidden="true"><img class="pv-ai-upright-pencil-img" src="data:image/png;base64,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" alt=""></span></button><button class="pv-ai-circle-btn" id="pv-ai-menu-btn" type="button" aria-label="Menu"><span class="pv-ai-upright-lines" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h18"/><path d="M3 16h18"/></svg></span></button></div></div><style data-file="css/pv-ai-history.css">
+#pv-ai-history-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10001;opacity:0;pointer-events:none;transition:opacity .25s ease}
+#pv-ai-history-backdrop.show{opacity:1;pointer-events:auto}
+#pv-ai-history{position:fixed;left:0;top:0;bottom:0;width:85%;max-width:360px;background:#0f0f0f;z-index:10002;transform:translateX(-102%);transition:transform .28s ease;display:flex;flex-direction:column;box-shadow:0 0 30px rgba(0,0,0,.6)}
+#pv-ai-history.show{transform:translateX(0)}
+#pv-ai-history.hidden{display:none !important}
+.pv-ai-history-search{padding:14px 16px 8px;flex-shrink:0}.pv-ai-history-search-clear{width:20px;height:20px;min-width:20px;border-radius:50%;background:transparent;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0}.pv-ai-history-search-clear.hidden{display:none}.pv-ai-history-search-clear svg{width:12px;height:12px}
+.pv-ai-history-search-inner{display:flex;align-items:center;gap:10px;background:#333336;border-radius:999px;padding:13px 16px}
+.pv-ai-history-search-inner svg{width:20px;height:20px;flex-shrink:0}
+.pv-ai-history-search-inner input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:#fff;font-size:18px;font-family:inherit}
+.pv-ai-history-search-inner input::placeholder{color:#8a8a8e}
+.pv-ai-history-label{padding:18px 20px 10px;color:#8a8a8e;font-size:22px;font-weight:700;letter-spacing:-.2px;line-height:1;flex-shrink:0}
+#pv-ai-history-list{flex:1;min-height:0;overflow-y:auto;padding:0 10px 20px;display:flex;flex-direction:column;gap:3px}
+.pv-ai-history-item{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:100%;min-width:0;background:transparent;border:none;padding:15px 18px;border-radius:999px;color:#fff;font-size:18px;line-height:1.25;text-align:left;cursor:pointer;white-space:nowrap;box-sizing:border-box;-webkit-tap-highlight-color:transparent;overflow:hidden}
+.pv-ai-history-item:active{background:#1e1e1e}
+.pv-ai-history-item.selected{background:#353537;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+.pv-ai-history-item-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400;overflow-wrap:anywhere;word-break:break-all}
+.pv-ai-history-item.unread .pv-ai-history-item-text{font-weight:800;letter-spacing:-.1px}
+.pv-ai-history-item.selected .pv-ai-history-item-text{font-weight:500}
+.pv-ai-history-dot{width:10px;height:10px;min-width:10px;border-radius:50%;background:#22c55e;flex-shrink:0;display:block;margin-left:auto}
+.pv-ai-history-empty-center{margin:auto;padding:60px 16px;text-align:center;color:#8a8a8e;font-size:16px}
+#pv-ai-hist-lp-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10003;opacity:0;pointer-events:none;transition:opacity .2s ease}
+#pv-ai-hist-lp-backdrop.show{opacity:1;pointer-events:auto}
+#pv-ai-hist-lp-sheet{position:fixed;left:0;right:0;bottom:0;z-index:10004;background:#242328;border-radius:28px 28px 0 0;padding:14px 18px calc(18px + env(safe-area-inset-bottom));box-sizing:border-box;transform:translateY(110%);transition:transform .25s ease;box-shadow:0 -8px 30px rgba(0,0,0,.5)}
+#pv-ai-hist-lp-sheet.show{transform:translateY(0)}
+.pv-ai-hist-lp-handle{width:32px;height:4px;border-radius:999px;background:#e6e9f0;margin:0 auto 16px;display:block}
+.pv-ai-hist-lp-title{font-size:15px;color:#8a8a8e;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 12px 12px;min-width:0;overflow-wrap:anywhere;word-break:break-all;box-sizing:border-box}
+.pv-ai-hist-lp-btn{width:100%;background:transparent;border:none;padding:15px 12px;display:flex;align-items:center;gap:14px;color:#fff;font-size:18px;text-align:left;cursor:pointer;border-radius:14px;-webkit-tap-highlight-color:transparent}
+.pv-ai-hist-lp-btn:active{background:#333336}
+.pv-ai-hist-lp-btn svg{width:22px;height:22px;flex-shrink:0}
+.pv-ai-hist-lp-btn.delete{color:#ff3b30}
+.pv-ai-hist-lp-divider{height:1px;background:rgba(255,255,255,.08);margin:4px 0}
 
-<div id="pv-lens-screen" class="hidden" hidden aria-label="Lens"><div class="pv-lens-top"><button class="pv-lens-back" id="pv-lens-back" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="M11 5 4 12l7 7"/></svg></button><button class="pv-lens-flash" id="pv-lens-flash" type="button" aria-label="Flash off"><span class="pv-flash-off"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 2.5 7.5 12.5h4L10.5 21.5l6-9.5h-4l1-9.5Z"/><path d="M3.5 3.5l17 17"/></svg></span><span class="pv-flash-on" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 2.5 7.5 12.5h4L10.5 21.5l6-9.5h-4l1-9.5Z"/></svg></span></button><div class="pv-lens-title"><b>COSPRO</b> <span>Lens</span></div><div class="pv-lens-top-spacer"></div><button class="pv-lens-dots" id="pv-lens-dots" type="button" aria-label="More"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div><div class="pv-lens-view"><video id="pv-lens-video" autoplay playsinline muted></video><div class="pv-lens-frame"><span class="pv-lens-corner tl"></span><span class="pv-lens-corner tr"></span><span class="pv-lens-corner bl"></span><span class="pv-lens-corner br"></span></div></div><div class="pv-lens-bottom"><button class="pv-lens-thumb" id="pv-lens-thumb" type="button" aria-label="Gallery"></button><button class="pv-lens-shutter" id="pv-lens-shutter" type="button" aria-label="Search"><span class="pv-lens-shutter-inner"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/></svg></span></button><button class="pv-lens-flip" id="pv-lens-flip" type="button" aria-label="Switch camera"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9a8 8 0 0 1 14-3"/><path d="M20 15a8 8 0 0 1-14 3"/><path d="M18 2v4h-4"/><path d="M6 22v-4h4"/></svg></button></div></div>
-<!-- ===== FILE: voice-live overlay — exactly as photo ===== -->
-<style data-file="css/voice-live.css">
-#pv-voice-live{position:fixed;inset:0;z-index:10001;background:#202124;display:flex;flex-direction:column;color:#e8eaed;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-#pv-voice-live.hidden{display:none !important}
-.pv-voice-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 4px;height:48px;box-sizing:border-box;flex-shrink:0}
-.pv-voice-top-spacer{flex:1;min-width:0}
-.pv-voice-top-actions{display:flex;align-items:center;gap:24px;padding-right:2px}
-.pv-voice-cc{background:none;border:1.5px solid #fff;border-radius:5px;color:#fff;font-size:11px;font-weight:700;letter-spacing:.5px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;height:24px;min-width:32px;box-sizing:border-box;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.pv-voice-dots{background:none;border:none;width:28px;height:28px;min-width:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.pv-voice-dots i{width:3.5px;height:3.5px;min-width:3.5px;min-height:3.5px;border-radius:50%;background:#fff;display:block}
-.pv-voice-close{background:none;border:none;width:30px;height:30px;min-width:30px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.pv-voice-close svg{width:20px;height:20px;display:block}
-.pv-voice-center{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 24px;text-align:center}
-.pv-voice-listening{font-size:38px;line-height:1.1;font-weight:400;letter-spacing:-.5px;color:#e8eaed;margin:0 0 38px}
-.pv-voice-pills{display:flex;gap:13px;align-items:center;justify-content:center;margin-bottom:38px}
-.pv-voice-pill{width:30px;height:52px;border-radius:999px;position:relative;overflow:hidden;flex-shrink:0;background:radial-gradient(ellipse at 50% 50%,#1a73e8 0%,#4285f4 38%,#8ab4f8 72%,#c2d8ff 100%);box-shadow:0 0 14px rgba(66,133,244,.35);animation:pvVoiceReal 1.7s ease-in-out infinite;transform-origin:center}
-.pv-voice-pill i{position:absolute;left:50%;top:50%;width:16px;height:26px;border-radius:999px;transform:translate(-50%,-50%);background:radial-gradient(ellipse at 50% 50%,#1a73e8 0%,#4285f4 45%,rgba(66,133,244,0) 72%);filter:blur(1.5px);animation:pvCoreReal 1.7s ease-in-out infinite}
-.pv-voice-pill:nth-child(1){animation-duration:1.55s;animation-delay:0s}.pv-voice-pill:nth-child(1) i{animation-duration:1.55s;animation-delay:0s}
-.pv-voice-pill:nth-child(2){animation-duration:1.9s;animation-delay:.22s}.pv-voice-pill:nth-child(2) i{animation-duration:1.9s;animation-delay:.22s}
-.pv-voice-pill:nth-child(3){animation-duration:1.45s;animation-delay:.38s}.pv-voice-pill:nth-child(3) i{animation-duration:1.45s;animation-delay:.38s}
-.pv-voice-pill:nth-child(4){animation-duration:1.75s;animation-delay:.12s}.pv-voice-pill:nth-child(4) i{animation-duration:1.75s;animation-delay:.12s}
-@keyframes pvVoiceReal{0%,100%{transform:scaleY(.82) scaleX(1)}20%{transform:scaleY(1.28) scaleX(.96)}40%{transform:scaleY(.92) scaleX(1)}60%{transform:scaleY(1.18) scaleX(.97)}80%{transform:scaleY(.88) scaleX(1)}}
-@keyframes pvCoreReal{0%,100%{transform:translate(-50%,-50%) scale(.85);opacity:.85}25%{transform:translate(-50%,-52%) scale(1.25);opacity:1}50%{transform:translate(-50%,-48%) scale(.9);opacity:.9}75%{transform:translate(-50%,-51%) scale(1.15);opacity:1}}
-.pv-voice-speak{font-size:20px;line-height:1.4;color:#e8eaed;font-weight:400;margin:0}
-.pv-voice-bottom{padding:0 24px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:24px;flex-shrink:0}
-.pv-voice-disclaimer{font-size:15px;line-height:1.5;color:#9aa0a6;text-align:center;max-width:320px;margin:0}
-.pv-voice-controls{display:flex;gap:18px;align-items:flex-start;justify-content:center}
-.pv-voice-ctl{display:flex;flex-direction:column;align-items:center;gap:10px}
-.pv-voice-ctl-btn{width:60px;height:60px;min-width:60px;border-radius:50%;background:#2e2f32;border:none;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s ease}
-.pv-voice-ctl-btn:active{transform:scale(.92)}
-.pv-voice-ctl-btn.is-mute{width:108px;min-width:108px;height:60px;border-radius:999px;background:#3f4043}
-.pv-voice-ctl-btn svg{width:28px;height:28px;display:block}
-.pv-voice-ctl-label{font-size:13px;line-height:1;color:#e8eaed}
-</style>
-<div id="pv-voice-live" class="hidden" hidden aria-label="Voice live"><div class="pv-live-top"><button class="pv-live-top-btn" id="pv-live-menu-btn" type="button" aria-label="Menu"><span class="pv-live-menu-lines"><i></i><i></i></span></button><button class="pv-live-top-btn" id="pv-live-settings-btn" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M4 8h16"/><path d="M4 16h16"/><circle cx="16.5" cy="8" r="3" fill="#232323" stroke="#fff" stroke-width="2.4"/><circle cx="8.5" cy="16" r="3" fill="#232323" stroke="#fff" stroke-width="2.4"/></svg></button></div><div class="pv-live-orb-wrap" aria-hidden="true"></div><div class="pv-live-disclaimer">COSPRO AI can make mistakes, so double-check responses</div><div class="pv-live-bottom"><button class="pv-live-mute" id="pv-live-mute" type="button" aria-label="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11.5 C5 15.5 8.2 18.5 12 18.5 C15.8 18.5 19 15.5 19 11.5"/><path d="M12 18.5 L12 21.5"/><path d="M4 4l16 16"/></svg></button><button class="pv-live-close" id="pv-live-close-x" type="button" aria-label="Close live"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14"/><path d="M19 5L5 19"/></svg></button></div></div> <style data-file="css/voice-live-blank.css">
-/* LIVE - black, 2 top circles, NO big circle, bottom mic + close only */
-#pv-voice-live{ position:fixed !important; inset:0 !important; background:#000 !important; z-index:10001 !important; display:flex !important; flex-direction:column !important; padding:18px 16px calc(18px + env(safe-area-inset-bottom)) !important; box-sizing:border-box !important; }
-#pv-voice-live.hidden{ display:none !important; }
-.pv-live-top{ display:flex !important; justify-content:space-between !important; align-items:flex-start !important; padding:2px 2px 0 !important; }
-.pv-live-top-btn{ width:46px !important; height:46px !important; min-width:46px !important; border-radius:50% !important; background:#232323 !important; border:1px solid #2b2b2b !important; display:flex !important; align-items:center !important; justify-content:center !important; padding:0 !important; cursor:pointer !important; -webkit-tap-highlight-color:transparent; }
-.pv-live-top-btn:active{ transform:scale(.92); }
-.pv-live-top-btn svg{ width:20px !important; height:20px !important; display:block !important; }
-.pv-live-menu-lines{ display:flex !important; flex-direction:column !important; gap:5px !important; align-items:flex-start !important; }
-.pv-live-menu-lines i{ display:block !important; height:2px !important; border-radius:999px !important; background:#fff !important; }
-.pv-live-menu-lines i:nth-child(1){ width:18px !important; }
-.pv-live-menu-lines i:nth-child(2){ width:11px !important; }
-.pv-live-orb-wrap{ flex:1 !important; display:block !important; min-height:0 !important; background:#000 !important; }
-
-.pv-live-disclaimer{ font-size:15px !important; line-height:1.5 !important; color:#9aa0a6 !important; text-align:center !important; max-width:320px !important; margin:0 auto !important; padding:0 20px 14px !important; box-sizing:border-box !important; }
-.pv-live-bottom{ display:flex !important; align-items:center !important; justify-content:center !important; gap:12px !important; padding:6px 16px 14px !important; margin-bottom:2px !important; }
-.pv-live-ask{ display:none !important; }
-
- .pv-live-plus svg{ width:19px !important; height:19px !important; display:block !important; }
-
-.pv-live-mute{ width:56px !important; height:56px !important; min-width:48px !important; border-radius:50% !important; background:#232323 !important; border:1px solid #2b2b2b !important; display:flex !important; align-items:center !important; justify-content:center !important; padding:0 !important; cursor:pointer !important; -webkit-tap-highlight-color:transparent; flex:none !important; }
-.pv-live-mute:active{ transform:scale(.92); }
-.pv-live-mute svg{ width:22px !important; height:22px !important; display:block !important; }
-.pv-live-mute.is-muted{ background:#ff3b30 !important; border-color:#ff3b30 !important; }
-.pv-live-close{ width:56px !important; height:56px !important; min-width:48px !important; border-radius:50% !important; background:#fff !important; border:none !important; display:flex !important; align-items:center !important; justify-content:center !important; padding:0 !important; cursor:pointer !important; -webkit-tap-highlight-color:transparent; flex:none !important; }
-.pv-live-close:active{ transform:scale(.92); }
-.pv-live-close svg{ width:20px !important; height:20px !important; display:block !important; }
-</style>
-
-<script data-file="js/live-sounds.js">
+/* FIX long words */
+#pv-ai-history-list .pv-ai-history-item{min-width:0 !important;max-width:100% !important;overflow:hidden !important}
+#pv-ai-history-list .pv-ai-history-item-text{flex:1 1 0 !important;min-width:0 !important;overflow:hidden !important;text-overflow:ellipsis !important;white-space:nowrap !important;overflow-wrap:anywhere !important;word-break:break-all !important}
+</style><div id="pv-ai-history-backdrop"></div><aside id="pv-ai-history" aria-label="Chat history"><div class="pv-ai-history-search"><div class="pv-ai-history-search-inner"><svg viewBox="0 0 24 24" fill="none" stroke="#8a8a8e" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/></svg><input id="pv-ai-history-search" type="text" placeholder="Search" autocomplete="off" /><button class="pv-ai-history-search-clear hidden" id="pv-ai-history-search-clear" type="button" aria-label="Clear search"><svg viewBox="0 0 24 24" fill="none" stroke="#8a8a8e" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div><div class="pv-ai-history-label">Chats</div><div id="pv-ai-history-list"></div></aside><div id="pv-ai-hist-lp-backdrop"></div><div id="pv-ai-hist-lp-sheet" aria-label="Chat options"><span class="pv-ai-hist-lp-handle"></span><div class="pv-ai-hist-lp-title" id="pv-ai-hist-lp-title">Chat</div><button class="pv-ai-hist-lp-btn" id="pv-ai-hist-lp-copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>Copy</span></button><div class="pv-ai-hist-lp-divider"></div><button class="pv-ai-hist-lp-btn delete" id="pv-ai-hist-lp-delete" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg><span>Delete</span></button></div><div class="pv-ai-messages" id="pv-ai-messages"></div><style data-file="css/ai-empty-writeup.css">
+/* AI EMPTY WRITEUP - big centred text when AI opens, changes, clears when chat starts */
+#pv-ai-empty-writeup{position:absolute;left:16px;right:16px;top:42%;transform:translateY(-50%);text-align:center;font-size:32px;line-height:1.2;color:#fff;font-weight:400;letter-spacing:-.3px;pointer-events:none;z-index:2;transition:opacity .4s ease;padding:0 12px;box-sizing:border-box}
+#pv-ai-empty-writeup.hidden{display:none !important}
+#pv-ai-empty-writeup.fading{opacity:0}
+#pv-ai-empty-writeup.is-greeting{white-space:nowrap !important;font-size:28px !important;overflow:hidden;text-overflow:ellipsis}
+</style><div id="pv-ai-empty-writeup" aria-hidden="true">What's on your mind?</div><script data-file="js/ai-empty-writeup.js">
+/* AI EMPTY WRITEUP - Greeting FIRST, one line, before other prompts. Then rotate. SOMETIMES greeting again, not every time. */
 (function(){
-  var ctx = null;
-  function ensureCtx(){
-    try{
-      if(!ctx){ var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return null; ctx = new AC(); }
-      if(ctx.state === 'suspended'){ try{ ctx.resume(); }catch(e){} }
-      return ctx;
-    }catch(e){ return null; }
+  var lines = ["What's on your mind?", "How can I help you today?", "What are we doing today?", "Ask me anything...", "What do you want to know?", "Need a quick idea?"];
+  var idx = 0;
+  var rotateCount = 0;
+  function el(id){ return document.getElementById(id); }
+  function getFirstName(){
+    var n = '';
+    try{ n = localStorage.getItem('pro_vibes_user_name') || ''; }catch(e){}
+    if(!n && window.ProVibesUser && window.ProVibesUser.name) n = window.ProVibesUser.name;
+    if(!n){
+      var pe = el('profile-name');
+      if(pe && pe.textContent) n = pe.textContent;
+    }
+    n = String(n || '').trim();
+    if(!n) return '';
+    var first = n.split(/\s+/)[0] || '';
+    if(!first) return '';
+    return first.charAt(0).toUpperCase() + first.slice(1);
   }
-  function tone(freq, startAt, dur, vol, slideTo){
-    var c = ensureCtx(); if(!c) return;
-    try{
-      var o = c.createOscillator(); var g = c.createGain();
-      o.type = 'sine'; o.frequency.setValueAtTime(freq, c.currentTime + startAt);
-      if(slideTo){ o.frequency.exponentialRampToValueAtTime(slideTo, c.currentTime + startAt + dur); }
-      g.gain.setValueAtTime(0.0001, c.currentTime + startAt);
-      g.gain.exponentialRampToValueAtTime(vol, c.currentTime + startAt + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + startAt + dur);
-      o.connect(g); g.connect(c.destination);
-      o.start(c.currentTime + startAt); o.stop(c.currentTime + startAt + dur + 0.05);
-    }catch(e){}
+  function greetingForNow(){
+    var name = getFirstName();
+    if(!name) return '';
+    var h = new Date().getHours();
+    var greet = '';
+    if(h >= 5 && h < 12) greet = 'Good Morning';
+    else if(h >= 12 && h < 17) greet = 'Good Afternoon';
+    else greet = 'Good Evening';
+    return greet + ' ' + name;
   }
-  // NORMAL BASS - reduced, so sounds can still be heard on phone speakers. One note only, not 2. Warm but clear, loud.
-  function proTone(freq, vol){
-    var c = ensureCtx(); if(!c) return;
-    try{
-      var now = c.currentTime;
-      var filter = c.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.setValueAtTime(1200, now); filter.Q.setValueAtTime(0.7, now);
-      filter.connect(c.destination);
-      var o1 = c.createOscillator(); o1.type = 'sine'; o1.frequency.setValueAtTime(freq, now);
-      var o2 = c.createOscillator(); o2.type = 'triangle'; o2.frequency.setValueAtTime(freq * 2, now);
-      var g1 = c.createGain(); g1.gain.setValueAtTime(0.0001, now); g1.gain.exponentialRampToValueAtTime(vol, now + 0.015); g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
-      var g2 = c.createGain(); g2.gain.setValueAtTime(0.0001, now); g2.gain.exponentialRampToValueAtTime(vol * 0.25, now + 0.015); g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.30);
-      o1.connect(g1); g1.connect(filter);
-      o2.connect(g2); g2.connect(filter);
-      o1.start(now); o2.start(now); o1.stop(now + 0.50); o2.stop(now + 0.35);
-    }catch(e){}
+  function hasChat(){
+    var box = el('pv-ai-messages');
+    if(!box) return false;
+    return !!(box.querySelector('.pv-ai-msg') || box.querySelector('.pv-ai-msg-wrap'));
   }
-  // OPEN LIVE - ONE note only + ONE simple vibration
-  window.pvPlayLiveOpenSound = function(){
-    try{ if(navigator.vibrate) navigator.vibrate(50); }catch(e){}
-    try{ proTone(261.63, 0.85); }catch(e){}
-  };
-  // CLOSE LIVE - ONE simple vibration only, cancel vibration removed
-  window.pvPlayLiveCloseSound = function(){
-    try{
-      if(navigator.vibrate) navigator.vibrate(50);
-    }catch(e){}
-    try{
-      proTone(261.63, 0.85);
-      setTimeout(function(){ try{ proTone(196.00, 0.85); }catch(e){} }, 150);
-    }catch(e){}
-  };
-
-  // Unlock audio on first tap anywhere (browsers block sound until user taps)
-  function unlock(){ ensureCtx(); }
-  document.addEventListener('touchstart', unlock, {passive:true});
-  document.addEventListener('click', unlock, {passive:true});
-})();
-</script>
-<script data-file="js/voice-live.js">
-// js/voice-live.js - voice note in AI opens Listening screen exactly as photo
-(function(){
-  function el(id){return document.getElementById(id);}
-  function openVoice(){var o=el('pv-voice-live');if(!o)return;o.classList.remove('hidden');o.removeAttribute('hidden');try{ if(window.pvPlayLiveOpenSound) window.pvPlayLiveOpenSound(); }catch(e){} }
-  function closeVoice(){var o=el('pv-voice-live');if(!o)return;o.classList.add('hidden');o.setAttribute('hidden','');}
-  function wire(){
-    var act=el('pv-ai-action');
-    /* SEND INSIDE LIVE CHAT - one button like voice note was before. Empty = live chat, text = send (Groq wire handles send). */
-    if(act&&!act.dataset.pvVoiceBound){act.dataset.pvVoiceBound='1';act.addEventListener('click',function(){try{var inp=el('pv-ai-input');var hasText=inp&&inp.value.trim().length>0;if(hasText)return;openVoice();}catch(e){openVoice();}});}
-    var close=el('pv-voice-close');
-    if(close&&!close.dataset.pvVoiceBound){close.dataset.pvVoiceBound='1';close.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();closeVoice();});}
-    var back=el('pv-ai-back-btn');
-    if(back&&!back.dataset.pvVoiceBackBound){back.dataset.pvVoiceBackBound='1';back.addEventListener('click',function(){closeVoice();});}
+  function isAiOpen(){
+    var s = el('pv-ai-screen');
+    return s && !s.classList.contains('hidden');
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
-})();
-</script>
-<script data-file="js/voice-live-blank-close.js">
-(function(){
-  function closeLive(playSound){
-    var o = document.getElementById('pv-voice-live');
-    if(!o) return;
-    o.classList.add('hidden'); o.setAttribute('hidden','');
-    try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
-    try{ if(playSound !== false && window.pvPlayLiveCloseSound) window.pvPlayLiveCloseSound(); }catch(e){}
+  function update(){
+    var w = el('pv-ai-empty-writeup');
+    if(!w) return;
+    if(!isAiOpen() || hasChat()){ w.classList.add('hidden'); }
+    else { w.classList.remove('hidden'); }
+  }
+  function showGreetingFirst(){
+    var w = el('pv-ai-empty-writeup');
+    if(!w) return;
+    var g = greetingForNow();
+    if(g){
+      w.textContent = g;
+      w.classList.add('is-greeting');
+      w.classList.remove('fading');
+    } else {
+      w.textContent = lines[0];
+      w.classList.remove('is-greeting');
+    }
+    idx = 0;
+    rotateCount = 0;
+  }
+  function nextText(){
+    rotateCount++;
+    // SOMETIMES greeting again later - 1 in 4 rotations, not every time
+    if(rotateCount % 4 === 0){
+      var g = greetingForNow();
+      if(g) return {text: g, greeting: true};
+    }
+    idx = (idx + 1) % lines.length;
+    return {text: lines[idx], greeting: false};
+  }
+  function rotate(){
+    var w = el('pv-ai-empty-writeup');
+    if(!w || w.classList.contains('hidden')) return;
+    if(!isAiOpen() || hasChat()){ update(); return; }
+    w.classList.add('fading');
+    setTimeout(function(){
+      var nxt = nextText();
+      if(w) w.textContent = nxt.text;
+      if(w) w.classList.toggle('is-greeting', !!nxt.greeting);
+      if(w) w.classList.remove('fading');
+    }, 400);
   }
   function wire(){
-    var x = document.getElementById('pv-live-close-x');
-    if(x && !x.dataset.pvLiveXBound){ x.dataset.pvLiveXBound='1'; x.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); closeLive(); }); }
-    var mute = document.getElementById('pv-live-mute');
-    if(mute && !mute.dataset.pvLiveMuteBound){ mute.dataset.pvLiveMuteBound='1'; mute.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); mute.classList.toggle('is-muted'); }); }
-    var ask = document.getElementById('pv-live-ask');
-    if(ask && !ask.dataset.pvLiveAskBound){ ask.dataset.pvLiveAskBound='1'; ask.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); closeLive(false); setTimeout(function(){ var inp=document.getElementById('pv-ai-input'); if(inp){ inp.focus(); } }, 80); }); }
-    var menu = document.getElementById('pv-live-menu-btn');
-    if(menu && !menu.dataset.pvLiveMenuBound){ menu.dataset.pvLiveMenuBound='1'; menu.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); }); }
-    var set = document.getElementById('pv-live-settings-btn');
-    if(set && !set.dataset.pvLiveSetBound){ set.dataset.pvLiveSetBound='1'; set.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); }); }
+    // FIRST: greeting first on load
+    showGreetingFirst();
+    update();
+    var box = el('pv-ai-messages');
+    if(box && window.MutationObserver && !box.dataset.pvWriteupObs){
+      box.dataset.pvWriteupObs = '1';
+      new MutationObserver(update).observe(box, {childList:true, subtree:true});
+    }
+    // FIRST every time AI opens: watch AI screen, when it opens and no chat, show greeting first
+    var scr = el('pv-ai-screen');
+    if(scr && window.MutationObserver && !scr.dataset.pvWriteupOpenObs){
+      scr.dataset.pvWriteupOpenObs = '1';
+      var wasOpen = isAiOpen();
+      new MutationObserver(function(){
+        var nowOpen = isAiOpen();
+        if(nowOpen && !wasOpen){
+          if(!hasChat()) showGreetingFirst();
+          update();
+        }
+        wasOpen = nowOpen;
+      }).observe(scr, {attributes:true, attributeFilter:['class']});
+    }
+    setInterval(update, 600);
+    setInterval(rotate, 4000);
+    document.addEventListener('click', function(){ setTimeout(update, 80); setTimeout(update, 300); }, true);
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
-  setInterval(wire, 1000);
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
-</script>
+</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt=""><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-icon-btn" id="pv-ai-cam" type="button" aria-label="Camera"><img class="pv-ai-lens-img" src="data:image/png;base64,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" alt=""></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Live chat or send"><span class="pv-ai-live-icon"><i></i><i></i><i></i><i></i></span><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
+
+<div id="pv-lens-screen" class="hidden" hidden aria-label="Lens"><div class="pv-lens-top"><button class="pv-lens-back" id="pv-lens-back" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="M11 5 4 12l7 7"/></svg></button><button class="pv-lens-flash" id="pv-lens-flash" type="button" aria-label="Flash off"><span class="pv-flash-off"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2 L7 12.5 H11 L9 22 L17 10.5 H13 L15.5 2 Z" fill="#fff" stroke="#fff" stroke-width="0.7" stroke-linejoin="round"/><path d="M3 3 L21 21" stroke="#000" stroke-width="4.2" stroke-linecap="round"/><path d="M3 3 L21 21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg></span><span class="pv-flash-on" style="display:none"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2 L7 12.5 H11 L9 22 L17 10.5 H13 L15.5 2 Z" fill="#fff" stroke="#fff" stroke-width="0.7" stroke-linejoin="round"/></svg></span></button><div class="pv-lens-title"><b>COSPRO</b> <span>Lens</span></div><div class="pv-lens-top-spacer"></div><button class="pv-lens-dots" id="pv-lens-dots" type="button" aria-label="More"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div><div class="pv-lens-view"><video id="pv-lens-video" autoplay playsinline muted></video><div class="pv-lens-frame"><span class="pv-lens-corner tl"></span><span class="pv-lens-corner tr"></span><span class="pv-lens-corner bl"></span><span class="pv-lens-corner br"></span></div></div><div class="pv-lens-bottom"><button class="pv-lens-thumb" id="pv-lens-thumb" type="button" aria-label="Gallery"></button><button class="pv-lens-shutter" id="pv-lens-shutter" type="button" aria-label="Search"><span class="pv-lens-shutter-inner"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/></svg></span></button><button class="pv-lens-flip" id="pv-lens-flip" type="button" aria-label="Switch camera"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9a8 8 0 0 1 14-3"/><path d="M20 15a8 8 0 0 1-14 3"/><path d="M18 2v4h-4"/><path d="M6 22v-4h4"/></svg></button></div></div>
+
+
+
+
+
+
 
 
 <!-- ===== FILE: js/ai-pill.js — separate, do not mix ===== -->
@@ -7025,7 +7030,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 </script>
 
 
-<!-- ===== FILE: js/groq-cloudflare.js — Groq = chat + vision, Cloudflare = LIVE ONLY, no Cloudflare ===== -->
+<!-- ===== FILE: js/groq.js — Groq only for AI: chat + vision + Live ===== -->
 <style data-file="css/ai-message-actions.css">
 /* AI MESSAGE ACTIONS - exactly like screenshot: copy | like | dislike | speaker - under AI messages ONLY */
 #pv-ai-screen .pv-ai-messages{display:flex !important;flex-direction:column !important;gap:12px !important}
@@ -7043,54 +7048,203 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 @keyframes pvAiSpeakPulse{ 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(1.12); opacity:.75; } }
 /* SLEEK TOAST - Thanks for submitting / Copied */
 /* FIX: pv-ai-screen MUST stay fixed fullscreen - never relative, or home nav stays on top */
-#pv-ai-screen{ position:fixed !important; inset:0 !important; z-index:10000 !important; background:#000 !important; display:flex !important; flex-direction:column !important; }
+#pv-ai-screen{ position:fixed !important; inset:0 !important; z-index:10000 !important; background:#000 !important; display:flex !important; flex-direction:column !important; height:100dvh !important; height:100% !important; overflow:hidden !important; }
 #pv-ai-screen.hidden{ display:none !important; }
 #pv-ai-toast{ position:fixed !important; left:50% !important; bottom:118px !important; transform:translate(-50%,12px) !important; background:#2c2c2e !important; color:#fff !important; padding:11px 20px !important; border-radius:999px !important; font-size:14px !important; font-weight:500 !important; letter-spacing:.1px !important; opacity:0 !important; pointer-events:none !important; transition:opacity .25s ease, transform .25s ease !important; z-index:999 !important; box-shadow:0 10px 28px rgba(0,0,0,.55) !important; white-space:nowrap !important; }
 #pv-ai-toast.show{ opacity:1 !important; transform:translate(-50%,0) !important; }
 </style>
-<script data-file="js/groq-cloudflare.js">
-// js/groq-cloudflare.js
-// Keys come from js/config.js (GROQ for chat, CLOUDFLARE for Live) - do NOT redeclare them here or the AI script breaks.
-var GROQ_MODEL = "openai/gpt-oss-120b";
+<script data-file="js/groq.js">
+// js/groq.js
+// Keys come from js/config.js (GROQ only for AI) - do NOT redeclare them here or the AI script breaks.
+var GROQ_MODEL = "llama-3.3-70b-versatile"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120b"; var GROQ_TITLE_MODEL = "llama-3.3-70b-versatile"; var GROQ_VISION_MODEL = "qwen-qwq-32b";
 (function(){
   function el(id){return document.getElementById(id);}
-  // TITLE - inside original AI file, no patch: first chat sets title, Quick Hello -> Quick Hello then real chat replaces it
+  // TITLE - Meta AI style: real AI summary, correct English. First chat only. Quick Hello -> real chat replaces it
   var TITLE_KEY='pro_vibes_cospro_ai_title';
-  function pvTopicFromText(txt, hasImage){
+  var TITLE_USED_KEY='pro_vibes_cospro_ai_titles_used';
+  function pvGetUsedTitles(){ try{ var arr=JSON.parse(localStorage.getItem(TITLE_USED_KEY)||'[]'); return Array.isArray(arr)?arr:[]; }catch(err){ return []; } }
+  function pvIsTitleUsed(title){ try{ var low=String(title||'').toLowerCase().trim(); var list=pvGetUsedTitles(); return list.some(function(x){ return String(x||'').toLowerCase().trim()===low; }); }catch(err){ return false; } }
+  function pvRememberTitle(title){ try{ if(!title||title==='COSPRO AI'||title==='Quick Hello') return; var list=pvGetUsedTitles(); var low=String(title).toLowerCase().trim(); if(list.some(function(x){ return String(x||'').toLowerCase().trim()===low; })) return; list.push(title); if(list.length>100) list=list.slice(-100); localStorage.setItem(TITLE_USED_KEY, JSON.stringify(list)); }catch(err){} }
+  function pvMakeTitleUnique(base){ try{ if(!pvIsTitleUsed(base)) return base; var cleanBase=String(base).replace(/\s+\d+$/,'').trim(); cleanBase=cleanBase.replace(/\bur\b/gi,'your').replace(/\bu\b/gi,'you'); var core=cleanBase; core=core.replace(/^(Understanding|Exploring|Learning|Thinking|Finding|Getting help with|Sharing|Creating|Fixing|Explaining|Talking about|A fresh look at|Another thought on|Once more on|More on)\s+(about\s+)?/i,''); core=core.replace(/^(Why should i be|Why am i|Why should i|Why is|Why are|What is|What are|How do i|How can i|Should i be)\s+/i,''); if(!core) core=cleanBase; var words=core.split(' ').filter(Boolean); var topicPhrase=core; if(words.length===1){ topicPhrase='being '+core; } else { topicPhrase=core.charAt(0).toLowerCase()+core.slice(1); } var cands=['Understanding '+topicPhrase,'Exploring '+topicPhrase,'Thinking about '+topicPhrase,'Learning about '+topicPhrase,'Finding out about '+topicPhrase,'A fresh look at '+topicPhrase,'Another thought on '+topicPhrase,'Talking about '+topicPhrase,'Once more on '+topicPhrase]; for(var i=0;i<cands.length;i++){ var cc=pvCleanAiTitle(cands[i]); if(cc && !pvIsTitleUsed(cc)) return cc; } return pvCleanAiTitle('Understanding '+topicPhrase)||cleanBase; }catch(err){ return String(base||'').replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); } }
+  var pvTitleRequestId=0; var pvTitleLockedChatId=null; function pvIsRealTitle(_t){ return !!_t && _t!=='COSPRO AI' && _t!=='Quick Hello'; } function pvGetLockedTitle(_id){ try{ var _lid=_id||pvHistoryGetCurrentId(); if(!_lid) return null; var _ll=pvHistoryLoad(); for(var _li=0;_li<_ll.length;_li++){ if(String(_ll[_li].id)===String(_lid) && pvIsRealTitle(_ll[_li].title)) return _ll[_li].title; } if(typeof pvTitleLockedChatId!=='undefined' && pvTitleLockedChatId && String(pvTitleLockedChatId)===String(_lid)){ try{ var _te=document.getElementById('pv-ai-title'); if(_te && pvIsRealTitle(_te.textContent)) return _te.textContent; }catch(e){} } return null; }catch(e){ return null; } } function pvIsChatTitleLocked(_id){ try{ return !!pvGetLockedTitle(_id); }catch(e){ return false; } }
+  function pvToGerund(v){
+    try{
+      var lower=String(v||'').toLowerCase();
+      var map={make:'Making',create:'Creating',generate:'Generating',draw:'Drawing',write:'Writing',learn:'Learning',fix:'Fixing',start:'Starting',give:'Giving',share:'Sharing',send:'Sending',explain:'Explaining',show:'Showing',help:'Getting help with',cook:'Cooking',build:'Building',find:'Finding',check:'Checking',plan:'Planning',watch:'Watching',play:'Playing'};
+      if(map[lower]) return map[lower];
+      if(/ie$/.test(lower)) return lower.slice(0,-2)+'ying';
+      if(/e$/.test(lower) && !/ee$/.test(lower)) return lower.slice(0,-1)+'ing';
+      return lower+'ing';
+    }catch(err){ return String(v||''); }
+  }
+  function pvFallbackTopicFromText(txt, hasImage){
     try{
       var s=String(txt||'').replace(/\s+/g,' ').trim();
-      if(!s){ if(hasImage) return 'Photo'; return null; }
+      if(!s){ if(hasImage) return 'Describing a photo'; return null; }
       var low=s.toLowerCase().replace(/[!?.,]+/g,'').trim();
       var greetingOnly=/^(hi|hello|heyy+|hii+|hey|wassup|whats up|what's up|sup|yo|good morning|good afternoon|good evening|how are you|how far|how you doing|how are u|hi hello|hello hi|hi hello wassup|wassup hi|hey hi|hi hey|quick hello)(\s+(hi|hello|heyy+|hii+|hey|wassup|whats up|what's up|sup|yo|good morning|good afternoon|good evening|how are you|quick hello))*$/.test(low);
       if(greetingOnly) return 'Quick Hello';
       if(low==='quick hello') return 'Quick Hello';
+      if(/exactly/.test(low) && /\b(this|that|it)\b/.test(low)) return 'Requesting an exact copy';
+      if(hasImage && !s) return 'Describing a photo';
       s=s.replace(/^(hi|hello|hey|heyy+|hii+|wassup|yo|good (morning|afternoon|evening))[,\s]+/i,'');
       s=s.replace(/^(please|pls)\s+/i,'');
       s=s.replace(/^(can you|can u|could you|could u|will you)\s+/i,'');
-      var wantToMake=/^(i want to|i wanna|i want)\s+/i.test(s);
-      s=s.replace(/^(help me (with|to)?|help me|i want to know|i want to|i want|tell me about|tell me|explain to me|explain|what is|what's|what are|how do i|how can i)\s+/i,'');
-      s=s.replace(/^(generate|create|draw|make)\s+(me\s+)?(an?\s+)?(image|picture|pic|photo|drawing)\s+(of\s+|for\s+)?/i,'Picture Of ');
-      s=s.replace(/^(show me\s+)(an?\s+)?(image|picture|pic|photo)\s+(of\s+)?/i,'Picture Of ');
+      s=s.replace(/^(i want to know|i want to|i wanna|i want)\s+/i,'');
+      s=s.replace(/^know\s+(about\s+)?/i,'Learning about ');
+      s=s.replace(/^(help me (with|to)?|help me)\s+/i,'Getting help with ');
+      s=s.replace(/^(tell me about|tell me)\s+/i,'Learning about ');
+      s=s.replace(/^(explain to me|explain)\s+/i,'Explaining ');
+      s=s.replace(/^(what is|what's|what are)\s+/i,'Learning about ');
+      s=s.replace(/^(how do i|how can i)\s+/i,'Learning to ');
+      s=s.replace(/^(show me)\s+/i,'Showing ');
+      s=s.replace(/^(make|create|generate|draw)\s+me\s+(an?\s+)?/i,'Creating a ');
+      s=s.replace(/^(give)\s+me\s+/i,'Sharing ');
+      var imgM=s.match(/^(generate|create|draw|make)\s+(me\s+)?(an?\s+)?(image|picture|pic|photo|drawing)\s+(of\s+|for\s+)?/i);
+      if(imgM){ s=s.replace(/^(generate|create|draw|make)\s+(me\s+)?(an?\s+)?(image|picture|pic|photo|drawing)\s+(of\s+|for\s+)?/i,'Creating a picture of '); }
+      else{
+        var verbM=s.match(/^(make|create|generate|draw|write|learn|fix|start|give|share|send|explain|tell|show|help|cook|build|find|check|plan|watch|play)\b/i);
+        if(verbM){
+          var v=verbM[1].toLowerCase();
+          var g=pvToGerund(v);
+          if(v==='give') g='Sharing';
+          if(v==='tell') g='Learning about';
+          s=s.replace(/^\S+\s*/, g+' ');
+        }
+      }
       s=s.trim(); if(!s) return null;
       var words=s.split(' ').filter(Boolean);
-      var stop={a:1,an:1,the:1,is:1,are:1,to:1,of:1,for:1,me:1,my:1,please:1,can:1,you:1,u:1,and:1,in:1,on:1,with:1,about:1};
-      var meaningful=words.filter(function(w){ return !stop[w.toLowerCase().replace(/[^a-z]/g,'')]; });
-      var use=meaningful.length?meaningful:words;
-      var topic=use.slice(0,4).join(' ');
-      if(topic.length>32){ topic=topic.slice(0,32); var ls=topic.lastIndexOf(' '); if(ls>12) topic=topic.slice(0,ls); topic=topic+'...'; }
-      var parts=topic.split(' ');
-      if(wantToMake && parts.length && parts[0].toLowerCase()==='make') parts[0]='Making';
-      if(wantToMake && parts.length && parts[0].toLowerCase()==='learn') parts[0]='Learning';
-      if(wantToMake && parts.length && parts[0].toLowerCase()==='fix') parts[0]='Fixing';
-      if(wantToMake && parts.length && parts[0].toLowerCase()==='start') parts[0]='Starting';
-      topic=parts.map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
+      var topicWords=words.slice(0,5);
+      while(topicWords.length>1 && /^(of|a|an|the|to|with|for|in|on|about|and)$/i.test(topicWords[topicWords.length-1])) topicWords.pop();
+      var topic=topicWords.join(' ');
+      topic=topic.charAt(0).toUpperCase()+topic.slice(1);
+      topic=topic.replace(/\s+/g,' ').trim();
+      if(topic.length>32){ var cut=topic.slice(0,32); var ls=cut.lastIndexOf(' '); if(ls>12) cut=cut.slice(0,ls); var cutWords=cut.split(' '); while(cutWords.length>1 && /^(of|a|an|the|to|with|for|in|on|about|and)$/i.test(cutWords[cutWords.length-1])) cutWords.pop(); topic=cutWords.join(' ')+'...'; }
       return topic||null;
+    }catch(err){ return null; }
+  }
+  function pvTopicFromText(txt, hasImage){ return pvFallbackTopicFromText(txt, hasImage); }
+  function pvCleanAiTitle(raw){
+    try{
+      var s=String(raw||'').replace(/\s+/g,' ').trim();
+      if(!s) return null;
+      if(s==='Quick Hello') return 'Quick Hello';
+      if(s==='COSPRO AI') return 'COSPRO AI';
+      s=s.replace(/^(title\s*:\s*|chat title\s*:\s*)/i,'');
+      s=s.replace(/^["'“”‘’]+|["'“”‘’]+$/g,'');
+      s=s.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{200D}\u{FE0F}]/gu,'').trim();
+      s=s.replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); /* NO NUMBERS in titles */
+      s=s.replace(/[\r\n]+/g,' ').trim();
+      s=s.replace(/^(user (wants|asks|is asking).*?[:\-]\s*)/i,'');
+      if(!s) return null;
+      var endsEllipsis=/\.\.\.$/.test(s);
+      if(!endsEllipsis) s=s.replace(/[.!?,:;]+$/,'').trim();
+      if(!s) return null;
+      s=s.charAt(0).toUpperCase()+s.slice(1);
+      var words=s.split(' ').filter(Boolean);
+      if(words.length>5) words=words.slice(0,5);
+      while(words.length>1 && /^(of|a|an|the|to|with|for|in|on|about|and)$/i.test(words[words.length-1])) words.pop();
+      s=words.join(' ');
+      if(s.length>32 && !/\.\.\.$/.test(s)){ var cut=s.slice(0,32); var ls=cut.lastIndexOf(' '); if(ls>12) cut=cut.slice(0,ls); var cutWords=cut.split(' '); while(cutWords.length>1 && /^(of|a|an|the|to|with|for|in|on|about|and)$/i.test(cutWords[cutWords.length-1])) cutWords.pop(); s=cutWords.join(' ')+'...'; }
+      s=s.replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); /* NO NUMBERS - final guard */
+      return s||null;
+    }catch(err){ return null; }
+  }
+  function pvSetTitle(topic, skipUnique){
+    if(!topic) return;
+    try{ var _curId=pvHistoryGetCurrentId(); var _locked=pvGetLockedTitle(_curId); if(_locked){ var _teL=el('pv-ai-title'); if(_teL && _teL.textContent!==_locked) _teL.textContent=_locked; try{ localStorage.setItem(TITLE_KEY,_locked); }catch(e){} return; } }catch(e){}
+    var clean=topic;
+    if(topic!=='COSPRO AI' && topic!=='Quick Hello'){ clean=pvCleanAiTitle(topic); if(!clean) return; if(!skipUnique){ if(pvIsTitleUsed(clean)) clean=pvMakeTitleUnique(clean); pvRememberTitle(clean); } }
+    var te=el('pv-ai-title'); if(te) te.textContent=clean; try{ if(pvIsRealTitle(clean)){ pvTitleLockedChatId=String(pvHistoryGetCurrentId()||''); } }catch(e){}
+    try{ localStorage.setItem(TITLE_KEY,clean); }catch(e){} try{ pvHistoryUpdateTitle(clean); }catch(e){}
+  }
+  function pvResetTitle(){
+    pvTitleRequestId++; pvTitleLockedChatId=null;
+    var te=el('pv-ai-title'); if(te) te.textContent='COSPRO AI';
+    try{ localStorage.setItem(TITLE_KEY,'COSPRO AI'); }catch(e){}
+  }
+  async function pvGenerateAiTitle(txt, hasImage){
+    try{
+      var userText=String(txt||'').trim();
+      if(!userText && hasImage) userText='Describe this photo';
+      if(!userText) return null;
+      if(typeof GROQ_API_KEY==='undefined' || !GROQ_API_KEY) return null;
+      var usedList=pvGetUsedTitles(); var usedText=usedList.length?(' Already used titles, do NOT reuse them, make a completely different title with different words, never add a number like 2 or 3: '+usedList.slice(-12).join(' | ')) : ''; var prompt='Summarize what the user wants in this chat. User message: "'+userText.replace(/"/g,"'")+'"'+(hasImage?' (user also sent a photo)':'') + usedText;
+      var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_API_KEY},
+        body: JSON.stringify({model: GROQ_TITLE_MODEL, messages:[{role:'system', content:'You are a chat title generator like Meta AI. Create a short title that summarizes what the user wants. Rules: 3 to 5 words only. Correct, natural English. Sentence case: capitalize only the first word unless it is a proper noun. Example: Sharing exactly this, Learning English grammar, Fixing my phone screen, Creating a birthday picture. No punctuation at the end, no quotes, no emoji, no hashtags. Do NOT start with User, Request, Question, Chat, or Title. Use a gerund (-ing) when the user is asking for something. Correct any spelling mistakes in the user message, never copy a misspelled word into the title, use correct English spelling. Do NOT copy the user words word-for-word, summarize the intent. If the user only says hello, reply exactly: Quick Hello. Reply with ONLY the title, nothing else.'},{role:'user', content: prompt}], temperature:0.2, max_tokens:20})
+      });
+      var data=await res.json();
+      if(data && data.error) return null;
+      var out=data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '';
+      var first=pvCleanAiTitle(out);
+      if(first && pvIsTitleUsed(first)){
+        try{
+          var prompt2='Give a completely different title for this chat, different words from "'+first+'", different from these used titles: '+usedList.slice(-12).join(' | ')+'. User message: "'+userText.replace(/"/g,"'")+'". No numbers, no 2, no 3, no duplicate. Reply with ONLY the title.';
+          var res2=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_API_KEY},body: JSON.stringify({model: GROQ_TITLE_MODEL, messages:[{role:'system', content:'You are a chat title generator. Create a short title, 3 to 5 words, correct English, sentence case, no numbers, no punctuation at end, no quotes, no emoji. Use different words from any used title.'},{role:'user', content: prompt2}], temperature:0.7, max_tokens:20})});
+          var data2=await res2.json(); var out2=data2 && data2.choices && data2.choices[0] && data2.choices[0].message && data2.choices[0].message.content || ''; var second=pvCleanAiTitle(out2); if(second && !pvIsTitleUsed(second)) return second; if(second) return pvMakeTitleUnique(second);
+        }catch(e2){}
+        return pvMakeTitleUnique(first);
+      }
+      return first;
     }catch(e){ return null; }
   }
-  function pvSetTitle(topic){ if(!topic) return; var te=el('pv-ai-title'); if(te) te.textContent=topic; try{ localStorage.setItem(TITLE_KEY,topic); }catch(e){} }
-  function pvResetTitle(){ var te=el('pv-ai-title'); if(te) te.textContent='COSPRO AI'; try{ localStorage.setItem(TITLE_KEY,'COSPRO AI'); }catch(e){} }
-  function pvUpdateTitleFromText(txt, hasImage){ var te=el('pv-ai-title'); if(te && te.textContent!=='COSPRO AI' && te.textContent!=='Quick Hello') return; var tt=pvTopicFromText(txt,hasImage); if(tt) pvSetTitle(tt); }
-  function pvInitTitle(){ try{ var saved=localStorage.getItem(TITLE_KEY); var box=el('pv-ai-messages'); var hasMsgs=box && box.querySelector('.pv-ai-msg'); if(saved && hasMsgs) pvSetTitle(saved); else pvResetTitle(); }catch(e){} }
+  function pvUpdateTitleFromText(txt, hasImage){
+    try{
+      var _uid=pvHistoryGetCurrentId(); if(pvIsChatTitleLocked(_uid)) return; if(pvTitleLockedChatId && _uid && pvTitleLockedChatId===String(_uid)) return; var te=el('pv-ai-title');
+      if(te && te.textContent!=='COSPRO AI' && te.textContent!=='Quick Hello') return;
+      var fb=pvFallbackTopicFromText(txt, hasImage);
+      if(!fb) return;
+      if(fb==='Quick Hello'){ pvSetTitle('Quick Hello'); return; }
+      var myId=++pvTitleRequestId; if(_uid) pvTitleLockedChatId=String(_uid);
+      pvGenerateAiTitle(txt, hasImage).then(function(aiTitle){
+        if(myId!==pvTitleRequestId) return;
+        var cur=el('pv-ai-title'); if(!cur) return; if(pvIsChatTitleLocked(pvHistoryGetCurrentId())) return;
+        if(cur.textContent!=='COSPRO AI' && cur.textContent!=='Quick Hello') return;
+        if(aiTitle){ if(aiTitle!==cur.textContent) pvSetTitle(aiTitle); }
+        else{ pvSetTitle(fb); }
+      }).catch(function(){
+        if(myId!==pvTitleRequestId) return;
+        if(pvIsChatTitleLocked(pvHistoryGetCurrentId())) return;
+        var cur2=el('pv-ai-title'); if(!cur2) return;
+        if(cur2.textContent==='COSPRO AI' || cur2.textContent==='Quick Hello') pvSetTitle(fb);
+      });
+    }catch(e){}
+  }
+  function pvInitTitle(){ try{ var _locked0=pvGetLockedTitle(pvHistoryGetCurrentId()); if(_locked0){ var _te0=el('pv-ai-title'); if(_te0) _te0.textContent=_locked0; return; } var saved=localStorage.getItem(TITLE_KEY); var box=el('pv-ai-messages'); var hasMsgs=box && box.querySelector('.pv-ai-msg'); if(saved && hasMsgs) pvSetTitle(saved, true); else pvResetTitle(); }catch(e){} }
+  // HISTORY - two-line menu opens history sidebar, exactly like Meta AI structure: Search + Chats + list, green dot for unread
+  var HISTORY_KEY='pro_vibes_cospro_ai_chats';
+  var CURRENT_CHAT_KEY='pro_vibes_cospro_ai_current_chat_id';
+  function pvHistoryLoad(){ try{ var arr=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]'); return Array.isArray(arr)?arr:[]; }catch(e){ return []; } }
+  function pvHistorySave(list){ try{ localStorage.setItem(HISTORY_KEY, JSON.stringify(list||[])); }catch(e){} }
+  function pvHistoryGetCurrentId(){ try{ return localStorage.getItem(CURRENT_CHAT_KEY)||null; }catch(e){ return null; } }
+  function pvHistorySetCurrentId(id){ try{ localStorage.setItem(CURRENT_CHAT_KEY, String(id)); }catch(e){} }
+  function pvHistoryNewId(){ return 'chat_'+Date.now()+'_'+Math.floor(Math.random()*10000); }
+  function pvHistoryEnsureCurrent(){ var id=pvHistoryGetCurrentId(); if(id) return id; var nid=pvHistoryNewId(); pvHistorySetCurrentId(nid); return nid; }
+  function pvHistoryGetMessagesFromDOM(){ try{ var box=el('pv-ai-messages'); if(!box) return []; var out=[]; var nodes=box.querySelectorAll('.pv-ai-msg'); for(var i=0;i<nodes.length;i++){ var n=nodes[i]; if(n.textContent && n.textContent.trim()==='Thinking...') continue; var who=n.classList.contains('user')?'user':'ai'; var sp=n.querySelector('span'); var txt=sp?sp.textContent:''; var im=n.querySelector('img'); var imgURL=im?im.src:null; if(!txt && !imgURL) continue; out.push({who:who, txt:txt||'', img:imgURL}); } return out; }catch(e){ return []; } }
+  function pvHistorySaveCurrent(leaveUnread){ try{ var id=pvHistoryEnsureCurrent(); var titleEl=el('pv-ai-title'); var title=titleEl?titleEl.textContent:'COSPRO AI'; var msgs=pvHistoryGetMessagesFromDOM(); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!msgs.length && (!title || title==='COSPRO AI' || title==='Quick Hello')){ return; } if(found){ if(pvIsRealTitle(found.title)){ try{ var _teL=el('pv-ai-title'); if(_teL && _teL.textContent!==found.title) _teL.textContent=found.title; }catch(e){} title=found.title; } else if(pvIsRealTitle(title)){ found.title=title; } found.messages=msgs; found.updatedAt=Date.now(); if(leaveUnread) found.unread=true; else if(!leaveUnread) found.unread=false; } else { list.unshift({id:id, title:title, messages:msgs, updatedAt:Date.now(), unread:leaveUnread?true:false}); } list.sort(function(a,b){ return (b.updatedAt||0)-(a.updatedAt||0); }); if(list.length>100) list=list.slice(0,100); pvHistorySave(list); }catch(e){} }
+  function pvHistoryUpdateTitle(title){ try{ if(!title||title==='COSPRO AI'||title==='Quick Hello') return; var id=pvHistoryEnsureCurrent(); if(pvIsChatTitleLocked(id)) return; var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(found){ if(pvIsRealTitle(found.title)) return; found.title=String(title).replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim()||title; found.updatedAt=Date.now(); pvHistorySave(list); } }catch(e){} }
+  function pvCleanNumberedTitles(){ try{ var list=pvHistoryLoad(); var changed=false; for(var i=0;i<list.length;i++){ var ttl=String(list[i].title||''); if(!ttl) continue; if(/[0-9]/.test(ttl)){ var noNum=ttl.replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); if(noNum && noNum!==ttl){ list[i].title=noNum; changed=true; } } } if(changed){ pvHistorySave(list); try{ var used=pvGetUsedTitles(); var nu2=used.map(function(x){ return String(x||'').replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); }).filter(Boolean); localStorage.setItem(TITLE_USED_KEY, JSON.stringify(nu2)); }catch(e){} } }catch(e){} }
+  function pvHistoryMigrateUsedTitles(){ try{ var list=pvHistoryLoad(); if(list.length) return; var used=pvGetUsedTitles(); if(!used.length) return; var now=Date.now(); for(var i=used.length-1;i>=0;i--){ list.push({id:'migrated_'+i+'_'+now, title:used[i], messages:[], updatedAt:now-(used.length-i)*1000, unread:false}); } pvHistorySave(list); }catch(e){} }
+  var pvHistLongPressId=null; var pvHistLongPressed=false; var pvHistLpTimer=null;
+  function pvHistShowToast(msg){ try{ var toast=el('pv-ai-toast'); if(!toast){ return; } toast.textContent=msg; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); }, 1800); }catch(e){} }
+  function pvHistShowLongPress(id, title){ try{ pvHistLongPressId=id; var ttl=el('pv-ai-hist-lp-title'); if(ttl) ttl.textContent=title||'Chat'; var back=el('pv-ai-hist-lp-backdrop'); var sheet=el('pv-ai-hist-lp-sheet'); if(back) back.classList.add('show'); if(sheet) sheet.classList.add('show'); try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){} }catch(e){} }
+  function pvHistHideLongPress(){ try{ pvHistLongPressId=null; var back=el('pv-ai-hist-lp-backdrop'); var sheet=el('pv-ai-hist-lp-sheet'); if(back) back.classList.remove('show'); if(sheet) sheet.classList.remove('show'); }catch(e){} }
+  function pvHistCopyChat(id){ try{ var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found){ pvHistHideLongPress(); return; } var text=found.title||'Chat'; function done(){ pvHistHideLongPress(); pvHistShowToast('Copied'); } if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(function(){ pvHistFallbackCopy(text); done(); }); } else { pvHistFallbackCopy(text); done(); } }catch(e){ pvHistHideLongPress(); } }
+  function pvHistFallbackCopy(text){ try{ var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }catch(e){} }
+  function pvHistDeleteChat(id){ try{ var list=pvHistoryLoad(); var found=null; var idx=-1; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; idx=i; break; } } if(idx===-1){ pvHistHideLongPress(); return; } var deletedTitle=found.title||''; list.splice(idx,1); pvHistorySave(list); try{ var used=pvGetUsedTitles(); var low=String(deletedTitle).toLowerCase().trim(); if(low){ var nu=used.filter(function(x){ return String(x||'').toLowerCase().trim()!==low; }); try{ localStorage.setItem(TITLE_USED_KEY, JSON.stringify(nu)); }catch(e){} } }catch(e){} pvHistHideLongPress(); var curId=pvHistoryGetCurrentId(); if(String(curId)===String(id)){ try{ localStorage.setItem(CURRENT_CHAT_KEY, 'chat_'+Date.now()+'_'+Math.floor(Math.random()*100000)); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; pvResetTitle(); } pvHistoryRender(el('pv-ai-history-search')?el('pv-ai-history-search').value:''); pvHistShowToast('Deleted permanently'); }catch(e){ pvHistHideLongPress(); } }
+  function pvHistoryRender(filterText){ try{ pvHistoryMigrateUsedTitles(); pvCleanNumberedTitles(); try{ var _rl=pvHistoryLoad(); var _rc=pvHistoryGetCurrentId(); var _changed=false; for(var _ri=0;_ri<_rl.length;_ri++){ if(String(_rl[_ri].id)!==String(_rc) && !_rl[_ri].unread){ _rl[_ri].unread=true; _changed=true; } if(typeof _rl[_ri].opens!=='number'){ _rl[_ri].opens=0; _changed=true; } } if(_changed) pvHistorySave(_rl); }catch(e){} var _clr=el('pv-ai-history-search-clear'); if(_clr){ if(filterText && String(filterText).trim()) _clr.classList.remove('hidden'); else _clr.classList.add('hidden'); } var list=pvHistoryLoad(); var curId=pvHistoryGetCurrentId(); var boxEl=el('pv-ai-history-list'); if(!boxEl) return; var q=String(filterText||'').toLowerCase().trim(); var shown=list.filter(function(c){ if(!q) return true; return String(c.title||'').toLowerCase().indexOf(q)!==-1; }); boxEl.innerHTML=''; if(!shown.length){ var _em=document.createElement('div'); _em.className='pv-ai-history-empty-center'; _em.textContent='No chats yet'; boxEl.appendChild(_em); } for(var i=0;i<shown.length;i++){ (function(c){ var btn=document.createElement('button'); btn.type='button'; var _isActive=String(c.id)===String(curId); var _showDot=(_isActive && (c.opens||0)>=2) || (!_isActive && c.unread); btn.className='pv-ai-history-item'+(_isActive?' selected':'')+(_showDot?' unread':''); var span=document.createElement('span'); span.className='pv-ai-history-item-text'; span.textContent=c.title||'New chat'; btn.appendChild(span); if(_showDot){ var dot=document.createElement('span'); dot.className='pv-ai-history-dot'; btn.appendChild(dot); } btn.addEventListener('click', function(){ if(pvHistLongPressed){ pvHistLongPressed=false; return; } pvHistoryOpen(c.id); });
+      (function(btnEl, chat){ var startLong=function(){ pvHistLongPressed=false; if(pvHistLpTimer) clearTimeout(pvHistLpTimer); pvHistLpTimer=setTimeout(function(){ pvHistLongPressed=true; pvHistShowLongPress(chat.id, chat.title||'Chat'); }, 500); }; var cancelLong=function(){ if(pvHistLpTimer) clearTimeout(pvHistLpTimer); }; btnEl.addEventListener('touchstart', startLong, {passive:true}); btnEl.addEventListener('touchend', cancelLong); btnEl.addEventListener('touchmove', cancelLong); btnEl.addEventListener('mousedown', startLong); btnEl.addEventListener('mouseup', cancelLong); btnEl.addEventListener('mouseleave', cancelLong); btnEl.addEventListener('contextmenu', function(e){ e.preventDefault(); pvHistLongPressed=true; pvHistShowLongPress(chat.id, chat.title||'Chat'); }); })(btn, c);
+      boxEl.appendChild(btn); })(shown[i]); } }catch(e){} }
+  function pvHistoryLoadMessagesToDOM(msgs){ try{ var box=el('pv-ai-messages'); if(!box) return; box.innerHTML=''; for(var i=0;i<(msgs||[]).length;i++){ addMsg(msgs[i].txt||'', msgs[i].who||'ai', msgs[i].img||null); } box.scrollTop=box.scrollHeight; }catch(e){} }
+  function pvHistoryOpen(id){ try{ if(String(id)===String(pvHistoryGetCurrentId())){ try{ var _al=pvHistoryLoad(); for(var _ai=0;_ai<_al.length;_ai++){ if(String(_al[_ai].id)===String(id)){ _al[_ai].opens=((_al[_ai].opens||0)+1); _al[_ai].unread=false; } } pvHistorySave(_al); }catch(e){} pvHistoryClose(); pvHistoryRender(''); return; } pvHistorySaveCurrent(true); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found) return; pvHistorySetCurrentId(id); found.unread=false; found.opens=((found.opens||0)+1); pvHistorySave(list); var te=el('pv-ai-title'); if(te) te.textContent=found.title||'COSPRO AI'; try{ localStorage.setItem(TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} pvHistoryLoadMessagesToDOM(found.messages||[]); pvHistoryClose(); pvHistoryRender(''); }catch(e){} }
+  function pvHistoryToggle(){ try{ var bar=el('pv-ai-history'); var back=el('pv-ai-history-backdrop'); if(!bar) return; var isOpen=bar.classList.contains('show'); if(isOpen){ pvHistoryClose(); } else { pvHistoryRender(el('pv-ai-history-search')?el('pv-ai-history-search').value:''); bar.classList.remove('hidden'); if(back) back.classList.add('show'); requestAnimationFrame(function(){ bar.classList.add('show'); }); } }catch(e){} }
+  function pvHistoryClose(){ try{ var bar=el('pv-ai-history'); var back=el('pv-ai-history-backdrop'); if(bar) bar.classList.remove('show'); if(back) back.classList.remove('show'); setTimeout(function(){ if(bar && !bar.classList.contains('show')) bar.classList.add('hidden'); }, 280); }catch(e){} }
+  function pvHistoryInit(){ try{ pvHistoryEnsureCurrent(); pvHistoryMigrateUsedTitles(); var clearBtn=el('pv-ai-history-search-clear'); if(clearBtn && !clearBtn.dataset.pvHistBound){ clearBtn.dataset.pvHistBound='1'; clearBtn.addEventListener('click', function(){ var s=el('pv-ai-history-search'); if(s){ s.value=''; s.focus(); } pvHistoryRender(''); if(clearBtn) clearBtn.classList.add('hidden'); }); } var search=el('pv-ai-history-search'); if(search && !search.dataset.pvHistBound){ search.dataset.pvHistBound='1'; search.addEventListener('input', function(){ pvHistoryRender(search.value); }); } var back=el('pv-ai-history-backdrop'); if(back && !back.dataset.pvHistBound){ back.dataset.pvHistBound='1'; back.addEventListener('click', function(){ pvHistoryClose(); }); } var lpBack=el('pv-ai-hist-lp-backdrop'); if(lpBack && !lpBack.dataset.pvLpBound){ lpBack.dataset.pvLpBound='1'; lpBack.addEventListener('click', function(){ pvHistHideLongPress(); }); } var lpCopy=el('pv-ai-hist-lp-copy'); if(lpCopy && !lpCopy.dataset.pvLpBound){ lpCopy.dataset.pvLpBound='1'; lpCopy.addEventListener('click', function(){ if(pvHistLongPressId) pvHistCopyChat(pvHistLongPressId); }); } var lpDel=el('pv-ai-hist-lp-delete'); if(lpDel && !lpDel.dataset.pvLpBound){ lpDel.dataset.pvLpBound='1'; lpDel.addEventListener('click', function(){ if(pvHistLongPressId) pvHistDeleteChat(pvHistLongPressId); }); } var lpSheet=el('pv-ai-hist-lp-sheet'); if(lpSheet && !lpSheet.dataset.pvLpBound){ lpSheet.dataset.pvLpBound='1'; lpSheet.style.touchAction='none'; var _sY=0,_dY=0,_drag=false; function _getY(e){ return e.touches?e.touches[0].clientY:e.clientY; } lpSheet.addEventListener('touchstart', function(e){ _sY=_getY(e); _dY=0; _drag=true; }); lpSheet.addEventListener('touchmove', function(e){ if(!_drag) return; _dY=_getY(e)-_sY; if(_dY>0) lpSheet.style.transform='translateY('+_dY+'px)'; }); lpSheet.addEventListener('touchend', function(){ _drag=false; if(_dY>80){ pvHistHideLongPress(); } lpSheet.style.transform=''; }); }
+ var menuBtn=el('pv-ai-menu-btn'); if(menuBtn && !menuBtn.dataset.pvHistBound){ menuBtn.dataset.pvHistBound='1'; menuBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); pvHistoryToggle(); }); } }catch(e){} }
+
+
 
   var pendingFile = null;
   var pendingFileURL = null;
@@ -7116,7 +7270,7 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
   }
   function cleanImagePrompt(txt){
     var s = String(txt||'').trim();
-    // Strip polite / request wrappers so Cloudflare gets just the subject: "can u generate me a boy running" -> "a boy running"
+    // Strip polite / request wrappers so Groq gets just the subject: "can u generate me a boy running" -> "a boy running"
     s = s.replace(/^(please\s+|pls\s+|can you\s+|can u\s+|could you\s+|could u\s+|can u\s+)/i, '');
     s = s.replace(/^(generate|create|draw|make)\s+(me\s+)?(an?\s+)?(image|picture|pic|photo|drawing)\s+(of\s+|for\s+)?/i, '');
     s = s.replace(/^(generate|create|draw|make)\s+(me\s+)?/i, '');
@@ -7134,18 +7288,20 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_API_KEY},
-      body: JSON.stringify({model: GROQ_MODEL, messages: messages, temperature: 0.7})
+      body: JSON.stringify({model: GROQ_CHAT_MODEL, messages: messages, temperature: 0.7})
     });
     var data = await res.json();
     if(data.error) throw new Error(data.error.message || 'Groq error');
-    return data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || 'No reply from Groq.';
+    var out = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if(out) return out;
+    throw new Error('No reply from Groq.');
   }
   async function callGroqVision(file, base64, mime){
     var prompt = "Describe this " + (file.type.indexOf('video')===0 ? "video" : "picture") + " in detail: what is happening, who/what is in it, colours, text if any, and anything important. Be clear and simple.";
     var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_API_KEY},
-      body: JSON.stringify({model:'qwen/qwen3.8-27b', messages:[{role:'user', content:[{type:'text', text: prompt},{type:'image_url', image_url:{url:'data:'+mime+';base64,'+base64}}]}], temperature:0.3})
+      body: JSON.stringify({model: GROQ_VISION_MODEL, messages:[{role:'user', content:[{type:'text', text: prompt},{type:'image_url', image_url:{url:'data:'+mime+';base64,'+base64}}]}], temperature:0.3})
     });
     var data = await res.json();
     if(data.error) throw new Error(data.error.message || 'Groq could not see this file.');
@@ -7153,14 +7309,16 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     if(!out) throw new Error('Groq could not see this file.');
     return out;
   }
-  // No Cloudflare - picture uses Groq vision above, Live uses Cloudflare below.
+  // Picture uses Groq vision above.
 async function handleSend(){
     var inp = el('pv-ai-input'); if(!inp) return;
     var txt = inp.value.trim();
     if(!txt && !pendingFile) return;
     var showImg = pendingFileURL;
+    var pvSendChatId=pvHistoryEnsureCurrent();
     addMsg(txt, 'user', showImg);
     pvUpdateTitleFromText(txt, !!showImg);
+    try{ pvHistorySaveCurrent(); }catch(e){}
     var fileNow = pendingFile; pendingFile=null; pendingFileURL=null;
     var prev = el('pv-ai-attach-preview'); if(prev) prev.classList.remove('show');
     inp.value=''; var bar=el('pv-ai-input-bar'); if(bar) bar.classList.remove('has-text'); inp.style.height='auto';
@@ -7168,33 +7326,36 @@ async function handleSend(){
     try{
       var reply = '';
       if(fileNow){
-        // Picture / video -> Groq sees, Groq explains (Cloudflare is LIVE ONLY)
+        // Picture / video -> Groq sees, Groq explains
         var b64 = await fileToBase64(fileNow);
         var seen = await callGroqVision(fileNow, b64, fileNow.type || 'image/jpeg');
+        var _hist2 = pvHistoryGetMessagesFromDOM().slice(-20).map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
         reply = await callGroq([
-          {role:'system', content:'You are COSPRO AI. Explain clearly and simply, like a friend. Keep it short unless the user asks for more. LANGUAGE: Default to clear English. Do NOT use Pidgin unless user uses Pidgin first.'},
-          {role:'user', content:'The user sent a ' + (fileNow.type.indexOf('video')===0 ? 'video' : 'picture') + '. Groq saw this: ' + seen + '\nUser said: ' + (txt || 'Explain this') + '\nExplain what is in the picture/video to the user.'}
-        ]);
+          {role:'system', content:'You are COSPRO AI. Explain clearly and simply, like a friend. Keep it short unless the user asks for more. LANGUAGE: Default to clear English. Do NOT use Pidgin unless user uses Pidgin first. Remember what the user said earlier in this same chat and follow it.'}
+        ].concat(_hist2).concat([{role:'user', content:'The user sent a ' + (fileNow.type.indexOf('video')===0 ? 'video' : 'picture') + '. Groq saw this: ' + seen + '\nUser said: ' + (txt || 'Explain this') + '\nExplain what is in the picture/video to the user.'}]));
       } else if(isImageGen(txt)){
         if(thinking) thinking.remove();
-        addMsg('Pictures are off for now - Live is the star. Tap Live and talk to me.', 'ai');
+        addMsg('Pictures are off for now.', 'ai');
         return;
       } else {
-        // Normal chat -> Groq gpt-oss-120b
+        // Normal chat -> remember previous messages in this same chat, like Meta AI / ChatGPT / Gemini
+        var _hist = pvHistoryGetMessagesFromDOM().slice(-20).map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
         reply = await callGroq([
-          {role:'system', content:'You are COSPRO AI. Helpful, friendly, clear. Keep answers simple unless user wants detail. LANGUAGE: Default to clear English. Do NOT use Pidgin unless user uses Pidgin first.'},
-          {role:'user', content: txt}
-        ]);
+          {role:'system', content:'You are COSPRO AI. Helpful, friendly, clear. Keep answers simple unless user wants detail. LANGUAGE: Default to clear English. Do NOT use Pidgin unless user uses Pidgin first. Remember what the user said earlier in this same chat and follow it. If the user said they want to buy shoes, keep talking about shoes unless they change topic.'}
+        ].concat(_hist));
       }
       if(thinking) thinking.remove();
       addMsg(reply, 'ai');
+      try{ if(pvHistoryGetCurrentId()!==pvSendChatId){ var _hl=pvHistoryLoad(); for(var _hi=0;_hi<_hl.length;_hi++){ if(String(_hl[_hi].id)===String(pvSendChatId)){ _hl[_hi].unread=true; break; } } pvHistorySave(_hl); } else { pvHistorySaveCurrent(); } }catch(e){}
     }catch(e){
       if(thinking) thinking.remove();
-      var em = String(e && e.message || 'Could not reach AI.');
-      if(em.toLowerCase().indexOf('quota')!==-1 || em.toLowerCase().indexOf('limit: 0')!==-1 || em.toLowerCase().indexOf('exceed')!==-1){
-        addMsg('Live is resting for a moment, try again in a few seconds.', 'ai');
-      } else {
-        addMsg('Error: ' + em, 'ai');
+      try{
+        var _retryHist = pvHistoryGetMessagesFromDOM().slice(-20).map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
+        var retryReply = await callGroq([{role:'system', content:'You are COSPRO AI. Helpful, friendly, clear. Keep answers simple unless user wants detail. Default to clear English. Remember what the user said earlier in this same chat and follow it.'}].concat(_retryHist));
+        addMsg(retryReply, 'ai');
+        try{ pvHistorySaveCurrent(); }catch(e2){}
+      }catch(e2){
+        addMsg('Sorry, I could not reach the AI just now. Please send your message again.', 'ai');
       }
     }
   }
@@ -7249,7 +7410,7 @@ async function handleSend(){
     // Flip = switch front/back camera (part of camera)
     var lensFlip = el('pv-lens-flip');
     if(lensFlip && !lensFlip.dataset.pvLensFlip){ lensFlip.dataset.pvLensFlip='1'; lensFlip.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); lensFacing = (lensFacing==='environment' ? 'user' : 'environment'); startLensCamera().then(function(){ if(torchOn){ applyTorch(true).catch(function(){ torchOn=false; syncTorchIcon(); }); } }); }); }
-    // FLASH = TORCH: exactly Google outline icon. Tap = phone flash ON, tap again = OFF. Close = OFF.
+    // FLASH = TORCH: exactly Google filled icon. Tap = phone flash ON, tap again = OFF. Close = OFF.
     var lensFlashBtn = el('pv-lens-flash');
     var torchOn = false;
     function syncTorchIcon(){
@@ -7345,8 +7506,9 @@ async function handleSend(){
       if(clearBtn) clearBtn.addEventListener('click', function(){ pendingFile=null; pendingFileURL=null; var p=el('pv-ai-attach-preview'); if(p) p.classList.remove('show'); });
     }
   }
-  document.addEventListener('click', function(e){ try{ if(!e.target || !e.target.closest) return; if(!e.target.closest('#pv-ai-upright')) return; var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp2=el('pv-ai-input'); if(inp2){ inp2.value=''; inp2.style.height='auto'; } var bar2=el('pv-ai-input-bar'); if(bar2) bar2.classList.remove('has-text'); var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('show'); pvResetTitle(); }catch(err){} }, true);
+  document.addEventListener('click', function(e){ try{ if(!e.target || !e.target.closest) return; if(!e.target.closest('#pv-ai-upright')) return; try{ pvHistorySaveCurrent(true); }catch(e){} try{ pvHistorySetCurrentId(pvHistoryNewId()); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp2=el('pv-ai-input'); if(inp2){ inp2.value=''; inp2.style.height='auto'; } var bar2=el('pv-ai-input-bar'); if(bar2) bar2.classList.remove('has-text'); var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('show'); pvResetTitle(); }catch(err){} }, true);
   pvInitTitle();
+  try{ pvHistoryInit(); }catch(e){}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
 </script>
@@ -7552,7 +7714,7 @@ async function handleSend(){
 .pv-ai-circle-btn .pv-ai-upright-new-icon{display:flex;align-items:center;justify-content:center}
 .pv-ai-circle-btn .pv-ai-upright-lines{display:flex;align-items:center;justify-content:center}
 /* TITLE: shift left more, bigger but still sleek */
-#pv-ai-title.pv-ai-title{margin-left:0;padding:0;font-size:20px;font-weight:700;letter-spacing:.2px;color:#fff;max-width:52%}
+#pv-ai-screen > .pv-posts-top{gap:10px} #pv-ai-screen .pv-ai-top-spacer{display:none} #pv-ai-title.pv-ai-title{flex:1 1 auto;max-width:none;min-width:0;margin-left:0;padding:0 10px 0 0;font-size:20px;font-weight:700;letter-spacing:.2px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* VOICE NOTE: plain, no black cover, just icon like lens */
 #pv-ai-screen .pv-ai-action{background:transparent !important;border:none !important;box-shadow:none !important;width:38px !important;height:38px !important;min-width:38px !important;border-radius:50% !important;padding:0}
 #pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action{background:linear-gradient(90deg,#0084ff,#00bfa5) !important;border:none !important;box-shadow:none !important;width:56px !important;height:40px !important;min-width:56px !important;border-radius:999px !important}
@@ -7576,7 +7738,7 @@ async function handleSend(){
 </style>
 <style data-file="css/cospro-ai-dm-bubble-small-back.css">
 /* MY BUBBLE IN AI = EXACTLY MY PRIVATE DM BUBBLE - delete old AI blue bubble, use DM mine bubble */
-#pv-ai-screen .pv-ai-msg.user{background:linear-gradient(135deg,#0084ff,#00bfa5) !important;color:#fff !important;padding:8px 12px !important;border-radius:18px !important;border-bottom-right-radius:18px !important;max-width:70% !important;width:fit-content !important;font-size:15px !important;line-height:1.4 !important;word-break:break-word !important;box-shadow:0 1px 3px rgba(0,0,0,0.25) !important;align-self:flex-end !important;white-space:pre-wrap}
+#pv-ai-screen .pv-ai-msg.user{background:#ffffff !important;color:#111111 !important;padding:8px 12px !important;border-radius:18px !important;border-bottom-right-radius:18px !important;max-width:70% !important;width:fit-content !important;font-size:15px !important;line-height:1.4 !important;word-break:break-word !important;box-shadow:0 1px 3px rgba(0,0,0,0.25) !important;align-self:flex-end !important;white-space:pre-wrap} #pv-ai-screen .pv-ai-msg.user span{color:#111111 !important}
 /* BACK ARROW COVER - reduced, small sleek like menu cover */
 #pv-ai-screen .pv-posts-back,#pv-ai-back-btn{width:36px !important;height:36px !important;min-width:36px !important;border-radius:50% !important;background:#1c1c1c !important;border:1px solid rgba(255,255,255,.12) !important;box-shadow:0 3px 10px rgba(0,0,0,.40) !important;padding:0 !important}
 #pv-ai-screen .pv-posts-back svg,#pv-ai-back-btn svg{width:22px !important;height:14px !important}
@@ -7654,12 +7816,12 @@ async function handleSend(){
 
 <!-- ===== FILE: css/ai-separate-voice-send.css — separate, do not mix ===== -->
 <style data-file="css/ai-separate-voice-send.css">
-/* SEND INSIDE LIVE CHAT - one button, just like voice note was before. Empty = live chat waveform, has text = send arrow. Live chat has JUST A CIRCLE COVER, no pill, no blue. */
+/* LIVE ICON KEPT - function deleted, no function for now. Voice note icon deleted. Lens stays where it was. Empty = live waveform icon, has text = send arrow. */
 .pv-ai-live-btn{display:none !important}
 #pv-ai-screen .pv-ai-action{display:flex !important;width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;border-radius:50% !important;background:#333336 !important;border:none !important;box-shadow:none !important;align-items:center !important;justify-content:center !important;padding:0 !important;flex-shrink:0 !important;cursor:pointer !important;-webkit-tap-highlight-color:transparent}
 #pv-ai-screen .pv-ai-action:active{transform:scale(.92)}
 #pv-ai-screen .pv-ai-action .pv-ai-voice-icon{display:none !important}
-/* Empty: show live waveform inside circle cover */
+/* Empty: show live waveform icon inside circle cover - tapping it does nothing, function deleted */
 #pv-ai-screen .pv-ai-input-bar:not(.has-text) .pv-ai-action{background:#333336 !important}
 #pv-ai-screen .pv-ai-input-bar:not(.has-text) .pv-ai-action .pv-ai-live-icon{display:flex !important;align-items:center !important;justify-content:center !important;gap:3px !important}
 #pv-ai-screen .pv-ai-input-bar:not(.has-text) .pv-ai-action .pv-ai-send-icon{display:none !important}
@@ -7673,11 +7835,6 @@ async function handleSend(){
 #pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action .pv-ai-live-icon{display:none !important}
 #pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action .pv-ai-send-icon{display:flex !important}
 #pv-ai-screen .pv-ai-action .pv-ai-send-icon svg{width:26px !important;height:26px !important}
-/* VOICE NOTE after lens - small sleek, transparent, NO cover, proper mic. Was missing CSS so it rendered as a white block. */
-.pv-ai-voice-note-btn{width:38px !important;height:38px !important;min-width:38px !important;border-radius:50% !important;background:transparent !important;border:none !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 !important;flex-shrink:0 !important;cursor:default !important;-webkit-tap-highlight-color:transparent}
-.pv-ai-voice-note-btn svg{width:26px !important;height:26px !important;display:block;fill:none !important}
-.pv-ai-voice-note-btn svg rect{fill:#fff !important}
-.pv-ai-voice-note-btn svg path{fill:none !important;stroke:#fff !important}
 </style>
 
 <!-- ===== FILE: js/scroll-down-sleek.js — separate, do not mix ===== -->
@@ -7749,412 +7906,344 @@ async function handleSend(){
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
 </script>
-<script data-file="js/ai-live-btn.js">
-/* LIVE CHAT IN MAIN BAR ONLY - no pill under input bar. Send is separate. */
-(function(){
-  function openVoice(){
-    try{
-      var o = document.getElementById('pv-voice-live');
-      if(o){ o.classList.remove('hidden'); o.removeAttribute('hidden'); return; }
-    }catch(e){}
-    try{
-      var act = document.getElementById('pv-ai-action');
-      var inp = document.getElementById('pv-ai-input');
-      if(act && inp && !inp.value.trim()) act.click();
-    }catch(e){}
-  }
-  function wire(){
-    /* No pill under input bar - removed. Voice note kept after lens icon, no function for now. */
-    var vn = document.getElementById('pv-ai-voice-note-btn');
-    if(vn && !vn.dataset.pvVoiceNoteBound){ vn.dataset.pvVoiceNoteBound='1'; vn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); /* voice note - no function for now */ }); }
-    var live = document.getElementById('pv-ai-live-btn');
-    if(live && !live.dataset.pvLiveBound){ live.dataset.pvLiveBound='1'; live.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openVoice(); }); }
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire); else wire();
-  setInterval(wire, 1000);
-})();
-</script>
+
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script>
-<style data-file="css/live-realtime.css"> /* LIVE REALTIME - TEXT FREE, NO WAVE - black only, buttons only */ #pv-voice-live .pv-live-orb-wrap{ display:flex !important; flex-direction:column !important; overflow:hidden !important; } .pv-live-center{ flex:1 !important; display:flex !important; flex-direction:column !important; min-height:0 !important; }</style>
-<script data-file="js/live-realtime.js">
-// PRO-VIBES LIVE - CLEAN REBUILD - CLOUDFLARE ONLY FOR LIVE
-// Design: Cloudflare Whisper = ear, Cloudflare Llama = brain, browser TTS = voice. Voice only. Normal chat + picture use the chat brain, not Live. No pictures. No header. UI untouched.
-// Language: English by default. Pidgin only if user speaks Pidgin first.
-// Voice: Male - browser TTS male voice.
-// Audio: No feedback - mic never plays to speaker, mic pauses while AI speaks, 48k -> 16k downsample, silence gate.
+
+
+
+
+
+
+<style data-file="css/live-chat-blue-only.css">
+/* LIVE CHAT BLUE ONLY - only #pv-ai-action, solid blue, no gradient, no green. Camera / lens / bar untouched. */
+#pv-ai-screen #pv-ai-action{background:#0084ff !important;background-image:none !important;border:none !important;box-shadow:none !important}
+#pv-ai-screen .pv-ai-input-bar:not(.has-text) #pv-ai-action{background:#0084ff !important;background-image:none !important}
+#pv-ai-screen .pv-ai-input-bar.has-text #pv-ai-action{background:#0084ff !important;background-image:none !important}
+#pv-ai-screen #pv-ai-action .pv-ai-live-icon i{background:#fff !important}
+#pv-ai-screen #pv-ai-action .pv-ai-send-icon svg{stroke:#fff !important}
+</style>
+<style data-file="css/live-chat.css">
+/* LIVE CHAT - X in same circle cover as live chat, NOT blue, bar goes down sleek, only Listening + X */
+#pv-ai-live-status{display:none !important;align-items:center;gap:8px;padding:0;box-sizing:border-box;min-height:28px}
+#pv-ai-input-bar{transition:padding .25s ease}
+#pv-ai-input-bar.pv-live-active{flex-direction:row !important;align-items:center !important;padding:10px 12px !important;gap:10px !important}
+#pv-ai-input-bar.pv-live-active #pv-ai-input{display:none !important}
+#pv-ai-input-bar.pv-live-active #pv-ai-attach-preview{display:none !important}
+#pv-ai-input-bar.pv-live-active #pv-ai-live-status{display:flex !important;flex:1 1 auto !important;min-width:0 !important;padding:0 !important;min-height:0 !important}
+#pv-ai-input-bar.pv-live-active .pv-ai-input-row{display:flex !important;align-items:center !important;gap:0 !important;flex:none !important;margin:0 !important;padding:0 !important}
+#pv-ai-input-bar.pv-live-active #pv-ai-plus{display:none !important}
+#pv-ai-input-bar.pv-live-active #pv-ai-cam{display:none !important}
+#pv-ai-input-bar.pv-live-active .pv-ai-row-spacer{display:none !important}
+#pv-ai-input-bar.pv-live-active>*:not(#pv-ai-live-status):not(.pv-ai-input-row){display:none !important}
+#pv-ai-input-bar.pv-live-active .pv-ai-input-row>*:not(#pv-ai-action){display:none !important}
+#pv-ai-live-status .pv-live-text{color:#fff;font-size:18px;line-height:1.3;font-family:inherit}
+#pv-ai-live-status .pv-live-dots{display:inline-flex;gap:4px;align-items:flex-end;height:18px}
+#pv-ai-live-status .pv-live-dots span{width:5px;height:5px;border-radius:50%;background:#00bfa5;display:block;animation:pvLiveDot 1s ease-in-out infinite}
+#pv-ai-live-status .pv-live-dots span:nth-child(2){animation-delay:.18s}
+#pv-ai-live-status .pv-live-dots span:nth-child(3){animation-delay:.36s}
+@keyframes pvLiveDot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+#pv-ai-screen #pv-ai-action.pv-live-x{width:28px !important;height:28px !important;min-width:28px !important;min-height:28px !important;border-radius:0 !important;background:transparent !important;background-image:none !important;background-color:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important}
+#pv-ai-screen #pv-ai-action.pv-live-x svg{width:20px !important;height:20px !important;display:block !important}
+#pv-ai-screen #pv-ai-action.pv-live-x .pv-ai-live-icon{display:none !important}
+#pv-ai-screen #pv-ai-action.pv-live-x .pv-ai-send-icon{display:none !important}
+#pv-ai-screen #pv-ai-action.pv-live-x .pv-ai-live-icon{display:none !important}
+#pv-ai-screen #pv-ai-action.pv-live-x .pv-ai-send-icon{display:none !important}
+</style>
+<script data-file="js/live-chat.js">
+/* LIVE CHAT - tap blue live button, AI speaks the prompt that is present, then only Listening... + X in same circle cover, not blue */
 (function(){
-  // ---- State ----
-  var liveOn = false;
-  var liveMuted = false;
-  var liveSpeaking = false; // AI is currently playing voice
-  var liveWs = null;
-  var liveSetupDone = false;
-  var liveUseReal = false; // Cloudflare Live uses Whisper + Llama + TTS, not a realtime websocket
-  var liveFallback = false;
-  var liveMicStarted = false;
-  var liveRetry = 0;
-  var liveModelIdx = 0;
-  var liveModels = ['@cf/meta/llama-3.3-70b-instruct-fp8-fast'];
-  var liveStream = null; // getUserMedia stream
-  var stream = null; // alias for fallback code
-  var liveAudioCtx = null, liveProcessor = null, liveInput = null, liveSilentGain = null;
-  var liveOutCtx = null, liveNextPlay = 0, liveCurrentSource = null;
-  var recog = null, recorder = null, recogRestartTimer = null, liveConnectTimer = null;
-  var liveLoudFrames = 0, liveAudioInTurn = false, liveTextInTurn = '', liveLastEmptyNudge = 0;
-  // ---- FIXED LIVE: memory + turn-taking, no mix ----
-  var liveHistory = []; // last 6 turns: [{role, content}] - so AI remembers, no repeat of old talk
-  var liveLastSentText = ''; var liveLastSentAt = 0;
-  var liveSpeakToken = 0; // cancels old TTS queue when new reply comes
-  var liveDebounceTimer = null; var livePendingText = '';
-  var liveIsThinking = false;
-  function liveNorm(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
-  function liveIsDup(text){
-    var n = liveNorm(text);
-    if(!n || n.length < 3) return true;
-    if(n === liveNorm(liveLastSentText) && (Date.now() - liveLastSentAt) < 5000) return true;
-    // if new text is just old text + small tail, or old is prefix of new, treat as same turn
-    if(liveLastSentText && (n.indexOf(liveNorm(liveLastSentText)) === 0 || liveNorm(liveLastSentText).indexOf(n) === 0)) return true;
-    return false;
-  }
-  function livePushHistory(role, content){
-    if(!content) return;
-    liveHistory.push({role: role, content: String(content).slice(0, 800)});
-    while(liveHistory.length > 12) liveHistory.shift(); // keep last 6 turns (12 messages)
-  }
-
+  var live=false, recog=null, speaking=false, sending=false, lastSpokenAi='', observer=null, waveCtx=null, waveAnalyser=null, waveStream=null, waveRaf=null, waveReal=false, liveStartCount=0;
   function el(id){ return document.getElementById(id); }
-  function liveBox(){ return el('pv-voice-live'); }
-  function isVisible(){ var o=liveBox(); if(!o) return false; return !o.classList.contains('hidden') && !o.hasAttribute('hidden'); }
-  function ensureUI(){ /* Intentionally empty - leave live UI exactly as it is, no header */ }
-
-  // ---- Male voice for fallback TTS ----
-  function pickMaleVoice(){
+  function getPresentPrompt(){
     try{
-      var vs = window.speechSynthesis ? window.speechSynthesis.getVoices() || [] : [];
-      if(!vs.length) return null;
-      var en = vs.filter(function(v){ return /^en/i.test(v.lang||''); });
-      var pool = en.length ? en : vs;
-      var male = pool.filter(function(v){ return /David|Daniel|Mark|Guy|Ryan|Brian|George|James|Microsoft David|Google US English Male/i.test(v.name||''); });
-      if(male.length) return male[0];
-      var notFemale = pool.filter(function(v){ return !/Samantha|Zira|Aria|Jenny|Female|Sofia|Emma|Natasha|Susan|Hazel|Karen/i.test(v.name||''); });
-      return notFemale[0] || pool[0] || null;
+      var w=el('pv-ai-empty-writeup');
+      if(w && !w.classList.contains('hidden') && (w.textContent||'').trim()) return (w.textContent||'').trim();
+    }catch(e){}
+    var fallbacks=["What's on your mind?","How can I help you today?","What are we doing today?","Ask me anything...","What do you want to know?","Need a quick idea?"];
+    return fallbacks[Math.floor(Date.now()/1000)%fallbacks.length] || "What are we doing today?";
+  }
+  function pickVoice(){
+    try{
+      if(!('speechSynthesis' in window)) return null;
+      var list=window.speechSynthesis.getVoices()||[];
+      if(!list.length) return null;
+      var enUS=list.filter(function(v){ return /en[-_]US/i.test(v.lang||''); });
+      var en=list.filter(function(v){ return /^en/i.test(v.lang||''); });
+      var pool=enUS.length?enUS:(en.length?en:list);
+      var prefer=['Google US English','Microsoft Aria','Microsoft Jenny','Samantha','Aria','Jenny','Guy','Natural','Neural'];
+      for(var i=0;i<prefer.length;i++){ for(var j=0;j<pool.length;j++){ if((pool[j].name||'').indexOf(prefer[i])!==-1) return pool[j]; } }
+      return pool[0]||null;
     }catch(e){ return null; }
   }
-  function speakAI(text){
-    if(!('speechSynthesis' in window)) return;
-    liveSpeakToken++; var myToken = liveSpeakToken;
-    try{ window.speechSynthesis.cancel(); }catch(e){}
-    try{ if(liveDebounceTimer) clearTimeout(liveDebounceTimer); }catch(e){}
-    livePendingText = '';
-    liveSpeaking = true; liveIsThinking = false;
-    try{ if(recog) recog.stop(); }catch(e){}
-    try{ if(recorder && recorder.state === 'recording') recorder.stop(); }catch(e){}
-    var clean = String(text||'').replace(/\[[^\]]+\]\([^)]+\)/g,'$1').replace(/https?:\/\/\S+/g,'').replace(/[*#_]/g,'').trim();
-    // Keep only ONE clean reply - if model tried to jumble 2 replies, keep first 2 sentences max for voice
-    if(!clean){ liveSpeaking=false; if(myToken === liveSpeakToken) resumeListening(); return; }
-    var chunks = clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || [clean];
-    // Voice: max 3 chunks per turn, so one answer does not run into next question
-    if(chunks.length > 3) chunks = chunks.slice(0, 3);
-    var idx = 0;
-    function next(){
-      if(!liveOn || myToken !== liveSpeakToken){ liveSpeaking=false; return; }
-      if(idx >= chunks.length){ liveSpeaking=false; if(myToken === liveSpeakToken) resumeListening(); return; }
-      var u = new SpeechSynthesisUtterance(chunks[idx]);
-      var v = pickMaleVoice(); if(v) u.voice=v;
-      u.lang = (v && v.lang) || 'en-US';
-      u.rate = 0.98; u.pitch = 0.85; u.volume = 1;
-      u.onend = function(){ if(myToken !== liveSpeakToken) return; idx++; next(); };
-      u.onerror = function(){ if(myToken !== liveSpeakToken) return; idx++; next(); };
+  function speak(text, cb){
+    try{
+      if(!('speechSynthesis' in window)){ if(cb) cb(); return; }
+      window.speechSynthesis.cancel();
+      var clean=String(text||'').replace(/https?:\/\/\S+/g,'').replace(/\s+/g,' ').trim();
+      if(!clean){ if(cb) cb(); return; }
+      var u=new SpeechSynthesisUtterance(clean);
+      var v=pickVoice(); if(v) u.voice=v; u.lang=(v&&v.lang)||'en-US'; u.rate=1.0; u.pitch=1.0; u.volume=1;
+      speaking=true; refreshLiveStatus(); startWaveCapture();
+      u.onend=function(){ speaking=false; refreshLiveStatus(); stopWaveCapture(); if(cb) cb(); };
+      u.onerror=function(){ speaking=false; refreshLiveStatus(); stopWaveCapture(); if(cb) cb(); };
       window.speechSynthesis.speak(u);
-    }
-    next();
+    }catch(e){ speaking=false; if(cb) cb(); }
   }
-  function stopSpeaking(){ liveSpeakToken++; try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} liveSpeaking=false; liveIsThinking=false; clearPlayback(); }
-  function localReply(q){
-    var s=(q||'').toLowerCase();
-    if(/hello|hi |hey|good morning|good evening/.test(s)) return "Hey! Good to hear you. What's on your mind today?";
-    if(/how are you/.test(s)) return "I'm doing great, thanks for asking. How can I help you right now?";
-    if(/your name|who are you/.test(s)) return "I'm PRO-VIBES AI, your live voice assistant. Talk to me like a friend.";
-    if(/thank/.test(s)) return "Anytime! Glad I could help. What else?";
-    if(/bye|goodbye/.test(s)) return "Bye for now! Come back anytime you want to talk.";
-    if(/nigeria|enugu|lagos|naira/.test(s)) return "Yes! I know Nigeria well. How can I help you with that?";
-    if(/music|song/.test(s)) return "I love music. Tell me what vibe you want and I'll suggest something good.";
-    if(/joke|funny/.test(s)) return "Okay here's one - why did the phone go to therapy? Too many missed calls!";
-    return "Got you - "+q+". Tell me a bit more so I can help you properly.";
+  function refreshLiveStatus(){
+    var bar=el('pv-ai-input-bar'); if(!bar) return;
+    var s=el('pv-ai-live-status');
+    if(live && speaking){ bar.classList.add('pv-ai-speaking'); if(s) s.style.display='flex'; }
+    else { bar.classList.remove('pv-ai-speaking'); if(s && live) s.style.display='flex'; }
   }
-
-  // ---- Live brain (Cloudflare Llama) - main Live path ----
-  var liveProcessing = false;
-  async function askCloudflareText(userText){
+  function stopWaveCapture(){
+    try{ if(waveRaf) cancelAnimationFrame(waveRaf); }catch(e){}
+    waveRaf=null; waveReal=false;
+    try{ if(waveStream){ waveStream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); } }catch(e){}
+    waveStream=null;
+    try{ if(waveCtx){ waveCtx.close(); } }catch(e){}
+    waveCtx=null; waveAnalyser=null;
+    try{ var w=el('pv-ai-live-wave'); if(w) w.classList.remove('pv-wave-real'); }catch(e){}
+  }
+  function startWaveCapture(){
+    stopWaveCapture();
     try{
-      var key=(typeof CLOUDFLARE_API_TOKEN!=='undefined')? CLOUDFLARE_API_TOKEN : '';
-      var acct=(typeof CLOUDFLARE_ACCOUNT_ID!=='undefined')? CLOUDFLARE_ACCOUNT_ID : '';
-      if(!key || !acct) throw new Error('no cloudflare');
-      // Build messages with history so AI does NOT repeat old turns and DOES answer the CURRENT question only
-      var msgs = [{role:'system', content:'You are PRO-VIBES AI, friendly real-time voice assistant in Enugu, Nigeria. LANGUAGE RULE: Default to clear, simple English. Do NOT use Pidgin unless the user speaks Pidgin first. If user speaks Pidgin, match their Pidgin naturally. If user speaks English, stay in English. RULES: Answer ONLY the latest user question. Do NOT repeat earlier answers. Do NOT start with hey/hello unless user just greeted. Do NOT add extra greetings like hey there can I help you if user asked a real question. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis.'}];
-      for(var h=0; h<liveHistory.length; h++) msgs.push(liveHistory[h]);
-      msgs.push({role:'user', content: userText});
-      var res=await fetch('https://api.cloudflare.com/client/v4/accounts/'+acct+'/ai/v1/chat/completions',{
-        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-        body: JSON.stringify({model:'@cf/meta/llama-3.3-70b-instruct-fp8-fast', messages: msgs, temperature:0.7})
-      });
-      var data=await res.json();
-      if(data.error) throw new Error(data.error.message||'Cloudflare error');
-      if(data.errors && data.errors[0]) throw new Error(data.errors[0].message||'Cloudflare error');
-      var out=data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-      if(data.result && data.result.response) out=data.result.response;
-      if(out) return String(out).trim();
-      throw new Error('empty');
-    }catch(e){ return localReply(userText); }
-  }
-  async function handleUserSpeech(text){
-    if(!text || !text.trim()) return;
-    text = text.trim();
-    // Turn-taking: if AI is speaking or thinking, ignore new speech - user must wait for AI to finish
-    if(liveSpeaking || liveIsThinking || liveProcessing) return;
-    // Dedup: same sentence twice in 5s = browser echo, ignore
-    if(liveIsDup(text)) return;
-    liveLastSentText = text; liveLastSentAt = Date.now();
-    liveProcessing = true; liveIsThinking = true;
-    // Stop mic while thinking so background talk does not mix in
-    try{ if(recog) recog.stop(); }catch(e){}
-    try{
-      livePushHistory('user', text);
-      var reply = await askCloudflareText(text);
-      if(!liveOn) return;
-      livePushHistory('assistant', reply);
-      liveIsThinking = false;
-      speakAI(reply);
-    }
-    catch(e){
-      liveIsThinking = false;
-      try{ if(liveOn){ var fb = localReply(text); livePushHistory('assistant', fb); speakAI(fb); } }catch(_){}
-    }
-    finally{ liveProcessing=false; liveIsThinking=false; }
-  }
-  // Debounce: wait 1200ms silence after user stops, then send once - stops 3-4 sends for same talk
-  function queueUserSpeech(text){
-    if(!text || !text.trim()) return;
-    if(liveSpeaking || liveIsThinking || liveProcessing) return;
-    livePendingText = text.trim();
-    try{ if(liveDebounceTimer) clearTimeout(liveDebounceTimer); }catch(e){}
-    liveDebounceTimer = setTimeout(function(){
-      var t = livePendingText; livePendingText = '';
-      if(t) handleUserSpeech(t);
-    }, 1200);
-  }
-  function resumeListening(){
-    try{
-      if(!liveOn || liveUseReal) return;
-      if(liveSpeaking || liveIsThinking) return; // wait until AI finishes talking
-      // Small pause so mic does not pick up AI TTS tail
-      setTimeout(function(){
-        if(!liveOn || liveSpeaking || liveIsThinking) return;
-        try{
-          if(recog){ try{ recog.start(); }catch(e){ try{ startRecognition(); }catch(_){} } return; }
-          startRecognition();
-        }catch(e){}
-      }, 400);
+      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+      navigator.mediaDevices.getUserMedia({audio:true, video:false}).then(function(stream){
+        if(!live || !speaking) { try{ stream.getTracks().forEach(function(tr){ tr.stop(); }); }catch(e){} return; }
+        waveStream=stream;
+        var AC=window.AudioContext||window.webkitAudioContext;
+        if(!AC) return;
+        waveCtx=new AC();
+        var srcNode=waveCtx.createMediaStreamSource(stream);
+        waveAnalyser=waveCtx.createAnalyser();
+        waveAnalyser.fftSize=256;
+        waveAnalyser.smoothingTimeConstant=0.82;
+        srcNode.connect(waveAnalyser);
+        var waveEl=el('pv-ai-live-wave');
+        if(waveEl) waveEl.classList.add('pv-wave-real');
+        waveReal=true;
+        var data=new Uint8Array(waveAnalyser.frequencyBinCount);
+        function tick(){
+          if(!live || !speaking || !waveAnalyser){ stopWaveCapture(); return; }
+          try{ waveAnalyser.getByteFrequencyData(data); }catch(e){ return; }
+          var waveEl2=el('pv-ai-live-wave');
+          if(waveEl2){
+            var bars=waveEl2.children;
+            for(var i=0;i<bars.length;i++){
+              var bin=Math.floor(i*data.length/bars.length);
+              var v=data[bin]||0;
+              var h=6 + (v/255)*22;
+              bars[i].style.height=h+'px';
+              bars[i].style.opacity=(0.45 + (v/255)*0.55).toFixed(2);
+            }
+          }
+          waveRaf=requestAnimationFrame(tick);
+        }
+        waveRaf=requestAnimationFrame(tick);
+      }).catch(function(){ /* keep CSS fallback wave */ });
     }catch(e){}
   }
-  function startRecognition(){
-    var Recog=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(!Recog){ startRecorderFallback(); return; }
+  function ensureLiveStatus(){
+    var bar=el('pv-ai-input-bar'); if(!bar) return null;
+    var s=el('pv-ai-live-status');
+    if(!s){
+      s=document.createElement('div'); s.id='pv-ai-live-status'; s.setAttribute('aria-live','polite');
+      var wave=''; for(var i=0;i<28;i++){ wave+='<span></span>'; }
+      s.innerHTML='<span class="pv-live-listening"><span class="pv-live-text">Listening</span><span class="pv-live-dots"><span></span><span></span><span></span></span></span><span class="pv-live-wave" id="pv-ai-live-wave">'+wave+'</span>';
+      var inp=el('pv-ai-input');
+      if(inp && inp.parentNode) inp.parentNode.insertBefore(s, inp.nextSibling);
+      else bar.insertBefore(s, bar.firstChild);
+    }
+    return s;
+  }
+  function showLiveUI(){
+    var bar=el('pv-ai-input-bar'), inp=el('pv-ai-input'), btn=el('pv-ai-action');
+    if(bar) bar.classList.add('pv-live-active');
+    ensureLiveStatus();
+    if(inp){ inp.value=''; try{ inp.blur(); }catch(e){} }
+    if(bar) bar.classList.remove('has-text');
+    if(btn){
+      if(!btn.dataset.pvLiveOrig) btn.dataset.pvLiveOrig=btn.innerHTML;
+      btn.classList.add('pv-live-x');
+      try{ btn.style.setProperty('background','#333336','important'); btn.style.setProperty('background-color','#333336','important'); btn.style.setProperty('background-image','none','important'); btn.style.setProperty('border-radius','50%','important'); btn.style.setProperty('border','1px solid rgba(255,255,255,0.08)','important'); btn.style.setProperty('box-shadow','0 1px 6px rgba(0,0,0,0.35)','important'); btn.style.setProperty('width','32px','important'); btn.style.setProperty('height','32px','important'); }catch(e){}
+      btn.setAttribute('aria-label','Close live chat');
+      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#8a8a8e" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    }
+  }
+  function hideLiveUI(){
+    var bar=el('pv-ai-input-bar'), btn=el('pv-ai-action');
+    if(bar){ bar.classList.remove('pv-live-active'); bar.classList.remove('pv-ai-speaking'); }
+    var _s=el('pv-ai-live-status'); if(_s) _s.style.display='none';
+    if(btn){
+      btn.classList.remove('pv-live-x');
+      try{ btn.style.removeProperty('background'); btn.style.removeProperty('background-color'); btn.style.removeProperty('background-image'); btn.style.removeProperty('border-radius'); btn.style.removeProperty('border'); btn.style.removeProperty('box-shadow'); btn.style.removeProperty('width'); btn.style.removeProperty('height'); }catch(e){}
+      btn.setAttribute('aria-label','Live chat or send');
+      if(btn.dataset.pvLiveOrig) btn.innerHTML=btn.dataset.pvLiveOrig;
+      try{ delete btn.dataset.pvLiveOrig; }catch(e){}
+    }
+    var inp=el('pv-ai-input'); if(inp){ inp.value=''; if(bar) bar.classList.remove('has-text'); }
+  }
+  function stopRecog(){
+    try{ if(recog){ recog.onend=null; recog.onresult=null; recog.onerror=null; try{ recog.abort(); }catch(e){} } }catch(e){}
+    recog=null;
+  }
+  function startListening(){
+    if(!live || speaking) return;
+    refreshLiveStatus();
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR) return;
+    stopRecog();
     try{
-      if(recog){ try{ recog.stop(); }catch(e){} }
-      recog=new Recog();
-      recog.continuous=true; recog.interimResults=true; recog.lang='en-US'; recog.maxAlternatives=1;
-      recog.onresult=function(ev){
-        if(liveSpeaking || liveIsThinking || liveProcessing) return;
-        var final='';
-        for(var i=ev.resultIndex;i<ev.results.length;i++){ var r=ev.results[i]; if(r.isFinal) final+=r[0].transcript; }
-        // Only FINAL transcripts, never interim - interim is what caused mixing
-        if(final && final.trim()) queueUserSpeech(final.trim());
+      recog=new SR();
+      recog.lang='en-US'; recog.interimResults=true; recog.continuous=false; recog.maxAlternatives=1;
+      var finalText='';
+      recog.onresult=function(e){
+        for(var i=e.resultIndex;i<e.results.length;i++){ if(e.results[i].isFinal) finalText+=e.results[i][0].transcript; }
       };
-      recog.onerror=function(ev){};
+      recog.onerror=function(){};
       recog.onend=function(){
-        if(!liveOn || liveUseReal) return;
-        clearTimeout(recogRestartTimer);
-        recogRestartTimer=setTimeout(function(){ if(liveOn && !liveSpeaking && !liveUseReal) startRecognition(); }, 400);
+        recog=null;
+        if(!live || speaking) return;
+        var txt=finalText.trim();
+        if(txt){ sendLiveText(txt); }
+        else { setTimeout(function(){ if(live && !speaking) startListening(); }, 300); }
       };
       recog.start();
-    }catch(e){ startRecorderFallback(); }
-  }
-  function startRecorderFallback(){
-    if(!stream) return;
-    try{
-      if(!window.MediaRecorder) return;
-      var mime='audio/webm';
-      try{ if(!MediaRecorder.isTypeSupported(mime)) mime=''; }catch(e){ mime=''; }
-      var opts=mime? {mimeType:mime} : {};
-      recorder=new MediaRecorder(stream, opts);
-      var chunks=[];
-      recorder.ondataavailable=function(e){ if(e.data && e.data.size>0) chunks.push(e.data); };
-      recorder.onstop=function(){
-        var blob=new Blob(chunks, {type: mime||'audio/webm'}); chunks=[];
-        if(blob.size<800){ if(liveOn && !liveUseReal && !liveSpeaking) startRecorderFallback(); return; }
-        transcribeWhisper(blob).then(function(txt){
-          if(txt && txt.trim()){ if(!liveIsDup(txt.trim())) queueUserSpeech(txt.trim()); else if(liveOn && !liveUseReal && !liveSpeaking) startRecorderFallback(); }
-          else if(liveOn && !liveUseReal && !liveSpeaking) startRecorderFallback();
-        }).catch(function(){ if(liveOn && !liveUseReal && !liveSpeaking) startRecorderFallback(); });
-      };
-      recorder.start();
-      setTimeout(function(){ try{ if(recorder && recorder.state==='recording') recorder.stop(); }catch(e){} }, 4200);
     }catch(e){}
   }
-  async function transcribeWhisper(blob){
-    try{
-      var key=(typeof CLOUDFLARE_API_TOKEN!=='undefined')? CLOUDFLARE_API_TOKEN : '';
-      var acct=(typeof CLOUDFLARE_ACCOUNT_ID!=='undefined')? CLOUDFLARE_ACCOUNT_ID : '';
-      if(!key || !acct) return '';
-      var fd=new FormData(); fd.append('file', blob, 'live.webm'); fd.append('model','@cf/openai/whisper'); fd.append('language','en');
-      var res=await fetch('https://api.cloudflare.com/client/v4/accounts/'+acct+'/ai/v1/audio/transcriptions',{method:'POST', headers:{'Authorization':'Bearer '+key}, body:fd});
-      var data=await res.json(); return (data.text||'').trim();
-    }catch(e){ return ''; }
+  function sendLiveText(txt){
+    if(!live) return;
+    sending=true;
+    var inp=el('pv-ai-input'), bar=el('pv-ai-input-bar'), btn=el('pv-ai-action');
+    if(inp) inp.value=txt;
+    if(bar) bar.classList.add('has-text');
+    try{ if(btn) btn.click(); }catch(e){}
+    sending=false;
+    if(inp){ inp.value=''; try{ inp.blur(); }catch(e){} }
+    if(bar){ bar.classList.remove('has-text'); bar.classList.add('pv-live-active'); }
   }
-
-  // ---- PCM helpers ----
-  function floatTo16BitPCM(input){
-    var out=new Int16Array(input.length);
-    for(var i=0;i<input.length;i++){ var s=Math.max(-1, Math.min(1, input[i])); out[i]= s<0 ? s*0x8000 : s*0x7FFF; }
-    return out;
-  }
-  function bytesToBase64(bytes){
-    var bin=''; var chunk=0x8000;
-    for(var i=0;i<bytes.length;i+=chunk){ bin+=String.fromCharCode.apply(null, bytes.subarray(i, i+chunk)); }
-    return btoa(bin);
-  }
-  function base64ToBytes(b64){
-    var bin=atob(b64); var len=bin.length; var bytes=new Uint8Array(len);
-    for(var i=0;i<len;i++) bytes[i]=bin.charCodeAt(i);
-    return bytes;
-  }
-  function clearPlayback(){
-    try{ if(liveCurrentSource){ try{ liveCurrentSource.stop(); }catch(e){} } }catch(e){}
-    liveCurrentSource=null;
-    try{ if(liveOutCtx) liveNextPlay=liveOutCtx.currentTime; }catch(e){}
-  }
-  function playPCM24k(b64){
-    try{
-      if(liveMuted) return;
-      if(!liveOutCtx){ liveOutCtx=new (window.AudioContext||window.webkitAudioContext)(); }
-      if(liveOutCtx.state==='suspended'){ try{ liveOutCtx.resume(); }catch(e){} }
-      var bytes=base64ToBytes(b64);
-      var int16=new Int16Array(bytes.buffer, bytes.byteOffset, Math.floor(bytes.byteLength/2));
-      var float32=new Float32Array(int16.length);
-      for(var i=0;i<int16.length;i++) float32[i]=int16[i]/32768;
-      var buf=liveOutCtx.createBuffer(1, float32.length, 24000);
-      buf.getChannelData(0).set(float32);
-      var src=liveOutCtx.createBufferSource(); src.buffer=buf; src.connect(liveOutCtx.destination);
-      var now=liveOutCtx.currentTime;
-      if(liveNextPlay<now) liveNextPlay=now+0.02;
-      if(liveNextPlay - now > 0.6) liveNextPlay = now + 0.02; // drop backlog, prevents garble
-      src.start(liveNextPlay);
-      liveCurrentSource=src; liveNextPlay+=buf.duration;
-      liveSpeaking=true;
-      src.onended=function(){ if(liveCurrentSource===src) liveCurrentSource=null; if(!liveCurrentSource){ liveSpeaking=false; liveLoudFrames=0; } };
-    }catch(e){}
-  }
-
-  // ---- CLOUDFLARE LIVE ----
-  // Cloudflare has no realtime websocket. Live = browser STT first, MediaRecorder + Cloudflare Whisper as backup, Cloudflare Llama as brain, browser TTS as voice.
-  function connectCloudflareLive(){
-    startFallbackLive();
-  }
-  function tryNextModelOrFallback(){
-    startFallbackLive();
-  }
-  function startMicStreaming(){ /* Cloudflare Live does not use PCM streaming - uses Whisper instead */ }
-  function stopMicStreaming(){
-    liveMicStarted=false;
-    try{ if(liveProcessor){ liveProcessor.disconnect(); liveProcessor.onaudioprocess=null; } }catch(e){}
-    liveProcessor=null;
-    try{ if(liveSilentGain) liveSilentGain.disconnect(); }catch(e){}
-    liveSilentGain=null;
-    try{ if(liveInput) liveInput.disconnect(); }catch(e){}
-    liveInput=null;
-    try{ if(liveAudioCtx) liveAudioCtx.close(); }catch(e){}
-    liveAudioCtx=null;
-  }
-  function startFallbackLive(){
-    if(!liveOn) return;
-    if(liveFallback) return;
-    liveFallback=true; liveUseReal=false;
-    try{ if(liveWs){ try{ liveWs.close(); }catch(e){} } }catch(e){}
-    liveWs=null;
-    stopMicStreaming();
-    try{ if(!stream) return; startRecognition(); }catch(e){}
-  }
-  async function startLive(){
-    if(liveOn) return;
-    liveOn=true; liveMuted=false; liveFallback=false; liveUseReal=false; liveRetry=0; liveModelIdx=0; liveLoudFrames=0; liveAudioInTurn=false; liveTextInTurn=''; liveLastEmptyNudge=0; liveHistory=[]; liveLastSentText=''; liveLastSentAt=0; liveSpeakToken++; liveIsThinking=false;
-    ensureUI();
-    try{
-      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ connectCloudflareLive(); return; }
-      stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}, video:false});
-      liveStream=stream;
-      connectCloudflareLive();
-    }catch(err){ connectCloudflareLive(); }
-  }
-  function stopLive(){
-    liveOn=false; liveIsThinking=false; liveProcessing=false;
-    try{ if(liveDebounceTimer) clearTimeout(liveDebounceTimer); }catch(e){} livePendingText='';
-    clearTimeout(recogRestartTimer); clearTimeout(liveConnectTimer);
-    try{ if(liveWs){ try{ liveWs.close(); }catch(e){} } }catch(e){}
-    liveWs=null; liveSetupDone=false;
-    stopMicStreaming();
-    try{ if(recog){ recog.onend=null; recog.onerror=null; recog.onresult=null; try{ recog.stop(); }catch(e){} } }catch(e){}
-    recog=null;
-    try{ if(recorder && recorder.state!=='inactive') recorder.stop(); }catch(e){}
-    recorder=null;
-    stopSpeaking(); clearPlayback();
-    try{ if(liveOutCtx) liveOutCtx.close(); }catch(e){}
-    liveOutCtx=null; liveNextPlay=0;
-    try{ if(stream){ stream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); } }catch(e){}
-    stream=null; liveStream=null;
-    try{ var m=document.getElementById('pv-live-mute'); if(m) m.classList.remove('is-muted'); }catch(e){}
-  }
-  window.pvStartLiveRealtime=startLive;
-  window.pvStopLiveRealtime=stopLive;
-  window.pvLiveIsReal=function(){ return liveOn; }; // Cloudflare Live is real when Live is on
-  function watch(){
-    var o=liveBox(); if(!o) return;
-    var wasVisible=isVisible();
-    var obs=new MutationObserver(function(){
-      var now=isVisible();
-      if(now && !wasVisible){ startLive(); }
-      if(!now && wasVisible){ stopLive(); }
-      wasVisible=now;
+  function startAiObserver(){
+    if(observer) return;
+    var box=el('pv-ai-messages'); if(!box || !window.MutationObserver) return;
+    observer=new MutationObserver(function(){
+      if(!live || speaking) return;
+      var msgs=box.querySelectorAll('.pv-ai-msg.ai');
+      if(!msgs.length) return;
+      var last=msgs[msgs.length-1];
+      var txt=(last.textContent||'').trim();
+      if(!txt || txt==='Thinking...' || txt===lastSpokenAi) return;
+      lastSpokenAi=txt;
+      try{ var _box2=el('pv-ai-messages'); if(_box2){ var _all=_box2.querySelectorAll('.pv-ai-msg'); for(var _i=liveStartCount; _i<_all.length; _i++){ try{ _all[_i].remove(); }catch(e){} } } }catch(e){}
+      stopRecog();
+      speak(txt, function(){ if(!live) return; setTimeout(function(){ if(live) startListening(); }, 300); });
     });
-    obs.observe(o,{attributes:true, attributeFilter:['class','hidden']});
-    setInterval(function(){
-      var now=isVisible();
-      if(now && !liveOn && !wasVisible){ startLive(); }
-      if(!now && liveOn){ stopLive(); }
-      wasVisible=now;
-    }, 800);
-    if(wasVisible) startLive();
+    observer.observe(box, {childList:true, subtree:true});
   }
-  function wireMute(){
-    var m=document.getElementById('pv-live-mute');
-    if(!m || m.dataset.pvLiveRealBound) return;
-    m.dataset.pvLiveRealBound='1';
-    m.addEventListener('click', function(){
-      setTimeout(function(){
-        var muted=m.classList.contains('is-muted');
-        if(!liveOn) return;
-        liveMuted=muted;
-        if(muted){ clearPlayback(); liveSpeaking=false; try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=false; }); }catch(e){} }
-        else{ try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=true; }); }catch(e){} if(!liveUseReal) resumeListening(); }
-      }, 30);
-    });
+  function startLive(){
+    if(live) return;
+    live=true; lastSpokenAi=''; speaking=true; refreshLiveStatus();
+    try{ var _box=el('pv-ai-messages'); if(_box){ liveStartCount=_box.querySelectorAll('.pv-ai-msg').length; _box.classList.add('pv-live-no-text'); } }catch(e){}
+    try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
+    try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+    showLiveUI();
+    startAiObserver();
+    var prompt=getPresentPrompt();
+    speak(prompt, function(){ if(!live) return; startListening(); });
   }
-  function init(){ ensureUI(); watch(); wireMute(); setInterval(wireMute, 1000); try{ if('speechSynthesis' in window) window.speechSynthesis.getVoices(); }catch(e){} }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
+  function endLive(){
+    if(!live) return;
+    live=false;
+    try{ var _box3=el('pv-ai-messages'); if(_box3){ var _a=_box3.querySelectorAll('.pv-ai-msg'); for(var _j=_a.length-1; _j>=liveStartCount; _j--){ try{ _a[_j].remove(); }catch(e){} } _box3.classList.remove('pv-live-no-text'); } }catch(e){}
+    stopRecog(); stopWaveCapture();
+    try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+    speaking=false;
+    hideLiveUI();
+  }
+  function wire(){
+    var btn=el('pv-ai-action');
+    if(!btn || btn.dataset.pvLiveBound) return;
+    btn.dataset.pvLiveBound='1';
+    btn.addEventListener('click', function(e){
+      if(sending) return;
+      var inp=el('pv-ai-input');
+      var hasText=inp && inp.value.trim().length>0;
+      if(live){
+        e.preventDefault();
+        endLive();
+        return;
+      }
+      if(!hasText){
+        e.preventDefault();
+        startLive();
+      }
+    }, true);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
+  setInterval(function(){ wire(); }, 1000);
 })();
 </script>
-
-
+<style data-file="css/send-cover-fix.css">
+/* SEND FIX - send color NOT changed to solid blue, back to its own gradient. Cover SAME as live chat own: circle 44px, NOT squircle/oval */
+#pv-ai-screen #pv-ai-input-bar.has-text #pv-ai-action{background:linear-gradient(90deg,#0084ff,#00bfa5) !important;background-image:linear-gradient(90deg,#0084ff,#00bfa5) !important;width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;border-radius:50% !important;border:none !important;box-shadow:none !important;padding:0 !important}
+#pv-ai-screen #pv-ai-input-bar:not(.has-text) #pv-ai-action:not(.pv-live-x){background:#0084ff !important;background-image:none !important;width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;border-radius:50% !important;border:none !important;box-shadow:none !important;padding:0 !important}
+#pv-ai-screen #pv-ai-action.pv-live-x{width:28px !important;height:28px !important;min-width:28px !important;min-height:28px !important;border-radius:0 !important;background:transparent !important;background-image:none !important;background-color:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important}
+</style>
+<style data-file="css/live-cancel-nocolor.css">
+/* LIVE CANCEL - sleek cover, NO blue. Cancel stays RIGHT where it was. */
+#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-action,
+#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-action.pv-live-x,
+#pv-ai-screen #pv-ai-input-bar.pv-live-active.has-text #pv-ai-action,
+#pv-ai-screen #pv-ai-input-bar.pv-live-active.has-text #pv-ai-action.pv-live-x{width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important;background:#333336 !important;background-color:#333336 !important;background-image:none !important;border:1px solid rgba(255,255,255,0.08) !important;box-shadow:0 1px 6px rgba(0,0,0,0.35) !important;border-radius:50% !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;margin-left:auto !important}
+#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-action svg,
+#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-action.pv-live-x svg{width:16px !important;height:16px !important;display:block !important;background:transparent !important}
+#pv-ai-screen #pv-ai-input-bar.pv-live-active .pv-ai-input-row{background:transparent !important;margin-left:auto !important;flex:none !important}
+#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-live-status{flex:1 1 auto !important;display:flex !important;opacity:1 !important;visibility:visible !important}
+#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-live-status .pv-live-dots span{background:#00bfa5 !important}
+/* LISTENING vs WAVE - only one shows */
+#pv-ai-live-status .pv-live-listening{display:flex !important;align-items:center;gap:8px;flex:1 1 auto}
+#pv-ai-live-status .pv-live-wave{display:none !important;flex:1 1 auto;align-items:center;justify-content:center !important;gap:3px;height:28px;min-width:0;margin:0 auto}
+#pv-ai-screen #pv-ai-input-bar.pv-live-active.pv-ai-speaking #pv-ai-live-status .pv-live-listening{display:none !important}
+#pv-ai-screen #pv-ai-input-bar.pv-live-active.pv-ai-speaking #pv-ai-live-status{justify-content:center !important}
+#pv-ai-screen #pv-ai-input-bar.pv-live-active.pv-ai-speaking #pv-ai-live-status .pv-live-wave{display:flex !important;justify-content:center !important}
+/* REAL SLEEK SPEECH WAVE - crosses the input bar while AI is talking */
+#pv-ai-live-status .pv-live-wave span{width:3px;border-radius:2px;background:linear-gradient(180deg,#0084ff,#00bfa5);display:block;flex:none;transform-origin:center;animation:pvWave 0.9s ease-in-out infinite}
+#pv-ai-live-status .pv-live-wave.pv-wave-real span{animation:none !important;transition:height 0.06s linear, opacity 0.06s linear}
+#pv-ai-live-status .pv-live-wave span:nth-child(1){height:10px;animation-delay:0s}
+#pv-ai-live-status .pv-live-wave span:nth-child(2){height:16px;animation-delay:0.08s}
+#pv-ai-live-status .pv-live-wave span:nth-child(3){height:22px;animation-delay:0.16s}
+#pv-ai-live-status .pv-live-wave span:nth-child(4){height:14px;animation-delay:0.04s}
+#pv-ai-live-status .pv-live-wave span:nth-child(5){height:26px;animation-delay:0.22s}
+#pv-ai-live-status .pv-live-wave span:nth-child(6){height:18px;animation-delay:0.1s}
+#pv-ai-live-status .pv-live-wave span:nth-child(7){height:28px;animation-delay:0.3s}
+#pv-ai-live-status .pv-live-wave span:nth-child(8){height:20px;animation-delay:0.14s}
+#pv-ai-live-status .pv-live-wave span:nth-child(9){height:12px;animation-delay:0.02s}
+#pv-ai-live-status .pv-live-wave span:nth-child(10){height:24px;animation-delay:0.26s}
+#pv-ai-live-status .pv-live-wave span:nth-child(11){height:16px;animation-delay:0.06s}
+#pv-ai-live-status .pv-live-wave span:nth-child(12){height:28px;animation-delay:0.32s}
+#pv-ai-live-status .pv-live-wave span:nth-child(13){height:20px;animation-delay:0.12s}
+#pv-ai-live-status .pv-live-wave span:nth-child(14){height:26px;animation-delay:0.2s}
+#pv-ai-live-status .pv-live-wave span:nth-child(15){height:14px;animation-delay:0.08s}
+#pv-ai-live-status .pv-live-wave span:nth-child(16){height:22px;animation-delay:0.28s}
+#pv-ai-live-status .pv-live-wave span:nth-child(17){height:18px;animation-delay:0.04s}
+#pv-ai-live-status .pv-live-wave span:nth-child(18){height:26px;animation-delay:0.24s}
+#pv-ai-live-status .pv-live-wave span:nth-child(19){height:12px;animation-delay:0.1s}
+#pv-ai-live-status .pv-live-wave span:nth-child(20){height:20px;animation-delay:0.18s}
+#pv-ai-live-status .pv-live-wave span:nth-child(21){height:28px;animation-delay:0.06s}
+#pv-ai-live-status .pv-live-wave span:nth-child(22){height:16px;animation-delay:0.3s}
+#pv-ai-live-status .pv-live-wave span:nth-child(23){height:24px;animation-delay:0.14s}
+#pv-ai-live-status .pv-live-wave span:nth-child(24){height:10px;animation-delay:0.02s}
+#pv-ai-live-status .pv-live-wave span:nth-child(25){height:18px;animation-delay:0.22s}
+#pv-ai-live-status .pv-live-wave span:nth-child(26){height:26px;animation-delay:0.08s}
+#pv-ai-live-status .pv-live-wave span:nth-child(27){height:14px;animation-delay:0.16s}
+#pv-ai-live-status .pv-live-wave span:nth-child(28){height:20px;animation-delay:0.26s}
+@keyframes pvWave{0%,100%{transform:scaleY(0.35);opacity:0.55}50%{transform:scaleY(1);opacity:1}}
+</style>
+<style data-file="css/live-no-text.css">
+/* LIVE CHAT VOICE ONLY - no text bubbles while live is on, leave UI how it was */
+#pv-ai-messages.pv-live-no-text .pv-ai-msg{display:none !important}
+#pv-ai-messages.pv-live-no-text .pv-ai-typing{display:none !important}
+#pv-ai-input-bar.pv-live-active #pv-ai-input{display:none !important}
+</style>
 </body>
 
 
