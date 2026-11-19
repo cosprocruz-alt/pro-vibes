@@ -7021,7 +7021,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 </script>
 
 
-<!-- ===== FILE: js/groq-gemini.js — Groq = chat + vision, Gemini = LIVE ONLY (real voice) ===== -->
+<!-- ===== FILE: js/groq-gemini.js — Groq = chat + vision, Gemini = LIVE ONLY ===== -->
 <style data-file="css/ai-message-actions.css">
 /* AI MESSAGE ACTIONS - exactly like screenshot: copy | like | dislike | speaker - under AI messages ONLY */
 #pv-ai-screen .pv-ai-messages{display:flex !important;flex-direction:column !important;gap:12px !important}
@@ -7047,8 +7047,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 <script data-file="js/groq-gemini.js">
 // js/groq-gemini.js
 // PASTE YOUR KEYS HERE - do NOT share them in chat, paste them directly in this file:
-// Keys come from js/config.js (GROQ + GEMINI) - do NOT redeclare them here.
-  // RULE: GEMINI is LIVE ONLY. Never use Gemini for text, vision, or pictures. Groq does chat + vision.
+// Keys come from js/config.js (GROQ + GEMINI) - do NOT redeclare them here or the AI script breaks.
 var GROQ_MODEL = "openai/gpt-oss-120b";
 (function(){
   function el(id){return document.getElementById(id);}
@@ -7139,7 +7138,6 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     return data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || 'No reply from Groq.';
   }
   async function callGroqVision(file, base64, mime){
-    // GROQ VISION ONLY - Gemini is LIVE ONLY, never vision.
     var prompt = "Describe this " + (file.type.indexOf('video')===0 ? "video" : "picture") + " in detail: what is happening, who/what is in it, colours, text if any, and anything important. Be clear and simple.";
     var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method:'POST',
@@ -7153,9 +7151,7 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     return out;
   }
   async function callGeminiVision(file, base64, mime){ return callGroqVision(file, base64, mime); }
-  async function callGeminiImage(prompt){
-    throw new Error('Pictures are off - Live is the focus. Tap Live to talk.');
-  }
+  async function callGeminiImage(prompt){ throw new Error('Pictures are off - Live is the focus.'); }
 async function handleSend(){
     var inp = el('pv-ai-input'); if(!inp) return;
     var txt = inp.value.trim();
@@ -7178,9 +7174,8 @@ async function handleSend(){
           {role:'user', content:'The user sent a ' + (fileNow.type.indexOf('video')===0 ? 'video' : 'picture') + '. Groq saw this: ' + seen + '\nUser said: ' + (txt || 'Explain this') + '\nExplain what is in the picture/video to the user.'}
         ]);
       } else if(isImageGen(txt)){
-        // Pictures OFF by design - Gemini is LIVE ONLY, no image API.
         if(thinking) thinking.remove();
-        addMsg('Pictures are off for now - Live is the star. Tap Live and talk to me, I am real voice now.', 'ai');
+        addMsg('Pictures are off for now - Live is the star. Tap Live and talk to me.', 'ai');
         return;
       } else {
         // Normal chat -> Groq gpt-oss-120b
@@ -7780,49 +7775,67 @@ async function handleSend(){
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script>
 <style data-file="css/live-realtime.css"> /* LIVE REALTIME - TEXT FREE, NO WAVE - black only, buttons only */ #pv-voice-live .pv-live-orb-wrap{ display:flex !important; flex-direction:column !important; overflow:hidden !important; } .pv-live-center{ flex:1 !important; display:flex !important; flex-direction:column !important; min-height:0 !important; }</style>
 <script data-file="js/live-realtime.js">
-// LIVE REALTIME - REAL GEMINI LIVE ONLY - WebSocket + PCM - NO FAKE TEXT LOOP
-// RULE: GEMINI = LIVE ONLY. Groq = chat + vision. No pictures.
-// LANGUAGE RULE: Default to clear English. NO Pidgin unless user speaks Pidgin first. Mirror user.
+// PRO-VIBES LIVE - CLEAN REBUILD - REAL GEMINI LIVE ONLY
+// Design: Gemini Live = voice only. Groq = text + vision. No pictures. No header. UI untouched.
+// Language: English by default. Pidgin only if user speaks Pidgin first.
+// Voice: Male - Gemini Charon, fallback TTS male voice.
+// Audio: No feedback - mic never plays to speaker, mic pauses while AI speaks, 48k -> 16k downsample, silence gate.
 (function(){
-  var liveOn=false, liveSpeaking=false, liveProcessing=false, liveMuted=false;
-  var liveWs=null, liveWsReady=false, liveSetupDone=false, liveUseReal=true, liveFallback=false, liveRetry=0;
-  var liveStream=null, liveAudioCtx=null, liveProcessor=null, liveInput=null;
-  var liveOutCtx=null, liveNextPlay=0, liveCurrentSource=null, livePlayQueue=[];
-  var recog=null, recorder=null, stream=null, recogRestartTimer=null;
-  var liveConnectTimer=null, liveMicStarted=false;
+  // ---- State ----
+  var liveOn = false;
+  var liveMuted = false;
+  var liveSpeaking = false; // AI is currently playing voice
+  var liveWs = null;
+  var liveSetupDone = false;
+  var liveUseReal = true;
+  var liveFallback = false;
+  var liveMicStarted = false;
+  var liveRetry = 0;
+  var liveModelIdx = 0;
+  var liveModels = ['models/gemini-2.0-flash-live-001', 'models/gemini-2.5-flash-live'];
+  var liveStream = null; // getUserMedia stream
+  var stream = null; // alias for fallback code
+  var liveAudioCtx = null, liveProcessor = null, liveInput = null, liveSilentGain = null;
+  var liveOutCtx = null, liveNextPlay = 0, liveCurrentSource = null;
+  var recog = null, recorder = null, recogRestartTimer = null, liveConnectTimer = null;
+  var liveLoudFrames = 0, liveAudioInTurn = false, liveTextInTurn = '', liveLastEmptyNudge = 0;
+
   function el(id){ return document.getElementById(id); }
   function liveBox(){ return el('pv-voice-live'); }
   function isVisible(){ var o=liveBox(); if(!o) return false; return !o.classList.contains('hidden') && !o.hasAttribute('hidden'); }
-  function ensureUI(){ /* Leave live UI exactly as is - no header, no status pill */ }
-  function setStatus(txt, mode){ /* No UI change - keep original live UI untouched */ }
-  function pickVoice(){
+  function ensureUI(){ /* Intentionally empty - leave live UI exactly as it is, no header */ }
+
+  // ---- Male voice for fallback TTS ----
+  function pickMaleVoice(){
     try{
-      var vs=window.speechSynthesis? window.speechSynthesis.getVoices()||[] : [];
+      var vs = window.speechSynthesis ? window.speechSynthesis.getVoices() || [] : [];
       if(!vs.length) return null;
-      var enUS=vs.filter(function(v){ return /en[-_]US/i.test(v.lang||''); });
-      var en=vs.filter(function(v){ return /^en/i.test(v.lang||''); });
-      var pool=enUS.length?enUS:(en.length?en:vs);
-      var pref=pool.filter(function(v){ return /Google|Natural|Neural|Samantha|Zira|Aria/i.test(v.name||''); });
-      return (pref[0]||pool[0]||null);
+      var en = vs.filter(function(v){ return /^en/i.test(v.lang||''); });
+      var pool = en.length ? en : vs;
+      var male = pool.filter(function(v){ return /David|Daniel|Mark|Guy|Ryan|Brian|George|James|Microsoft David|Google US English Male/i.test(v.name||''); });
+      if(male.length) return male[0];
+      var notFemale = pool.filter(function(v){ return !/Samantha|Zira|Aria|Jenny|Female|Sofia|Emma|Natasha|Susan|Hazel|Karen/i.test(v.name||''); });
+      return notFemale[0] || pool[0] || null;
     }catch(e){ return null; }
   }
   function speakAI(text){
     if(!('speechSynthesis' in window)) return;
     try{ window.speechSynthesis.cancel(); }catch(e){}
-    liveSpeaking=true; setStatus('LIVE - SPEAKING','is-speaking');
+    liveSpeaking = true;
     try{ if(recog) recog.stop(); }catch(e){}
-    var clean=String(text||'').replace(/\[[^\]]+\]\([^)]+\)/g,'$1').replace(/https?:\/\/\S+/g,'').replace(/[*#_]/g,'').trim();
-    if(!clean){ liveSpeaking=false; setStatus('LIVE - LISTENING',''); resumeListening(); return; }
-    var chunks=clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g)||[clean];
-    var idx=0;
+    var clean = String(text||'').replace(/\[[^\]]+\]\([^)]+\)/g,'$1').replace(/https?:\/\/\S+/g,'').replace(/[*#_]/g,'').trim();
+    if(!clean){ liveSpeaking=false; resumeListening(); return; }
+    var chunks = clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || [clean];
+    var idx = 0;
     function next(){
       if(!liveOn){ liveSpeaking=false; return; }
-      if(idx>=chunks.length){ liveSpeaking=false; setStatus('LIVE - LISTENING',''); resumeListening(); return; }
-      var u=new SpeechSynthesisUtterance(chunks[idx]);
-      var v=pickVoice(); if(v) u.voice=v;
-      u.lang=(v&&v.lang)||'en-US'; u.rate=1.0; u.pitch=1.0; u.volume=1;
-      u.onend=function(){ idx++; next(); };
-      u.onerror=function(){ idx++; next(); };
+      if(idx >= chunks.length){ liveSpeaking=false; resumeListening(); return; }
+      var u = new SpeechSynthesisUtterance(chunks[idx]);
+      var v = pickMaleVoice(); if(v) u.voice=v;
+      u.lang = (v && v.lang) || 'en-US';
+      u.rate = 0.98; u.pitch = 0.85; u.volume = 1; // male feel
+      u.onend = function(){ idx++; next(); };
+      u.onerror = function(){ idx++; next(); };
       window.speechSynthesis.speak(u);
     }
     next();
@@ -7840,6 +7853,9 @@ async function handleSend(){
     if(/joke|funny/.test(s)) return "Okay here's one - why did the phone go to therapy? Too many missed calls!";
     return "Got you - "+q+". Tell me a bit more so I can help you properly.";
   }
+
+  // ---- Fallback text (Groq) - only if Real Live fails ----
+  var liveProcessing = false;
   async function askGroqText(userText){
     try{
       var key=(typeof GROQ_API_KEY!=='undefined')? GROQ_API_KEY : '';
@@ -7925,6 +7941,8 @@ async function handleSend(){
       var data=await res.json(); return (data.text||'').trim();
     }catch(e){ return ''; }
   }
+
+  // ---- PCM helpers ----
   function floatTo16BitPCM(input){
     var out=new Int16Array(input.length);
     for(var i=0;i<input.length;i++){ var s=Math.max(-1, Math.min(1, input[i])); out[i]= s<0 ? s*0x8000 : s*0x7FFF; }
@@ -7941,7 +7959,6 @@ async function handleSend(){
     return bytes;
   }
   function clearPlayback(){
-    livePlayQueue=[];
     try{ if(liveCurrentSource){ try{ liveCurrentSource.stop(); }catch(e){} } }catch(e){}
     liveCurrentSource=null;
     try{ if(liveOutCtx) liveNextPlay=liveOutCtx.currentTime; }catch(e){}
@@ -7949,7 +7966,7 @@ async function handleSend(){
   function playPCM24k(b64){
     try{
       if(liveMuted) return;
-      if(!liveOutCtx){ liveOutCtx=new (window.AudioContext||window.webkitAudioContext)({sampleRate:24000}); }
+      if(!liveOutCtx){ liveOutCtx=new (window.AudioContext||window.webkitAudioContext)(); }
       if(liveOutCtx.state==='suspended'){ try{ liveOutCtx.resume(); }catch(e){} }
       var bytes=base64ToBytes(b64);
       var int16=new Int16Array(bytes.buffer, bytes.byteOffset, Math.floor(bytes.byteLength/2));
@@ -7960,26 +7977,28 @@ async function handleSend(){
       var src=liveOutCtx.createBufferSource(); src.buffer=buf; src.connect(liveOutCtx.destination);
       var now=liveOutCtx.currentTime;
       if(liveNextPlay<now) liveNextPlay=now+0.02;
+      if(liveNextPlay - now > 0.6) liveNextPlay = now + 0.02; // drop backlog, prevents garble
       src.start(liveNextPlay);
       liveCurrentSource=src; liveNextPlay+=buf.duration;
-      liveSpeaking=true; setStatus('LIVE - SPEAKING','is-speaking');
-      src.onended=function(){ if(liveCurrentSource===src) liveCurrentSource=null; if(!liveCurrentSource && livePlayQueue.length===0){ liveSpeaking=false; if(liveOn && liveUseReal) setStatus('LIVE - LISTENING',''); } };
+      liveSpeaking=true;
+      src.onended=function(){ if(liveCurrentSource===src) liveCurrentSource=null; if(!liveCurrentSource){ liveSpeaking=false; liveLoudFrames=0; } };
     }catch(e){}
   }
+
+  // ---- REAL GEMINI LIVE ----
   function connectGeminiLive(){
     var key=(typeof GEMINI_API_KEY!=='undefined')? GEMINI_API_KEY : '';
     if(!key){ startFallbackLive(); return; }
-    liveUseReal=true; liveFallback=false; liveWsReady=false; liveSetupDone=false;
-    setStatus('LIVE - CONNECTING','');
+    liveUseReal=true; liveFallback=false; liveSetupDone=false;
     var url='wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key='+encodeURIComponent(key);
     try{ liveWs=new WebSocket(url); }catch(e){ startFallbackLive(); return; }
     liveWs.onopen=function(){
       try{
         var setup={
           setup:{
-            model:'models/gemini-3.8-live',
-            generationConfig:{ responseModalities:['AUDIO'], speechConfig:{ voiceConfig:{ prebuiltVoiceConfig:{ voiceName:'Puck' } } } },
-            systemInstruction:{ parts:[{ text:'You are PRO-VIBES AI, a friendly real-time voice assistant in Enugu, Nigeria. LANGUAGE RULE: Default to clear, simple English. Do NOT use Pidgin unless the user speaks Pidgin first. If the user speaks Pidgin, match their Pidgin naturally and stay in Pidgin until they switch back to English. If the user speaks English, stay in English. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis, like a real human conversation.' }] },
+            model: liveModels[liveModelIdx] || 'models/gemini-2.0-flash-live-001',
+            generationConfig:{ responseModalities:['AUDIO'], temperature:0.7, maxOutputTokens:220, speechConfig:{ voiceConfig:{ prebuiltVoiceConfig:{ voiceName:'Charon' } } } },
+            systemInstruction:{ parts:[{ text:'You are PRO-VIBES AI, a friendly real-time voice assistant in Enugu, Nigeria. LANGUAGE RULE: Default to clear, simple English. Do NOT use Pidgin unless the user speaks Pidgin first. If the user speaks Pidgin, match their Pidgin naturally and stay in Pidgin until they switch back to English. If the user speaks English, stay in English. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis, like a real human conversation. Voice is male.' }] },
             realtimeInputConfig:{ automaticActivityDetection:{ disabled:false, startSensitivity:'HIGH', endSensitivity:'LOW', prefixPaddingMs:20, silenceDurationMs:500 } }
           }
         };
@@ -7989,51 +8008,90 @@ async function handleSend(){
     liveWs.onmessage=function(ev){
       try{
         var msg=JSON.parse(ev.data||'{}');
-        if(msg.setupComplete){ liveSetupDone=true; liveWsReady=true; liveRetry=0; setStatus('LIVE - LISTENING',''); startMicStreaming(); return; }
+        if(msg.setupComplete){ liveSetupDone=true; liveRetry=0; liveAudioInTurn=false; liveTextInTurn=''; startMicStreaming(); return; }
         var sc=msg.serverContent;
         if(!sc) return;
-        if(sc.interrupted){ clearPlayback(); liveSpeaking=false; setStatus('LIVE - LISTENING',''); return; }
+        if(sc.interrupted){ clearPlayback(); liveSpeaking=false; liveLoudFrames=0; liveAudioInTurn=false; liveTextInTurn=''; return; }
         if(sc.modelTurn && sc.modelTurn.parts){
           for(var i=0;i<sc.modelTurn.parts.length;i++){
             var p=sc.modelTurn.parts[i];
-            if(p.inlineData && p.inlineData.data){ playPCM24k(p.inlineData.data); }
+            if(p.inlineData && p.inlineData.data){ liveAudioInTurn=true; playPCM24k(p.inlineData.data); }
+            if(p.text){ liveTextInTurn += p.text; }
           }
         }
-        if(sc.turnComplete){ liveSpeaking=false; if(liveOn && liveUseReal) setStatus('LIVE - LISTENING',''); }
+        if(sc.turnComplete){
+          var hadAudio = liveAudioInTurn;
+          var txt = (liveTextInTurn||'').trim();
+          liveAudioInTurn=false; liveTextInTurn='';
+          // Only one output per turn: if audio played, ignore text. If no audio but text, speak text once.
+          if(!hadAudio && txt){
+            if(!liveSpeaking) speakAI(txt);
+          } else if(!hadAudio && !txt){
+            var nowT = Date.now();
+            if(nowT - liveLastEmptyNudge > 8000){
+              liveLastEmptyNudge = nowT;
+              try{ if(liveWs && liveWs.readyState===1) liveWs.send(JSON.stringify({ clientContent:{ turns:[{ parts:[{ text:'Please reply in voice, short, 1 sentence.' }] }], turnComplete:true } })); }catch(e){}
+            }
+          }
+          if(!hadAudio){ liveSpeaking=false; liveLoudFrames=0; }
+        }
       }catch(e){}
     };
-    liveWs.onerror=function(){ if(liveOn && liveUseReal && !liveSetupDone){ startFallbackLive(); } };
+    liveWs.onerror=function(){ if(liveOn && liveUseReal && !liveSetupDone){ tryNextModelOrFallback(); } };
     liveWs.onclose=function(){
       if(!liveOn) return;
-      if(liveUseReal && !liveFallback){
-        if(liveRetry<1){ liveRetry++; setTimeout(function(){ if(liveOn) connectGeminiLive(); }, 800); }
-        else { startFallbackLive(); }
-      }
+      if(liveUseReal && !liveFallback) tryNextModelOrFallback();
     };
     clearTimeout(liveConnectTimer);
-    liveConnectTimer=setTimeout(function(){ if(liveOn && liveUseReal && !liveSetupDone && !liveFallback) startFallbackLive(); }, 7000);
+    liveConnectTimer=setTimeout(function(){ if(liveOn && liveUseReal && !liveSetupDone && !liveFallback) tryNextModelOrFallback(); }, 7000);
+  }
+  function tryNextModelOrFallback(){
+    if(liveModelIdx < liveModels.length-1){ liveModelIdx++; setTimeout(function(){ if(liveOn) connectGeminiLive(); }, 600); }
+    else if(liveRetry<1){ liveRetry++; setTimeout(function(){ if(liveOn) connectGeminiLive(); }, 800); }
+    else { startFallbackLive(); }
   }
   function startMicStreaming(){
     if(liveMicStarted) return;
     if(!liveStream) return;
     try{
-      liveAudioCtx=new (window.AudioContext||window.webkitAudioContext)({sampleRate:16000});
+      liveAudioCtx=new (window.AudioContext||window.webkitAudioContext)();
       if(liveAudioCtx.state==='suspended'){ try{ liveAudioCtx.resume(); }catch(e){} }
+      var nativeRate = liveAudioCtx.sampleRate || 48000;
       liveInput=liveAudioCtx.createMediaStreamSource(liveStream);
       liveProcessor=liveAudioCtx.createScriptProcessor(4096, 1, 1);
+      liveSilentGain=liveAudioCtx.createGain(); liveSilentGain.gain.value=0;
       liveProcessor.onaudioprocess=function(e){
         try{
+          var outBuf=e.outputBuffer.getChannelData(0);
+          for(var z=0; z<outBuf.length; z++) outBuf[z]=0; // never play mic back to speaker
           if(!liveOn || !liveUseReal || !liveWs || liveWs.readyState!==1 || !liveSetupDone) return;
           if(liveMuted) return;
           var input=e.inputBuffer.getChannelData(0);
-          var pcm=floatTo16BitPCM(input);
+          var sum=0; for(var s=0;s<input.length;s++) sum+=input[s]*input[s];
+          var rms=Math.sqrt(sum/input.length);
+          if(rms < 0.012){ liveLoudFrames=0; return; } // silence gate
+          if(liveSpeaking){
+            if(rms > 0.08){ liveLoudFrames++; if(liveLoudFrames < 4) return; clearPlayback(); liveSpeaking=false; liveLoudFrames=0; }
+            else { liveLoudFrames=0; return; }
+          } else { liveLoudFrames=0; }
+          var ratio = nativeRate / 16000;
+          var outLen = Math.floor(input.length / ratio);
+          var down = new Float32Array(outLen);
+          for(var i=0;i<outLen;i++){
+            var idx = i * ratio;
+            var idx0 = Math.floor(idx); var idx1 = Math.min(idx0+1, input.length-1);
+            var frac = idx - idx0;
+            down[i] = input[idx0]*(1-frac) + input[idx1]*frac;
+          }
+          var pcm=floatTo16BitPCM(down);
           var bytes=new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength);
           var b64=bytesToBase64(bytes);
           liveWs.send(JSON.stringify({ realtimeInput:{ audio:{ mimeType:'audio/pcm;rate=16000', data:b64 } } }));
         }catch(err){}
       };
       liveInput.connect(liveProcessor);
-      liveProcessor.connect(liveAudioCtx.destination);
+      liveProcessor.connect(liveSilentGain);
+      liveSilentGain.connect(liveAudioCtx.destination);
       liveMicStarted=true;
     }catch(e){ startFallbackLive(); }
   }
@@ -8041,6 +8099,8 @@ async function handleSend(){
     liveMicStarted=false;
     try{ if(liveProcessor){ liveProcessor.disconnect(); liveProcessor.onaudioprocess=null; } }catch(e){}
     liveProcessor=null;
+    try{ if(liveSilentGain) liveSilentGain.disconnect(); }catch(e){}
+    liveSilentGain=null;
     try{ if(liveInput) liveInput.disconnect(); }catch(e){}
     liveInput=null;
     try{ if(liveAudioCtx) liveAudioCtx.close(); }catch(e){}
@@ -8049,8 +8109,7 @@ async function handleSend(){
   function startFallbackLive(){
     if(!liveOn) return;
     if(liveFallback) return;
-    liveFallback=true; liveUseReal=false; liveWsReady=false;
-    setStatus('LIVE - BACKUP','is-backup');
+    liveFallback=true; liveUseReal=false;
     try{ if(liveWs){ try{ liveWs.close(); }catch(e){} } }catch(e){}
     liveWs=null;
     stopMicStreaming();
@@ -8058,8 +8117,8 @@ async function handleSend(){
   }
   async function startLive(){
     if(liveOn) return;
-    liveOn=true; liveMuted=false; liveFallback=false; liveUseReal=true; liveRetry=0;
-    ensureUI(); setStatus('LIVE - CONNECTING','');
+    liveOn=true; liveMuted=false; liveFallback=false; liveUseReal=true; liveRetry=0; liveModelIdx=0; liveLoudFrames=0; liveAudioInTurn=false; liveTextInTurn=''; liveLastEmptyNudge=0;
+    ensureUI();
     try{
       if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ connectGeminiLive(); return; }
       stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}, video:false});
@@ -8071,7 +8130,7 @@ async function handleSend(){
     liveOn=false;
     clearTimeout(recogRestartTimer); clearTimeout(liveConnectTimer);
     try{ if(liveWs){ try{ liveWs.close(); }catch(e){} } }catch(e){}
-    liveWs=null; liveWsReady=false; liveSetupDone=false;
+    liveWs=null; liveSetupDone=false;
     stopMicStreaming();
     try{ if(recog){ recog.onend=null; recog.onerror=null; recog.onresult=null; try{ recog.stop(); }catch(e){} } }catch(e){}
     recog=null;
@@ -8083,7 +8142,6 @@ async function handleSend(){
     try{ if(stream){ stream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); } }catch(e){}
     stream=null; liveStream=null;
     try{ var m=document.getElementById('pv-live-mute'); if(m) m.classList.remove('is-muted'); }catch(e){}
-    setStatus('LIVE - OFF','');
   }
   window.pvStartLiveRealtime=startLive;
   window.pvStopLiveRealtime=stopLive;
@@ -8115,7 +8173,7 @@ async function handleSend(){
         var muted=m.classList.contains('is-muted');
         if(!liveOn) return;
         liveMuted=muted;
-        if(muted){ clearPlayback(); stopSpeaking(); try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=false; }); }catch(e){} }
+        if(muted){ clearPlayback(); liveSpeaking=false; try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=false; }); }catch(e){} }
         else{ try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=true; }); }catch(e){} if(!liveUseReal) resumeListening(); }
       }, 30);
     });
