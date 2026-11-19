@@ -6824,7 +6824,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 .pv-voice-ctl-btn svg{width:28px;height:28px;display:block}
 .pv-voice-ctl-label{font-size:13px;line-height:1;color:#e8eaed}
 </style>
-<div id="pv-voice-live" class="hidden" hidden aria-label="Voice live"><div class="pv-live-top"><button class="pv-live-top-btn" id="pv-live-menu-btn" type="button" aria-label="Menu"><span class="pv-live-menu-lines"><i></i><i></i></span></button><button class="pv-live-top-btn" id="pv-live-settings-btn" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M4 8h16"/><path d="M4 16h16"/><circle cx="16.5" cy="8" r="3" fill="#232323" stroke="#fff" stroke-width="2.4"/><circle cx="8.5" cy="16" r="3" fill="#232323" stroke="#fff" stroke-width="2.4"/></svg></button></div><div class="pv-live-orb-wrap" aria-hidden="true"></div><div class="pv-live-bottom"><button class="pv-live-mute" id="pv-live-mute" type="button" aria-label="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11.5 C5 15.5 8.2 18.5 12 18.5 C15.8 18.5 19 15.5 19 11.5"/><path d="M12 18.5 L12 21.5"/><path d="M4 4l16 16"/></svg></button><button class="pv-live-close" id="pv-live-close-x" type="button" aria-label="Close live"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14"/><path d="M19 5L5 19"/></svg></button></div></div> <style data-file="css/voice-live-blank.css">
+<div id="pv-voice-live" class="hidden" hidden aria-label="Voice live"><div class="pv-live-top"><button class="pv-live-top-btn" id="pv-live-menu-btn" type="button" aria-label="Menu"><span class="pv-live-menu-lines"><i></i><i></i></span></button><button class="pv-live-top-btn" id="pv-live-settings-btn" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M4 8h16"/><path d="M4 16h16"/><circle cx="16.5" cy="8" r="3" fill="#232323" stroke="#fff" stroke-width="2.4"/><circle cx="8.5" cy="16" r="3" fill="#232323" stroke="#fff" stroke-width="2.4"/></svg></button></div><div class="pv-live-orb-wrap" aria-hidden="true"></div><div class="pv-live-disclaimer">COSPRO AI can make mistakes, so double-check responses</div><div class="pv-live-bottom"><button class="pv-live-mute" id="pv-live-mute" type="button" aria-label="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11.5 C5 15.5 8.2 18.5 12 18.5 C15.8 18.5 19 15.5 19 11.5"/><path d="M12 18.5 L12 21.5"/><path d="M4 4l16 16"/></svg></button><button class="pv-live-close" id="pv-live-close-x" type="button" aria-label="Close live"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14"/><path d="M19 5L5 19"/></svg></button></div></div> <style data-file="css/voice-live-blank.css">
 /* LIVE - black, 2 top circles, NO big circle, bottom mic + close only */
 #pv-voice-live{ position:fixed !important; inset:0 !important; background:#000 !important; z-index:10001 !important; display:flex !important; flex-direction:column !important; padding:18px 16px calc(18px + env(safe-area-inset-bottom)) !important; box-sizing:border-box !important; }
 #pv-voice-live.hidden{ display:none !important; }
@@ -6838,7 +6838,8 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 .pv-live-menu-lines i:nth-child(2){ width:11px !important; }
 .pv-live-orb-wrap{ flex:1 !important; display:block !important; min-height:0 !important; background:#000 !important; }
 
-.pv-live-bottom{ display:flex !important; align-items:center !important; justify-content:space-between !important; gap:0 !important; padding:6px 28px 22px !important; margin-bottom:6px !important; }
+.pv-live-disclaimer{ font-size:15px !important; line-height:1.5 !important; color:#9aa0a6 !important; text-align:center !important; max-width:320px !important; margin:0 auto !important; padding:0 20px 14px !important; box-sizing:border-box !important; }
+.pv-live-bottom{ display:flex !important; align-items:center !important; justify-content:center !important; gap:12px !important; padding:6px 16px 14px !important; margin-bottom:2px !important; }
 .pv-live-ask{ display:none !important; }
 
  .pv-live-plus svg{ width:19px !important; height:19px !important; display:block !important; }
@@ -6891,14 +6892,15 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
       o1.start(now); o2.start(now); o1.stop(now + 0.50); o2.stop(now + 0.35);
     }catch(e){}
   }
-  // OPEN LIVE - ONE note only, MORE LOUD
+  // OPEN LIVE - ONE note only + ONE simple vibration
   window.pvPlayLiveOpenSound = function(){
+    try{ if(navigator.vibrate) navigator.vibrate(50); }catch(e){}
     try{ geminiTone(261.63, 0.85); }catch(e){}
   };
-  // CANCEL / CLOSE LIVE - TWO notes only for closing, MORE LOUD + VIBRATION
+  // CLOSE LIVE - ONE simple vibration only, cancel vibration removed
   window.pvPlayLiveCloseSound = function(){
     try{
-      if(navigator.vibrate) navigator.vibrate(120);
+      if(navigator.vibrate) navigator.vibrate(50);
     }catch(e){}
     try{
       geminiTone(261.63, 0.85);
@@ -7049,6 +7051,44 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 var GROQ_MODEL = "openai/gpt-oss-120b";
 (function(){
   function el(id){return document.getElementById(id);}
+  // TITLE - inside original AI file, no patch: first chat sets title, Quick Hello -> Quick Hello then real chat replaces it
+  var TITLE_KEY='pro_vibes_cospro_ai_title';
+  function pvTopicFromText(txt, hasImage){
+    try{
+      var s=String(txt||'').replace(/\s+/g,' ').trim();
+      if(!s){ if(hasImage) return 'Photo'; return null; }
+      var low=s.toLowerCase().replace(/[!?.,]+/g,'').trim();
+      var greetingOnly=/^(hi|hello|heyy+|hii+|hey|wassup|whats up|what's up|sup|yo|good morning|good afternoon|good evening|how are you|how far|how you doing|how are u|hi hello|hello hi|hi hello wassup|wassup hi|hey hi|hi hey|quick hello)(\s+(hi|hello|heyy+|hii+|hey|wassup|whats up|what's up|sup|yo|good morning|good afternoon|good evening|how are you|quick hello))*$/.test(low);
+      if(greetingOnly) return 'Quick Hello';
+      if(low==='quick hello') return 'Quick Hello';
+      s=s.replace(/^(hi|hello|hey|heyy+|hii+|wassup|yo|good (morning|afternoon|evening))[,\s]+/i,'');
+      s=s.replace(/^(please|pls)\s+/i,'');
+      s=s.replace(/^(can you|can u|could you|could u|will you)\s+/i,'');
+      var wantToMake=/^(i want to|i wanna|i want)\s+/i.test(s);
+      s=s.replace(/^(help me (with|to)?|help me|i want to know|i want to|i want|tell me about|tell me|explain to me|explain|what is|what's|what are|how do i|how can i)\s+/i,'');
+      s=s.replace(/^(generate|create|draw|make)\s+(me\s+)?(an?\s+)?(image|picture|pic|photo|drawing)\s+(of\s+|for\s+)?/i,'Picture Of ');
+      s=s.replace(/^(show me\s+)(an?\s+)?(image|picture|pic|photo)\s+(of\s+)?/i,'Picture Of ');
+      s=s.trim(); if(!s) return null;
+      var words=s.split(' ').filter(Boolean);
+      var stop={a:1,an:1,the:1,is:1,are:1,to:1,of:1,for:1,me:1,my:1,please:1,can:1,you:1,u:1,and:1,in:1,on:1,with:1,about:1};
+      var meaningful=words.filter(function(w){ return !stop[w.toLowerCase().replace(/[^a-z]/g,'')]; });
+      var use=meaningful.length?meaningful:words;
+      var topic=use.slice(0,4).join(' ');
+      if(topic.length>32){ topic=topic.slice(0,32); var ls=topic.lastIndexOf(' '); if(ls>12) topic=topic.slice(0,ls); topic=topic+'...'; }
+      var parts=topic.split(' ');
+      if(wantToMake && parts.length && parts[0].toLowerCase()==='make') parts[0]='Making';
+      if(wantToMake && parts.length && parts[0].toLowerCase()==='learn') parts[0]='Learning';
+      if(wantToMake && parts.length && parts[0].toLowerCase()==='fix') parts[0]='Fixing';
+      if(wantToMake && parts.length && parts[0].toLowerCase()==='start') parts[0]='Starting';
+      topic=parts.map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
+      return topic||null;
+    }catch(e){ return null; }
+  }
+  function pvSetTitle(topic){ if(!topic) return; var te=el('pv-ai-title'); if(te) te.textContent=topic; try{ localStorage.setItem(TITLE_KEY,topic); }catch(e){} }
+  function pvResetTitle(){ var te=el('pv-ai-title'); if(te) te.textContent='COSPRO AI'; try{ localStorage.setItem(TITLE_KEY,'COSPRO AI'); }catch(e){} }
+  function pvUpdateTitleFromText(txt, hasImage){ var te=el('pv-ai-title'); if(te && te.textContent!=='COSPRO AI' && te.textContent!=='Quick Hello') return; var tt=pvTopicFromText(txt,hasImage); if(tt) pvSetTitle(tt); }
+  function pvInitTitle(){ try{ var saved=localStorage.getItem(TITLE_KEY); var box=el('pv-ai-messages'); var hasMsgs=box && box.querySelector('.pv-ai-msg'); if(saved && hasMsgs) pvSetTitle(saved); else pvResetTitle(); }catch(e){} }
+
   var pendingFile = null;
   var pendingFileURL = null;
   function addMsg(txt, who, imgURL){
@@ -7099,17 +7139,30 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
   }
   async function callGeminiVision(file, base64, mime){
     var prompt = "Describe this " + (file.type.indexOf('video')===0 ? "video" : "picture") + " in detail: what is happening, who/what is in it, colours, text if any, and anything important. Be clear and simple.";
-    var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=' + encodeURIComponent(GEMINI_API_KEY), {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({contents:[{parts:[{text: prompt},{inlineData:{mimeType: mime, data: base64}}]}]})
-    });
-    var data = await res.json();
-    if(data.error) throw new Error(data.error.message || 'Gemini could not see this file.'); try{ return data.candidates[0].content.parts[0].text; }catch(e){ throw new Error('Gemini could not see this file.'); }
+    var models=['gemini-3.8-flash','gemini-2.5-flash','gemini-3-flash'];
+    var lastErr=null;
+    for(var mi=0; mi<models.length; mi++){
+      try{
+        var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+models[mi]+':generateContent?key=' + encodeURIComponent(GEMINI_API_KEY), {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({contents:[{parts:[{text: prompt},{inlineData:{mimeType: mime, data: base64}}]}]})
+        });
+        var data = await res.json();
+        if(data.error){
+          lastErr=new Error(data.error.message || 'Gemini could not see this file.');
+          var msg=String(data.error.message||'').toLowerCase();
+          if(msg.indexOf('high demand')!==-1 || msg.indexOf('overload')!==-1 || msg.indexOf('temporarily')!==-1 || msg.indexOf('no longer available')!==-1 || data.error.status==='UNAVAILABLE' || data.error.code===503) continue;
+          throw lastErr;
+        }
+        try{ return data.candidates[0].content.parts[0].text; }catch(e){ lastErr=new Error('Gemini could not see this file.'); }
+      }catch(e){ lastErr=e; }
+    }
+    throw lastErr||new Error('Gemini could not see this file.');
   }
   async function callGeminiImage(prompt){
     // PURE GEMINI ONLY - no other service.
     // New models first - old ones are shut down / have 0 free quota.
-    var models = ['gemini-3.1-flash-image', 'gemini-3-pro-image', 'gemini-2.5-flash-image'];
+    var models = ['gemini-3.8-flash-image', 'gemini-3.1-flash-image', 'gemini-3-pro-image', 'gemini-2.5-flash-image'];
     var lastErr = null;
     for(var m=0; m<models.length; m++){
       try{
@@ -7131,6 +7184,7 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     if(!txt && !pendingFile) return;
     var showImg = pendingFileURL;
     addMsg(txt, 'user', showImg);
+    pvUpdateTitleFromText(txt, !!showImg);
     var fileNow = pendingFile; pendingFile=null; pendingFileURL=null;
     var prev = el('pv-ai-attach-preview'); if(prev) prev.classList.remove('show');
     inp.value=''; var bar=el('pv-ai-input-bar'); if(bar) bar.classList.remove('has-text'); inp.style.height='auto';
@@ -7188,8 +7242,10 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     var fileInput = el('pv-ai-file');
     var plusSheet = el('pv-ai-plus-sheet');
     var plusBackdrop = el('pv-ai-plus-backdrop');
-    function openPlusSheet(){ if(plusSheet) plusSheet.classList.add('show'); if(plusBackdrop) plusBackdrop.classList.add('show'); }
-    function closePlusSheet(){ if(plusSheet) plusSheet.classList.remove('show'); if(plusBackdrop) plusBackdrop.classList.remove('show'); }
+    function openPlusSheet(){ if(plusSheet){ plusSheet.style.transition=''; plusSheet.style.transform=''; plusSheet.classList.add('show'); } if(plusBackdrop){ plusBackdrop.style.opacity=''; plusBackdrop.classList.add('show'); } }
+    function closePlusSheet(){ if(plusSheet){ plusSheet.style.transition=''; plusSheet.style.transform=''; plusSheet.classList.remove('show'); } if(plusBackdrop){ plusBackdrop.style.opacity=''; plusBackdrop.classList.remove('show'); } }
+    // Gallery / file sheet - drag down manually to close, inside original file, no patch
+    (function(){ if(!plusSheet || plusSheet.dataset.pvDragBound) return; plusSheet.dataset.pvDragBound='1'; plusSheet.style.touchAction='none'; var sY=0, dY=0, dragging=false, dragged=false; function getY(e){ return e.touches? e.touches[0].clientY : e.clientY; } plusSheet.addEventListener('touchstart', function(e){ if(!plusSheet.classList.contains('show')) return; sY=getY(e); dY=0; dragging=true; dragged=false; plusSheet.style.transition='none'; }, {passive:true}); plusSheet.addEventListener('touchmove', function(e){ if(!dragging) return; var y=getY(e); dY=y-sY; if(dY>0){ if(e.cancelable) e.preventDefault(); plusSheet.style.transform='translateY('+dY+'px)'; if(plusBackdrop) plusBackdrop.style.opacity=String(Math.max(0,1-dY/300)); if(dY>10) dragged=true; } }, {passive:false}); function endDrag(){ if(!dragging) return; dragging=false; plusSheet.style.transition=''; if(dY>90 || dY>plusSheet.offsetHeight*0.35){ closePlusSheet(); } else { plusSheet.style.transform=''; if(plusBackdrop) plusBackdrop.style.opacity=''; } dY=0; if(dragged){ setTimeout(function(){ dragged=false; }, 80); } } plusSheet.addEventListener('touchend', endDrag, {passive:true}); plusSheet.addEventListener('touchcancel', endDrag, {passive:true}); plusSheet.addEventListener('click', function(e){ if(dragged){ e.preventDefault(); e.stopPropagation(); } }, true); var mDown=false, mY=0, mDY=0; plusSheet.addEventListener('mousedown', function(e){ if(!plusSheet.classList.contains('show')) return; mDown=true; mY=e.clientY; mDY=0; plusSheet.style.transition='none'; }); document.addEventListener('mousemove', function(e){ if(!mDown) return; mDY=e.clientY-mY; if(mDY>0){ plusSheet.style.transform='translateY('+mDY+'px)'; if(plusBackdrop) plusBackdrop.style.opacity=String(Math.max(0,1-mDY/300)); } }); document.addEventListener('mouseup', function(){ if(!mDown) return; mDown=false; plusSheet.style.transition=''; if(mDY>90){ closePlusSheet(); } else { plusSheet.style.transform=''; if(plusBackdrop) plusBackdrop.style.opacity=''; } mDY=0; }); })();
     if(plusBackdrop && !plusBackdrop.dataset.pvPlusBound){ plusBackdrop.dataset.pvPlusBound='1'; plusBackdrop.addEventListener('click', function(e){ e.preventDefault(); closePlusSheet(); }); }
     // Files = open Files DIRECTLY, no Camera / Quick Share chooser. Gallery / Camera stay as before.
     document.querySelectorAll('.pv-ai-plus-opt').forEach(function(btn){ if(!btn.dataset.pvPlusOptBound){ btn.dataset.pvPlusOptBound='1'; btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var opt=btn.getAttribute('data-opt'); if(opt!=='files') return; closePlusSheet(); (async function(){ try{ if(window.showOpenFilePicker){ var handles=await window.showOpenFilePicker({multiple:false, types:[{description:'Files', accept:{'application/*':['.pdf','.doc','.docx','.xls','.xlsx','.ppt','.pptx','.txt','.zip','.csv']}}]}); if(handles && handles[0]){ var f=await handles[0].getFile(); var fi2=el('pv-ai-files-input'); if(fi2){ try{ var dt=new DataTransfer(); dt.items.add(f); fi2.files=dt.files; }catch(_e){} fi2.dispatchEvent(new Event('change',{bubbles:true})); } return; } } }catch(err){ if(err && err.name==='AbortError') return; } var fi=el('pv-ai-files-input'); if(fi){ fi.value=''; fi.click(); } })(); }); } });
@@ -7315,6 +7371,8 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       if(clearBtn) clearBtn.addEventListener('click', function(){ pendingFile=null; pendingFileURL=null; var p=el('pv-ai-attach-preview'); if(p) p.classList.remove('show'); });
     }
   }
+  document.addEventListener('click', function(e){ try{ if(!e.target || !e.target.closest) return; if(!e.target.closest('#pv-ai-upright')) return; var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp2=el('pv-ai-input'); if(inp2){ inp2.value=''; inp2.style.height='auto'; } var bar2=el('pv-ai-input-bar'); if(bar2) bar2.classList.remove('has-text'); var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('show'); pvResetTitle(); }catch(err){} }, true);
+  pvInitTitle();
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
 </script>
@@ -7508,130 +7566,7 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
 <style data-file="css/cospro-ai-title.css">
 #pv-ai-title.pv-ai-title{flex:0 1 auto;max-width:55%;min-width:0;text-align:left;color:#fff;font-size:17px;font-weight:650;line-height:1.2;letter-spacing:.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0;margin-left:4px;-webkit-tap-highlight-color:transparent}
 </style>
-<script>
-/* COSPRO AI TITLE - FIRST CHAT ONLY
-   - New chat: title = COSPRO AI
-   - First real chat (not Quick Hello / greeting only): AI summarizes it, picks a topic that suits it, title changes to that topic ONCE
-   - Example: first chat "I want to make things work out" -> title "Making Things Work Out"
-   - After that, title stays. Later chats do NOT change it.
-   - If first chat is just Quick Hello / hi / greeting, title becomes Quick Hello, then next real chat changes it to that real topic.
-   - New chat (tap top-right pencil) = clears messages + resets title to COSPRO AI. */
-(function(){
-  var TITLE_KEY = 'pro_vibes_cospro_ai_title';
-  function el(id){ return document.getElementById(id); }
-  function topicFromText(txt, hasImage){
-    try{
-      var s = String(txt||'').replace(/\s+/g,' ').trim();
-      if(!s){
-        if(hasImage) return 'Photo';
-        return null;
-      }
-      var low = s.toLowerCase().replace(/[!?.,]+/g,'').trim();
-      // Quick Hello / greeting only -> title is Quick Hello, next real chat will replace it
-      var greetingOnly = /^(hi|hello|heyy+|hii+|hey|wassup|whats up|what's up|sup|yo|good morning|good afternoon|good evening|how are you|how far|how you doing|how are u|hi hello|hello hi|hi hello wassup|wassup hi|hey hi|hi hey|quick hello)(\s+(hi|hello|heyy+|hii+|hey|wassup|whats up|what's up|sup|yo|good morning|good afternoon|good evening|how are you|quick hello))*$/.test(low);
-      if(greetingOnly) return 'Quick Hello';
-      if(low === 'quick hello') return 'Quick Hello';
-      // Keep original for gerund handling, then strip wrappers for summary
-      var origLow = low;
-      s = s.replace(/^(hi|hello|hey|heyy+|hii+|wassup|yo|good (morning|afternoon|evening))[,\s]+/i, '');
-      s = s.replace(/^(please|pls)\s+/i, '');
-      s = s.replace(/^(can you|can u|could you|could u|will you)\s+/i, '');
-      // "I want to make things work out" -> keep "make things work out" then turn Make -> Making
-      var wantToMake = /^(i want to|i wanna|i want)\s+/i.test(s);
-      s = s.replace(/^(help me (with|to)?|help me|i want to know|i want to|i want|tell me about|tell me|explain to me|explain|what is|what's|what are|how do i|how can i)\s+/i, '');
-      s = s.replace(/^(generate|create|draw|make)\s+(me\s+)?(an?\s+)?(image|picture|pic|photo|drawing)\s+(of\s+|for\s+)?/i, 'Picture Of ');
-      s = s.replace(/^(show me\s+)(an?\s+)?(image|picture|pic|photo)\s+(of\s+)?/i, 'Picture Of ');
-      s = s.trim();
-      if(!s) return null;
-      var words = s.split(' ').filter(Boolean);
-      var stop = {a:1, an:1, the:1, is:1, are:1, to:1, of:1, for:1, me:1, my:1, please:1, can:1, you:1, u:1, and:1, in:1, on:1, with:1, about:1};
-      var meaningful = words.filter(function(w){ return !stop[w.toLowerCase().replace(/[^a-z]/g,'')]; });
-      var use = meaningful.length ? meaningful : words;
-      var topic = use.slice(0,4).join(' ');
-      // If long, put ... like "Adjusting Galler..."
-      if(topic.length > 32){
-        topic = topic.slice(0,32);
-        var lastSpace = topic.lastIndexOf(' ');
-        if(lastSpace > 12) topic = topic.slice(0, lastSpace);
-        topic = topic + '...';
-      }
-      // Title Case, with Make -> Making for "I want to make..." style first chats
-      var parts = topic.split(' ');
-      if(wantToMake && parts.length && parts[0].toLowerCase() === 'make') parts[0] = 'Making';
-      if(wantToMake && parts.length && parts[0].toLowerCase() === 'learn') parts[0] = 'Learning';
-      if(wantToMake && parts.length && parts[0].toLowerCase() === 'fix') parts[0] = 'Fixing';
-      if(wantToMake && parts.length && parts[0].toLowerCase() === 'start') parts[0] = 'Starting';
-      topic = parts.map(function(w){ return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
-      return topic || null;
-    }catch(e){ return null; }
-  }
-  function setTitle(topic){
-    if(!topic) return;
-    var titleEl = el('pv-ai-title');
-    if(titleEl) titleEl.textContent = topic;
-    try{ localStorage.setItem(TITLE_KEY, topic); }catch(e){}
-  }
-  function resetTitle(){
-    var titleEl = el('pv-ai-title');
-    if(titleEl) titleEl.textContent = 'COSPRO AI';
-    try{ localStorage.setItem(TITLE_KEY, 'COSPRO AI'); }catch(e){}
-  }
-  window.pvCosproResetTitle = resetTitle;
-  window.pvCosproSetTitle = setTitle;
-  window.pvCosproUpdateTitleFromText = function(txt, hasImage){ var titleEl = el('pv-ai-title'); if(titleEl && titleEl.textContent !== 'COSPRO AI' && titleEl.textContent !== 'Quick Hello') return; var t = topicFromText(txt, hasImage); if(t) setTitle(t); };
-  function init(){
-    var saved = null;
-    try{ saved = localStorage.getItem(TITLE_KEY); }catch(e){}
-    var box = el('pv-ai-messages');
-    var hasMsgs = box && box.querySelector('.pv-ai-msg');
-    if(saved && hasMsgs) setTitle(saved);
-    else resetTitle();
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
-  function watchMessages(){
-    var box = el('pv-ai-messages');
-    if(!box || !window.MutationObserver) return;
-    var obs = new MutationObserver(function(muts){
-      muts.forEach(function(m){
-        (m.addedNodes || []).forEach(function(n){
-          try{
-            var isUser = false, txt = '', hasImg = false;
-            if(n && n.classList && n.classList.contains('pv-ai-msg') && n.classList.contains('user')){ isUser = true; txt = n.textContent || ''; hasImg = !!n.querySelector('img'); }
-            if(n && n.querySelector && n.querySelector('.pv-ai-msg.user')){ isUser = true; var sp = n.querySelector('.pv-ai-msg.user span'); txt = sp ? sp.textContent : (n.textContent || ''); hasImg = !!n.querySelector('.pv-ai-msg.user img'); }
-            if(isUser){
-              // FIRST CHAT ONLY: change if title is still COSPRO AI or Quick Hello (Quick Hello gets replaced by real topic)
-              var titleEl = el('pv-ai-title');
-              if(titleEl && (titleEl.textContent === 'COSPRO AI' || titleEl.textContent === 'Quick Hello')){
-                var newTopic = topicFromText(txt, hasImg);
-                if(newTopic) setTitle(newTopic);
-                // if newTopic is Quick Hello, title becomes Quick Hello - next real chat will replace it
-              }
-              // if title already changed, do nothing - later chats do NOT change it
-            }
-          }catch(e){}
-        });
-      });
-    });
-    obs.observe(box, {childList:true, subtree:true});
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchMessages); else watchMessages();
-  document.addEventListener('click', function(e){
-    try{
-      if(!e.target || !e.target.closest) return;
-      if(!e.target.closest('#pv-ai-upright')) return;
-      var box = el('pv-ai-messages');
-      if(box) box.innerHTML = '';
-      var inp = el('pv-ai-input');
-      if(inp){ inp.value=''; inp.style.height='auto'; }
-      var bar = el('pv-ai-input-bar');
-      if(bar) bar.classList.remove('has-text');
-      var prev = el('pv-ai-attach-preview');
-      if(prev) prev.classList.remove('show');
-      resetTitle();
-    }catch(err){}
-  }, true);
-})();
-</script>
+
 
 
 <style data-file="css/cospro-ai-top-fixes.css">
@@ -7937,15 +7872,27 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     try{
       var key=(typeof GEMINI_API_KEY!=='undefined')? GEMINI_API_KEY : '';
       if(!key) throw new Error('no gemini key');
-      var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key='+encodeURIComponent(key),{
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({contents:[{parts:[{text:'You are PRO-VIBES AI, a friendly real-time voice assistant. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis, like a real human conversation. You are in Enugu, Nigeria, user speaks English / Pidgin.\nUser: '+userText}]}]})
-      });
-      var data=await res.json();
-      if(data.error) throw new Error(data.error.message||'Gemini error');
-      var out=data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
-      if(out) return out.trim();
-      throw new Error('empty');
+      var models=['gemini-3.8-flash','gemini-2.5-flash','gemini-3-flash','gemini-2.5-flash-lite'];
+      var lastErr=null;
+      for(var mi=0; mi<models.length; mi++){
+        try{
+          var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+models[mi]+':generateContent?key='+encodeURIComponent(key),{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({contents:[{parts:[{text:'You are PRO-VIBES AI, a friendly real-time voice assistant. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis, like a real human conversation. You are in Enugu, Nigeria, user speaks English / Pidgin.\nUser: '+userText}]}]})
+          });
+          var data=await res.json();
+          if(data.error){
+            lastErr=new Error(data.error.message||'Gemini error');
+            var msg=String(data.error.message||'').toLowerCase();
+            if(msg.indexOf('high demand')!==-1 || msg.indexOf('overload')!==-1 || msg.indexOf('temporarily')!==-1 || msg.indexOf('no longer available')!==-1 || data.error.status==='UNAVAILABLE' || data.error.code===503) continue;
+            throw lastErr;
+          }
+          var out=data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+          if(out) return out.trim();
+          lastErr=new Error('empty');
+        }catch(e){ lastErr=e; }
+      }
+      throw lastErr||new Error('Gemini busy');
     }catch(e){ return localReply(userText); }
   }
   async function askGroq(userText){ return askGeminiLive(userText); }
@@ -7954,20 +7901,25 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     if(!text || !text.trim()) return;
     if(liveProcessing) return;
     liveProcessing=true;
-    var reply=await askGroq(text.trim());
-    if(!liveOn){ liveProcessing=false; return; }
-    // Also save to AI chat history if available
-    try{ var box=document.getElementById('pv-ai-messages'); if(box){ /* keep live separate, don't spam AI chat */ } }catch(e){}
-    speakAI(reply);
-    liveProcessing=false;
+    try{
+      var reply=await askGroq(text.trim());
+      if(!liveOn) return;
+      speakAI(reply);
+    }catch(e){
+      try{ if(liveOn) speakAI(localReply(text.trim())); }catch(_){}
+    }finally{
+      liveProcessing=false;
+    }
   }
 
   function resumeListening(){
     try{
+      if(!liveOn) return;
       if(recog){
-        try{ recog.start(); }catch(e){}
+        try{ recog.start(); }catch(e){ try{ startRecognition(); }catch(_){} }
         return;
       }
+      startRecognition();
     }catch(e){}
   }
 
@@ -8000,11 +7952,8 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       };
       recog.onend=function(){
         if(!liveOn) return;
-          // retry in a bit
-          clearTimeout(recogRestartTimer);
-          return;
-        }
         clearTimeout(recogRestartTimer);
+        recogRestartTimer=setTimeout(function(){ if(liveOn && !liveSpeaking) startRecognition(); }, 400);
       };
       recog.start();
     }catch(e){
@@ -8055,19 +8004,22 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
 
   async function startLive(){
     if(liveOn) return;
+    liveOn=true;
     ensureUI();
     try{
       if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+        startRecognition();
         return;
       }
       stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}, video:false});
       startRecognition();
     }catch(err){
-      liveOn=true;
+      try{ startRecognition(); }catch(e){}
     }
   }
 
   function stopLive(){
+    liveOn=false;
     clearTimeout(recogRestartTimer);
     try{ if(recog){ recog.onend=null; recog.onerror=null; recog.onresult=null; try{ recog.stop(); }catch(e){} } }catch(e){}
     recog=null;
