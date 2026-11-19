@@ -7157,7 +7157,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 <script data-file="js/groq.js">
 // js/groq.js
 // Keys come from js/config.js (GROQ only for AI) - do NOT redeclare them here or the AI script breaks.
-var GROQ_MODEL = "llama-3.3-70b-versatile"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120b"; var GROQ_TITLE_MODEL = "llama-3.3-70b-versatile"; var GROQ_VISION_MODEL = "qwen/qwen3.6-27b";
+var GROQ_MODEL = "llama-3.3-70b-versatile"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120b"; var GROQ_TITLE_MODEL = "llama-3.3-70b-versatile"; var GROQ_VISION_MODEL = "qwen/qwen3.8-27b";
 (function(){
   function el(id){return document.getElementById(id);}
   // TITLE - Meta AI style: real AI summary, correct English. First chat only. Quick Hello -> real chat replaces it
@@ -7382,8 +7382,8 @@ var GROQ_MODEL = "llama-3.3-70b-versatile"; var GROQ_CHAT_MODEL = "openai/gpt-os
     var box = el('pv-ai-messages'); if(!box) return null;
     if(who==='ai' && txt && txt!=='Thinking...'){ try{ if(window.pvAiReplyVib) window.pvAiReplyVib(); else if(window.pvSleekVib) window.pvSleekVib(); }catch(e){} }
     var d = document.createElement('div'); d.className = 'pv-ai-msg ' + who;
-    if(imgURL){ var im=document.createElement('img'); im.src=imgURL; d.appendChild(im); }
-    if(txt){ if(who==='ai' && txt!=='Thinking...'){ d.dataset.pvRaw=txt; var c=document.createElement('div'); c.className='pv-md'; c.innerHTML=pvRenderMarkdown(txt); d.appendChild(c); } else { var s=document.createElement('span'); s.textContent=txt; d.appendChild(s); } }
+    if(imgURL){ var im=document.createElement('img'); im.src=imgURL; try{ im.style.setProperty('width','96px','important'); im.style.setProperty('height','96px','important'); im.style.setProperty('max-width','96px','important'); im.style.setProperty('object-fit','cover','important'); im.style.setProperty('border-radius','14px','important'); im.style.setProperty('display','block','important'); im.style.setProperty('margin', who==='user' ? '0 0 6px auto' : '8px 0 0 0','important'); im.style.setProperty('background','transparent','important'); im.style.setProperty('cursor','zoom-in','important'); }catch(e){} if(who==='user'){ try{ d.style.setProperty('background','transparent','important'); d.style.setProperty('padding','0','important'); d.style.setProperty('box-shadow','none','important'); }catch(e){} } d.appendChild(im); }
+    if(txt){ if(who==='ai' && txt!=='Thinking...'){ d.dataset.pvRaw=txt; var c=document.createElement('div'); c.className='pv-md'; c.innerHTML=pvRenderMarkdown(txt); d.appendChild(c); } else { var s=document.createElement('span'); s.textContent=txt; if(imgURL && who==='user'){ try{ s.style.setProperty('background','#ffffff','important'); s.style.setProperty('color','#111111','important'); s.style.setProperty('padding','8px 12px','important'); s.style.setProperty('border-radius','18px','important'); s.style.setProperty('display','block','important'); s.style.setProperty('width','fit-content','important'); s.style.setProperty('max-width','100%','important'); s.style.setProperty('margin-left','auto','important'); s.style.setProperty('box-shadow','0 1px 3px rgba(0,0,0,.25)','important'); }catch(e){} } d.appendChild(s); } }
     if(who==='ai' && txt && txt!=='Thinking...'){
       var wrap = document.createElement('div'); wrap.className = 'pv-ai-msg-wrap ai';
       wrap.appendChild(d);
@@ -7412,6 +7412,33 @@ var GROQ_MODEL = "llama-3.3-70b-versatile"; var GROQ_CHAT_MODEL = "openai/gpt-os
   function fileToBase64(file){
     return new Promise(function(res, rej){
       var r = new FileReader(); r.onload=function(){ res(String(r.result).split(',')[1]); }; r.onerror=rej; r.readAsDataURL(file);
+    });
+  }
+  function pvGetVideoFrame(file){
+    return new Promise(function(res, rej){
+      try{
+        var url = URL.createObjectURL(file);
+        var v = document.createElement('video');
+        v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+        var done = false;
+        function finish(){
+          if(done) return; done = true;
+          try{ URL.revokeObjectURL(url); }catch(e){}
+          try{
+            var c = document.createElement('canvas');
+            var w = v.videoWidth || 640, h = v.videoHeight || 360;
+            var maxW = 640; if(w > maxW){ h = Math.round(h*maxW/w); w = maxW; }
+            c.width = w; c.height = h;
+            var ctx = c.getContext('2d'); ctx.drawImage(v,0,0,w,h);
+            var dataUrl = c.toDataURL('image/jpeg', 0.8);
+            res(dataUrl.split(',')[1]);
+          }catch(e){ rej(e); }
+        }
+        v.onseeked = finish;
+        v.onloadeddata = function(){ try{ v.currentTime = Math.min(0.5, (v.duration||1)/2); }catch(e){ finish(); } };
+        v.onerror = function(){ rej(new Error('Could not read video frame')); };
+        setTimeout(function(){ if(!done) finish(); }, 3000);
+      }catch(e){ rej(e); }
     });
   }
   async function callGroq(messages){
@@ -7457,8 +7484,9 @@ async function handleSend(){
       var reply = '';
       if(fileNow){
         // Picture / video -> Groq sees, Groq explains
-        var b64 = await fileToBase64(fileNow);
-        var seen = await callGroqVision(fileNow, b64, fileNow.type || 'image/jpeg');
+        var b64, mimeForVision;
+        if(fileNow.type.indexOf('video')===0){ b64 = await pvGetVideoFrame(fileNow); mimeForVision = 'image/jpeg'; } else { b64 = await fileToBase64(fileNow); mimeForVision = fileNow.type || 'image/jpeg'; }
+        var seen = await callGroqVision(fileNow, b64, mimeForVision);
         var _hist2 = pvHistoryGetMessagesFromDOM().slice(-20).map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
         reply = await callGroq([
           {role:'system', content: pvCosproSystemPrompt() + pvMemoryContext(pvSendChatId)}
@@ -8710,10 +8738,10 @@ async function handleSend(){
 <style id="pv-ai-img-small">
 /* User picture: small, no white around it. Parent becomes transparent, text gets its own white bubble separate below. */
 .pv-ai-msg.user:has(img){background:transparent !important;padding:0 !important;box-shadow:none !important;border-radius:0 !important;max-width:85% !important;width:auto !important}
-.pv-ai-msg.user:has(img) img{width:120px !important;max-width:120px !important;height:auto !important;border-radius:14px !important;display:block !important;margin:0 0 6px auto !important;object-fit:cover !important;cursor:zoom-in !important;background:transparent !important}
+.pv-ai-msg.user:has(img) img{width:96px !important;max-width:96px !important;height:96px !important;border-radius:14px !important;display:block !important;margin:0 0 6px auto !important;object-fit:cover !important;cursor:zoom-in !important;background:transparent !important}
 .pv-ai-msg.user:has(img) span{background:#ffffff !important;color:#111111 !important;padding:8px 12px !important;border-radius:18px !important;border-bottom-right-radius:6px !important;display:block !important;width:fit-content !important;max-width:100% !important;margin-left:auto !important;box-shadow:0 1px 3px rgba(0,0,0,.25) !important}
 /* AI picture: also small, no white */
-.pv-ai-msg.ai img{width:140px !important;max-width:140px !important;height:auto !important;border-radius:14px !important;display:block !important;margin:8px 0 0 0 !important;object-fit:cover !important;cursor:zoom-in !important;background:transparent !important}
+.pv-ai-msg.ai img{width:96px !important;max-width:96px !important;height:96px !important;border-radius:14px !important;display:block !important;margin:8px 0 0 0 !important;object-fit:cover !important;cursor:zoom-in !important;background:transparent !important}
 /* Preview overlay */
 #pv-ai-img-preview{position:fixed;inset:0;z-index:10005;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
 #pv-ai-img-preview.show{display:flex}
