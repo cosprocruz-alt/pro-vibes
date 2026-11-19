@@ -1487,7 +1487,12 @@ const FB_REELS_LIKES="/reels_likes/";
 const FB_REELS_COMMENTS="/reels_comments/";
 const FB_REELS_SAVES="/reels_saves/";
 // Deleted: group typing removed
-const GROQ_API_KEY="PASTE_YOUR_GROQ_KEY_HERE";
+const GROQ_API_KEY="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";
+// Cloudflare = LIVE ONLY. Chat + picture still use Groq so chat works from file (Cloudflare blocks browser fetch).
+const CLOUDFLARE_ACCOUNT_ID="9c5c475aa39fa1fee876e219e761a6fb";
+const CLOUDFLARE_API_TOKEN="cfut_PULjwiYmddkY352GqEtuxgkg6YnOizz4gCL7d8XBfb85830c";
+const CLOUDFLARE_CHAT_MODEL="@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+const CLOUDFLARE_WHISPER_MODEL="@cf/openai/whisper";
 const YOUTUBE_API_KEYS=[
 "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
 "AIzaSyAvwvug-vi4scbjdTXU6j6Tj63UnIt7S7A",
@@ -6876,7 +6881,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     }catch(e){}
   }
   // NORMAL BASS - reduced, so sounds can still be heard on phone speakers. One note only, not 2. Warm but clear, loud.
-  function pvLiveTone(freq, vol){
+  function proTone(freq, vol){
     var c = ensureCtx(); if(!c) return;
     try{
       var now = c.currentTime;
@@ -6894,7 +6899,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   // OPEN LIVE - ONE note only + ONE simple vibration
   window.pvPlayLiveOpenSound = function(){
     try{ if(navigator.vibrate) navigator.vibrate(50); }catch(e){}
-    try{ pvLiveTone(261.63, 0.85); }catch(e){}
+    try{ proTone(261.63, 0.85); }catch(e){}
   };
   // CLOSE LIVE - ONE simple vibration only, cancel vibration removed
   window.pvPlayLiveCloseSound = function(){
@@ -6902,8 +6907,8 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
       if(navigator.vibrate) navigator.vibrate(50);
     }catch(e){}
     try{
-      pvLiveTone(261.63, 0.85);
-      setTimeout(function(){ try{ pvLiveTone(196.00, 0.85); }catch(e){} }, 150);
+      proTone(261.63, 0.85);
+      setTimeout(function(){ try{ proTone(196.00, 0.85); }catch(e){} }, 150);
     }catch(e){}
   };
 
@@ -7020,7 +7025,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 </script>
 
 
-<!-- ===== FILE: js/groq-live.js — Groq = chat + vision + LIVE ===== -->
+<!-- ===== FILE: js/groq-cloudflare.js — Groq = chat + vision, Cloudflare = LIVE ONLY, no Cloudflare ===== -->
 <style data-file="css/ai-message-actions.css">
 /* AI MESSAGE ACTIONS - exactly like screenshot: copy | like | dislike | speaker - under AI messages ONLY */
 #pv-ai-screen .pv-ai-messages{display:flex !important;flex-direction:column !important;gap:12px !important}
@@ -7043,10 +7048,9 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 #pv-ai-toast{ position:fixed !important; left:50% !important; bottom:118px !important; transform:translate(-50%,12px) !important; background:#2c2c2e !important; color:#fff !important; padding:11px 20px !important; border-radius:999px !important; font-size:14px !important; font-weight:500 !important; letter-spacing:.1px !important; opacity:0 !important; pointer-events:none !important; transition:opacity .25s ease, transform .25s ease !important; z-index:999 !important; box-shadow:0 10px 28px rgba(0,0,0,.55) !important; white-space:nowrap !important; }
 #pv-ai-toast.show{ opacity:1 !important; transform:translate(-50%,0) !important; }
 </style>
-<script data-file="js/groq-live.js">
-// js/groq-live.js
-// PASTE YOUR KEYS HERE - do NOT share them in chat, paste them directly in this file:
-// Keys come from js/config.js (GROQ ONLY) - do NOT redeclare them here or the AI script breaks.
+<script data-file="js/groq-cloudflare.js">
+// js/groq-cloudflare.js
+// Keys come from js/config.js (GROQ for chat, CLOUDFLARE for Live) - do NOT redeclare them here or the AI script breaks.
 var GROQ_MODEL = "openai/gpt-oss-120b";
 (function(){
   function el(id){return document.getElementById(id);}
@@ -7112,7 +7116,7 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
   }
   function cleanImagePrompt(txt){
     var s = String(txt||'').trim();
-    // Strip polite / request wrappers so Groq gets just the subject: "can u generate me a boy running" -> "a boy running"
+    // Strip polite / request wrappers so Cloudflare gets just the subject: "can u generate me a boy running" -> "a boy running"
     s = s.replace(/^(please\s+|pls\s+|can you\s+|can u\s+|could you\s+|could u\s+|can u\s+)/i, '');
     s = s.replace(/^(generate|create|draw|make)\s+(me\s+)?(an?\s+)?(image|picture|pic|photo|drawing)\s+(of\s+|for\s+)?/i, '');
     s = s.replace(/^(generate|create|draw|make)\s+(me\s+)?/i, '');
@@ -7149,8 +7153,7 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     if(!out) throw new Error('Groq could not see this file.');
     return out;
   }
-  async function callGroqVisionAlias(file, base64, mime){ return callGroqVision(file, base64, mime); }
-  async function callGroqImage(prompt){ throw new Error('Pictures are off - Live is the focus.'); }
+  // No Cloudflare - picture uses Groq vision above, Live uses Cloudflare below.
 async function handleSend(){
     var inp = el('pv-ai-input'); if(!inp) return;
     var txt = inp.value.trim();
@@ -7165,7 +7168,7 @@ async function handleSend(){
     try{
       var reply = '';
       if(fileNow){
-        // Picture / video -> Groq sees, Groq explains (Groq is LIVE)
+        // Picture / video -> Groq sees, Groq explains (Cloudflare is LIVE ONLY)
         var b64 = await fileToBase64(fileNow);
         var seen = await callGroqVision(fileNow, b64, fileNow.type || 'image/jpeg');
         reply = await callGroq([
@@ -7774,460 +7777,315 @@ async function handleSend(){
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script>
 <style data-file="css/live-realtime.css"> /* LIVE REALTIME - TEXT FREE, NO WAVE - black only, buttons only */ #pv-voice-live .pv-live-orb-wrap{ display:flex !important; flex-direction:column !important; overflow:hidden !important; } .pv-live-center{ flex:1 !important; display:flex !important; flex-direction:column !important; min-height:0 !important; }</style>
 <script data-file="js/live-realtime.js">
-// PRO-VIBES LIVE - GROQ ONLY
-// Ear: Groq Whisper | Brain: Groq gpt-oss-120b | Mouth: 14 distinct voices
-// Each voice is STRICTLY DIFFERENT: unique pitch + unique rate + unique base voice + unique preview line. No two share the same combo.
+// PRO-VIBES LIVE - CLEAN REBUILD - CLOUDFLARE ONLY FOR LIVE
+// Design: Cloudflare Whisper = ear, Cloudflare Llama = brain, browser TTS = voice. Voice only. Normal chat + picture use the chat brain, not Live. No pictures. No header. UI untouched.
+// Language: English by default. Pidgin only if user speaks Pidgin first.
+// Voice: Male - browser TTS male voice.
+// Audio: No feedback - mic never plays to speaker, mic pauses while AI speaks, 48k -> 16k downsample, silence gate.
 (function(){
-  function el(id){ return document.getElementById(id); }
-
-  // ---------- 14 STRICTLY DIFFERENT VOICES ----------
-  var VOICES = [
-    { id:'cospro', name:'Cospro', tag:'Deep Bass Male • Naija Confident', pitch:0.45, rate:0.92, find:['David','Microsoft David'], preview:'Hi, I am Cospro. Deep, calm and confident. How are you doing today?' },
-    { id:'ada', name:'Ada', tag:'Warm Female • Lagos Friendly', pitch:1.25, rate:1.00, find:['Zira','Microsoft Zira'], preview:'Hi, I am Ada. Warm and friendly, I love to chat with you.' },
-    { id:'chidi', name:'Chidi', tag:'Young Bass Male • Enugu Fresh', pitch:0.68, rate:1.08, find:['Ryan','Microsoft Ryan'], preview:'Yo, I am Chidi. Young, fresh and ready to gist with you.' },
-    { id:'zara', name:'Zara', tag:'Soft Female • Calm & Gentle', pitch:1.45, rate:0.88, find:['Aria','Microsoft Aria'], preview:'Hello, I am Zara. Soft, calm and gentle. Take your time, I am listening.' },
-    { id:'emeka', name:'Emeka', tag:'Bold Bass Male • Strong & Clear', pitch:0.52, rate:1.02, find:['Guy','Microsoft Guy'], preview:'Hello, I am Emeka. Bold, strong and clear. Tell me what you need.' },
-    { id:'nia', name:'Nia', tag:'Energetic Female • High Vibe', pitch:1.35, rate:1.15, find:['Jenny','Microsoft Jenny'], preview:'Hey! I am Nia. Full of energy and good vibes. Let us go!' },
-    { id:'kofi', name:'Kofi', tag:'Deepest Bass Male • Slow & Rich', pitch:0.30, rate:0.84, find:['George','Microsoft George'], preview:'Hello, I am Kofi. I tell stories slow and deep, so you feel every word.' },
-    { id:'tobi', name:'Tobi', tag:'Chill Bass Male • Relaxed', pitch:0.72, rate:0.94, find:['Brian','Microsoft Brian'], preview:'Hey, I am Tobi. Chill, relaxed, no stress. What is on your mind?' },
-    { id:'amara', name:'Amara', tag:'Sweet Female • Bright & Sweet', pitch:1.60, rate:0.96, find:['Samantha','Google US English Female'], preview:'Hi, I am Amara. Sweet and bright. It is so nice to talk to you.' },
-    { id:'jay', name:'Jay', tag:'Cool Bass Male • US Cool', pitch:0.60, rate:1.12, find:['Mark','Microsoft Mark'], preview:'What is up? I am Jay. Cool, smooth and straight to the point.' },
-    { id:'lola', name:'Lola', tag:'Playful Female • Fun & Bubbly', pitch:1.30, rate:1.22, find:['Emma','Microsoft Emma'], preview:'Hii! I am Lola. Playful and bubbly. This is going to be fun!' },
-    { id:'obi', name:'Obi', tag:'Elder Bass Male • Wise & Slow', pitch:0.38, rate:0.82, find:['Daniel','Microsoft Daniel'], preview:'Good day, I am Obi. I speak slow and wise. I am here to guide you.' },
-    { id:'mira', name:'Mira', tag:'Smooth Female • Soft & Smooth', pitch:1.42, rate:0.90, find:['Natasha','Microsoft Natasha'], preview:'Hi, I am Mira. Smooth and soft. Let us talk calmly together.' },
-    { id:'flex', name:'Flex', tag:'Hype Bass Male • Fast & Loud', pitch:0.78, rate:1.25, find:['James','Microsoft James'], preview:'Let us go! I am Flex. Fast, hype and full of ginger. Are you ready?' }
-  ];
-
-  var VOICE_KEY = 'pro_vibes_live_voice_v2';
-  var currentVoiceId = 'cospro';
-  try{ var saved = localStorage.getItem(VOICE_KEY); if(saved){ for(var i=0;i<VOICES.length;i++){ if(VOICES[i].id===saved){ currentVoiceId = saved; break; } } } }catch(e){}
-
-  function getVoiceCfg(id){
-    for(var i=0;i<VOICES.length;i++){ if(VOICES[i].id===id) return VOICES[i]; }
-    return VOICES[0];
-  }
-  function getCurrentCfg(){ return getVoiceCfg(currentVoiceId); }
-
-  // ---------- STATE ----------
+  // ---- State ----
   var liveOn = false;
   var liveMuted = false;
-  var liveStream = null;
-  var liveAudioCtx = null;
-  var analyser = null;
-  var mediaRecorder = null;
-  var recChunks = [];
-  var recStart = 0;
-  var recHasSpeech = false;
-  var recLastSpeech = 0;
-  var recDiscard = false;
-  var isRecording = false;
-  var liveSpeaking = false;
-  var speakToken = 0;
-  var vadTimer = null;
-  var loudFrames = 0;
-  var queue = [];
-  var processing = false;
-  var history = []; // {role, content} last 8 turns
-  var liveStatusEl = null;
+  var liveSpeaking = false; // AI is currently playing voice
+  var liveWs = null;
+  var liveSetupDone = false;
+  var liveUseReal = false; // Cloudflare Live uses Whisper + Llama + TTS, not a realtime websocket
+  var liveFallback = false;
+  var liveMicStarted = false;
+  var liveRetry = 0;
+  var liveModelIdx = 0;
+  var liveModels = ['@cf/meta/llama-3.3-70b-instruct-fp8-fast'];
+  var liveStream = null; // getUserMedia stream
+  var stream = null; // alias for fallback code
+  var liveAudioCtx = null, liveProcessor = null, liveInput = null, liveSilentGain = null;
+  var liveOutCtx = null, liveNextPlay = 0, liveCurrentSource = null;
+  var recog = null, recorder = null, recogRestartTimer = null, liveConnectTimer = null;
+  var liveLoudFrames = 0, liveAudioInTurn = false, liveTextInTurn = '', liveLastEmptyNudge = 0;
 
-  // ---------- CSS + SHEET ----------
-  function injectCSS(){
-    if(document.getElementById('pv-voice-picker-css')) return;
-    var s = document.createElement('style');
-    s.id = 'pv-voice-picker-css';
-    s.textContent = '#pv-voice-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:10005;opacity:0;pointer-events:none;transition:opacity .25s ease}#pv-voice-backdrop.show{opacity:1;pointer-events:auto}#pv-voice-sheet{position:fixed;left:0;right:0;bottom:0;z-index:10006;background:#141414;border-top-left-radius:24px;border-top-right-radius:24px;border:1px solid #2b2b2b;border-bottom:none;padding:10px 14px calc(18px + env(safe-area-inset-bottom));box-sizing:border-box;transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.9,.25,1);max-height:78vh;display:flex;flex-direction:column}#pv-voice-sheet.show{transform:translateY(0)}#pv-voice-sheet .pv-v-handle{width:44px;height:5px;border-radius:999px;background:#3a3a3a;margin:4px auto 10px}#pv-voice-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:2px 4px 8px}#pv-voice-head h3{margin:0;color:#fff;font-size:20px;font-weight:800;line-height:1.1}#pv-voice-head p{margin:4px 0 0;color:#9aa0a6;font-size:13px;line-height:1.4}#pv-voice-close{width:36px;height:36px;min-width:36px;border-radius:50%;background:#232323;border:1px solid #2b2b2b;color:#fff;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer}#pv-voice-now{margin:8px 4px 10px;background:#1e2b22;border:1px solid #22c55e;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px}#pv-voice-now .pv-v-dot{width:34px;height:34px;min-width:34px;border-radius:50%;background:#22c55e;color:#000;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:16px}#pv-voice-now b{color:#fff;font-size:15px;display:block}#pv-voice-now span{color:#a8d5b5;font-size:12px}#pv-voice-list{overflow-y:auto;flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;padding:2px 2px 6px}#pv-voice-row{width:100%;text-align:left;background:#1c1c1c;border:1px solid #2b2b2b;border-radius:16px;padding:12px;display:flex;align-items:center;gap:12px;cursor:pointer;box-sizing:border-box;transition:transform .12s ease,border-color .15s ease,background .15s ease}#pv-voice-row:active{transform:scale(.98)}#pv-voice-row.active{background:#222b26;border-color:#22c55e}#pv-voice-row .pv-v-av{width:44px;height:44px;min-width:44px;border-radius:50%;background:#2a2a2a;border:1px solid #333;display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;font-weight:800}#pv-voice-row.active .pv-v-av{background:#22c55e;color:#000;border-color:#22c55e}#pv-voice-row .pv-v-mid{flex:1;min-width:0}#pv-voice-row .pv-v-mid b{color:#fff;font-size:16px;display:block;line-height:1.2}#pv-voice-row .pv-v-mid span{color:#9aa0a6;font-size:12.5px;display:block;margin-top:3px;line-height:1.3}#pv-voice-row .pv-v-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}#pv-voice-row .pv-v-check{width:22px;height:22px;border-radius:50%;border:2px solid #444;display:flex;align-items:center;justify-content:center;color:#000;font-size:13px;font-weight:900}#pv-voice-row.active .pv-v-check{background:#22c55e;border-color:#22c55e}#pv-voice-row .pv-v-play{font-size:11px;color:#aaa;background:#2a2a2a;border:1px solid #333;border-radius:999px;padding:4px 8px}';
-    document.head.appendChild(s);
-  }
+  function el(id){ return document.getElementById(id); }
+  function liveBox(){ return el('pv-voice-live'); }
+  function isVisible(){ var o=liveBox(); if(!o) return false; return !o.classList.contains('hidden') && !o.hasAttribute('hidden'); }
+  function ensureUI(){ /* Intentionally empty - leave live UI exactly as it is, no header */ }
 
-  function buildSheet(){
-    injectCSS();
-    if(document.getElementById('pv-voice-sheet')) return;
-    var back = document.createElement('div'); back.id = 'pv-voice-backdrop';
-    back.addEventListener('click', closeVoicePicker);
-    var sheet = document.createElement('div'); sheet.id = 'pv-voice-sheet';
-    sheet.innerHTML = '<div class="pv-v-handle"></div><div id="pv-voice-head"><div><h3>Choose Voice</h3><p>Tap any voice. It changes immediately and you hear it at once.</p></div><button id="pv-voice-close" type="button" aria-label="Close">×</button></div><div id="pv-voice-now"></div><div id="pv-voice-list"></div>';
-    document.body.appendChild(back);
-    document.body.appendChild(sheet);
-    var c = document.getElementById('pv-voice-close'); if(c) c.addEventListener('click', closeVoicePicker);
-    renderVoiceList();
-  }
-
-  function renderVoiceList(){
-    var list = document.getElementById('pv-voice-list');
-    var now = document.getElementById('pv-voice-now');
-    if(!list) return;
-    var cur = getCurrentCfg();
-    if(now) now.innerHTML = '<div class="pv-v-dot">' + cur.name.charAt(0) + '</div><div><b>Now: ' + cur.name + '</b><span>' + cur.tag + ' • Tap another voice to switch instantly</span></div>';
-    list.innerHTML = '';
-    for(var i=0;i<VOICES.length;i++){
-      (function(v){
-        var row = document.createElement('button');
-        row.type = 'button';
-        row.className = 'pv-voice-row' + (v.id===currentVoiceId ? ' active' : '');
-        row.innerHTML = '<span class="pv-v-av">' + v.name.charAt(0) + '</span><span class="pv-v-mid"><b>' + v.name + '</b><span>' + v.tag + '</span></span><span class="pv-v-right"><span class="pv-v-check">' + (v.id===currentVoiceId ? '✓' : '') + '</span><span class="pv-v-play">▶ Hear</span></span>';
-        row.addEventListener('click', function(){ selectVoice(v.id, true); });
-        list.appendChild(row);
-      })(VOICES[i]);
-    }
-    updateLiveVoicePill();
-  }
-
-  function updateLiveVoicePill(){ return; }
-
-  function openVoicePicker(){
-    buildSheet();
-    renderVoiceList();
-    var back = document.getElementById('pv-voice-backdrop');
-    var sheet = document.getElementById('pv-voice-sheet');
-    if(back) back.classList.add('show');
-    if(sheet) sheet.classList.add('show');
-    try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
-  }
-  function closeVoicePicker(){
-    var back = document.getElementById('pv-voice-backdrop');
-    var sheet = document.getElementById('pv-voice-sheet');
-    if(back) back.classList.remove('show');
-    if(sheet) sheet.classList.remove('show');
-  }
-
-  function selectVoice(id, preview){
-    var cfg = getVoiceCfg(id);
-    currentVoiceId = cfg.id;
-    try{ localStorage.setItem(VOICE_KEY, cfg.id); }catch(e){}
-    renderVoiceList();
-    if(preview){
-      // Stop anything speaking now, then speak preview in the NEW voice immediately. This is the instant switch.
-      stopSpeaking();
-      setTimeout(function(){ speakText(cfg.preview, true); }, 120);
-    }
-  }
-
-  // ---------- TTS - fixed cancel bug, one voice at a time ----------
-  function pickSystemVoice(cfg){
+  // ---- Male voice for fallback TTS ----
+  function pickMaleVoice(){
     try{
       var vs = window.speechSynthesis ? window.speechSynthesis.getVoices() || [] : [];
       if(!vs.length) return null;
-      // 1. Try exact preferred name for this voice - each voice has a DIFFERENT preferred name
-      for(var i=0;i<cfg.find.length;i++){
-        for(var j=0;j<vs.length;j++){
-          if(vs[j].name && vs[j].name.indexOf(cfg.find[i]) !== -1) return vs[j];
-        }
-      }
-      // 2. Gender fallback: female voices for female tags, male for male tags
-      var isFemale = cfg.tag.indexOf('Female') !== -1;
-      var en = vs.filter(function(v){ return /^en/i.test(v.lang || ''); });
+      var en = vs.filter(function(v){ return /^en/i.test(v.lang||''); });
       var pool = en.length ? en : vs;
-      var genderPool;
-      if(isFemale) genderPool = pool.filter(function(v){ return /Zira|Aria|Jenny|Samantha|Emma|Natasha|Female|Sofia|Google US English Female/i.test(v.name || ''); });
-      else genderPool = pool.filter(function(v){ return /David|Daniel|Mark|Guy|Ryan|Brian|George|James|Male/i.test(v.name || ''); });
-      if(genderPool.length) return genderPool[0];
-      return pool[0] || null;
+      var male = pool.filter(function(v){ return /David|Daniel|Mark|Guy|Ryan|Brian|George|James|Microsoft David|Google US English Male/i.test(v.name||''); });
+      if(male.length) return male[0];
+      var notFemale = pool.filter(function(v){ return !/Samantha|Zira|Aria|Jenny|Female|Sofia|Emma|Natasha|Susan|Hazel|Karen/i.test(v.name||''); });
+      return notFemale[0] || pool[0] || null;
     }catch(e){ return null; }
   }
-
-  function stopSpeaking(){
-    speakToken++;
-    try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
-    liveSpeaking = false;
+  function speakAI(text){
+    if(!('speechSynthesis' in window)) return;
+    try{ window.speechSynthesis.cancel(); }catch(e){}
+    liveSpeaking = true;
+    try{ if(recog) recog.stop(); }catch(e){}
+    var clean = String(text||'').replace(/\[[^\]]+\]\([^)]+\)/g,'$1').replace(/https?:\/\/\S+/g,'').replace(/[*#_]/g,'').trim();
+    if(!clean){ liveSpeaking=false; resumeListening(); return; }
+    var chunks = clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || [clean];
+    var idx = 0;
+    function next(){
+      if(!liveOn){ liveSpeaking=false; return; }
+      if(idx >= chunks.length){ liveSpeaking=false; resumeListening(); return; }
+      var u = new SpeechSynthesisUtterance(chunks[idx]);
+      var v = pickMaleVoice(); if(v) u.voice=v;
+      u.lang = (v && v.lang) || 'en-US';
+      u.rate = 0.98; u.pitch = 0.85; u.volume = 1; // male feel
+      u.onend = function(){ idx++; next(); };
+      u.onerror = function(){ idx++; next(); };
+      window.speechSynthesis.speak(u);
+    }
+    next();
   }
-
-  function speakText(text, isPreview){
-    return new Promise(function(resolve){
-      if(!text || !String(text).trim()){ resolve(); return; }
-      if(!('speechSynthesis' in window)){ resolve(); return; }
-      var myToken = ++speakToken;
-      var cfg = getCurrentCfg();
-      // Clean text for speaking
-      var clean = String(text).replace(/\[[^\]]+\]\([^)]+\)/g,'$1').replace(/https?:\/\/\S+/g,'').replace(/[*#_]/g,'').trim();
-      if(!clean){ resolve(); return; }
-      liveSpeaking = true;
-      // Stop any old queue first, but do NOT let old onend continue - token check handles it
-      try{ window.speechSynthesis.cancel(); }catch(e){}
-      var chunks = clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || [clean];
-      var idx = 0;
-      function next(){
-        if(myToken !== speakToken){ liveSpeaking = false; resolve(); return; }
-        if(!liveOn && !isPreview){ liveSpeaking = false; resolve(); return; }
-        if(idx >= chunks.length){ liveSpeaking = false; resolve(); return; }
-        var part = chunks[idx].trim();
-        if(!part){ idx++; next(); return; }
-        var u = new SpeechSynthesisUtterance(part);
-        var sysVoice = pickSystemVoice(cfg);
-        if(sysVoice) u.voice = sysVoice;
-        u.lang = (sysVoice && sysVoice.lang) || 'en-US';
-        // STRICTLY DIFFERENT: each voice has its own pitch + rate. This is what makes them sound different even on the same phone.
-        u.pitch = cfg.pitch;
-        u.rate = cfg.rate;
-        u.volume = 1;
-        u.onend = function(){ if(myToken !== speakToken){ liveSpeaking=false; resolve(); return; } idx++; next(); };
-        u.onerror = function(){ if(myToken !== speakToken){ liveSpeaking=false; resolve(); return; } idx++; next(); };
-        var watchdog = setTimeout(function(){ if(myToken===speakToken){ try{ window.speechSynthesis.cancel(); }catch(e){} } }, 12000); var _oldEnd = u.onend; u.onend = function(){ clearTimeout(watchdog); _oldEnd(); }; var _oldErr = u.onerror; u.onerror = function(){ clearTimeout(watchdog); _oldErr(); };
-        try{ window.speechSynthesis.speak(u); }catch(e){ idx++; next(); }
-      }
-      // Small delay so cancel() finishes before new voice starts - prevents old + new mixing
-      setTimeout(next, 60);
-    });
-  }
-
-  // Expose for other parts of the app (AI message speaker button)
-  window.PV_VOICE = { list: VOICES, get: getCurrentCfg, getId: function(){ return currentVoiceId; }, set: selectVoice, speak: speakText, stop: stopSpeaking };
-  window.pvSpeakLive = speakText;
-  window.pvStopAiSpeech = stopSpeaking;
-  window.pvOpenVoicePicker = openVoicePicker;
-  window.pvCloseVoicePicker = closeVoicePicker;
-
-  // ---------- GROQ ----------
-  function groqKey(){ try{ return (typeof GROQ_API_KEY !== 'undefined') ? GROQ_API_KEY : ''; }catch(e){ return ''; } }
+  function stopSpeaking(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} liveSpeaking=false; clearPlayback(); }
   function localReply(q){
-    var s = (q||'').toLowerCase();
+    var s=(q||'').toLowerCase();
     if(/hello|hi |hey|good morning|good evening/.test(s)) return "Hey! Good to hear you. What's on your mind today?";
     if(/how are you/.test(s)) return "I'm doing great, thanks for asking. How can I help you right now?";
     if(/your name|who are you/.test(s)) return "I'm PRO-VIBES AI, your live voice assistant. Talk to me like a friend.";
     if(/thank/.test(s)) return "Anytime! Glad I could help. What else?";
     if(/bye|goodbye/.test(s)) return "Bye for now! Come back anytime you want to talk.";
+    if(/nigeria|enugu|lagos|naira/.test(s)) return "Yes! I know Nigeria well. How can I help you with that?";
     if(/music|song/.test(s)) return "I love music. Tell me what vibe you want and I'll suggest something good.";
     if(/joke|funny/.test(s)) return "Okay here's one - why did the phone go to therapy? Too many missed calls!";
-    return "Got you. Tell me a bit more so I can help you properly.";
+    return "Got you - "+q+". Tell me a bit more so I can help you properly.";
   }
 
-  async function askGroq(userText){
-    var key = groqKey();
-    if(!key || key.indexOf('PASTE') !== -1) return localReply(userText);
+  // ---- Live brain (Cloudflare Llama) - main Live path ----
+  var liveProcessing = false;
+  async function askCloudflareText(userText){
     try{
-      var msgs = [];
-      msgs.push({role:'system', content:'You are PRO-VIBES AI, a friendly real-time voice assistant in Enugu, Nigeria. Default to clear, simple English. Do NOT use Pidgin unless the user speaks Pidgin first. If user speaks Pidgin, match their Pidgin naturally. If user speaks English, stay in English. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis, like a real human conversation. Remember what the user said before in this chat.'});
-      for(var i=0;i<history.length;i++) msgs.push(history[i]);
-      msgs.push({role:'user', content: userText});
-      var res = await fetch('https://api.groq.com/openai/v1/chat/completions', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key}, body: JSON.stringify({model:'openai/gpt-oss-120b', messages: msgs, temperature:0.7}) });
-      var data = await res.json();
-      if(data.error) throw new Error(data.error.message || 'Groq error');
-      var out = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-      if(out) return out.trim();
+      var key=(typeof CLOUDFLARE_API_TOKEN!=='undefined')? CLOUDFLARE_API_TOKEN : '';
+      var acct=(typeof CLOUDFLARE_ACCOUNT_ID!=='undefined')? CLOUDFLARE_ACCOUNT_ID : '';
+      if(!key || !acct) throw new Error('no cloudflare');
+      var res=await fetch('https://api.cloudflare.com/client/v4/accounts/'+acct+'/ai/v1/chat/completions',{
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+        body: JSON.stringify({model:'@cf/meta/llama-3.3-70b-instruct-fp8-fast', messages:[
+          {role:'system', content:'You are PRO-VIBES AI, friendly real-time voice assistant in Enugu, Nigeria. LANGUAGE RULE: Default to clear, simple English. Do NOT use Pidgin unless the user speaks Pidgin first. If user speaks Pidgin, match their Pidgin naturally. If user speaks English, stay in English. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis.'},
+          {role:'user', content: userText}
+        ], temperature:0.7})
+      });
+      var data=await res.json();
+      if(data.error) throw new Error(data.error.message||'Cloudflare error');
+      if(data.errors && data.errors[0]) throw new Error(data.errors[0].message||'Cloudflare error');
+      var out=data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if(data.result && data.result.response) out=data.result.response;
+      if(out) return String(out).trim();
       throw new Error('empty');
     }catch(e){ return localReply(userText); }
   }
-
+  async function handleUserSpeech(text){
+    if(!text || !text.trim()) return;
+    if(liveProcessing) return;
+    liveProcessing=true;
+    try{ var reply=await askCloudflareText(text.trim()); if(!liveOn) return; speakAI(reply); }
+    catch(e){ try{ if(liveOn) speakAI(localReply(text.trim())); }catch(_){} }
+    finally{ liveProcessing=false; }
+  }
+  function resumeListening(){
+    try{
+      if(!liveOn || liveUseReal) return;
+      if(recog){ try{ recog.start(); }catch(e){ try{ startRecognition(); }catch(_){} } return; }
+      startRecognition();
+    }catch(e){}
+  }
+  function startRecognition(){
+    var Recog=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!Recog){ startRecorderFallback(); return; }
+    try{
+      if(recog){ try{ recog.stop(); }catch(e){} }
+      recog=new Recog();
+      recog.continuous=true; recog.interimResults=true; recog.lang='en-US'; recog.maxAlternatives=1;
+      recog.onresult=function(ev){
+        var final='';
+        for(var i=ev.resultIndex;i<ev.results.length;i++){ var r=ev.results[i]; if(r.isFinal) final+=r[0].transcript; }
+        if(final && final.trim()) handleUserSpeech(final.trim());
+      };
+      recog.onerror=function(ev){};
+      recog.onend=function(){
+        if(!liveOn || liveUseReal) return;
+        clearTimeout(recogRestartTimer);
+        recogRestartTimer=setTimeout(function(){ if(liveOn && !liveSpeaking && !liveUseReal) startRecognition(); }, 400);
+      };
+      recog.start();
+    }catch(e){ startRecorderFallback(); }
+  }
+  function startRecorderFallback(){
+    if(!stream) return;
+    try{
+      if(!window.MediaRecorder) return;
+      var mime='audio/webm';
+      try{ if(!MediaRecorder.isTypeSupported(mime)) mime=''; }catch(e){ mime=''; }
+      var opts=mime? {mimeType:mime} : {};
+      recorder=new MediaRecorder(stream, opts);
+      var chunks=[];
+      recorder.ondataavailable=function(e){ if(e.data && e.data.size>0) chunks.push(e.data); };
+      recorder.onstop=function(){
+        var blob=new Blob(chunks, {type: mime||'audio/webm'}); chunks=[];
+        if(blob.size<800){ if(liveOn && !liveUseReal) startRecorderFallback(); return; }
+        transcribeWhisper(blob).then(function(txt){
+          if(txt && txt.trim()) handleUserSpeech(txt.trim());
+          else if(liveOn && !liveUseReal) startRecorderFallback();
+        }).catch(function(){ if(liveOn && !liveUseReal) startRecorderFallback(); });
+      };
+      recorder.start();
+      setTimeout(function(){ try{ if(recorder && recorder.state==='recording') recorder.stop(); }catch(e){} }, 4200);
+    }catch(e){}
+  }
   async function transcribeWhisper(blob){
     try{
-      var key = groqKey();
-      if(!key || key.indexOf('PASTE') !== -1) return '';
-      var fd = new FormData();
-      fd.append('file', blob, 'live.webm');
-      fd.append('model','whisper-large-v3');
-      fd.append('language','en');
-      var res = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {method:'POST', headers:{'Authorization':'Bearer '+key}, body: fd});
-      var data = await res.json();
-      return (data.text || '').trim();
+      var key=(typeof CLOUDFLARE_API_TOKEN!=='undefined')? CLOUDFLARE_API_TOKEN : '';
+      var acct=(typeof CLOUDFLARE_ACCOUNT_ID!=='undefined')? CLOUDFLARE_ACCOUNT_ID : '';
+      if(!key || !acct) return '';
+      var fd=new FormData(); fd.append('file', blob, 'live.webm'); fd.append('model','@cf/openai/whisper'); fd.append('language','en');
+      var res=await fetch('https://api.cloudflare.com/client/v4/accounts/'+acct+'/ai/v1/audio/transcriptions',{method:'POST', headers:{'Authorization':'Bearer '+key}, body:fd});
+      var data=await res.json(); return (data.text||'').trim();
     }catch(e){ return ''; }
   }
 
-  // ---------- QUEUE - never drop talk, process one by one ----------
-  function handleUserSpeech(text){
-    if(!text || !String(text).trim()) return;
-    var t = String(text).trim();
-    // De-dupe: check last 3 user turns, not just last item (history ends with assistant, so old check miss am)
-    var dup = false; var seen = 0; for(var di=history.length-1; di>=0 && seen<6; di--){ if(history[di].role==='user'){ seen++; if(history[di].content===t){ dup=true; break; } } } if(dup) return;
-    queue.push(t);
-    processQueue();
+  // ---- PCM helpers ----
+  function floatTo16BitPCM(input){
+    var out=new Int16Array(input.length);
+    for(var i=0;i<input.length;i++){ var s=Math.max(-1, Math.min(1, input[i])); out[i]= s<0 ? s*0x8000 : s*0x7FFF; }
+    return out;
   }
-
-  async function processQueue(){
-    if(processing) return;
-    processing = true;
-    while(queue.length && liveOn){
-      var userText = queue.shift();
-      // Add to history, keep last 8 turns = 16 messages
-      history.push({role:'user', content: userText});
-      while(history.length > 16) history.shift();
-      var reply = await askGroq(userText);
-      if(!liveOn) break;
-      history.push({role:'assistant', content: reply});
-      while(history.length > 16) history.shift();
-      await speakText(reply, false);
-      // Small pause so user can start talking, then listen again
-      await new Promise(function(r){ setTimeout(r, 250); });
-    }
-    processing = false;
-    if(liveOn && !liveSpeaking) startListening();
+  function bytesToBase64(bytes){
+    var bin=''; var chunk=0x8000;
+    for(var i=0;i<bytes.length;i+=chunk){ bin+=String.fromCharCode.apply(null, bytes.subarray(i, i+chunk)); }
+    return btoa(bin);
   }
-
-  // ---------- LISTENING - Groq Whisper + VAD ----------
-  function startVAD(){
-    if(!liveStream) return;
+  function base64ToBytes(b64){
+    var bin=atob(b64); var len=bin.length; var bytes=new Uint8Array(len);
+    for(var i=0;i<len;i++) bytes[i]=bin.charCodeAt(i);
+    return bytes;
+  }
+  function clearPlayback(){
+    try{ if(liveCurrentSource){ try{ liveCurrentSource.stop(); }catch(e){} } }catch(e){}
+    liveCurrentSource=null;
+    try{ if(liveOutCtx) liveNextPlay=liveOutCtx.currentTime; }catch(e){}
+  }
+  function playPCM24k(b64){
     try{
-      if(liveAudioCtx) return;
-      liveAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if(liveAudioCtx.state === 'suspended'){ try{ liveAudioCtx.resume(); }catch(e){} }
-      var src = liveAudioCtx.createMediaStreamSource(liveStream);
-      analyser = liveAudioCtx.createAnalyser();
-      analyser.fftSize = 512;
-      src.connect(analyser);
-      if(vadTimer) clearInterval(vadTimer);
-      vadTimer = setInterval(function(){
-        if(!liveOn || !analyser) return;
-        try{
-          var data = new Uint8Array(analyser.fftSize);
-          analyser.getByteTimeDomainData(data);
-          var sum = 0;
-          for(var i=0;i<data.length;i++){ var v = (data[i]-128)/128; sum += v*v; }
-          var rms = Math.sqrt(sum / data.length);
-          // If AI is speaking and user talks LOUD, interrupt - stop AI and listen
-          if(liveSpeaking){
-            if(rms > 0.08){ loudFrames++; if(loudFrames >= 3){ loudFrames = 0; stopSpeaking(); startListening(); } }
-            else loudFrames = 0;
-            return;
-          }
-          if(!isRecording) return;
-          if(rms > 0.015){ recHasSpeech = true; recLastSpeech = Date.now(); }
-          if(recHasSpeech && Date.now() - recLastSpeech > 1100){
-            stopRecorder(false);
-          } else if(!recHasSpeech && Date.now() - recStart > 6000){
-            stopRecorder(true);
-          }
-        }catch(e){}
-      }, 120);
+      if(liveMuted) return;
+      if(!liveOutCtx){ liveOutCtx=new (window.AudioContext||window.webkitAudioContext)(); }
+      if(liveOutCtx.state==='suspended'){ try{ liveOutCtx.resume(); }catch(e){} }
+      var bytes=base64ToBytes(b64);
+      var int16=new Int16Array(bytes.buffer, bytes.byteOffset, Math.floor(bytes.byteLength/2));
+      var float32=new Float32Array(int16.length);
+      for(var i=0;i<int16.length;i++) float32[i]=int16[i]/32768;
+      var buf=liveOutCtx.createBuffer(1, float32.length, 24000);
+      buf.getChannelData(0).set(float32);
+      var src=liveOutCtx.createBufferSource(); src.buffer=buf; src.connect(liveOutCtx.destination);
+      var now=liveOutCtx.currentTime;
+      if(liveNextPlay<now) liveNextPlay=now+0.02;
+      if(liveNextPlay - now > 0.6) liveNextPlay = now + 0.02; // drop backlog, prevents garble
+      src.start(liveNextPlay);
+      liveCurrentSource=src; liveNextPlay+=buf.duration;
+      liveSpeaking=true;
+      src.onended=function(){ if(liveCurrentSource===src) liveCurrentSource=null; if(!liveCurrentSource){ liveSpeaking=false; liveLoudFrames=0; } };
     }catch(e){}
   }
 
-  function startListening(){
-    if(!liveOn || liveMuted || liveSpeaking || isRecording) return;
-    if(!liveStream) return;
-    try{
-      if(!window.MediaRecorder){ return; }
-      var mime = 'audio/webm';
-      try{ if(!MediaRecorder.isTypeSupported(mime)) mime = ''; }catch(e){ mime = ''; }
-      var opts = mime ? {mimeType: mime} : {};
-      mediaRecorder = new MediaRecorder(liveStream, opts);
-      recChunks = [];
-      recHasSpeech = false;
-      recLastSpeech = 0;
-      recDiscard = false;
-      recStart = Date.now();
-      isRecording = true;
-      mediaRecorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) recChunks.push(e.data); };
-      mediaRecorder.onstop = function(){
-        isRecording = false;
-        var blob = new Blob(recChunks, {type: mime || 'audio/webm'});
-        recChunks = [];
-        if(recDiscard || !liveOn){ if(liveOn && !liveSpeaking) setTimeout(startListening, 200); return; }
-        if(blob.size < 800){ if(liveOn && !liveSpeaking) setTimeout(startListening, 200); return; }
-        transcribeWhisper(blob).then(function(txt){
-          if(txt && txt.trim()) handleUserSpeech(txt.trim());
-          else if(liveOn && !liveSpeaking) setTimeout(startListening, 200);
-        }).catch(function(){ if(liveOn && !liveSpeaking) setTimeout(startListening, 200); });
-      };
-      mediaRecorder.start();
-    }catch(e){ }
+  // ---- CLOUDFLARE LIVE ----
+  // Cloudflare has no realtime websocket. Live = browser STT first, MediaRecorder + Cloudflare Whisper as backup, Cloudflare Llama as brain, browser TTS as voice.
+  function connectCloudflareLive(){
+    startFallbackLive();
   }
-
-  function stopRecorder(discard){
-    recDiscard = !!discard;
-    try{ if(mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop(); }catch(e){ isRecording = false; }
+  function tryNextModelOrFallback(){
+    startFallbackLive();
   }
-
-  // ---------- START / STOP ----------
-  var liveStarting = false;
-  async function startLive(){
-    if(liveOn || liveStarting) return;
-    liveStarting = true;
-    liveOn = true; liveMuted = false; liveSpeaking = false; queue = []; processing = false;
-    buildSheet(); renderVoiceList(); updateLiveVoicePill();
-    try{
-      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ return; }
-      liveStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}, video:false});
-      startVAD();
-      startListening();
-      liveStarting = false;
-      try{ if(window.speechSynthesis) window.speechSynthesis.getVoices(); }catch(e){}
-    }catch(err){ liveStarting = false; }
-  }
-
-  function stopLive(){
-    liveOn = false;
-    liveStarting = false;
-    if(vadTimer) clearInterval(vadTimer); vadTimer = null;
-    try{ if(mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop(); }catch(e){}
-    mediaRecorder = null; isRecording = false;
-    stopSpeaking();
+  function startMicStreaming(){ /* Cloudflare Live does not use PCM streaming - uses Whisper instead */ }
+  function stopMicStreaming(){
+    liveMicStarted=false;
+    try{ if(liveProcessor){ liveProcessor.disconnect(); liveProcessor.onaudioprocess=null; } }catch(e){}
+    liveProcessor=null;
+    try{ if(liveSilentGain) liveSilentGain.disconnect(); }catch(e){}
+    liveSilentGain=null;
+    try{ if(liveInput) liveInput.disconnect(); }catch(e){}
+    liveInput=null;
     try{ if(liveAudioCtx) liveAudioCtx.close(); }catch(e){}
-    liveAudioCtx = null; analyser = null;
-    try{ if(liveStream){ liveStream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); } }catch(e){}
-    liveStream = null;
-    queue = []; processing = false;
-    try{ var m = document.getElementById('pv-live-mute'); if(m) m.classList.remove('is-muted'); }catch(e){}
-    closeVoicePicker();
+    liveAudioCtx=null;
   }
-
-  window.pvStartLiveRealtime = startLive;
-  window.pvStopLiveRealtime = stopLive;
-  window.pvLiveIsReal = function(){ return liveOn; };
-  window.pvLiveIsGroq = function(){ return true; };
-
-  // ---------- WIRE ----------
-  function fixSettingsButton(){
-    var btn = document.getElementById('pv-live-settings-btn');
-    if(!btn) return;
-    // Clone to kill the old no-op handler that did preventDefault + nothing
-    if(!btn.dataset.pvVoiceFixed){
-      var clone = btn.cloneNode(true);
-      clone.dataset.pvVoiceFixed = '1';
-      // Keep the pvLiveSetBound flag so the old 1s interval does not re-bind it
-      clone.dataset.pvLiveSetBound = '1';
-      if(btn.parentNode) btn.parentNode.replaceChild(clone, btn);
-      clone.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openVoicePicker(); });
-    }
+  function startFallbackLive(){
+    if(!liveOn) return;
+    if(liveFallback) return;
+    liveFallback=true; liveUseReal=false;
+    try{ if(liveWs){ try{ liveWs.close(); }catch(e){} } }catch(e){}
+    liveWs=null;
+    stopMicStreaming();
+    try{ if(!stream) return; startRecognition(); }catch(e){}
   }
-
-  function wireMute(){
-    var m = document.getElementById('pv-live-mute');
-    if(!m || m.dataset.pvGroqLiveMuteBound) return;
-    m.dataset.pvGroqLiveMuteBound = '1';
-    m.addEventListener('click', function(){
-      setTimeout(function(){
-        var muted = m.classList.contains('is-muted');
-        if(!liveOn) return;
-        liveMuted = muted;
-        if(muted){ stopSpeaking(); try{ if(liveStream) liveStream.getTracks().forEach(function(tr){ tr.enabled = false; }); }catch(e){} }
-        else{ try{ if(liveStream) liveStream.getTracks().forEach(function(tr){ tr.enabled = true; }); }catch(e){} if(!liveSpeaking) startListening(); }
-      }, 30);
-    });
-  }
-
-  function watch(){
-    var o = document.getElementById('pv-voice-live');
-    if(!o) return;
-    function isVisible(){ return !o.classList.contains('hidden') && !o.hasAttribute('hidden'); }
-    var wasVisible = isVisible();
+  async function startLive(){
+    if(liveOn) return;
+    liveOn=true; liveMuted=false; liveFallback=false; liveUseReal=false; liveRetry=0; liveModelIdx=0; liveLoudFrames=0; liveAudioInTurn=false; liveTextInTurn=''; liveLastEmptyNudge=0;
+    ensureUI();
     try{
-      var obs = new MutationObserver(function(){
-        var now = isVisible();
-        if(now && !wasVisible) startLive();
-        if(!now && wasVisible) stopLive();
-        wasVisible = now;
-      });
-      obs.observe(o, {attributes:true, attributeFilter:['class','hidden']});
-    }catch(e){}
+      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ connectCloudflareLive(); return; }
+      stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}, video:false});
+      liveStream=stream;
+      connectCloudflareLive();
+    }catch(err){ connectCloudflareLive(); }
+  }
+  function stopLive(){
+    liveOn=false;
+    clearTimeout(recogRestartTimer); clearTimeout(liveConnectTimer);
+    try{ if(liveWs){ try{ liveWs.close(); }catch(e){} } }catch(e){}
+    liveWs=null; liveSetupDone=false;
+    stopMicStreaming();
+    try{ if(recog){ recog.onend=null; recog.onerror=null; recog.onresult=null; try{ recog.stop(); }catch(e){} } }catch(e){}
+    recog=null;
+    try{ if(recorder && recorder.state!=='inactive') recorder.stop(); }catch(e){}
+    recorder=null;
+    stopSpeaking(); clearPlayback();
+    try{ if(liveOutCtx) liveOutCtx.close(); }catch(e){}
+    liveOutCtx=null; liveNextPlay=0;
+    try{ if(stream){ stream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); } }catch(e){}
+    stream=null; liveStream=null;
+    try{ var m=document.getElementById('pv-live-mute'); if(m) m.classList.remove('is-muted'); }catch(e){}
+  }
+  window.pvStartLiveRealtime=startLive;
+  window.pvStopLiveRealtime=stopLive;
+  window.pvLiveIsReal=function(){ return liveOn; }; // Cloudflare Live is real when Live is on
+  function watch(){
+    var o=liveBox(); if(!o) return;
+    var wasVisible=isVisible();
+    var obs=new MutationObserver(function(){
+      var now=isVisible();
+      if(now && !wasVisible){ startLive(); }
+      if(!now && wasVisible){ stopLive(); }
+      wasVisible=now;
+    });
+    obs.observe(o,{attributes:true, attributeFilter:['class','hidden']});
     setInterval(function(){
-      var now = isVisible();
-      if(now && !liveOn && !wasVisible) startLive();
-      if(!now && liveOn) stopLive();
-      wasVisible = now;
+      var now=isVisible();
+      if(now && !liveOn && !wasVisible){ startLive(); }
+      if(!now && liveOn){ stopLive(); }
+      wasVisible=now;
     }, 800);
     if(wasVisible) startLive();
   }
-
-  function init(){
-    buildSheet();
-    try{ if('speechSynthesis' in window) window.speechSynthesis.getVoices(); }catch(e){}
-    if('speechSynthesis' in window){ try{ window.speechSynthesis.onvoiceschanged = function(){ renderVoiceList(); }; }catch(e){} }
-    watch();
-    wireMute();
-    setInterval(function(){ fixSettingsButton(); wireMute(); }, 1000);
-    fixSettingsButton();
+  function wireMute(){
+    var m=document.getElementById('pv-live-mute');
+    if(!m || m.dataset.pvLiveRealBound) return;
+    m.dataset.pvLiveRealBound='1';
+    m.addEventListener('click', function(){
+      setTimeout(function(){
+        var muted=m.classList.contains('is-muted');
+        if(!liveOn) return;
+        liveMuted=muted;
+        if(muted){ clearPlayback(); liveSpeaking=false; try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=false; }); }catch(e){} }
+        else{ try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=true; }); }catch(e){} if(!liveUseReal) resumeListening(); }
+      }, 30);
+    });
   }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  function init(){ ensureUI(); watch(); wireMute(); setInterval(wireMute, 1000); try{ if('speechSynthesis' in window) window.speechSynthesis.getVoices(); }catch(e){} }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
-
 </script>
 
 
