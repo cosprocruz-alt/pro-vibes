@@ -7801,6 +7801,26 @@ async function handleSend(){
   var liveOutCtx = null, liveNextPlay = 0, liveCurrentSource = null;
   var recog = null, recorder = null, recogRestartTimer = null, liveConnectTimer = null;
   var liveLoudFrames = 0, liveAudioInTurn = false, liveTextInTurn = '', liveLastEmptyNudge = 0;
+  // ---- FIXED LIVE: memory + turn-taking, no mix ----
+  var liveHistory = []; // last 6 turns: [{role, content}] - so AI remembers, no repeat of old talk
+  var liveLastSentText = ''; var liveLastSentAt = 0;
+  var liveSpeakToken = 0; // cancels old TTS queue when new reply comes
+  var liveDebounceTimer = null; var livePendingText = '';
+  var liveIsThinking = false;
+  function liveNorm(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
+  function liveIsDup(text){
+    var n = liveNorm(text);
+    if(!n || n.length < 3) return true;
+    if(n === liveNorm(liveLastSentText) && (Date.now() - liveLastSentAt) < 5000) return true;
+    // if new text is just old text + small tail, or old is prefix of new, treat as same turn
+    if(liveLastSentText && (n.indexOf(liveNorm(liveLastSentText)) === 0 || liveNorm(liveLastSentText).indexOf(n) === 0)) return true;
+    return false;
+  }
+  function livePushHistory(role, content){
+    if(!content) return;
+    liveHistory.push({role: role, content: String(content).slice(0, 800)});
+    while(liveHistory.length > 12) liveHistory.shift(); // keep last 6 turns (12 messages)
+  }
 
   function el(id){ return document.getElementById(id); }
   function liveBox(){ return el('pv-voice-live'); }
@@ -7822,27 +7842,34 @@ async function handleSend(){
   }
   function speakAI(text){
     if(!('speechSynthesis' in window)) return;
+    liveSpeakToken++; var myToken = liveSpeakToken;
     try{ window.speechSynthesis.cancel(); }catch(e){}
-    liveSpeaking = true;
+    try{ if(liveDebounceTimer) clearTimeout(liveDebounceTimer); }catch(e){}
+    livePendingText = '';
+    liveSpeaking = true; liveIsThinking = false;
     try{ if(recog) recog.stop(); }catch(e){}
+    try{ if(recorder && recorder.state === 'recording') recorder.stop(); }catch(e){}
     var clean = String(text||'').replace(/\[[^\]]+\]\([^)]+\)/g,'$1').replace(/https?:\/\/\S+/g,'').replace(/[*#_]/g,'').trim();
-    if(!clean){ liveSpeaking=false; resumeListening(); return; }
+    // Keep only ONE clean reply - if model tried to jumble 2 replies, keep first 2 sentences max for voice
+    if(!clean){ liveSpeaking=false; if(myToken === liveSpeakToken) resumeListening(); return; }
     var chunks = clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || [clean];
+    // Voice: max 3 chunks per turn, so one answer does not run into next question
+    if(chunks.length > 3) chunks = chunks.slice(0, 3);
     var idx = 0;
     function next(){
-      if(!liveOn){ liveSpeaking=false; return; }
-      if(idx >= chunks.length){ liveSpeaking=false; resumeListening(); return; }
+      if(!liveOn || myToken !== liveSpeakToken){ liveSpeaking=false; return; }
+      if(idx >= chunks.length){ liveSpeaking=false; if(myToken === liveSpeakToken) resumeListening(); return; }
       var u = new SpeechSynthesisUtterance(chunks[idx]);
       var v = pickMaleVoice(); if(v) u.voice=v;
       u.lang = (v && v.lang) || 'en-US';
-      u.rate = 0.98; u.pitch = 0.85; u.volume = 1; // male feel
-      u.onend = function(){ idx++; next(); };
-      u.onerror = function(){ idx++; next(); };
+      u.rate = 0.98; u.pitch = 0.85; u.volume = 1;
+      u.onend = function(){ if(myToken !== liveSpeakToken) return; idx++; next(); };
+      u.onerror = function(){ if(myToken !== liveSpeakToken) return; idx++; next(); };
       window.speechSynthesis.speak(u);
     }
     next();
   }
-  function stopSpeaking(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} liveSpeaking=false; clearPlayback(); }
+  function stopSpeaking(){ liveSpeakToken++; try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} liveSpeaking=false; liveIsThinking=false; clearPlayback(); }
   function localReply(q){
     var s=(q||'').toLowerCase();
     if(/hello|hi |hey|good morning|good evening/.test(s)) return "Hey! Good to hear you. What's on your mind today?";
@@ -7863,12 +7890,13 @@ async function handleSend(){
       var key=(typeof CLOUDFLARE_API_TOKEN!=='undefined')? CLOUDFLARE_API_TOKEN : '';
       var acct=(typeof CLOUDFLARE_ACCOUNT_ID!=='undefined')? CLOUDFLARE_ACCOUNT_ID : '';
       if(!key || !acct) throw new Error('no cloudflare');
+      // Build messages with history so AI does NOT repeat old turns and DOES answer the CURRENT question only
+      var msgs = [{role:'system', content:'You are PRO-VIBES AI, friendly real-time voice assistant in Enugu, Nigeria. LANGUAGE RULE: Default to clear, simple English. Do NOT use Pidgin unless the user speaks Pidgin first. If user speaks Pidgin, match their Pidgin naturally. If user speaks English, stay in English. RULES: Answer ONLY the latest user question. Do NOT repeat earlier answers. Do NOT start with hey/hello unless user just greeted. Do NOT add extra greetings like hey there can I help you if user asked a real question. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis.'}];
+      for(var h=0; h<liveHistory.length; h++) msgs.push(liveHistory[h]);
+      msgs.push({role:'user', content: userText});
       var res=await fetch('https://api.cloudflare.com/client/v4/accounts/'+acct+'/ai/v1/chat/completions',{
         method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-        body: JSON.stringify({model:'@cf/meta/llama-3.3-70b-instruct-fp8-fast', messages:[
-          {role:'system', content:'You are PRO-VIBES AI, friendly real-time voice assistant in Enugu, Nigeria. LANGUAGE RULE: Default to clear, simple English. Do NOT use Pidgin unless the user speaks Pidgin first. If user speaks Pidgin, match their Pidgin naturally. If user speaks English, stay in English. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis.'},
-          {role:'user', content: userText}
-        ], temperature:0.7})
+        body: JSON.stringify({model:'@cf/meta/llama-3.3-70b-instruct-fp8-fast', messages: msgs, temperature:0.7})
       });
       var data=await res.json();
       if(data.error) throw new Error(data.error.message||'Cloudflare error');
@@ -7881,17 +7909,52 @@ async function handleSend(){
   }
   async function handleUserSpeech(text){
     if(!text || !text.trim()) return;
-    if(liveProcessing) return;
-    liveProcessing=true;
-    try{ var reply=await askCloudflareText(text.trim()); if(!liveOn) return; speakAI(reply); }
-    catch(e){ try{ if(liveOn) speakAI(localReply(text.trim())); }catch(_){} }
-    finally{ liveProcessing=false; }
+    text = text.trim();
+    // Turn-taking: if AI is speaking or thinking, ignore new speech - user must wait for AI to finish
+    if(liveSpeaking || liveIsThinking || liveProcessing) return;
+    // Dedup: same sentence twice in 5s = browser echo, ignore
+    if(liveIsDup(text)) return;
+    liveLastSentText = text; liveLastSentAt = Date.now();
+    liveProcessing = true; liveIsThinking = true;
+    // Stop mic while thinking so background talk does not mix in
+    try{ if(recog) recog.stop(); }catch(e){}
+    try{
+      livePushHistory('user', text);
+      var reply = await askCloudflareText(text);
+      if(!liveOn) return;
+      livePushHistory('assistant', reply);
+      liveIsThinking = false;
+      speakAI(reply);
+    }
+    catch(e){
+      liveIsThinking = false;
+      try{ if(liveOn){ var fb = localReply(text); livePushHistory('assistant', fb); speakAI(fb); } }catch(_){}
+    }
+    finally{ liveProcessing=false; liveIsThinking=false; }
+  }
+  // Debounce: wait 1200ms silence after user stops, then send once - stops 3-4 sends for same talk
+  function queueUserSpeech(text){
+    if(!text || !text.trim()) return;
+    if(liveSpeaking || liveIsThinking || liveProcessing) return;
+    livePendingText = text.trim();
+    try{ if(liveDebounceTimer) clearTimeout(liveDebounceTimer); }catch(e){}
+    liveDebounceTimer = setTimeout(function(){
+      var t = livePendingText; livePendingText = '';
+      if(t) handleUserSpeech(t);
+    }, 1200);
   }
   function resumeListening(){
     try{
       if(!liveOn || liveUseReal) return;
-      if(recog){ try{ recog.start(); }catch(e){ try{ startRecognition(); }catch(_){} } return; }
-      startRecognition();
+      if(liveSpeaking || liveIsThinking) return; // wait until AI finishes talking
+      // Small pause so mic does not pick up AI TTS tail
+      setTimeout(function(){
+        if(!liveOn || liveSpeaking || liveIsThinking) return;
+        try{
+          if(recog){ try{ recog.start(); }catch(e){ try{ startRecognition(); }catch(_){} } return; }
+          startRecognition();
+        }catch(e){}
+      }, 400);
     }catch(e){}
   }
   function startRecognition(){
@@ -7902,9 +7965,11 @@ async function handleSend(){
       recog=new Recog();
       recog.continuous=true; recog.interimResults=true; recog.lang='en-US'; recog.maxAlternatives=1;
       recog.onresult=function(ev){
+        if(liveSpeaking || liveIsThinking || liveProcessing) return;
         var final='';
         for(var i=ev.resultIndex;i<ev.results.length;i++){ var r=ev.results[i]; if(r.isFinal) final+=r[0].transcript; }
-        if(final && final.trim()) handleUserSpeech(final.trim());
+        // Only FINAL transcripts, never interim - interim is what caused mixing
+        if(final && final.trim()) queueUserSpeech(final.trim());
       };
       recog.onerror=function(ev){};
       recog.onend=function(){
@@ -7927,11 +7992,11 @@ async function handleSend(){
       recorder.ondataavailable=function(e){ if(e.data && e.data.size>0) chunks.push(e.data); };
       recorder.onstop=function(){
         var blob=new Blob(chunks, {type: mime||'audio/webm'}); chunks=[];
-        if(blob.size<800){ if(liveOn && !liveUseReal) startRecorderFallback(); return; }
+        if(blob.size<800){ if(liveOn && !liveUseReal && !liveSpeaking) startRecorderFallback(); return; }
         transcribeWhisper(blob).then(function(txt){
-          if(txt && txt.trim()) handleUserSpeech(txt.trim());
-          else if(liveOn && !liveUseReal) startRecorderFallback();
-        }).catch(function(){ if(liveOn && !liveUseReal) startRecorderFallback(); });
+          if(txt && txt.trim()){ if(!liveIsDup(txt.trim())) queueUserSpeech(txt.trim()); else if(liveOn && !liveUseReal && !liveSpeaking) startRecorderFallback(); }
+          else if(liveOn && !liveUseReal && !liveSpeaking) startRecorderFallback();
+        }).catch(function(){ if(liveOn && !liveUseReal && !liveSpeaking) startRecorderFallback(); });
       };
       recorder.start();
       setTimeout(function(){ try{ if(recorder && recorder.state==='recording') recorder.stop(); }catch(e){} }, 4200);
@@ -8022,7 +8087,7 @@ async function handleSend(){
   }
   async function startLive(){
     if(liveOn) return;
-    liveOn=true; liveMuted=false; liveFallback=false; liveUseReal=false; liveRetry=0; liveModelIdx=0; liveLoudFrames=0; liveAudioInTurn=false; liveTextInTurn=''; liveLastEmptyNudge=0;
+    liveOn=true; liveMuted=false; liveFallback=false; liveUseReal=false; liveRetry=0; liveModelIdx=0; liveLoudFrames=0; liveAudioInTurn=false; liveTextInTurn=''; liveLastEmptyNudge=0; liveHistory=[]; liveLastSentText=''; liveLastSentAt=0; liveSpeakToken++; liveIsThinking=false;
     ensureUI();
     try{
       if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ connectCloudflareLive(); return; }
@@ -8032,7 +8097,8 @@ async function handleSend(){
     }catch(err){ connectCloudflareLive(); }
   }
   function stopLive(){
-    liveOn=false;
+    liveOn=false; liveIsThinking=false; liveProcessing=false;
+    try{ if(liveDebounceTimer) clearTimeout(liveDebounceTimer); }catch(e){} livePendingText='';
     clearTimeout(recogRestartTimer); clearTimeout(liveConnectTimer);
     try{ if(liveWs){ try{ liveWs.close(); }catch(e){} } }catch(e){}
     liveWs=null; liveSetupDone=false;
