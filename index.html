@@ -7816,114 +7816,44 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
 })();
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script>
+
 <style data-file="css/live-realtime.css">
-/* LIVE REALTIME - real mic streaming, no orb, sleek black */
-#pv-voice-live .pv-live-orb-wrap{ display:flex !important; flex-direction:column !important; overflow:hidden !important; }
-.pv-live-center{ flex:1 !important; display:flex !important; flex-direction:column !important; gap:10px !important; min-height:0 !important; padding:14px 4px 8px !important; }
-.pv-live-status{ display:flex !important; align-items:center !important; justify-content:center !important; gap:8px !important; font-size:13px !important; color:#a8a8a8 !important; letter-spacing:.2px !important; }
-.pv-live-status-dot{ width:8px !important; height:8px !important; border-radius:50% !important; background:#34c759 !important; flex:none !important; animation:pvLivePulse 1.2s ease-in-out infinite !important; }
-.pv-live-status.muted .pv-live-status-dot{ background:#ff3b30 !important; animation:none !important; }
-.pv-live-status.thinking .pv-live-status-dot{ background:#ffcc00 !important; }
-.pv-live-status.speaking .pv-live-status-dot{ background:#0a84ff !important; }
-@keyframes pvLivePulse{ 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(1.35); opacity:.6; } }
-.pv-live-transcript{ flex:1 !important; overflow-y:auto !important; display:flex !important; flex-direction:column !important; gap:10px !important; padding:4px 2px !important; scrollbar-width:none !important; }
-.pv-live-transcript::-webkit-scrollbar{ display:none !important; }
-.pv-live-bubble{ max-width:88% !important; padding:11px 14px !important; border-radius:18px !important; font-size:15px !important; line-height:1.45 !important; word-break:break-word !important; }
-.pv-live-bubble.user{ align-self:flex-end !important; background:#2c2c2e !important; color:#fff !important; border-bottom-right-radius:6px !important; }
-.pv-live-bubble.ai{ align-self:flex-start !important; background:#1c1c1e !important; color:#e8eaed !important; border:1px solid #2a2a2a !important; border-bottom-left-radius:6px !important; }
-.pv-live-bubble.interim{ opacity:.55 !important; font-style:italic !important; }
-.pv-live-bubble.sys{ align-self:center !important; background:transparent !important; color:#8e8e93 !important; font-size:13px !important; text-align:center !important; padding:6px 10px !important; }
-.pv-live-visual{ display:flex !important; gap:4px !important; justify-content:center !important; align-items:flex-end !important; height:34px !important; padding:6px 0 2px !important; }
-.pv-live-visual i{ width:4px !important; height:6px !important; background:#fff !important; border-radius:2px !important; display:block !important; transition:height .07s linear !important; opacity:.95 !important; }
-.pv-live-hint{ text-align:center !important; font-size:12px !important; color:#6e6e73 !important; padding-bottom:2px !important; }
+/* LIVE VOICE ONLY - NO TEXTS, NO BUBBLES, NO INPUT BAR - blank black centre, voice only */
+#pv-voice-live .pv-live-orb-wrap{ display:flex !important; flex-direction:column !important; overflow:hidden !important; background:#000 !important; }
+.pv-live-center, .pv-live-status, .pv-live-transcript, .pv-live-hint, .pv-live-bubble{ display:none !important; }
+/* DOTS where they were - bottom centre, above mic + cancel, no texts */
+.pv-live-visual{ display:flex !important; gap:5px !important; justify-content:center !important; align-items:center !important; height:22px !important; padding:0 0 8px !important; }
+.pv-live-visual i{ width:5px !important; height:5px !important; min-width:5px !important; background:#fff !important; border-radius:50% !important; display:block !important; opacity:.85 !important; transition:transform .08s linear, opacity .08s linear !important; }
+/* REMOVE INPUT BAR - only mic + cancel, small balanced centred */
+.pv-live-ask{ display:none !important; }
+.pv-live-bottom{ display:flex !important; justify-content:center !important; align-items:center !important; gap:14px !important; padding:0 0 2px !important; }
+.pv-live-mute, .pv-live-close{ width:48px !important; height:48px !important; min-width:48px !important; flex:none !important; }
 </style>
 <script data-file="js/live-realtime.js">
-// LIVE REALTIME - real mic streaming + real conversation via Groq + real voice
+// LIVE VOICE ONLY - real human voice, NO TEXTS. Backchannel yh on little pause, like ChatGPT voice.
 (function(){
   var liveOn=false, liveMuted=false, liveProcessing=false, liveSpeaking=false;
   var stream=null, audioCtx=null, analyser=null, animId=null, recog=null, recorder=null, recogRestartTimer=null;
-  var statusEl=null, transcriptEl=null, visualEl=null, visualBars=[];
-  var lastInterimEl=null;
-
+  var lastLoudTime=0, speakingStarted=false, lastBackchannel=0, backchannelSpeaking=false;
   function el(id){ return document.getElementById(id); }
   function liveBox(){ return el('pv-voice-live'); }
-  function isVisible(){
-    var o=liveBox(); if(!o) return false;
-    return !o.classList.contains('hidden') && !o.hasAttribute('hidden');
-  }
-  function setStatus(txt, cls){
-    if(!statusEl) return;
-    statusEl.className='pv-live-status '+(cls||'');
-    var dot=statusEl.querySelector('.pv-live-status-dot');
-    var label=statusEl.querySelector('.pv-live-status-text');
-    if(label) label.textContent=txt;
-    if(!dot){ dot=document.createElement('span'); dot.className='pv-live-status-dot'; statusEl.prepend(dot); }
-  }
-  function addBubble(txt, who, interim){
-    if(!transcriptEl) return null;
-    if(interim && lastInterimEl){ lastInterimEl.textContent=txt; return lastInterimEl; }
-    if(interim){
-      // remove old interim
-      if(lastInterimEl && lastInterimEl.parentNode) lastInterimEl.parentNode.removeChild(lastInterimEl);
-    }
-    var d=document.createElement('div');
-    d.className='pv-live-bubble '+who+(interim?' interim':'');
-    d.textContent=txt;
-    transcriptEl.appendChild(d);
-    if(interim) lastInterimEl=d; else lastInterimEl=null;
-    transcriptEl.scrollTop=transcriptEl.scrollHeight;
-    return d;
-  }
-  function addSys(txt){ return addBubble(txt,'sys',false); }
-
+  function isVisible(){ var o=liveBox(); if(!o) return false; return !o.classList.contains('hidden') && !o.hasAttribute('hidden'); }
+  var visualBars=[];
   function ensureUI(){
     var wrap=document.querySelector('#pv-voice-live .pv-live-orb-wrap');
     if(!wrap) return;
-    if(wrap.querySelector('.pv-live-center')){ 
-      statusEl=wrap.querySelector('.pv-live-status');
-      transcriptEl=wrap.querySelector('.pv-live-transcript');
-      visualEl=wrap.querySelector('.pv-live-visual');
+    if(wrap.querySelector('.pv-live-visual')){
+      visualBars=Array.prototype.slice.call(wrap.querySelectorAll('.pv-live-visual i'));
       return;
     }
     wrap.innerHTML='';
-    var center=document.createElement('div'); center.className='pv-live-center';
-    var st=document.createElement('div'); st.className='pv-live-status';
-    var dot=document.createElement('span'); dot.className='pv-live-status-dot';
-    var lab=document.createElement('span'); lab.className='pv-live-status-text'; lab.textContent='Connecting...';
-    st.appendChild(dot); st.appendChild(lab);
-    var trans=document.createElement('div'); trans.className='pv-live-transcript';
+    wrap.setAttribute('aria-hidden','true');
+    wrap.style.display='flex'; wrap.style.flexDirection='column'; wrap.style.justifyContent='flex-end';
     var vis=document.createElement('div'); vis.className='pv-live-visual';
     visualBars=[];
     for(var i=0;i<24;i++){ var b=document.createElement('i'); vis.appendChild(b); visualBars.push(b); }
-    var hint=document.createElement('div'); hint.className='pv-live-hint'; hint.textContent='Speak now — I hear you in real time';
-    center.appendChild(st); center.appendChild(trans); center.appendChild(vis); center.appendChild(hint);
-    wrap.appendChild(center);
-    statusEl=st; transcriptEl=trans; visualEl=vis;
-    addSys('Live connected — speak, I will answer with voice');
+    wrap.appendChild(vis);
   }
-
-  function updateVisual(){
-    if(!liveOn || !analyser || !visualBars.length){ animId=requestAnimationFrame(updateVisual); return; }
-    try{
-      var data=new Uint8Array(analyser.fftSize);
-      analyser.getByteTimeDomainData(data);
-      var sum=0; for(var i=0;i<data.length;i++){ var v=(data[i]-128)/128; sum+=v*v; }
-      var rms=Math.sqrt(sum/data.length);
-      var level=Math.min(1, rms*6);
-      // If muted or speaking, show calm bars
-      if(liveMuted) level=0;
-      if(liveSpeaking) level=Math.max(level, 0.25+Math.random()*0.25);
-      for(var j=0;j<visualBars.length;j++){
-        var centerDist=Math.abs(j-11.5)/11.5;
-        var h=6 + level*(28*(1-centerDist*0.6)) + (liveOn? Math.random()*3:0);
-        if(liveMuted) h=6;
-        visualBars[j].style.height=Math.max(6, Math.min(32, h))+'px';
-        visualBars[j].style.opacity=(0.35+level*0.65).toFixed(2);
-      }
-    }catch(e){}
-    animId=requestAnimationFrame(updateVisual);
-  }
-
   function pickVoice(){
     try{
       var vs=window.speechSynthesis? window.speechSynthesis.getVoices()||[] : [];
@@ -7931,24 +7861,71 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       var enUS=vs.filter(function(v){ return /en[-_]US/i.test(v.lang||''); });
       var en=vs.filter(function(v){ return /^en/i.test(v.lang||''); });
       var pool=enUS.length?enUS:(en.length?en:vs);
-      // Prefer natural / Google voices
       var pref=pool.filter(function(v){ return /Google|Natural|Neural|Samantha|Zira|Aria/i.test(v.name||''); });
       return (pref[0]||pool[0]||null);
     }catch(e){ return null; }
   }
+  function speakYh(){
+    if(!liveOn || liveMuted || liveProcessing || liveSpeaking || backchannelSpeaking) return;
+    if(!('speechSynthesis' in window)) return;
+    backchannelSpeaking=true;
+    var words=['yh','yh','mmhm','yeah','uh-huh'];
+    var w=words[Math.floor(Math.random()*words.length)];
+    if(Math.random()<0.6) w='yh';
+    try{ if(recog){ try{ recog.stop(); }catch(e){} } }catch(e){}
+    var u=new SpeechSynthesisUtterance(w);
+    var v=pickVoice(); if(v) u.voice=v;
+    u.lang=(v&&v.lang)||'en-US'; u.rate=1.15; u.pitch=1.0; u.volume=0.55;
+    var done=function(){ backchannelSpeaking=false; setTimeout(function(){ if(liveOn && !liveMuted && !liveSpeaking) resumeListening(); }, 120); };
+    u.onend=done; u.onerror=done;
+    try{ window.speechSynthesis.speak(u); }catch(e){ backchannelSpeaking=false; }
+    setTimeout(function(){ if(backchannelSpeaking){ backchannelSpeaking=false; } }, 900);
+  }
+  function updateVisual(){
+    if(!liveOn || !analyser){ animId=requestAnimationFrame(updateVisual); return; }
+    try{
+      var data=new Uint8Array(analyser.fftSize);
+      analyser.getByteTimeDomainData(data);
+      var sum=0; for(var i=0;i<data.length;i++){ var v=(data[i]-128)/128; sum+=v*v; }
+      var rms=Math.sqrt(sum/data.length);
+      var now=Date.now();
+      var THRESH=0.07;
+      var level=Math.min(1, rms*6);
+      if(liveMuted) level=0;
+      if(liveSpeaking) level=Math.max(level, 0.3+Math.random()*0.25);
+      // Dots where they were - pulse with real voice level
+      if(visualBars && visualBars.length){
+        for(var j=0;j<visualBars.length;j++){
+          var centreDist=Math.abs(j-11.5)/11.5;
+          var s=1 + level*(1.6*(1-centreDist*0.5)) + Math.random()*0.15;
+          if(liveMuted) s=1;
+          visualBars[j].style.transform='scale('+s.toFixed(2)+')';
+          visualBars[j].style.opacity=(0.45+level*0.55).toFixed(2);
+        }
+      }
+      if(rms>THRESH){ lastLoudTime=now; speakingStarted=true; }
+      else {
+        if(speakingStarted && !liveMuted && !liveProcessing && !liveSpeaking && !backchannelSpeaking){
+          var quietFor=now-lastLoudTime;
+          if(quietFor>900 && quietFor<2500 && (now-lastBackchannel)>3200){ lastBackchannel=now; speakYh(); }
+          if(quietFor>2600){ speakingStarted=false; }
+        }
+      }
+    }catch(e){}
+    animId=requestAnimationFrame(updateVisual);
+  }
   function speakAI(text){
     if(!('speechSynthesis' in window)) return;
     try{ window.speechSynthesis.cancel(); }catch(e){}
-    liveSpeaking=true; setStatus('Speaking...','speaking');
-    // Pause listening while AI speaks so it doesn't hear itself
+    liveSpeaking=true;
     try{ if(recog) recog.stop(); }catch(e){}
-    var clean=String(text||'').replace(/\[[^\]]+\]\([^)]+\)/g,'$1').replace(/https?:\/\/\S+/g,'').replace(/[*#_]/g,'').trim();
+    var clean=String(text||'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/https?:\/\/\S+/g,'').replace(/[*#_]/g,'').trim();
     if(!clean){ liveSpeaking=false; resumeListening(); return; }
     var chunks=clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g)||[clean];
     var idx=0;
     function next(){
       if(!liveOn){ liveSpeaking=false; return; }
-      if(idx>=chunks.length){ liveSpeaking=false; setStatus(liveMuted?'Muted':'Listening...', liveMuted?'muted':''); resumeListening(); return; }
+      if(idx>=chunks.length){ liveSpeaking=false; speakingStarted=false; lastLoudTime=0; resumeListening(); return; }
       var u=new SpeechSynthesisUtterance(chunks[idx]);
       var v=pickVoice(); if(v) u.voice=v;
       u.lang=(v&&v.lang)||'en-US'; u.rate=1.0; u.pitch=1.0; u.volume=1;
@@ -7958,8 +7935,7 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     }
     next();
   }
-  function stopSpeaking(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} liveSpeaking=false; }
-
+  function stopSpeaking(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} liveSpeaking=false; backchannelSpeaking=false; }
   function localReply(q){
     var s=(q||'').toLowerCase();
     if(/hello|hi |hey|good morning|good evening/.test(s)) return "Hey! Good to hear you. What's on your mind today?";
@@ -7972,20 +7948,12 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     if(/joke|funny/.test(s)) return "Okay here's one — why did the phone go to therapy? Too many missed calls!";
     return "Got you — "+q+". Tell me a bit more so I can help you properly.";
   }
-
   async function askGroq(userText){
     try{
       var key=(typeof GROQ_API_KEY!=='undefined')? GROQ_API_KEY : '';
       var model=(typeof GROQ_MODEL!=='undefined')? GROQ_MODEL : 'openai/gpt-oss-120b';
       if(!key) throw new Error('no key');
-      var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-        body: JSON.stringify({model:model, temperature:0.7, max_tokens:220, messages:[
-          {role:'system', content:'You are PRO-VIBES AI, a friendly real-time voice assistant. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis, like a real human conversation. You are in Enugu, Nigeria, user speaks English / Pidgin.'},
-          {role:'user', content:userText}
-        ]})
-      });
+      var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key}, body: JSON.stringify({model:model, temperature:0.7, max_tokens:220, messages:[{role:'system', content:'You are PRO-VIBES AI, a friendly real-time voice assistant. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis, like a real human conversation. You are in Enugu, Nigeria, user speaks English / Pidgin. Sound warm and human.'},{role:'user', content:userText}]})});
       var data=await res.json();
       if(data.error) throw new Error(data.error.message||'Groq error');
       var out=data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
@@ -7993,84 +7961,47 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       throw new Error('empty');
     }catch(e){ return localReply(userText); }
   }
-
   async function handleUserSpeech(text){
     if(!text || !text.trim()) return;
     if(liveProcessing) return;
     liveProcessing=true;
-    addBubble(text,'user',false);
-    setStatus('Thinking...','thinking');
+    speakingStarted=false;
     var reply=await askGroq(text.trim());
     if(!liveOn){ liveProcessing=false; return; }
-    addBubble(reply,'ai',false);
-    // Also save to AI chat history if available
-    try{ var box=document.getElementById('pv-ai-messages'); if(box){ /* keep live separate, don't spam AI chat */ } }catch(e){}
     speakAI(reply);
     liveProcessing=false;
   }
-
   function resumeListening(){
-    if(!liveOn || liveMuted || liveSpeaking) return;
-    try{
-      if(recog){
-        try{ recog.start(); }catch(e){}
-        return;
-      }
-    }catch(e){}
+    if(!liveOn || liveMuted || liveSpeaking || backchannelSpeaking) return;
+    try{ if(recog){ try{ recog.start(); }catch(e){} return; } }catch(e){}
   }
-
   function startRecognition(){
     var Recog=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!Recog){ startRecorderFallback(); return; }
     try{
       if(recog){ try{ recog.stop(); }catch(e){} }
       recog=new Recog();
-      recog.continuous=true;
-      recog.interimResults=true;
-      recog.lang='en-US';
-      recog.maxAlternatives=1;
+      recog.continuous=true; recog.interimResults=true; recog.lang='en-US'; recog.maxAlternatives=1;
       recog.onresult=function(ev){
-        if(liveMuted || liveSpeaking) return;
-        var interim='', final='';
-        for(var i=ev.resultIndex;i<ev.results.length;i++){
-          var r=ev.results[i];
-          if(r.isFinal) final+=r[0].transcript;
-          else interim+=r[0].transcript;
-        }
-        if(interim) addBubble('You: '+interim, 'user', true);
-        if(final && final.trim()){
-          if(lastInterimEl && lastInterimEl.parentNode) lastInterimEl.parentNode.removeChild(lastInterimEl);
-          lastInterimEl=null;
-          handleUserSpeech(final.trim());
-        }
+        if(liveMuted || liveSpeaking || backchannelSpeaking) return;
+        var final='';
+        for(var i=ev.resultIndex;i<ev.results.length;i++){ var r=ev.results[i]; if(r.isFinal) final+=r[0].transcript; }
+        if(final && final.trim()){ handleUserSpeech(final.trim()); }
       };
-      recog.onerror=function(ev){
-        // Keep live alive on no-speech / network blips
-        if(ev.error==='not-allowed' || ev.error==='service-not-allowed'){
-          addSys('Mic blocked — tap Allow for microphone, then reopen Live');
-          setStatus('Mic blocked','muted');
-        }
-      };
+      recog.onerror=function(ev){};
       recog.onend=function(){
         if(!liveOn) return;
-        if(liveMuted || liveSpeaking || liveProcessing) {
-          // retry in a bit
+        if(liveMuted || liveSpeaking || liveProcessing || backchannelSpeaking){
           clearTimeout(recogRestartTimer);
-          recogRestartTimer=setTimeout(function(){ if(liveOn && !liveMuted && !liveSpeaking) { try{ recog.start(); }catch(e){} } }, 600);
+          recogRestartTimer=setTimeout(function(){ if(liveOn && !liveMuted && !liveSpeaking && !backchannelSpeaking){ try{ recog.start(); }catch(e){} } }, 600);
           return;
         }
         clearTimeout(recogRestartTimer);
-        recogRestartTimer=setTimeout(function(){ if(liveOn && !liveMuted && !liveSpeaking){ try{ recog.start(); }catch(e){} } }, 300);
+        recogRestartTimer=setTimeout(function(){ if(liveOn && !liveMuted && !liveSpeaking && !backchannelSpeaking){ try{ recog.start(); }catch(e){} } }, 300);
       };
       recog.start();
-      setStatus('Listening...','');
-    }catch(e){
-      addSys('Live listening not supported here — trying audio streaming mode');
-      startRecorderFallback();
-    }
+    }catch(e){ startRecorderFallback(); }
   }
-
-  // Fallback for Safari / no SpeechRecognition: record 4s chunks -> Groq Whisper -> Groq chat -> voice
   function startRecorderFallback(){
     if(!stream) return;
     try{
@@ -8082,21 +8013,14 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       var chunks=[];
       recorder.ondataavailable=function(e){ if(e.data && e.data.size>0) chunks.push(e.data); };
       recorder.onstop=function(){
-        if(!liveOn || liveMuted) { if(liveOn) startRecorderFallback(); return; }
+        if(!liveOn || liveMuted){ if(liveOn) startRecorderFallback(); return; }
         var blob=new Blob(chunks, {type: mime||'audio/webm'});
         chunks=[];
         if(blob.size<800){ if(liveOn) startRecorderFallback(); return; }
-        transcribeWhisper(blob).then(function(txt){
-          if(txt && txt.trim()) handleUserSpeech(txt.trim());
-          else if(liveOn) startRecorderFallback();
-        }).catch(function(){ if(liveOn) startRecorderFallback(); });
+        transcribeWhisper(blob).then(function(txt){ if(txt && txt.trim()) handleUserSpeech(txt.trim()); else if(liveOn) startRecorderFallback(); }).catch(function(){ if(liveOn) startRecorderFallback(); });
       };
       recorder.start();
       setTimeout(function(){ try{ if(recorder && recorder.state==='recording') recorder.stop(); }catch(e){} }, 4200);
-      // Keep loop: onstop restarts
-      recorder.onstop=recorder.onstop; // keep
-      // For continuous loop, we need to restart after stop - handled in onstop
-      setStatus('Listening...','');
     }catch(e){}
   }
   async function transcribeWhisper(blob){
@@ -8112,20 +8036,14 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       return (data.text||'').trim();
     }catch(e){ return ''; }
   }
-
   async function startLive(){
     if(liveOn) return;
     ensureUI();
     liveOn=true; liveMuted=false; liveProcessing=false;
-    setStatus('Connecting...','');
+    lastLoudTime=Date.now(); speakingStarted=false; lastBackchannel=0;
     try{
-      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-        addSys('This device does not support microphone streaming');
-        setStatus('Mic not supported','muted');
-        return;
-      }
+      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ return; }
       stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}, video:false});
-      // Real-time audio streaming analyser
       try{
         audioCtx=new (window.AudioContext||window.webkitAudioContext)();
         if(audioCtx.state==='suspended') await audioCtx.resume();
@@ -8136,18 +8054,9 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
         src.connect(analyser);
       }catch(e){}
       cancelAnimationFrame(animId); animId=requestAnimationFrame(updateVisual);
-      setStatus('Listening...','');
-      // Reset transcript for fresh live
-      if(transcriptEl) transcriptEl.innerHTML='';
-      addSys('Live connected — speak, I will answer with voice');
       startRecognition();
-    }catch(err){
-      addSys('Mic permission needed — tap Allow, then reopen Live');
-      setStatus('Mic blocked','muted');
-      liveOn=true; // keep UI so user sees message, but no stream
-    }
+    }catch(err){}
   }
-
   function stopLive(){
     liveOn=false; liveMuted=false;
     clearTimeout(recogRestartTimer);
@@ -8161,15 +8070,10 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     stream=null;
     try{ if(audioCtx){ audioCtx.close(); } }catch(e){}
     audioCtx=null; analyser=null;
-    // Reset bars
-    try{ visualBars.forEach(function(b){ b.style.height='6px'; }); }catch(e){}
-    // Reset mute button visual
     try{ var m=document.getElementById('pv-live-mute'); if(m) m.classList.remove('is-muted'); }catch(e){}
   }
   window.pvStartLiveRealtime=startLive;
   window.pvStopLiveRealtime=stopLive;
-
-  // Watch live overlay visibility - start on open, stop on close
   function watch(){
     var o=liveBox(); if(!o) return;
     var wasVisible=isVisible();
@@ -8180,17 +8084,14 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       wasVisible=now;
     });
     obs.observe(o,{attributes:true, attributeFilter:['class','hidden']});
-    // Also check periodically (some code toggles via style)
     setInterval(function(){
       var now=isVisible();
       if(now && !liveOn && !wasVisible){ startLive(); }
       if(!now && liveOn){ stopLive(); }
       wasVisible=now;
     }, 800);
-    // If already visible on load, start
     if(wasVisible) startLive();
   }
-  // Mute button - real mute: stop mic + stop listening + stop speaking
   function wireMute(){
     var m=document.getElementById('pv-live-mute');
     if(!m || m.dataset.pvLiveRealBound) return;
@@ -8201,12 +8102,10 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
         liveMuted=muted;
         if(!liveOn) return;
         if(muted){
-          setStatus('Muted','muted');
           try{ if(recog){ try{ recog.stop(); }catch(e){} } }catch(e){}
           stopSpeaking();
           try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=false; }); }catch(e){}
         }else{
-          setStatus('Listening...','');
           try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=true; }); }catch(e){}
           resumeListening();
           if(!recog) startRecognition();
@@ -8214,17 +8113,11 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       }, 30);
     });
   }
-  function init(){
-    ensureUI();
-    watch();
-    wireMute();
-    setInterval(wireMute, 1000);
-    // Warm up voices
-    try{ if('speechSynthesis' in window) window.speechSynthesis.getVoices(); }catch(e){}
-  }
+  function init(){ ensureUI(); watch(); wireMute(); setInterval(wireMute, 1000); try{ if('speechSynthesis' in window) window.speechSynthesis.getVoices(); }catch(e){} }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
+
 
 </body>
 
