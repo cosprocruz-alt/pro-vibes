@@ -7021,7 +7021,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 </script>
 
 
-<!-- ===== FILE: js/groq-gemini.js — Groq = chat (openai/gpt-oss-120b), Gemini = pictures + vision ===== -->
+<!-- ===== FILE: js/groq-gemini.js — Groq = chat + vision, Gemini = LIVE ONLY (real voice) ===== -->
 <style data-file="css/ai-message-actions.css">
 /* AI MESSAGE ACTIONS - exactly like screenshot: copy | like | dislike | speaker - under AI messages ONLY */
 #pv-ai-screen .pv-ai-messages{display:flex !important;flex-direction:column !important;gap:12px !important}
@@ -7047,7 +7047,8 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 <script data-file="js/groq-gemini.js">
 // js/groq-gemini.js
 // PASTE YOUR KEYS HERE - do NOT share them in chat, paste them directly in this file:
-// Keys come from js/config.js (GROQ + GEMINI) - do NOT redeclare them here or the AI script breaks.
+// Keys come from js/config.js (GROQ + GEMINI) - do NOT redeclare them here.
+  // RULE: GEMINI is LIVE ONLY. Never use Gemini for text, vision, or pictures. Groq does chat + vision.
 var GROQ_MODEL = "openai/gpt-oss-120b";
 (function(){
   function el(id){return document.getElementById(id);}
@@ -7137,48 +7138,25 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     if(data.error) throw new Error(data.error.message || 'Groq error');
     return data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || 'No reply from Groq.';
   }
-  async function callGeminiVision(file, base64, mime){
+  async function callGroqVision(file, base64, mime){
+    // GROQ VISION ONLY - Gemini is LIVE ONLY, never vision.
     var prompt = "Describe this " + (file.type.indexOf('video')===0 ? "video" : "picture") + " in detail: what is happening, who/what is in it, colours, text if any, and anything important. Be clear and simple.";
-    var models=['gemini-3.8-flash','gemini-2.5-flash','gemini-3-flash'];
-    var lastErr=null;
-    for(var mi=0; mi<models.length; mi++){
-      try{
-        var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+models[mi]+':generateContent?key=' + encodeURIComponent(GEMINI_API_KEY), {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({contents:[{parts:[{text: prompt},{inlineData:{mimeType: mime, data: base64}}]}]})
-        });
-        var data = await res.json();
-        if(data.error){
-          lastErr=new Error(data.error.message || 'Gemini could not see this file.');
-          var msg=String(data.error.message||'').toLowerCase();
-          if(msg.indexOf('high demand')!==-1 || msg.indexOf('overload')!==-1 || msg.indexOf('temporarily')!==-1 || msg.indexOf('no longer available')!==-1 || data.error.status==='UNAVAILABLE' || data.error.code===503) continue;
-          throw lastErr;
-        }
-        try{ return data.candidates[0].content.parts[0].text; }catch(e){ lastErr=new Error('Gemini could not see this file.'); }
-      }catch(e){ lastErr=e; }
-    }
-    throw lastErr||new Error('Gemini could not see this file.');
+    var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_API_KEY},
+      body: JSON.stringify({model:'qwen/qwen3.8-27b', messages:[{role:'user', content:[{type:'text', text: prompt},{type:'image_url', image_url:{url:'data:'+mime+';base64,'+base64}}]}], temperature:0.3})
+    });
+    var data = await res.json();
+    if(data.error) throw new Error(data.error.message || 'Groq could not see this file.');
+    var out = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if(!out) throw new Error('Groq could not see this file.');
+    return out;
   }
+  async function callGeminiVision(file, base64, mime){ return callGroqVision(file, base64, mime); }
   async function callGeminiImage(prompt){
-    // PURE GEMINI ONLY - no other service.
-    // New models first - old ones are shut down / have 0 free quota.
-    var models = ['gemini-3.8-flash-image', 'gemini-3.1-flash-image', 'gemini-3-pro-image', 'gemini-2.5-flash-image'];
-    var lastErr = null;
-    for(var m=0; m<models.length; m++){
-      try{
-        var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + models[m] + ':generateContent?key=' + encodeURIComponent(GEMINI_API_KEY), {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({contents:[{parts:[{text: prompt}]}], generationConfig:{responseModalities:["TEXT","IMAGE"]}})
-        });
-        var data = await res.json();
-        if(data.error){ lastErr = new Error(data.error.message || 'Gemini error'); continue; }
-        var parts = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
-        if(parts){ for(var i=0;i<parts.length;i++){ if(parts[i].inlineData && parts[i].inlineData.data){ return 'data:' + (parts[i].inlineData.mimeType || 'image/png') + ';base64,' + parts[i].inlineData.data; } } }
-      }catch(e){ lastErr = e; }
-    }
-    throw lastErr || new Error('Gemini could not generate this picture.');
+    throw new Error('Pictures are off - Live is the focus. Tap Live to talk.');
   }
-  async function handleSend(){
+async function handleSend(){
     var inp = el('pv-ai-input'); if(!inp) return;
     var txt = inp.value.trim();
     if(!txt && !pendingFile) return;
@@ -7192,23 +7170,22 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     try{
       var reply = '';
       if(fileNow){
-        // Picture / video -> Groq through Gemini: Gemini sees, Groq explains
+        // Picture / video -> Groq sees, Groq explains (Gemini is LIVE ONLY)
         var b64 = await fileToBase64(fileNow);
-        var seen = await callGeminiVision(fileNow, b64, fileNow.type || 'image/jpeg');
+        var seen = await callGroqVision(fileNow, b64, fileNow.type || 'image/jpeg');
         reply = await callGroq([
-          {role:'system', content:'You are COSPRO AI. Explain clearly and simply, like a friend. Keep it short unless the user asks for more.'},
-          {role:'user', content:'The user sent a ' + (fileNow.type.indexOf('video')===0 ? 'video' : 'picture') + '. Gemini saw this: ' + seen + '\nUser said: ' + (txt || 'Explain this') + '\nExplain what is in the picture/video to the user.'}
+          {role:'system', content:'You are COSPRO AI. Explain clearly and simply, like a friend. Keep it short unless the user asks for more. LANGUAGE: Default to clear English. Do NOT use Pidgin unless user uses Pidgin first.'},
+          {role:'user', content:'The user sent a ' + (fileNow.type.indexOf('video')===0 ? 'video' : 'picture') + '. Groq saw this: ' + seen + '\nUser said: ' + (txt || 'Explain this') + '\nExplain what is in the picture/video to the user.'}
         ]);
       } else if(isImageGen(txt)){
-        // Picture generation -> Gemini only
-        var imgData = await callGeminiImage(cleanImagePrompt(txt));
+        // Pictures OFF by design - Gemini is LIVE ONLY, no image API.
         if(thinking) thinking.remove();
-        if(imgData){ addMsg('Here is your picture:', 'ai', imgData); } else { addMsg('Gemini could not make that picture, try another prompt.', 'ai'); }
+        addMsg('Pictures are off for now - Live is the star. Tap Live and talk to me, I am real voice now.', 'ai');
         return;
       } else {
         // Normal chat -> Groq gpt-oss-120b
         reply = await callGroq([
-          {role:'system', content:'You are COSPRO AI. Helpful, friendly, clear. Keep answers simple unless user wants detail.'},
+          {role:'system', content:'You are COSPRO AI. Helpful, friendly, clear. Keep answers simple unless user wants detail. LANGUAGE: Default to clear English. Do NOT use Pidgin unless user uses Pidgin first.'},
           {role:'user', content: txt}
         ]);
       }
@@ -7218,7 +7195,7 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       if(thinking) thinking.remove();
       var em = String(e && e.message || 'Could not reach AI.');
       if(em.toLowerCase().indexOf('quota')!==-1 || em.toLowerCase().indexOf('limit: 0')!==-1 || em.toLowerCase().indexOf('exceed')!==-1){
-        addMsg('Gemini says: quota exceeded, limit 0. Image generation needs billing enabled on this key. Enable billing in Google AI Studio / Google Cloud, then try again.', 'ai');
+        addMsg('Live is resting for a moment, try again in a few seconds.', 'ai');
       } else {
         addMsg('Error: ' + em, 'ai');
       }
@@ -7803,22 +7780,21 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script>
 <style data-file="css/live-realtime.css"> /* LIVE REALTIME - TEXT FREE, NO WAVE - black only, buttons only */ #pv-voice-live .pv-live-orb-wrap{ display:flex !important; flex-direction:column !important; overflow:hidden !important; } .pv-live-center{ flex:1 !important; display:flex !important; flex-direction:column !important; min-height:0 !important; }</style>
 <script data-file="js/live-realtime.js">
-// LIVE REALTIME - real mic streaming + real conversation via GEMINI (Live only) + real voice - TEXT FREE, NO WAVE
+// LIVE REALTIME - REAL GEMINI LIVE ONLY - WebSocket + PCM - NO FAKE TEXT LOOP
+// RULE: GEMINI = LIVE ONLY. Groq = chat + vision. No pictures.
+// LANGUAGE RULE: Default to clear English. NO Pidgin unless user speaks Pidgin first. Mirror user.
 (function(){
-
+  var liveOn=false, liveSpeaking=false, liveProcessing=false, liveMuted=false;
+  var liveWs=null, liveWsReady=false, liveSetupDone=false, liveUseReal=true, liveFallback=false, liveRetry=0;
+  var liveStream=null, liveAudioCtx=null, liveProcessor=null, liveInput=null;
+  var liveOutCtx=null, liveNextPlay=0, liveCurrentSource=null, livePlayQueue=[];
+  var recog=null, recorder=null, stream=null, recogRestartTimer=null;
+  var liveConnectTimer=null, liveMicStarted=false;
   function el(id){ return document.getElementById(id); }
   function liveBox(){ return el('pv-voice-live'); }
-  function isVisible(){
-    var o=liveBox(); if(!o) return false;
-    return !o.classList.contains('hidden') && !o.hasAttribute('hidden');
-  }
-
-  function ensureUI(){
-    var wrap=document.querySelector('#pv-voice-live .pv-live-orb-wrap');
-    if(!wrap) return;
-    wrap.innerHTML='';
-  }
-
+  function isVisible(){ var o=liveBox(); if(!o) return false; return !o.classList.contains('hidden') && !o.hasAttribute('hidden'); }
+  function ensureUI(){ /* Leave live UI exactly as is - no header, no status pill */ }
+  function setStatus(txt, mode){ /* No UI change - keep original live UI untouched */ }
   function pickVoice(){
     try{
       var vs=window.speechSynthesis? window.speechSynthesis.getVoices()||[] : [];
@@ -7826,7 +7802,6 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       var enUS=vs.filter(function(v){ return /en[-_]US/i.test(v.lang||''); });
       var en=vs.filter(function(v){ return /^en/i.test(v.lang||''); });
       var pool=enUS.length?enUS:(en.length?en:vs);
-      // Prefer natural / Google voices
       var pref=pool.filter(function(v){ return /Google|Natural|Neural|Samantha|Zira|Aria/i.test(v.name||''); });
       return (pref[0]||pool[0]||null);
     }catch(e){ return null; }
@@ -7834,16 +7809,15 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
   function speakAI(text){
     if(!('speechSynthesis' in window)) return;
     try{ window.speechSynthesis.cancel(); }catch(e){}
-    liveSpeaking=true;
-    // Pause listening while AI speaks so it doesn't hear itself
+    liveSpeaking=true; setStatus('LIVE - SPEAKING','is-speaking');
     try{ if(recog) recog.stop(); }catch(e){}
     var clean=String(text||'').replace(/\[[^\]]+\]\([^)]+\)/g,'$1').replace(/https?:\/\/\S+/g,'').replace(/[*#_]/g,'').trim();
-    if(!clean){ liveSpeaking=false; resumeListening(); return; }
+    if(!clean){ liveSpeaking=false; setStatus('LIVE - LISTENING',''); resumeListening(); return; }
     var chunks=clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g)||[clean];
     var idx=0;
     function next(){
       if(!liveOn){ liveSpeaking=false; return; }
-      if(idx>=chunks.length){ liveSpeaking=false; resumeListening(); return; }
+      if(idx>=chunks.length){ liveSpeaking=false; setStatus('LIVE - LISTENING',''); resumeListening(); return; }
       var u=new SpeechSynthesisUtterance(chunks[idx]);
       var v=pickVoice(); if(v) u.voice=v;
       u.lang=(v&&v.lang)||'en-US'; u.rate=1.0; u.pitch=1.0; u.volume=1;
@@ -7853,8 +7827,7 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     }
     next();
   }
-  function stopSpeaking(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} liveSpeaking=false; }
-
+  function stopSpeaking(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} liveSpeaking=false; clearPlayback(); }
   function localReply(q){
     var s=(q||'').toLowerCase();
     if(/hello|hi |hey|good morning|good evening/.test(s)) return "Hey! Good to hear you. What's on your mind today?";
@@ -7864,104 +7837,63 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
     if(/bye|goodbye/.test(s)) return "Bye for now! Come back anytime you want to talk.";
     if(/nigeria|enugu|lagos|naira/.test(s)) return "Yes! I know Nigeria well. How can I help you with that?";
     if(/music|song/.test(s)) return "I love music. Tell me what vibe you want and I'll suggest something good.";
-    if(/joke|funny/.test(s)) return "Okay here's one — why did the phone go to therapy? Too many missed calls!";
-    return "Got you — "+q+". Tell me a bit more so I can help you properly.";
+    if(/joke|funny/.test(s)) return "Okay here's one - why did the phone go to therapy? Too many missed calls!";
+    return "Got you - "+q+". Tell me a bit more so I can help you properly.";
   }
-
-  async function askGeminiLive(userText){
+  async function askGroqText(userText){
     try{
-      var key=(typeof GEMINI_API_KEY!=='undefined')? GEMINI_API_KEY : '';
-      if(!key) throw new Error('no gemini key');
-      var models=['gemini-3.8-flash','gemini-2.5-flash','gemini-3-flash','gemini-2.5-flash-lite'];
-      var lastErr=null;
-      for(var mi=0; mi<models.length; mi++){
-        try{
-          var res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+models[mi]+':generateContent?key='+encodeURIComponent(key),{
-            method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({contents:[{parts:[{text:'You are PRO-VIBES AI, a friendly real-time voice assistant. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis, like a real human conversation. You are in Enugu, Nigeria, user speaks English / Pidgin.\nUser: '+userText}]}]})
-          });
-          var data=await res.json();
-          if(data.error){
-            lastErr=new Error(data.error.message||'Gemini error');
-            var msg=String(data.error.message||'').toLowerCase();
-            if(msg.indexOf('high demand')!==-1 || msg.indexOf('overload')!==-1 || msg.indexOf('temporarily')!==-1 || msg.indexOf('no longer available')!==-1 || data.error.status==='UNAVAILABLE' || data.error.code===503) continue;
-            throw lastErr;
-          }
-          var out=data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
-          if(out) return out.trim();
-          lastErr=new Error('empty');
-        }catch(e){ lastErr=e; }
-      }
-      throw lastErr||new Error('Gemini busy');
+      var key=(typeof GROQ_API_KEY!=='undefined')? GROQ_API_KEY : '';
+      if(!key) throw new Error('no groq');
+      var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+        body: JSON.stringify({model:'openai/gpt-oss-120b', messages:[
+          {role:'system', content:'You are PRO-VIBES AI, friendly real-time voice assistant in Enugu, Nigeria. LANGUAGE RULE: Default to clear, simple English. Do NOT use Pidgin unless the user speaks Pidgin first. If user speaks Pidgin, match their Pidgin naturally. If user speaks English, stay in English. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis.'},
+          {role:'user', content: userText}
+        ], temperature:0.7})
+      });
+      var data=await res.json();
+      if(data.error) throw new Error(data.error.message||'Groq error');
+      var out=data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if(out) return out.trim();
+      throw new Error('empty');
     }catch(e){ return localReply(userText); }
   }
-  async function askGroq(userText){ return askGeminiLive(userText); }
-
   async function handleUserSpeech(text){
     if(!text || !text.trim()) return;
     if(liveProcessing) return;
     liveProcessing=true;
-    try{
-      var reply=await askGroq(text.trim());
-      if(!liveOn) return;
-      speakAI(reply);
-    }catch(e){
-      try{ if(liveOn) speakAI(localReply(text.trim())); }catch(_){}
-    }finally{
-      liveProcessing=false;
-    }
+    try{ var reply=await askGroqText(text.trim()); if(!liveOn) return; speakAI(reply); }
+    catch(e){ try{ if(liveOn) speakAI(localReply(text.trim())); }catch(_){} }
+    finally{ liveProcessing=false; }
   }
-
   function resumeListening(){
     try{
-      if(!liveOn) return;
-      if(recog){
-        try{ recog.start(); }catch(e){ try{ startRecognition(); }catch(_){} }
-        return;
-      }
+      if(!liveOn || liveUseReal) return;
+      if(recog){ try{ recog.start(); }catch(e){ try{ startRecognition(); }catch(_){} } return; }
       startRecognition();
     }catch(e){}
   }
-
   function startRecognition(){
     var Recog=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!Recog){ startRecorderFallback(); return; }
     try{
       if(recog){ try{ recog.stop(); }catch(e){} }
       recog=new Recog();
-      recog.continuous=true;
-      recog.interimResults=true;
-      recog.lang='en-US';
-      recog.maxAlternatives=1;
+      recog.continuous=true; recog.interimResults=true; recog.lang='en-US'; recog.maxAlternatives=1;
       recog.onresult=function(ev){
-        var interim='', final='';
-        for(var i=ev.resultIndex;i<ev.results.length;i++){
-          var r=ev.results[i];
-          if(r.isFinal) final+=r[0].transcript;
-          else interim+=r[0].transcript;
-        }
-        if(interim)
-        if(final && final.trim()){
-          handleUserSpeech(final.trim());
-        }
+        var final='';
+        for(var i=ev.resultIndex;i<ev.results.length;i++){ var r=ev.results[i]; if(r.isFinal) final+=r[0].transcript; }
+        if(final && final.trim()) handleUserSpeech(final.trim());
       };
-      recog.onerror=function(ev){
-        // Keep live alive on no-speech / network blips
-        if(ev.error==='not-allowed' || ev.error==='service-not-allowed'){
-        }
-      };
+      recog.onerror=function(ev){};
       recog.onend=function(){
-        if(!liveOn) return;
+        if(!liveOn || liveUseReal) return;
         clearTimeout(recogRestartTimer);
-        recogRestartTimer=setTimeout(function(){ if(liveOn && !liveSpeaking) startRecognition(); }, 400);
+        recogRestartTimer=setTimeout(function(){ if(liveOn && !liveSpeaking && !liveUseReal) startRecognition(); }, 400);
       };
       recog.start();
-    }catch(e){
-      startRecorderFallback();
-    }
+    }catch(e){ startRecorderFallback(); }
   }
-
-  // Fallback for Safari / no SpeechRecognition: record 4s chunks -> Groq Whisper (transcription only) -> Gemini (Live chat) -> voice
   function startRecorderFallback(){
     if(!stream) return;
     try{
@@ -7973,67 +7905,189 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       var chunks=[];
       recorder.ondataavailable=function(e){ if(e.data && e.data.size>0) chunks.push(e.data); };
       recorder.onstop=function(){
-        var blob=new Blob(chunks, {type: mime||'audio/webm'});
-        chunks=[];
-        if(blob.size<800){ if(liveOn) startRecorderFallback(); return; }
+        var blob=new Blob(chunks, {type: mime||'audio/webm'}); chunks=[];
+        if(blob.size<800){ if(liveOn && !liveUseReal) startRecorderFallback(); return; }
         transcribeWhisper(blob).then(function(txt){
           if(txt && txt.trim()) handleUserSpeech(txt.trim());
-          else if(liveOn) startRecorderFallback();
-        }).catch(function(){ if(liveOn) startRecorderFallback(); });
+          else if(liveOn && !liveUseReal) startRecorderFallback();
+        }).catch(function(){ if(liveOn && !liveUseReal) startRecorderFallback(); });
       };
       recorder.start();
       setTimeout(function(){ try{ if(recorder && recorder.state==='recording') recorder.stop(); }catch(e){} }, 4200);
-      // Keep loop: onstop restarts
-      recorder.onstop=recorder.onstop; // keep
-      // For continuous loop, we need to restart after stop - handled in onstop
     }catch(e){}
   }
   async function transcribeWhisper(blob){
     try{
       var key=(typeof GROQ_API_KEY!=='undefined')? GROQ_API_KEY : '';
       if(!key) return '';
-      var fd=new FormData();
-      fd.append('file', blob, 'live.webm');
-      fd.append('model','whisper-large-v3');
-      fd.append('language','en');
+      var fd=new FormData(); fd.append('file', blob, 'live.webm'); fd.append('model','whisper-large-v3'); fd.append('language','en');
       var res=await fetch('https://api.groq.com/openai/v1/audio/transcriptions',{method:'POST', headers:{'Authorization':'Bearer '+key}, body:fd});
-      var data=await res.json();
-      return (data.text||'').trim();
+      var data=await res.json(); return (data.text||'').trim();
     }catch(e){ return ''; }
   }
-
+  function floatTo16BitPCM(input){
+    var out=new Int16Array(input.length);
+    for(var i=0;i<input.length;i++){ var s=Math.max(-1, Math.min(1, input[i])); out[i]= s<0 ? s*0x8000 : s*0x7FFF; }
+    return out;
+  }
+  function bytesToBase64(bytes){
+    var bin=''; var chunk=0x8000;
+    for(var i=0;i<bytes.length;i+=chunk){ bin+=String.fromCharCode.apply(null, bytes.subarray(i, i+chunk)); }
+    return btoa(bin);
+  }
+  function base64ToBytes(b64){
+    var bin=atob(b64); var len=bin.length; var bytes=new Uint8Array(len);
+    for(var i=0;i<len;i++) bytes[i]=bin.charCodeAt(i);
+    return bytes;
+  }
+  function clearPlayback(){
+    livePlayQueue=[];
+    try{ if(liveCurrentSource){ try{ liveCurrentSource.stop(); }catch(e){} } }catch(e){}
+    liveCurrentSource=null;
+    try{ if(liveOutCtx) liveNextPlay=liveOutCtx.currentTime; }catch(e){}
+  }
+  function playPCM24k(b64){
+    try{
+      if(liveMuted) return;
+      if(!liveOutCtx){ liveOutCtx=new (window.AudioContext||window.webkitAudioContext)({sampleRate:24000}); }
+      if(liveOutCtx.state==='suspended'){ try{ liveOutCtx.resume(); }catch(e){} }
+      var bytes=base64ToBytes(b64);
+      var int16=new Int16Array(bytes.buffer, bytes.byteOffset, Math.floor(bytes.byteLength/2));
+      var float32=new Float32Array(int16.length);
+      for(var i=0;i<int16.length;i++) float32[i]=int16[i]/32768;
+      var buf=liveOutCtx.createBuffer(1, float32.length, 24000);
+      buf.getChannelData(0).set(float32);
+      var src=liveOutCtx.createBufferSource(); src.buffer=buf; src.connect(liveOutCtx.destination);
+      var now=liveOutCtx.currentTime;
+      if(liveNextPlay<now) liveNextPlay=now+0.02;
+      src.start(liveNextPlay);
+      liveCurrentSource=src; liveNextPlay+=buf.duration;
+      liveSpeaking=true; setStatus('LIVE - SPEAKING','is-speaking');
+      src.onended=function(){ if(liveCurrentSource===src) liveCurrentSource=null; if(!liveCurrentSource && livePlayQueue.length===0){ liveSpeaking=false; if(liveOn && liveUseReal) setStatus('LIVE - LISTENING',''); } };
+    }catch(e){}
+  }
+  function connectGeminiLive(){
+    var key=(typeof GEMINI_API_KEY!=='undefined')? GEMINI_API_KEY : '';
+    if(!key){ startFallbackLive(); return; }
+    liveUseReal=true; liveFallback=false; liveWsReady=false; liveSetupDone=false;
+    setStatus('LIVE - CONNECTING','');
+    var url='wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key='+encodeURIComponent(key);
+    try{ liveWs=new WebSocket(url); }catch(e){ startFallbackLive(); return; }
+    liveWs.onopen=function(){
+      try{
+        var setup={
+          setup:{
+            model:'models/gemini-3.8-live',
+            generationConfig:{ responseModalities:['AUDIO'], speechConfig:{ voiceConfig:{ prebuiltVoiceConfig:{ voiceName:'Puck' } } } },
+            systemInstruction:{ parts:[{ text:'You are PRO-VIBES AI, a friendly real-time voice assistant in Enugu, Nigeria. LANGUAGE RULE: Default to clear, simple English. Do NOT use Pidgin unless the user speaks Pidgin first. If the user speaks Pidgin, match their Pidgin naturally and stay in Pidgin until they switch back to English. If the user speaks English, stay in English. Reply short, natural, spoken style, 1-2 sentences max, no markdown, no lists, no emojis, like a real human conversation.' }] },
+            realtimeInputConfig:{ automaticActivityDetection:{ disabled:false, startSensitivity:'HIGH', endSensitivity:'LOW', prefixPaddingMs:20, silenceDurationMs:500 } }
+          }
+        };
+        liveWs.send(JSON.stringify(setup));
+      }catch(e){ startFallbackLive(); }
+    };
+    liveWs.onmessage=function(ev){
+      try{
+        var msg=JSON.parse(ev.data||'{}');
+        if(msg.setupComplete){ liveSetupDone=true; liveWsReady=true; liveRetry=0; setStatus('LIVE - LISTENING',''); startMicStreaming(); return; }
+        var sc=msg.serverContent;
+        if(!sc) return;
+        if(sc.interrupted){ clearPlayback(); liveSpeaking=false; setStatus('LIVE - LISTENING',''); return; }
+        if(sc.modelTurn && sc.modelTurn.parts){
+          for(var i=0;i<sc.modelTurn.parts.length;i++){
+            var p=sc.modelTurn.parts[i];
+            if(p.inlineData && p.inlineData.data){ playPCM24k(p.inlineData.data); }
+          }
+        }
+        if(sc.turnComplete){ liveSpeaking=false; if(liveOn && liveUseReal) setStatus('LIVE - LISTENING',''); }
+      }catch(e){}
+    };
+    liveWs.onerror=function(){ if(liveOn && liveUseReal && !liveSetupDone){ startFallbackLive(); } };
+    liveWs.onclose=function(){
+      if(!liveOn) return;
+      if(liveUseReal && !liveFallback){
+        if(liveRetry<1){ liveRetry++; setTimeout(function(){ if(liveOn) connectGeminiLive(); }, 800); }
+        else { startFallbackLive(); }
+      }
+    };
+    clearTimeout(liveConnectTimer);
+    liveConnectTimer=setTimeout(function(){ if(liveOn && liveUseReal && !liveSetupDone && !liveFallback) startFallbackLive(); }, 7000);
+  }
+  function startMicStreaming(){
+    if(liveMicStarted) return;
+    if(!liveStream) return;
+    try{
+      liveAudioCtx=new (window.AudioContext||window.webkitAudioContext)({sampleRate:16000});
+      if(liveAudioCtx.state==='suspended'){ try{ liveAudioCtx.resume(); }catch(e){} }
+      liveInput=liveAudioCtx.createMediaStreamSource(liveStream);
+      liveProcessor=liveAudioCtx.createScriptProcessor(4096, 1, 1);
+      liveProcessor.onaudioprocess=function(e){
+        try{
+          if(!liveOn || !liveUseReal || !liveWs || liveWs.readyState!==1 || !liveSetupDone) return;
+          if(liveMuted) return;
+          var input=e.inputBuffer.getChannelData(0);
+          var pcm=floatTo16BitPCM(input);
+          var bytes=new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength);
+          var b64=bytesToBase64(bytes);
+          liveWs.send(JSON.stringify({ realtimeInput:{ audio:{ mimeType:'audio/pcm;rate=16000', data:b64 } } }));
+        }catch(err){}
+      };
+      liveInput.connect(liveProcessor);
+      liveProcessor.connect(liveAudioCtx.destination);
+      liveMicStarted=true;
+    }catch(e){ startFallbackLive(); }
+  }
+  function stopMicStreaming(){
+    liveMicStarted=false;
+    try{ if(liveProcessor){ liveProcessor.disconnect(); liveProcessor.onaudioprocess=null; } }catch(e){}
+    liveProcessor=null;
+    try{ if(liveInput) liveInput.disconnect(); }catch(e){}
+    liveInput=null;
+    try{ if(liveAudioCtx) liveAudioCtx.close(); }catch(e){}
+    liveAudioCtx=null;
+  }
+  function startFallbackLive(){
+    if(!liveOn) return;
+    if(liveFallback) return;
+    liveFallback=true; liveUseReal=false; liveWsReady=false;
+    setStatus('LIVE - BACKUP','is-backup');
+    try{ if(liveWs){ try{ liveWs.close(); }catch(e){} } }catch(e){}
+    liveWs=null;
+    stopMicStreaming();
+    try{ if(!stream) return; startRecognition(); }catch(e){}
+  }
   async function startLive(){
     if(liveOn) return;
-    liveOn=true;
-    ensureUI();
+    liveOn=true; liveMuted=false; liveFallback=false; liveUseReal=true; liveRetry=0;
+    ensureUI(); setStatus('LIVE - CONNECTING','');
     try{
-      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-        startRecognition();
-        return;
-      }
+      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ connectGeminiLive(); return; }
       stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}, video:false});
-      startRecognition();
-    }catch(err){
-      try{ startRecognition(); }catch(e){}
-    }
+      liveStream=stream;
+      connectGeminiLive();
+    }catch(err){ connectGeminiLive(); }
   }
-
   function stopLive(){
     liveOn=false;
-    clearTimeout(recogRestartTimer);
+    clearTimeout(recogRestartTimer); clearTimeout(liveConnectTimer);
+    try{ if(liveWs){ try{ liveWs.close(); }catch(e){} } }catch(e){}
+    liveWs=null; liveWsReady=false; liveSetupDone=false;
+    stopMicStreaming();
     try{ if(recog){ recog.onend=null; recog.onerror=null; recog.onresult=null; try{ recog.stop(); }catch(e){} } }catch(e){}
     recog=null;
     try{ if(recorder && recorder.state!=='inactive') recorder.stop(); }catch(e){}
     recorder=null;
-    stopSpeaking();
+    stopSpeaking(); clearPlayback();
+    try{ if(liveOutCtx) liveOutCtx.close(); }catch(e){}
+    liveOutCtx=null; liveNextPlay=0;
     try{ if(stream){ stream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); } }catch(e){}
-    stream=null;
+    stream=null; liveStream=null;
     try{ var m=document.getElementById('pv-live-mute'); if(m) m.classList.remove('is-muted'); }catch(e){}
+    setStatus('LIVE - OFF','');
   }
   window.pvStartLiveRealtime=startLive;
   window.pvStopLiveRealtime=stopLive;
-
-  // Watch live overlay visibility - start on open, stop on close
+  window.pvLiveIsReal=function(){ return liveUseReal && !liveFallback; };
   function watch(){
     var o=liveBox(); if(!o) return;
     var wasVisible=isVisible();
@@ -8044,17 +8098,14 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       wasVisible=now;
     });
     obs.observe(o,{attributes:true, attributeFilter:['class','hidden']});
-    // Also check periodically (some code toggles via style)
     setInterval(function(){
       var now=isVisible();
       if(now && !liveOn && !wasVisible){ startLive(); }
       if(!now && liveOn){ stopLive(); }
       wasVisible=now;
     }, 800);
-    // If already visible on load, start
     if(wasVisible) startLive();
   }
-  // Mute button - real mute: stop mic + stop listening + stop speaking
   function wireMute(){
     var m=document.getElementById('pv-live-mute');
     if(!m || m.dataset.pvLiveRealBound) return;
@@ -8063,29 +8114,17 @@ var GROQ_MODEL = "openai/gpt-oss-120b";
       setTimeout(function(){
         var muted=m.classList.contains('is-muted');
         if(!liveOn) return;
-        if(muted){
-          try{ if(recog){ try{ recog.stop(); }catch(e){} } }catch(e){}
-          stopSpeaking();
-          try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=false; }); }catch(e){}
-        }else{
-          try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=true; }); }catch(e){}
-          resumeListening();
-          if(!recog) startRecognition();
-        }
+        liveMuted=muted;
+        if(muted){ clearPlayback(); stopSpeaking(); try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=false; }); }catch(e){} }
+        else{ try{ if(stream) stream.getTracks().forEach(function(tr){ tr.enabled=true; }); }catch(e){} if(!liveUseReal) resumeListening(); }
       }, 30);
     });
   }
-  function init(){
-    ensureUI();
-    watch();
-    wireMute();
-    setInterval(wireMute, 1000);
-    // Warm up voices
-    try{ if('speechSynthesis' in window) window.speechSynthesis.getVoices(); }catch(e){}
-  }
+  function init(){ ensureUI(); watch(); wireMute(); setInterval(wireMute, 1000); try{ if('speechSynthesis' in window) window.speechSynthesis.getVoices(); }catch(e){} }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
+
 
 </body>
 
