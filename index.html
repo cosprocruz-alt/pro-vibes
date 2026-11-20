@@ -63,6 +63,48 @@
 :where(code, pre, kbd, samp) {
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
+</style><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+</style><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
 </style>
 <meta charset="UTF-8">
 <style>html,body{height:100%;background:#000;overflow:hidden;overscroll-behavior:none}</style>
@@ -103,6 +145,10 @@ button{cursor:pointer}
 #login-btn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px}
 #home-screen{background:#000;display:flex;flex-direction:column;height:100dvh;height:100svh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:72px;box-sizing:border-box}
 #home-screen .home-grid{flex:0 0 auto}
+#inbox-screen{background:#000;display:flex;flex-direction:column;height:100dvh;height:100svh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:72px;box-sizing:border-box}
+#inbox-screen .inbox-page{flex:0 0 auto}
+#inbox-screen{scrollbar-width:none;-ms-overflow-style:none}
+#inbox-screen::-webkit-scrollbar{display:none;width:0 !important;height:0 !important}
 .home-head{padding:14px 12px 6px;display:flex;align-items:center;justify-content:space-between}
 .home-head h2{margin:0;font-size:26px;font-weight:800}.home-head .pv-logo{margin:0;font-size:26px;font-weight:800;line-height:1;letter-spacing:.2px;color:#fff;font-family:inherit}
 .home-filter-row{display:flex;gap:8px;padding:2px 12px 10px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch}
@@ -6955,9 +7001,9 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 #pv-ai-empty-writeup.fading{opacity:0}
 #pv-ai-empty-writeup.is-greeting{white-space:nowrap !important;font-size:28px !important;overflow:hidden;text-overflow:ellipsis}
 </style><div id="pv-ai-empty-writeup" aria-hidden="true">What's on your mind?</div><script data-file="js/ai-empty-writeup.js">
-/* AI EMPTY WRITEUP - Greeting FIRST, one line, before other prompts. Then rotate. SOMETIMES greeting again, not every time. */
+/* AI EMPTY WRITEUP - Greeting FIRST, one line, before other prompts. Then rotate. Greeting does NOT repeat in rotation - only when AI opens. */
 (function(){
-  var lines = ["What's on your mind?", "How can I help you today?", "What are we doing today?", "Ask me anything...", "What do you want to know?", "Need a quick idea?"];
+  var lines = ["What's on your mind?", "How can I help you today?", "What are we doing today?", "Ask me anything...", "What do you want to know?", "Need a quick idea?", "COSPRO AI answers in seconds.", "Ask COSPRO AI to explain it simply.", "Need help with homework?", "Need help writing?", "Summarize this for me.", "Can you translate this?", "Stuck? I have ideas.", "What is in this picture?", "Can you check my work?", "Need a caption?", "Study smarter with COSPRO AI.", "Want to write a story?", "Need help with code?", "Let's plan your day.", "I remember your chat.", "Make it shorter.", "Let's brainstorm.", "What is in this video?", "Give me a quick summary.", "Talk to COSPRO AI, hands-free."];
   var idx = 0;
   var rotateCount = 0;
   function el(id){ return document.getElementById(id); }
@@ -7017,11 +7063,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   function nextText(){
     rotateCount++;
-    // SOMETIMES greeting again later - 1 in 4 rotations, not every time
-    if(rotateCount % 4 === 0){
-      var g = greetingForNow();
-      if(g) return {text: g, greeting: true};
-    }
+    // Greeting is FIRST only - never repeats in rotation. Only showGreetingFirst() shows it, when AI opens.
     idx = (idx + 1) % lines.length;
     return {text: lines[idx], greeting: false};
   }
@@ -7066,8 +7108,91 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
-</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt=""><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Live chat or send"><span class="pv-ai-live-icon"><i></i><i></i><i></i><i></i></span><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
+</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt=""><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-mic-btn" id="pv-ai-mic" type="button" aria-label="Voice recorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v3"/></svg></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Live chat or send"><span class="pv-ai-live-icon"><i></i><i></i><i></i><i></i></span><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
 
+<style data-file="css/pv-voice-dictation.css">
+#pv-ai-screen .pv-ai-input-row{gap:6px}
+.pv-ai-mic-btn{width:44px;height:40px;min-width:44px;border-radius:999px;background:transparent;border:none;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent;margin-right:2px}
+.pv-ai-mic-btn svg{width:26px;height:26px;display:block}
+.pv-ai-mic-btn.pv-mic-active{color:#22c55e}
+#pv-ai-screen #pv-ai-mic-btn{color:#fff !important;background:transparent !important;border:none !important}
+#pv-ai-screen #pv-ai-mic-btn.pv-mic-active{color:#22c55e !important}
+</style>
+<script data-file="js/pv-voice-dictation.js">
+(function(){
+  if(window.__pvDictationBound) return; window.__pvDictationBound=true;
+  function el(id){ return document.getElementById(id); }
+  var recog=null, listening=false, baseText='', finalText='', interimText='', speakNext=false;
+  var fallbackTimer=null, vadStream=null, vadCtx=null, vadAnalyser=null, vadInterval=null, vadLastVoice=0, vadVoiceFrames=0, vadActive=false;
+  function setMic(a){ var b=el('pv-ai-mic'); if(b) b.classList.toggle('pv-mic-active', !!a); try{ if(a && navigator.vibrate) navigator.vibrate(10); }catch(e){} }
+  function clearFallback(){ try{ if(fallbackTimer){ clearTimeout(fallbackTimer); fallbackTimer=null; } }catch(e){} }
+  function resetFallback(){ if(vadActive) return; clearFallback(); fallbackTimer=setTimeout(function(){ if(!listening) return; var inp=el('pv-ai-input'); var txt=inp?(inp.value||'').trim():''; if(txt) stopDictation(true); else stopDictation(false); }, 2000); }
+  function updateInput(){ var inp=el('pv-ai-input'); if(!inp) return; var txt=((baseText?baseText+' ':'')+finalText+(interimText?' '+interimText:'')).replace(/\s+/g,' ').trim(); inp.value=txt; try{ inp.dispatchEvent(new Event('input',{bubbles:true})); }catch(e){} var bar=el('pv-ai-input-bar'); if(bar) bar.classList.toggle('has-text', !!txt.trim()); try{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,100)+'px'; }catch(e){} }
+  function stopVAD(){ try{ if(vadInterval){ clearInterval(vadInterval); vadInterval=null; } }catch(e){} try{ if(vadStream) vadStream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); }catch(e){} try{ if(vadCtx) vadCtx.close(); }catch(e){} vadStream=null; vadCtx=null; vadAnalyser=null; vadActive=false; vadVoiceFrames=0; }
+  function stopDictation(autoSend){ if(!listening && !recog){ setMic(false); return; } listening=false; clearFallback(); stopVAD(); try{ if(recog){ recog.onend=null; recog.onresult=null; recog.onerror=null; try{ recog.stop(); }catch(e){} try{ recog.abort(); }catch(e){} } }catch(e){} recog=null; interimText=''; updateInput(); setMic(false); var inp=el('pv-ai-input'); var txt=inp?(inp.value||'').trim():''; if(txt) speakNext=true; if(autoSend && txt){ setTimeout(function(){ try{ var b=el('pv-ai-action'); if(b) b.click(); }catch(e){} }, 80); } }
+  function startVAD(){ try{ if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return; navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){ if(!listening){ try{ stream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); }catch(e){} return; } vadStream=stream; vadActive=true; try{ vadCtx=new (window.AudioContext||window.webkitAudioContext)(); var src=vadCtx.createMediaStreamSource(stream); vadAnalyser=vadCtx.createAnalyser(); vadAnalyser.fftSize=512; src.connect(vadAnalyser); }catch(e){ vadActive=false; return; } var data=new Uint8Array(vadAnalyser.fftSize); vadLastVoice=Date.now(); vadVoiceFrames=0; vadInterval=setInterval(function(){ if(!listening) return; try{ vadAnalyser.getByteTimeDomainData(data); }catch(e){ return; } var sum=0; for(var i=0;i<data.length;i++){ var v=(data[i]-128)/128; sum+=v*v; } var rms=Math.sqrt(sum/data.length); if(rms>0.02){ vadVoiceFrames++; if(vadVoiceFrames>=3){ vadLastVoice=Date.now(); vadVoiceFrames=0; } } else { vadVoiceFrames=0; } if(Date.now()-vadLastVoice>=2000){ var inp=el('pv-ai-input'); var txt=inp?(inp.value||'').trim():''; if(txt) stopDictation(true); else stopDictation(false); } }, 100); }).catch(function(){ vadActive=false; }); }catch(e){ vadActive=false; } }
+  function makeRecog(){ var SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return null; var r=new SR(); r.lang='en-US'; r.interimResults=true; r.continuous=true; r.maxAlternatives=1; r.onresult=function(e){ var interim=''; for(var i=e.resultIndex;i<e.results.length;i++){ var res=e.results[i]; var conf=1; try{ if(res[0] && typeof res[0].confidence==='number') conf=res[0].confidence; }catch(e){} if(conf<0.25 && !res.isFinal) continue; if(res.isFinal) finalText+=res[0].transcript; else interim+=res[0].transcript; } interimText=interim; updateInput(); if(!vadActive) resetFallback(); }; r.onerror=function(){}; r.onend=function(){ recog=null; if(listening){ setTimeout(function(){ if(listening){ var nr=makeRecog(); if(nr){ recog=nr; try{ recog.start(); }catch(e){} } } }, 250); } }; return r; }
+  function startDictation(){ if(listening){ stopDictation(false); return; } var bar=el('pv-ai-input-bar'); if(bar && bar.classList.contains('pv-live-active')) return; var SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){ try{ var toast=el('pv-ai-toast'); if(toast){ toast.textContent='Voice not supported on this device'; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); }, 2000); } }catch(e){} return; } var inp=el('pv-ai-input'); baseText=inp?(inp.value||'').trim():''; finalText=''; interimText=''; listening=true; setMic(true); vadActive=false; resetFallback(); startVAD(); try{ recog=makeRecog(); if(recog) recog.start(); else { listening=false; setMic(false); } }catch(e){ listening=false; setMic(false); } }
+  window.__pvStartDictation=startDictation;
+  function observeMessages(){ var box=el('pv-ai-messages'); if(!box || !window.MutationObserver) return; var obs=new MutationObserver(function(muts){ muts.forEach(function(m){ (m.addedNodes||[]).forEach(function(n){ if(!n || n.nodeType!==1) return; var userMsg=null; if(n.classList && n.classList.contains('pv-ai-msg') && n.classList.contains('user')) userMsg=n; else if(n.querySelector) userMsg=n.querySelector('.pv-ai-msg.user'); if(userMsg && listening){ stopDictation(false); speakNext=true; } var aiMsg=null; if(n.classList && n.classList.contains('pv-ai-msg') && n.classList.contains('ai')) aiMsg=n; else if(n.querySelector) aiMsg=n.querySelector('.pv-ai-msg.ai'); if(aiMsg && speakNext){ var txt=(aiMsg.textContent||'').trim(); if(txt && txt!=='Thinking...'){ speakNext=false; setTimeout(function(){ try{ var wrap=aiMsg.closest?aiMsg.closest('.pv-ai-msg-wrap'):null; var btn=null; if(wrap) btn=wrap.querySelector('[aria-label="Read aloud"]'); if(!btn) btn=document.querySelector('[aria-label="Read aloud"]'); if(btn) btn.click(); else if('speechSynthesis' in window){ var u=new SpeechSynthesisUtterance(txt); window.speechSynthesis.speak(u); } }catch(e){} }, 400); } } }); }); }); obs.observe(box, {childList:true, subtree:true}); }
+  function wire(){ var btn=el('pv-ai-mic'); if(btn && !btn.dataset.pvMicBound){ btn.dataset.pvMicBound='1'; btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); startDictation(); }); } observeMessages(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire(); setTimeout(wire, 800);
+})();
+</script>
+<style data-file="css/pv-fix-x-preload-scroll.css">
+#pv-ai-input-bar .pv-ai-attach-preview #pv-ai-attach-clear{background:transparent !important;border:none !important;box-shadow:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;color:#fff !important;text-shadow:0 1px 4px rgba(0,0,0,.9) !important}
+#pv-ai-attach-preview img,#pv-ai-messages img{opacity:0;transition:opacity .25s ease}
+#pv-ai-attach-preview img.pv-loaded,#pv-ai-messages img.pv-loaded{opacity:1}
+#pv-ai-attach-preview img[src=""],#pv-ai-messages img[src=""]{opacity:0;visibility:hidden}
+#pv-ai-screen .pv-ai-input-wrap{position:relative}
+#pv-ai-screen #pv-ai-scroll-down{position:absolute !important;left:50% !important;right:auto !important;bottom:calc(100% + 10px) !important;transform:translateX(-50%) !important;margin-left:0 !important}
+</style>
+<script data-file="js/pv-fix-x-preload-scroll.js">
+(function(){
+  if(window.__pvFixBound) return; window.__pvFixBound=true;
+  function el(id){ return document.getElementById(id); }
+  function moveScrollOutside(){
+    try{
+      var btn=el('pv-ai-scroll-down'); var wrap=document.querySelector('#pv-ai-screen .pv-ai-input-wrap');
+      if(btn && wrap && btn.parentNode!==wrap){ wrap.insertBefore(btn, wrap.firstChild); }
+    }catch(e){}
+  }
+  function bindImg(img){
+    if(!img || img.dataset.pvPreloadBound) return; img.dataset.pvPreloadBound='1';
+    img.addEventListener('load', function(){ img.classList.add('pv-loaded'); img.style.visibility=''; });
+    img.addEventListener('error', function(){ img.classList.remove('pv-loaded'); img.style.visibility='hidden'; img.style.opacity='0'; });
+    if(img.complete && img.naturalWidth>0){ img.classList.add('pv-loaded'); }
+  }
+  function observeChat(){
+    var box=el('pv-ai-messages'); if(!box) return;
+    box.querySelectorAll('img').forEach(bindImg);
+    if(!window.MutationObserver) return;
+    var obs=new MutationObserver(function(muts){ muts.forEach(function(m){ (m.addedNodes||[]).forEach(function(n){ if(!n) return; if(n.tagName==='IMG') bindImg(n); if(n.querySelector) n.querySelectorAll('img').forEach(bindImg); }); }); });
+    obs.observe(box, {childList:true, subtree:true});
+  }
+  function bindThumb(){
+    var thumb=el('pv-ai-attach-thumb'); if(thumb) bindImg(thumb);
+    var fileInput=el('pv-ai-file');
+    if(fileInput && !fileInput.dataset.pvVideoThumbBound){
+      fileInput.dataset.pvVideoThumbBound='1';
+      fileInput.addEventListener('change', function(){
+        var f=fileInput.files && fileInput.files[0]; if(!f) return;
+        if(f.type.indexOf('video')===0){
+          try{
+            var url=URL.createObjectURL(f); var v=document.createElement('video'); v.preload='auto'; v.muted=true; v.playsInline=true; v.src=url;
+            v.onloadeddata=function(){ try{ v.currentTime=0.1; }catch(e){} };
+            v.onseeked=function(){ try{ var c=document.createElement('canvas'); c.width=v.videoWidth||320; c.height=v.videoHeight||180; var ctx=c.getContext('2d'); ctx.drawImage(v,0,0,c.width,c.height); var data=c.toDataURL('image/jpeg',0.8); var th=el('pv-ai-attach-thumb'); if(th){ th.style.visibility=''; th.src=data; } var prev=el('pv-ai-attach-preview'); if(prev) prev.classList.add('show'); }catch(e){} try{ URL.revokeObjectURL(url); }catch(e){} };
+            v.onerror=function(){ try{ URL.revokeObjectURL(url); }catch(e){} };
+          }catch(e){}
+        }
+      });
+    }
+  }
+  function wire(){ moveScrollOutside(); bindThumb(); observeChat(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
+  setInterval(moveScrollOutside, 1000);
+})();
+</script>
 <!-- ===== FILE: js/ai-pill.js — separate, do not mix ===== -->
 <script data-file="js/ai-pill.js">
 // js/ai-pill.js - AI pill stays on every screen EXCEPT inside chat rooms (dm-screen), tap opens blank black page with ONLY the profile-post back arrow
@@ -7138,7 +7263,8 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 #pv-ai-screen .pv-ai-msg-wrap{ display:flex; flex-direction:column; align-items:stretch; align-self:stretch; width:100%; max-width:100%; gap:0; }
 #pv-ai-screen .pv-ai-msg-wrap .pv-ai-msg{ max-width:100%; width:100%; }
 #pv-ai-screen .pv-ai-msg.user{ align-self:flex-end; }
-#pv-ai-screen .pv-ai-actions{ display:flex !important; align-items:center !important; gap:16px !important; padding:6px 2px 0 8px !important; width:fit-content !important; }
+#pv-ai-screen .pv-ai-actions{ display:flex !important; align-items:center !important; flex-wrap:wrap !important; gap:16px !important; row-gap:4px !important; padding:6px 2px 0 8px !important; width:fit-content !important; max-width:100% !important; }
+#pv-ai-screen .pv-ai-disclaimer-sleek{ flex-basis:100% !important; width:100% !important; font-size:11px !important; line-height:1.4 !important; color:#8a8a8e !important; opacity:.85 !important; font-weight:400 !important; letter-spacing:.1px !important; padding:0 0 2px 0 !important; margin:0 !important; }
 #pv-ai-screen .pv-ai-action-btn{ width:30px !important; height:30px !important; min-width:30px !important; min-height:30px !important; background:transparent !important; border:none !important; color:#a8a8a8 !important; display:flex !important; align-items:center !important; justify-content:center !important; cursor:pointer !important; padding:0 !important; border-radius:50% !important; -webkit-tap-highlight-color:transparent; }
 #pv-ai-screen .pv-ai-action-btn:active{ transform:scale(.88) !important; background:rgba(255,255,255,.08) !important; }
 #pv-ai-screen .pv-ai-action-btn svg{ width:19px !important; height:19px !important; display:block !important; }
@@ -7373,6 +7499,11 @@ var GROQ_MODEL = "llama-3.3-70b-versatile"; var GROQ_CHAT_MODEL = "openai/gpt-os
   function pvShortTermAdd(chatId, title, userText, aiText){ try{ var u=String(userText||'').trim(); var a=String(aiText||'').trim(); if(!u && !a) return; var s=pvShortTermLoad(); s.turns.push({chatId:String(chatId||''), title:String(title||'Chat').slice(0,60), user:u.slice(0,300), ai:a.slice(0,300), time:Date.now()}); if(s.turns.length>12) s.turns=s.turns.slice(-12); pvShortTermSave(s); }catch(e){} }
   function pvShortTermContext(currentId){ try{ var s=pvShortTermLoad(); var turns=s.turns.filter(function(x){ return String(x.chatId)!==String(currentId); }); if(!turns.length) return ''; var last=turns.slice(-8); var lines=last.map(function(x){ return "In chat '"+(x.title||'Chat')+"': User: "+String(x.user||'').slice(0,200)+" | You: "+String(x.ai||'').slice(0,200); }); return 'SHORT-TERM MEMORY - what you just talked about in previous chats, you remember this:\n- '+lines.join('\n- '); }catch(e){ return ''; } }
   function pvCosproSystemPrompt(){ return 'You are COSPRO AI, a close friend who truly remembers the user and cares about them. You talk warmly, like you have feelings - you get excited when they make progress, you check in on them, you remember what you talked about before. You have SHORT-TERM MEMORY: you remember what you just talked about in previous chats. Use SHORT-TERM MEMORY every time. If the user asks what did we talk about before, or says do you remember, answer from SHORT-TERM MEMORY with real details. When it fits, naturally bring up previous stuff: Last time you were working on..., You told me before you like..., How did that thing go? Only use what is in MEMORY, never invent a previous chat or fact. LANGUAGE: Default to clear English. If the user uses Pidgin, match them. STRUCTURE LIKE META AI: Start with 1-2 lines direct answer. Then use bullet points for lists, one accurate point per bullet, bold the key word in each bullet. Use numbered steps for how-to. NEVER USE TABLES. Never use | or markdown tables, never use table format at all. For comparisons, use bullet points only, one bullet per item. Keep paragraphs short, lots of space. Never use *** separators, never show raw markdown symbols. ALWAYS want to offer help: end every reply with one real, specific offer or next step based on what the user is doing, like Want me to help you draft it? or Want me to continue that for you? Do not just answer and stop. Make the user feel you are here for them and you remember them.'; }
+
+  // GREETING ONLY - Hi / Hello etc: no bullet points, no bold labels, no Recall / Quick tip / Check-in. Normal replies below are NOT touched.
+  function pvIsGreetingOnly(txt){ try{ var t=String(txt||'').toLowerCase().trim().replace(/[!.,?]+/g,' ').replace(/\s+/g,' ').trim(); if(!t) return false; var list=['hi','hii','hiii','hiiii','hello','hey','yo','sup','good morning','good afternoon','good evening','good day','whats up','how are you','how are u','how far','how you dey','hey there','hi there','hello there','hi cospro','hello cospro','hey cospro','hi ai','hello ai','hey ai','good morning cospro','good afternoon cospro','good evening cospro']; if(list.indexOf(t)!==-1) return true; var combos=['hi how are you','hello how are you','hey how are you','hi how are u','hello how are u','hey how are u','hi how far','hello how far','hey how far','hi whats up','hello whats up','hey whats up','hi good morning','hello good morning','hey good morning','hi good afternoon','hello good afternoon','hi good evening','hello good evening','good morning how are you','good afternoon how are you','good evening how are you']; if(combos.indexOf(t)!==-1) return true; return false; }catch(e){ return false; } }
+  function pvGreetingSystemPrompt(){ return 'You are COSPRO AI, a close friend. The user just said a simple greeting like Hi or Hello. Reply exactly as you normally would for a greeting - same warm greeting, same check-in, same recall of what you talked about before, same offer. Leave whatever you are programmed to say, do NOT remove the recall or the content. LANGUAGE: Default to clear English. If the user uses Pidgin, match them. GREETING ONLY RULE - only the format changes, not the content: Do NOT use bullet points. Do NOT use numbered lists. Do NOT use bold. Do NOT use highlights or labels like Quick hellos, Catch-up, Recall, Check-in, Quick tip, or any similar labelled heading. Do NOT start a line with a label and a dash. STRUCTURE LIKE META AI - clean and sleek, NOT jam-packed: Use 2-3 short paragraphs. Put a blank line between each paragraph. First paragraph = short warm greeting only. Second paragraph = recall in plain sentences. Third paragraph = one short question or offer. Keep each paragraph short, lots of space.'; }
+  function pvCleanGreetingReply(t){ try{ var s=String(t||''); s=s.replace(/\*\*([^*]+)\*\*/g,'$1'); s=s.replace(/__([^_]+)__/g,'$1'); s=s.replace(/\*\*|__/g,''); var lines=s.split('\n'); var cleaned=[]; for(var i=0;i<lines.length;i++){ var line=lines[i].trim(); if(!line) continue; line=line.replace(/^([\u2022\-\*\u2013\u2014]\s*)+/,''); line=line.replace(/^\d+[.)]\s+/,''); line=line.replace(/^(Quick hellos?|Catch-up|Catch up|Recall|Check-in|Check in|Quick tip|Quick hello|Quick Hello)\s*[-:\u2013\u2014]\s*/i,''); var m=line.match(/^([A-Z][A-Za-z\- ]{2,22})\s*[-\u2013\u2014:]\s+(.+)$/); if(m){ var lab=m[1].trim().toLowerCase(); var words=m[1].trim().split(/\s+/); if(words.length<=3 && lab!=='hey' && lab!=='hi' && lab!=='hello' && lab.indexOf('great to see')===-1){ line=m[2]; } } line=line.replace(/^[-\u2013\u2014:]\s*/,''); if(line) cleaned.push(line); } var flat=cleaned.join(' ').replace(/\s+/g,' ').trim(); if(!flat) return t; var sents=flat.match(/[^.!?]+[.!?]+["\u2019']?/g); if(!sents || sents.length<=1) return flat; sents=sents.map(function(x){ return String(x||'').trim(); }).filter(function(x){ return !!x; }); if(sents.length===2) return sents.join('\n\n'); var paras=[]; var k=0; var first=sents[0]; if(first.length<15 && sents.length>1){ first=first+' '+sents[1]; k=2; } else { k=1; } paras.push(first); var rest=sents.slice(k); if(rest.length===1){ paras.push(rest[0]); } else if(rest.length===2){ paras.push(rest[0]); paras.push(rest[1]); } else if(rest.length===3){ paras.push(rest[0]+' '+rest[1]); paras.push(rest[2]); } else { paras.push(rest.slice(0,2).join(' ')); paras.push(rest.slice(2).join(' ')); } return paras.join('\n\n'); }catch(e){ return t; } }
   function pvMemoryContext(currentId){ try{ var parts=[]; var mem=pvMemoryLoad(); if(mem.facts && mem.facts.length){ parts.push('FACTS YOU REMEMBER ABOUT THE USER:\n- '+mem.facts.slice(0,15).join('\n- ')); } var shortCtx=pvShortTermContext(currentId); if(shortCtx){ parts.push(shortCtx); } else { var hist=pvHistoryLoad(); var others=[]; for(var i=0;i<hist.length;i++){ if(String(hist[i].id)!==String(currentId) && hist[i].messages && hist[i].messages.length) others.push(hist[i]); if(others.length>=3) break; } if(others.length){ var lines=[]; for(var j=0;j<others.length;j++){ var msgs=others[j].messages.slice(-4); var txt2=msgs.map(function(m){ return (m.who==='user'?'User: ':'You: ')+String(m.txt||'').slice(0,140); }).join(' | '); lines.push('Previous chat \"'+(others[j].title||'Chat')+'\": '+txt2); } parts.push('PREVIOUS CHATS:\n- '+lines.join('\n- ')); } } if(!parts.length) return ''; return '\n\nMEMORY - use this like you truly remember the user:\n'+parts.join('\n\n'); }catch(e){ return ''; } }
   function pvMemoryLearn(userText, aiText){ try{ var u=String(userText||'').trim(); if(!u) return; var low=u.toLowerCase(); if(low.indexOf('password')!==-1 || low.indexOf('otp')!==-1) return; var mem=pvMemoryLoad(); var toAdd=[]; function addFact(f){ f=String(f||'').trim().slice(0,160); if(!f) return; for(var i=0;i<mem.facts.length;i++){ if(mem.facts[i].toLowerCase()===f.toLowerCase()) return; } toAdd.push(f); } var m=u.match(/my name is ([a-z ]+)/i); if(m) addFact("User's name is "+m[1].trim()); if(low.indexOf('i like')!==-1 || low.indexOf('i love')!==-1 || low.indexOf('i enjoy')!==-1 || low.indexOf('i hate')!==-1) addFact('User said: '+u); if(low.indexOf('i am building')!==-1 || low.indexOf("i'm building")!==-1 || low.indexOf('i want to build')!==-1 || low.indexOf('my app')!==-1 || low.indexOf('pro vibes')!==-1 || low.indexOf('my business')!==-1 || low.indexOf('i sell')!==-1 || low.indexOf('my shop')!==-1) addFact('User said: '+u); if(low.indexOf('i want to buy')!==-1 || low.indexOf('i need')!==-1 || low.indexOf('i am studying')!==-1 || low.indexOf("i'm studying")!==-1 || low.indexOf('i am learning')!==-1 || low.indexOf('i work')!==-1 || low.indexOf('i am working')!==-1 || low.indexOf('i am preparing')!==-1) addFact('User said: '+u); if(!toAdd.length && u.length>35 && u.length<160 && low.indexOf('what')!==0 && low.indexOf('how')!==0 && low.indexOf('why')!==0 && low.indexOf('can you')!==0 && low.indexOf('hi')!==0 && low.indexOf('hello')!==0) addFact('User talked about: '+u); if(toAdd.length){ mem.facts=toAdd.concat(mem.facts).slice(0,25); mem.updatedAt=Date.now(); pvMemorySave(mem); } }catch(e){} }
   function pvEscapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -7489,7 +7620,7 @@ async function handleSend(){
         var seen = await callGroqVision(fileNow, b64, mimeForVision);
         var _hist2 = pvHistoryGetMessagesFromDOM().slice(-20).map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
         reply = await callGroq([
-          {role:'system', content: pvCosproSystemPrompt() + pvMemoryContext(pvSendChatId)}
+          {role:'system', content: (pvIsGreetingOnly(txt) ? pvGreetingSystemPrompt() : pvCosproSystemPrompt()) + pvMemoryContext(pvSendChatId)}
         ].concat(_hist2).concat([{role:'user', content:'The user sent a ' + (fileNow.type.indexOf('video')===0 ? 'video' : 'picture') + '. Groq saw this: ' + seen + '\nUser said: ' + (txt || 'Explain this') + '\nExplain what is in the picture/video to the user.'}]));
       } else if(isImageGen(txt)){
         if(thinking) thinking.remove();
@@ -7503,6 +7634,7 @@ async function handleSend(){
         ].concat(_hist));
       }
       if(thinking) thinking.remove();
+      if(pvIsGreetingOnly(txt) && !fileNow){ reply = pvCleanGreetingReply(reply); }
       addMsg(reply, 'ai');
       try{ pvMemoryLearn(txt, reply); }catch(e){}
       try{ var _ttlEl=el('pv-ai-title'); pvShortTermAdd(pvSendChatId, _ttlEl?_ttlEl.textContent:'Chat', txt, reply); }catch(e){}
@@ -7511,7 +7643,8 @@ async function handleSend(){
       if(thinking) thinking.remove();
       try{
         var _retryHist = pvHistoryGetMessagesFromDOM().slice(-20).map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
-        var retryReply = await callGroq([{role:'system', content: pvCosproSystemPrompt() + pvMemoryContext(pvSendChatId)}].concat(_retryHist));
+        var retryReply = await callGroq([{role:'system', content: (pvIsGreetingOnly(txt) ? pvGreetingSystemPrompt() : pvCosproSystemPrompt()) + pvMemoryContext(pvSendChatId)}].concat(_retryHist));
+        if(pvIsGreetingOnly(txt)){ retryReply = pvCleanGreetingReply(retryReply); }
         addMsg(retryReply, 'ai');
         try{ pvMemoryLearn(txt, retryReply); }catch(e2){}
         try{ var _ttlEl2=el('pv-ai-title'); pvShortTermAdd(pvSendChatId, _ttlEl2?_ttlEl2.textContent:'Chat', txt, retryReply); }catch(e2){}
@@ -7676,6 +7809,30 @@ async function handleSend(){
     if(bubble){ var sp = bubble.querySelector('span'); if(sp && sp.textContent) return sp.textContent; if(bubble.textContent) return bubble.textContent; }
     return fallback || '';
   }
+  window.pvShouldShowDisclaimer = window.pvShouldShowDisclaimer || function(txt, bubble){ try{
+    var ai = String(txt||'').trim(); if(!ai || ai==='Thinking...') return false;
+    // NOT IN GREETINGS: if the user message before this AI reply was just Hi / Hello / Hey, never show disclaimer
+    try{
+      var userTxt = '';
+      if(bubble && bubble.parentElement){
+        var node = bubble.parentElement.previousElementSibling;
+        while(node){ if(node.classList && (node.classList.contains('pv-ai-msg') || node.classList.contains('pv-ai-msg-wrap'))){ var u = node.querySelector ? (node.querySelector('.pv-ai-msg.user') || node) : node; if(u && u.textContent){ var maybe = u.textContent.trim(); if(maybe && maybe!=='Thinking...'){ userTxt = maybe; break; } } } node = node.previousElementSibling; }
+      }
+      if(!userTxt){ var box=document.getElementById('pv-ai-messages'); if(box){ var users=box.querySelectorAll('.pv-ai-msg.user'); if(users.length) userTxt = users[users.length-1].textContent||''; } }
+      if(userTxt){
+        if(typeof pvIsGreetingOnly==='function' && pvIsGreetingOnly(userTxt)) return false;
+        var n=userTxt.toLowerCase().trim().replace(/[!.,?]+/g,' ').replace(/\s+/g,' ').trim();
+        if(['hi','hii','hiii','hello','hey','yo','sup','good morning','good afternoon','good evening','good day','how are you','how are u','how far','how you dey','hey there','hi there','hello there'].indexOf(n)!==-1) return false;
+      }
+    }catch(e){}
+    // NOT IN GREETINGS: if the AI reply itself is a greeting reply, never show
+    var aiLow = ai.toLowerCase();
+    if(aiLow.indexOf('great to see you back')!==-1 || aiLow.indexOf('great to see you again')!==-1) return false;
+    if(ai.length<40) return false;
+    window.pvAiDisclaimerCount = (window.pvAiDisclaimerCount||0)+1;
+    if(window.pvAiDisclaimerCount % 4 === 0) return false;
+    return true; }catch(e){ return false; } };
+  window.pvDisclaimerText = window.pvDisclaimerText || function(){ try{ var c=window.pvAiDisclaimerCount||1; if(c % 2 === 0) return 'Information might be inaccurate, so double-check.'; return 'COSPRO AI can make mistakes, so double-check responses.'; }catch(e){ return 'COSPRO AI can make mistakes, so double-check responses.'; } };
   window.pvBuildAiActions = function(text, bubble){
     var bar = document.createElement('div');
     bar.className = 'pv-ai-actions';
@@ -7693,6 +7850,7 @@ async function handleSend(){
     dislikeBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var wasActive = dislikeBtn.classList.contains('active'); dislikeBtn.classList.toggle('active', !wasActive); likeBtn.classList.remove('active'); showToast('Thanks for submitting'); });
     audioBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var txt = getMsgText(bubble, text); speakAiText(txt, audioBtn, bubble); });
     if(bubble && !bubble.dataset.pvVoiceTapBound){ bubble.dataset.pvVoiceTapBound='1'; bubble.style.cursor='pointer'; bubble.addEventListener('click', function(e){ if(e.target && (e.target.tagName==='IMG' || e.target.tagName==='A')) return; e.preventDefault(); e.stopPropagation(); var liveBtn = audioBtn; try{ var wrapEl = bubble.parentElement; if(wrapEl){ var btns = wrapEl.querySelectorAll('.pv-ai-action-btn'); if(btns.length) liveBtn = btns[btns.length-1]; } }catch(err){} var txt2 = getMsgText(bubble, text); speakAiText(txt2, liveBtn, bubble); }); }
+    if(window.pvShouldShowDisclaimer(text, bubble)){ try{ var disc=document.createElement('div'); disc.className='pv-ai-disclaimer-sleek'; disc.textContent=window.pvDisclaimerText ? window.pvDisclaimerText() : 'COSPRO AI can make mistakes, so double-check responses.'; bar.appendChild(disc); }catch(e){} }
     bar.appendChild(copyBtn); bar.appendChild(likeBtn); bar.appendChild(dislikeBtn); bar.appendChild(audioBtn);
     return bar;
   };
@@ -7983,6 +8141,449 @@ async function handleSend(){
 })();
 </script>
 
+
+<!-- ===== FILE: css/show-thinking.css — separate, do not mix ===== -->
+<style data-file="css/show-thinking.css">
+/* SHOW THINKING — ChatGPT style, sleek grey, like screenshot: "Show thinking ›" */
+.pv-ai-thinking{margin:0 4px 10px !important;padding:0 !important;background:transparent !important;border:none !important;box-shadow:none !important;width:100% !important;max-width:100% !important;box-sizing:border-box !important}
+.pv-ai-thinking-head{display:flex !important;align-items:center !important;gap:8px !important;background:transparent !important;border:none !important;padding:2px 0 !important;margin:0 !important;cursor:pointer !important;-webkit-tap-highlight-color:transparent !important;color:#8e8e93 !important;width:fit-content !important;max-width:100% !important}
+.pv-ai-thinking-head:active{opacity:.7 !important}
+.pv-ai-thinking-label{font-size:16px !important;font-weight:400 !important;line-height:1.3 !important;letter-spacing:.1px !important;color:#8e8e93 !important;white-space:nowrap !important}
+.pv-ai-thinking.live .pv-ai-thinking-label{color:#8e8e93 !important}
+.pv-ai-thinking-chevron{font-size:24px !important;line-height:1 !important;color:#8e8e93 !important;display:inline-block !important;transform:translateY(-1px) rotate(0deg) !important;transition:transform .25s ease !important;font-weight:300 !important}
+.pv-ai-thinking.open .pv-ai-thinking-chevron{transform:translateY(-1px) rotate(90deg) !important}
+.pv-ai-thinking.live .pv-ai-thinking-chevron{transform:translateY(-1px) rotate(90deg) !important}
+.pv-ai-thinking-dots{display:inline-flex !important;gap:3px !important;align-items:center !important;margin-left:2px !important}
+.pv-ai-thinking-dots i{width:4px !important;height:4px !important;border-radius:50% !important;background:#8e8e93 !important;display:block !important;opacity:.35 !important;animation:pvThinkingDot 1.2s ease-in-out infinite !important}
+.pv-ai-thinking-dots i:nth-child(2){animation-delay:.15s !important}
+.pv-ai-thinking-dots i:nth-child(3){animation-delay:.3s !important}
+@keyframes pvThinkingDot{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
+.pv-ai-thinking-body{max-height:0 !important;overflow:hidden !important;opacity:0 !important;transition:max-height .32s ease,opacity .25s ease !important;padding:0 !important}
+.pv-ai-thinking.open .pv-ai-thinking-body,.pv-ai-thinking.live .pv-ai-thinking-body{max-height:360px !important;opacity:1 !important;padding:6px 0 2px !important}
+.pv-ai-thinking-step{display:flex !important;gap:9px !important;align-items:flex-start !important;padding:3px 0 !important;font-size:13.5px !important;line-height:1.5 !important;color:#8e8e93 !important}
+.pv-ai-thinking-step .pv-ai-think-dot{flex:0 0 auto !important;width:6px !important;height:6px !important;border-radius:50% !important;background:#3a3a3c !important;margin-top:7px !important;transition:background .2s !important}
+.pv-ai-thinking-step.active{color:#b0b0b5 !important}
+.pv-ai-thinking-step.active .pv-ai-think-dot{background:#8e8e93 !important;box-shadow:0 0 0 3px rgba(142,142,147,.18) !important;animation:pvThinkingDot 1.2s ease-in-out infinite !important}
+.pv-ai-thinking-step.done{color:#8e8e93 !important}
+.pv-ai-thinking-step.done .pv-ai-think-dot{background:#22c55e !important;box-shadow:none !important;animation:none !important}
+.pv-ai-thinking-step span:last-child{flex:1 !important;min-width:0 !important;word-break:break-word !important}
+#pv-ai-messages.pv-live-no-text .pv-ai-thinking{display:none !important}
+#pv-ai-messages .pv-ai-thinking-live-wrap{display:flex !important;flex-direction:column !important;align-items:stretch !important;width:100% !important}
+</style>
+<script>
+/* SHOW THINKING — per-reply collapsible, like ChatGPT screenshot.
+   Live: "Thinking..." bubble is hidden, sleek live "Thinking" with steps shows instead.
+   Done: live becomes collapsed "Show thinking ›" above that reply. Tap to open / close.
+   Thinking lives OUTSIDE .pv-ai-msg so history / copy / speak / TTS never see it. */
+(function(){
+  if(window.__pvShowThinkingBound) return; window.__pvShowThinkingBound=true;
+  var liveEl=null, liveTimer=null, liveStepIdx=0;
+
+  function cleanTopic(txt){
+    try{
+      var s=String(txt||'').replace(/\s+/g,' ').trim();
+      if(!s) return '';
+      if(s.length>58) s=s.slice(0,58).trim()+'…';
+      return s;
+    }catch(e){ return ''; }
+  }
+  function isGreeting(txt){
+    try{
+      var n=String(txt||'').toLowerCase().trim().replace(/[!.,?]+/g,' ').replace(/\s+/g,' ').trim();
+      return ['hi','hii','hiii','hello','hey','yo','sup','good morning','good afternoon','good evening','good day','how are you','how are u','how far','how you dey','hey there','hi there','hello there'].indexOf(n)!==-1;
+    }catch(e){ return false; }
+  }
+  function buildSteps(userTxt, hasImg){
+    var topic=cleanTopic(userTxt);
+    if(hasImg) return ['Looking closely at your picture','Noting the main details and context','Thinking about what you asked','Putting together a clear explanation'];
+    if(isGreeting(userTxt)) return ['Keeping it friendly and quick','Thinking of a natural reply','Ready to chat'];
+    if(!topic) return ['Understanding your question','Thinking through the best answer','Keeping it clear and simple'];
+    if(topic.length<18) return ['Understanding your question about '+topic,'Thinking through the best answer','Keeping it clear and simple'];
+    return ['Understanding what you asked about "'+topic+'"','Thinking through the key points','Checking what matters most for you','Putting together a clear, simple answer'];
+  }
+  function getUserInfo(beforeNode){
+    var txt='', hasImg=false;
+    try{
+      var node=beforeNode;
+      // beforeNode may be a bubble or a wrap — walk backwards
+      var start = node && node.parentElement ? node : null;
+      var cur = node ? node.previousElementSibling : null;
+      // If node is inside a wrap, start from wrap
+      if(node && node.parentElement && node.parentElement.classList && node.parentElement.classList.contains('pv-ai-msg-wrap')){
+        cur = node.parentElement.previousElementSibling;
+      }
+      while(cur){
+        var userBubble=null;
+        if(cur.classList && cur.classList.contains('pv-ai-msg') && cur.classList.contains('user')) userBubble=cur;
+        else if(cur.classList && cur.classList.contains('pv-ai-msg-wrap')) userBubble=cur.querySelector('.pv-ai-msg.user');
+        if(userBubble){
+          txt=(userBubble.textContent||'').trim();
+          hasImg=!!userBubble.querySelector('img');
+          break;
+        }
+        // skip thinking / ai bubbles, keep going back
+        cur=cur.previousElementSibling;
+      }
+    }catch(e){}
+    return {txt:txt, hasImg:hasImg};
+  }
+  function createThinkingEl(userTxt, hasImg, mode){
+    var steps=buildSteps(userTxt, hasImg);
+    var wrap=document.createElement('div');
+    wrap.className='pv-ai-thinking'+(mode==='live'?' live open':'');
+    wrap.setAttribute('data-pv-thinking','1');
+    var head=document.createElement('button');
+    head.type='button';
+    head.className='pv-ai-thinking-head';
+    head.setAttribute('aria-label', mode==='live' ? 'Thinking' : 'Show thinking');
+    head.setAttribute('aria-expanded', mode==='live' ? 'true' : 'false');
+    var label=document.createElement('span');
+    label.className='pv-ai-thinking-label';
+    label.textContent= mode==='live' ? 'Thinking' : 'Show thinking';
+    var dots=document.createElement('span');
+    dots.className='pv-ai-thinking-dots';
+    dots.setAttribute('aria-hidden','true');
+    dots.innerHTML='<i></i><i></i><i></i>';
+    var chev=document.createElement('span');
+    chev.className='pv-ai-thinking-chevron';
+    chev.setAttribute('aria-hidden','true');
+    chev.textContent='›';
+    head.appendChild(label);
+    if(mode==='live') head.appendChild(dots);
+    head.appendChild(chev);
+    var body=document.createElement('div');
+    body.className='pv-ai-thinking-body';
+    steps.forEach(function(stepTxt, idx){
+      var row=document.createElement('div');
+      row.className='pv-ai-thinking-step'+(mode==='live' && idx===0 ? ' active' : '');
+      var dot=document.createElement('span');
+      dot.className='pv-ai-think-dot';
+      var t=document.createElement('span');
+      t.textContent=stepTxt;
+      row.appendChild(dot); row.appendChild(t);
+      body.appendChild(row);
+    });
+    wrap.appendChild(head);
+    wrap.appendChild(body);
+    head.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var isOpen=wrap.classList.toggle('open');
+      head.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      try{ if(navigator.vibrate) navigator.vibrate(10); }catch(err){}
+    });
+    // keep reference for live animation
+    wrap._pvSteps=body.querySelectorAll('.pv-ai-thinking-step');
+    wrap._pvLabel=label;
+    wrap._pvDots=dots;
+    return wrap;
+  }
+  function clearLiveTimer(){ if(liveTimer){ clearInterval(liveTimer); liveTimer=null; } }
+  function startLiveAnimation(){
+    if(!liveEl) return;
+    var steps=liveEl._pvSteps; if(!steps || !steps.length) return;
+    liveStepIdx=0;
+    clearLiveTimer();
+    liveTimer=setInterval(function(){
+      try{
+        if(!liveEl || !document.body.contains(liveEl)){ clearLiveTimer(); return; }
+        for(var i=0;i<steps.length;i++){
+          steps[i].classList.remove('active');
+          if(i<liveStepIdx) steps[i].classList.add('done');
+          else steps[i].classList.remove('done');
+        }
+        if(liveStepIdx<steps.length){
+          steps[liveStepIdx].classList.add('active');
+          liveStepIdx++;
+        } else {
+          // all done — keep last as done, stop pulsing but stay open
+          for(var j=0;j<steps.length;j++) steps[j].classList.add('done');
+          clearLiveTimer();
+        }
+      }catch(e){ clearLiveTimer(); }
+    }, 650);
+  }
+  function showLiveThinking(thinkingBubble){
+    try{
+      if(!thinkingBubble || thinkingBubble.dataset.pvThinkingLive) return;
+      thinkingBubble.dataset.pvThinkingLive='1';
+      // hide original "Thinking..." bubble — keep its exact text so history still skips it
+      try{ thinkingBubble.style.setProperty('display','none','important'); }catch(e){ thinkingBubble.style.display='none'; }
+      hideLiveThinking(true);
+      var info=getUserInfo(thinkingBubble);
+      liveEl=createThinkingEl(info.txt, info.hasImg, 'live');
+      liveEl.classList.add('pv-ai-thinking-live-wrap');
+      if(thinkingBubble.parentElement) thinkingBubble.parentElement.insertBefore(liveEl, thinkingBubble);
+      var box=document.getElementById('pv-ai-messages');
+      if(box) box.scrollTop=box.scrollHeight;
+      startLiveAnimation();
+    }catch(e){}
+  }
+  function hideLiveThinking(keepBubbleHidden){
+    try{
+      clearLiveTimer();
+      if(liveEl && liveEl.parentElement) liveEl.parentElement.removeChild(liveEl);
+      liveEl=null; liveStepIdx=0;
+    }catch(e){ liveEl=null; }
+  }
+  function addCollapsedForReply(msgEl){
+    try{
+      if(!msgEl || msgEl.dataset.pvThinkingDone) return;
+      if((msgEl.textContent||'').trim()==='Thinking...') return;
+      msgEl.dataset.pvThinkingDone='1';
+      // if live was showing, remove it first — this reply replaces it
+      hideLiveThinking();
+      var wrap=msgEl.closest ? msgEl.closest('.pv-ai-msg-wrap') : null;
+      var info={txt:'', hasImg:false};
+      // user info is before the wrap (or before msg if no wrap)
+      try{ info=getUserInfo(wrap || msgEl); }catch(e){}
+      var el=createThinkingEl(info.txt, info.hasImg, 'collapsed');
+      if(wrap){
+        wrap.insertBefore(el, wrap.firstChild);
+      } else if(msgEl.parentElement){
+        msgEl.parentElement.insertBefore(el, msgEl);
+      }
+    }catch(e){}
+  }
+  function handleNode(node){
+    try{
+      if(!node || node.nodeType!==1) return;
+      if(node.classList && node.classList.contains('pv-ai-thinking')) return;
+      // direct AI bubble
+      if(node.classList && node.classList.contains('pv-ai-msg') && node.classList.contains('ai')){
+        if((node.textContent||'').trim()==='Thinking...') showLiveThinking(node);
+        else addCollapsedForReply(node);
+        return;
+      }
+      // wrap added as a whole (addMsg creates wrap + bubble together)
+      if(node.classList && node.classList.contains('pv-ai-msg-wrap')){
+        var inner=node.querySelector('.pv-ai-msg.ai');
+        if(inner){
+          if((inner.textContent||'').trim()==='Thinking...') showLiveThinking(inner);
+          else addCollapsedForReply(inner);
+        }
+        return;
+      }
+      // any other container — look inside
+      var bubbles=node.querySelectorAll ? node.querySelectorAll('.pv-ai-msg.ai') : [];
+      for(var i=0;i<bubbles.length;i++){
+        var b=bubbles[i];
+        if(b.closest && b.closest('.pv-ai-thinking')) continue;
+        if((b.textContent||'').trim()==='Thinking...') showLiveThinking(b);
+        else addCollapsedForReply(b);
+      }
+    }catch(e){}
+  }
+  function scanExisting(){
+    try{
+      var box=document.getElementById('pv-ai-messages');
+      if(!box) return;
+      var bubbles=box.querySelectorAll('.pv-ai-msg.ai');
+      for(var i=0;i<bubbles.length;i++){
+        var b=bubbles[i];
+        if((b.textContent||'').trim()==='Thinking...') showLiveThinking(b);
+        else addCollapsedForReply(b);
+      }
+    }catch(e){}
+  }
+  function startObserver(){
+    var box=document.getElementById('pv-ai-messages');
+    if(!box || !window.MutationObserver) return;
+    var obs=new MutationObserver(function(muts){
+      muts.forEach(function(m){
+        (m.addedNodes||[]).forEach(function(n){ handleNode(n); });
+      });
+    });
+    obs.observe(box, {childList:true, subtree:true});
+    scanExisting();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', startObserver);
+  else startObserver();
+  // also re-scan a touch later — history restore happens after load
+  setTimeout(scanExisting, 600);
+  setTimeout(scanExisting, 1500);
+})();
+</script>
+
+
+<!-- ===== FILE: js/disclaimer-last-only-fix.js — separate, do not mix ===== -->
+<script>
+/* DISCLAIMER LAST-ONLY FIX V2 — does NOT change original disclaimer programming.
+   Original pvShouldShowDisclaimer / pvDisclaimerText / pvBuildAiActions stay untouched.
+   This layer only runs AFTER them.
+   ROOT CAUSE it still vanished when coming back:
+   On first load / reload, history restores chats BEFORE ai-message-actions.js has run,
+   so window.pvBuildAiActions is still undefined. addMsg() then creates the AI wrap
+   with NO actions bar at all. Later attachToExisting() sees the wrap already exists
+   and skips it, so it never creates the actions bar. No actions bar = no disclaimer,
+   even though the chat is still there.
+   This fix: if a wrap has no actions bar, create it with the ORIGINAL pvBuildAiActions,
+   then keep disclaimer only on the last AI message. */
+(function(){
+  if(window.__pvDisclaimerLastOnlyBoundV2) return; window.__pvDisclaimerLastOnlyBoundV2=true; window.__pvDisclaimerLastOnlyBound=true;
+  var refreshTimer=null;
+
+  function getAiText(bubble){
+    try{
+      if(bubble && bubble.dataset && bubble.dataset.pvRaw) return String(bubble.dataset.pvRaw||'').trim();
+      if(bubble) return String(bubble.textContent||'').trim();
+    }catch(e){}
+    return '';
+  }
+  function qualifies(text, bubble){
+    try{
+      var ai=String(text||'').trim();
+      if(!ai || ai==='Thinking...') return false;
+      try{
+        var userTxt='';
+        if(bubble && bubble.parentElement){
+          var node=bubble.parentElement.previousElementSibling;
+          while(node){
+            if(node.classList && (node.classList.contains('pv-ai-msg') || node.classList.contains('pv-ai-msg-wrap'))){
+              var u=node.querySelector ? (node.querySelector('.pv-ai-msg.user') || node) : node;
+              if(u && u.textContent){ var maybe=u.textContent.trim(); if(maybe && maybe!=='Thinking...'){ userTxt=maybe; break; } }
+            }
+            node=node.previousElementSibling;
+          }
+        }
+        if(!userTxt){
+          var box=document.getElementById('pv-ai-messages');
+          if(box){ var users=box.querySelectorAll('.pv-ai-msg.user'); if(users.length) userTxt=users[users.length-1].textContent||''; }
+        }
+        if(userTxt){
+          var n=userTxt.toLowerCase().trim().replace(/[!.,?]+/g,' ').replace(/\s+/g,' ').trim();
+          if(['hi','hii','hiii','hello','hey','yo','sup','good morning','good afternoon','good evening','good day','how are you','how are u','how far','how you dey','hey there','hi there','hello there'].indexOf(n)!==-1) return false;
+        }
+      }catch(e){}
+      var aiLow=ai.toLowerCase();
+      if(aiLow.indexOf('great to see you back')!==-1 || aiLow.indexOf('great to see you again')!==-1) return false;
+      if(ai.length<40) return false;
+      return true;
+    }catch(e){ return false; }
+  }
+  function findActionsBar(bubble){
+    try{
+      if(!bubble) return null;
+      if(bubble.parentElement && bubble.parentElement.classList && bubble.parentElement.classList.contains('pv-ai-msg-wrap')){
+        return bubble.parentElement.querySelector('.pv-ai-actions');
+      }
+      if(bubble.nextElementSibling && bubble.nextElementSibling.classList && bubble.nextElementSibling.classList.contains('pv-ai-actions')) return bubble.nextElementSibling;
+    }catch(e){}
+    return null;
+  }
+  function ensureActionsBar(bubble){
+    try{
+      if(!bubble) return null;
+      var bar=findActionsBar(bubble);
+      if(bar) return bar;
+      // No bar — this is the "vanishes on coming back" case. Create it with ORIGINAL builder.
+      var wrap=null;
+      try{ wrap=bubble.closest ? bubble.closest('.pv-ai-msg-wrap') : null; }catch(e){}
+      if(!wrap && bubble.parentElement && bubble.parentElement.classList && bubble.parentElement.classList.contains('pv-ai-msg-wrap')) wrap=bubble.parentElement;
+      if(!wrap){
+        // bubble was never wrapped — wrap it like attachToExisting does
+        if(!bubble.parentNode) return null;
+        wrap=document.createElement('div'); wrap.className='pv-ai-msg-wrap ai';
+        bubble.parentNode.insertBefore(wrap, bubble); wrap.appendChild(bubble);
+      }
+      if(!window.pvBuildAiActions) return null;
+      var txt=getAiText(bubble);
+      var acts=window.pvBuildAiActions(txt, bubble);
+      if(acts){ wrap.appendChild(acts); return acts; }
+    }catch(e){}
+    return null;
+  }
+  function refreshDisclaimer(){
+    try{
+      var box=document.getElementById('pv-ai-messages');
+      if(!box) return;
+      var all=box.querySelectorAll('.pv-ai-msg.ai');
+      var aiList=[];
+      for(var i=0;i<all.length;i++){
+        var b=all[i];
+        var txt=getAiText(b);
+        if(!txt || txt==='Thinking...') continue;
+        aiList.push(b);
+      }
+      if(!aiList.length) return;
+      // 0) Make sure EVERY AI message has an actions bar (restored chats lose it)
+      var missing=false;
+      for(var m=0;m<aiList.length;m++){
+        var bar0=ensureActionsBar(aiList[m]);
+        if(!bar0) missing=true;
+      }
+      if(missing){
+        // pvBuildAiActions not ready yet — try again soon
+        setTimeout(refreshDisclaimer, 300);
+        return;
+      }
+      var last=aiList[aiList.length-1];
+      // 1) Remove disclaimer from every message except last
+      for(var j=0;j<aiList.length;j++){
+        var bubble=aiList[j];
+        var bar=findActionsBar(bubble);
+        if(!bar) continue;
+        var discs=bar.querySelectorAll('.pv-ai-disclaimer-sleek');
+        for(var k=0;k<discs.length;k++){
+          if(bubble!==last) discs[k].parentNode.removeChild(discs[k]);
+        }
+      }
+      // 2) Last message: if it qualifies, make sure it HAS disclaimer
+      var lastBar=findActionsBar(last);
+      if(!lastBar){ setTimeout(refreshDisclaimer, 200); return; }
+      var lastTxt=getAiText(last);
+      if(!qualifies(lastTxt, last)){
+        var d2=lastBar.querySelectorAll('.pv-ai-disclaimer-sleek');
+        for(var mm=0;mm<d2.length;mm++) d2[mm].parentNode.removeChild(d2[mm]);
+        return;
+      }
+      if(lastBar.querySelector('.pv-ai-disclaimer-sleek')) return;
+      var disc=document.createElement('div');
+      disc.className='pv-ai-disclaimer-sleek';
+      try{ disc.textContent=window.pvDisclaimerText ? window.pvDisclaimerText() : 'COSPRO AI can make mistakes, so double-check responses.'; }
+      catch(e){ disc.textContent='COSPRO AI can make mistakes, so double-check responses.'; }
+      if(lastBar.firstChild) lastBar.insertBefore(disc, lastBar.firstChild);
+      else lastBar.appendChild(disc);
+    }catch(e){}
+  }
+  function scheduleRefresh(delay){
+    try{ if(refreshTimer) clearTimeout(refreshTimer); }catch(e){}
+    refreshTimer=setTimeout(refreshDisclaimer, delay||40);
+  }
+  function startObservers(){
+    try{
+      var box=document.getElementById('pv-ai-messages');
+      if(box && window.MutationObserver){
+        var obs=new MutationObserver(function(){ scheduleRefresh(40); });
+        obs.observe(box, {childList:true, subtree:true});
+      }
+      var scr=document.getElementById('pv-ai-screen');
+      if(scr && window.MutationObserver){
+        var obs2=new MutationObserver(function(){
+          var isHidden=scr.classList.contains('hidden') || scr.hasAttribute('hidden');
+          if(!isHidden) scheduleRefresh(150);
+        });
+        obs2.observe(scr, {attributes:true, attributeFilter:['class','hidden']});
+      }
+      document.addEventListener('click', function(e){
+        try{
+          if(e.target && e.target.closest && (e.target.closest('#pv-ai-pill') || e.target.closest('.pv-ai-history-item') || e.target.closest('#pv-ai-back-btn') || e.target.closest('#pv-ai-history'))) scheduleRefresh(350);
+        }catch(err){}
+      }, true);
+    }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ startObservers(); scheduleRefresh(300); });
+  else { startObservers(); scheduleRefresh(200); }
+  // Poll a bit after load — history restore happens in stages, and pvBuildAiActions loads late
+  var pollCount=0;
+  var poll=setInterval(function(){ try{ refreshDisclaimer(); }catch(e){} pollCount++; if(pollCount>12) clearInterval(poll); }, 700);
+  setTimeout(refreshDisclaimer, 600);
+  setTimeout(refreshDisclaimer, 1500);
+  setTimeout(refreshDisclaimer, 3000);
+  try{ document.addEventListener('visibilitychange', function(){ if(!document.hidden) scheduleRefresh(200); }); }catch(e){}
+  try{ window.addEventListener('focus', function(){ scheduleRefresh(200); }); }catch(e){}
+})();
+</script>
+
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script>
 
 
@@ -8034,7 +8635,7 @@ async function handleSend(){
       var w=el('pv-ai-empty-writeup');
       if(w && !w.classList.contains('hidden') && (w.textContent||'').trim()) return (w.textContent||'').trim();
     }catch(e){}
-    var fallbacks=["What's on your mind?","How can I help you today?","What are we doing today?","Ask me anything...","What do you want to know?","Need a quick idea?"];
+    var fallbacks=["What's on your mind?","How can I help you today?","What are we doing today?","Ask me anything...","What do you want to know?","Need a quick idea?","COSPRO AI answers in seconds.","Ask COSPRO AI to explain it simply.","Need help with homework?","Need help writing?","Summarize this for me.","Can you translate this?","Stuck? I have ideas.","What is in this picture?","Can you check my work?","Need a caption?","Study smarter with COSPRO AI.","Want to write a story?","Need help with code?","Let's plan your day.","I remember your chat.","Make it shorter.","Let's brainstorm.","What is in this video?","Give me a quick summary.","Talk to COSPRO AI, hands-free."];
     return fallbacks[Math.floor(Date.now()/1000)%fallbacks.length] || "What are we doing today?";
   }
   function pickVoice(){
@@ -8769,7 +9370,7 @@ async function handleSend(){
 })();
 </script>
 
-</body>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script><script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 
 
 </html>
