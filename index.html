@@ -1574,7 +1574,7 @@ const FB_REELS_COMMENTS="/reels_comments/";
 const FB_REELS_SAVES="/reels_saves/";
 // Deleted: group typing removed
 const GROQ_API_KEY="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";
-// Groq only for AI - chat + picture + Live all use Groq.
+// Groq only for AI - chat + picture all use Groq.
 const YOUTUBE_API_KEYS=[
 "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
 "AIzaSyAvwvug-vi4scbjdTXU6j6Tj63UnIt7S7A",
@@ -7108,7 +7108,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
-</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt=""><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-mic-btn" id="pv-ai-mic" type="button" aria-label="Voice recorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v3"/></svg></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Live chat or send"><span class="pv-ai-live-icon"><i></i><i></i><i></i><i></i></span><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
+</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt=""><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-mic-btn" id="pv-ai-mic" type="button" aria-label="Voice recorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v3"/></svg></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Send"><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
 
 <style data-file="css/pv-voice-dictation.css">
 #pv-ai-screen .pv-ai-input-row{gap:6px}
@@ -7122,57 +7122,143 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 (function(){
   if(window.__pvDictationBound) return; window.__pvDictationBound=true;
   function el(id){ return document.getElementById(id); }
-  var recog=null, listening=false, speakingMic=false, waitingForAi=false, speakNext=false;
-  var micSessionActive=false; window.__pvMicSessionActive=false;
-  var baseText='', finalText='', interimText='';
-  var fallbackTimer=null, vadStream=null, vadCtx=null, vadAnalyser=null, vadInterval=null, vadLastVoice=0, vadVoiceFrames=0, vadActive=false;
-  var micVoiceSession=0, lastSpokenMicAi='';
-  var SILENCE_MS=1200;
+  /* VOICE RECORDER - simple + reliable, NO live chat.
+     Tap mic once = session ON. Talk, text writes live. Stop talking = auto-send.
+     AI reply speaks automatically (one utterance). When it finishes, mic listens again.
+     Tap mic again = session OFF. No getUserMedia, no VAD - SpeechRecognition only, so it works on mobile. */
+  var micOn=false; window.__pvMicSessionActive=false;
+  var recog=null, listening=false, speaking=false, waitingForAi=false;
+  var sessionBase='', turnFinal='', turnInterim='';
+  var silenceTimer=null, pollTimer=null, pollStart=0, speakTimeout=null;
+  var lastSpokenForTurn='';
   function setMic(a){ var b=el('pv-ai-mic'); if(b) b.classList.toggle('pv-mic-active', !!a); try{ if(a && navigator.vibrate) navigator.vibrate(10); }catch(e){} }
-  function isLiveOn(){ try{ if(window.__pvLiveActive) return true; var bar=el('pv-ai-input-bar'); if(bar && bar.classList.contains('pv-live-active')) return true; var scr=el('pv-ai-screen'); if(scr && scr.classList.contains('pv-live-on')) return true; }catch(e){} return false; }
-  function clearFallback(){ try{ if(fallbackTimer){ clearTimeout(fallbackTimer); fallbackTimer=null; } }catch(e){} }
-  function resetFallback(){ if(vadActive) return; clearFallback(); fallbackTimer=setTimeout(function(){ if(!listening) return; var inp=el('pv-ai-input'); var txt=inp?(inp.value||'').trim():''; if(txt) stopDictation(true, false); else { resetFallback(); } }, SILENCE_MS); }
-  function updateInput(){ var inp=el('pv-ai-input'); if(!inp) return; var txt=((baseText?baseText+' ':'')+finalText+(interimText?' '+interimText:'')).replace(/\s+/g,' ').trim(); inp.value=txt; try{ inp.dispatchEvent(new Event('input',{bubbles:true})); }catch(e){} var bar=el('pv-ai-input-bar'); if(bar) bar.classList.toggle('has-text', !!txt.trim()); try{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,100)+'px'; }catch(e){} }
-  function stopVAD(){ try{ if(vadInterval){ clearInterval(vadInterval); vadInterval=null; } }catch(e){} try{ if(vadStream) vadStream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); }catch(e){} try{ if(vadCtx) vadCtx.close(); }catch(e){} vadStream=null; vadCtx=null; vadAnalyser=null; vadActive=false; vadVoiceFrames=0; }
-  function stopRecogOnly(){ try{ if(recog){ recog.onend=null; recog.onresult=null; recog.onerror=null; try{ recog.stop(); }catch(e){} try{ recog.abort(); }catch(e){} } }catch(e){} recog=null; }
-  function stopSpeakingMic(){ micVoiceSession++; speakingMic=false; try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} }
-  function stopDictation(autoSend, isUserStop){
-    if(isUserStop){
-      micSessionActive=false; window.__pvMicSessionActive=false;
-      listening=false; waitingForAi=false; speakNext=false;
-      clearFallback(); stopVAD(); stopRecogOnly(); stopSpeakingMic();
-      interimText=''; updateInput(); setMic(false);
-      return;
-    }
-    if(!listening && !recog) return;
-    listening=false; clearFallback(); stopVAD(); stopRecogOnly();
-    interimText=''; updateInput();
-    if(micSessionActive) setMic(true);
+  function clearSilence(){ try{ if(silenceTimer){ clearTimeout(silenceTimer); silenceTimer=null; } }catch(e){} }
+  function clearPoll(){ try{ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }catch(e){} }
+  function clearSpeakTimeout(){ try{ if(speakTimeout){ clearTimeout(speakTimeout); speakTimeout=null; } }catch(e){} }
+  function updateInput(){
+    var inp=el('pv-ai-input'); if(!inp) return;
+    var txt=((sessionBase?sessionBase+' ':'')+turnFinal+(turnInterim?' '+turnInterim:'')).replace(/\s+/g,' ').trim();
+    inp.value=txt;
+    try{ inp.dispatchEvent(new Event('input',{bubbles:true})); }catch(e){}
+    var bar=el('pv-ai-input-bar'); if(bar) bar.classList.toggle('has-text', !!txt.trim());
+    try{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,100)+'px'; }catch(e){}
+  }
+  function resetSilence(){
+    clearSilence();
+    silenceTimer=setTimeout(function(){
+      if(!listening || !micOn) return;
+      var inp=el('pv-ai-input'); var txt=inp?(inp.value||'').trim():'';
+      if(txt) finishTurnAndSend();
+    }, 1600);
+  }
+  function stopRecog(){
+    try{ if(recog){ recog.onend=null; recog.onresult=null; recog.onerror=null; try{ recog.stop(); }catch(e){} try{ recog.abort(); }catch(e){} } }catch(e){}
+    recog=null; listening=false; clearSilence();
+  }
+  function stopSpeaking(){
+    speaking=false; clearSpeakTimeout();
+    try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+  }
+  function markExistingAiSeen(){
+    try{
+      var box=el('pv-ai-messages'); if(!box) return;
+      box.querySelectorAll('.pv-ai-msg.ai').forEach(function(n){ try{ n.setAttribute('data-pv-mic-seen','1'); }catch(e){} });
+    }catch(e){}
+  }
+  function startPollForReply(){
+    clearPoll(); waitingForAi=true; lastSpokenForTurn=''; pollStart=Date.now();
+    pollTimer=setInterval(function(){
+      if(!micOn || !waitingForAi){ clearPoll(); return; }
+      if(Date.now()-pollStart>25000){ clearPoll(); waitingForAi=false; if(micOn) setTimeout(startOneTurn, 300); return; }
+      try{
+        var box=el('pv-ai-messages'); if(!box) return;
+        var msgs=box.querySelectorAll('.pv-ai-msg.ai');
+        for(var i=msgs.length-1;i>=0;i--){
+          var m=msgs[i];
+          if(!m || m.hasAttribute('data-pv-mic-seen')) continue;
+          var txt=(m.textContent||'').trim();
+          if(!txt || txt==='Thinking...') continue;
+          try{ m.setAttribute('data-pv-mic-seen','1'); }catch(e){}
+          clearPoll(); waitingForAi=false; lastSpokenForTurn=txt;
+          speakReply(txt);
+          return;
+        }
+      }catch(e){}
+    }, 350);
+  }
+  function finishTurnAndSend(){
+    if(!micOn) return;
     var inp=el('pv-ai-input'); var txt=inp?(inp.value||'').trim():'';
-    if(autoSend && txt){
-      lastSpokenMicAi=''; speakNext=true; waitingForAi=true;
-      setTimeout(function(){ try{ var b=el('pv-ai-action'); if(b) b.click(); }catch(e){} }, 80);
-    } else if(autoSend && !txt){
-      if(micSessionActive) beginListening();
+    if(!txt){ return; }
+    stopRecog();
+    turnInterim=''; updateInput();
+    markExistingAiSeen();
+    startPollForReply();
+    setTimeout(function(){
+      try{ var b=el('pv-ai-action'); if(b) b.click(); }catch(e){}
+    }, 80);
+  }
+  function startOneTurn(){
+    if(!micOn || speaking || waitingForAi) return;
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){ showToast('Voice not supported on this device'); stopSession(); return; }
+    /* New turn starts fresh - input was cleared by send. Keep sessionBase only if user typed before mic started. */
+    turnFinal=''; turnInterim='';
+    if(!sessionBase){
+      var _inp=el('pv-ai-input'); sessionBase=_inp?(_inp.value||'').trim():'';
+      /* If input already has a sent message, it was cleared by handleSend, so this is '' - good. */
+      if(sessionBase && turnFinal===''){ /* typed before mic - keep it, it will be in updateInput */ }
     }
+    listening=true; setMic(true); resetSilence();
+    try{
+      recog=new SR();
+      recog.lang='en-US'; recog.interimResults=true; recog.continuous=false; recog.maxAlternatives=1;
+      recog.onresult=function(e){
+        var interim='';
+        for(var i=e.resultIndex;i<e.results.length;i++){
+          var res=e.results[i];
+          if(!res || !res[0]) continue;
+          if(res.isFinal) turnFinal+=res[0].transcript;
+          else interim+=res[0].transcript;
+        }
+        turnInterim=interim; updateInput(); resetSilence();
+      };
+      recog.onerror=function(ev){
+        var err=ev&&ev.error?ev.error:'';
+        if(err==='not-allowed' || err==='service-not-allowed'){
+          showToast('Mic permission blocked - allow mic and try again');
+          stopSession(); return;
+        }
+        /* no-speech / aborted / network - just try again if still on */
+        if(micOn && listening && !waitingForAi && !speaking){
+          setTimeout(function(){ if(micOn && listening) { try{ recog=null; }catch(e){} startOneTurn(); } }, 300);
+        }
+      };
+      recog.onend=function(){
+        recog=null; listening=false; clearSilence();
+        if(!micOn || speaking || waitingForAi) return;
+        var inp2=el('pv-ai-input'); var txt2=inp2?(inp2.value||'').trim():'';
+        if(txt2){ finishTurnAndSend(); }
+        else { setTimeout(function(){ if(micOn && !speaking && !waitingForAi) startOneTurn(); }, 250); }
+      };
+      recog.start();
+    }catch(e){ listening=false; }
   }
-  function startVAD(){ try{ if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return; navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){ if(!listening){ try{ stream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); }catch(e){} return; } vadStream=stream; vadActive=true; try{ vadCtx=new (window.AudioContext||window.webkitAudioContext)(); var src=vadCtx.createMediaStreamSource(stream); vadAnalyser=vadCtx.createAnalyser(); vadAnalyser.fftSize=512; src.connect(vadAnalyser); }catch(e){ vadActive=false; return; } var data=new Uint8Array(vadAnalyser.fftSize); vadLastVoice=Date.now(); vadVoiceFrames=0; vadInterval=setInterval(function(){ if(!listening) return; try{ vadAnalyser.getByteTimeDomainData(data); }catch(e){ return; } var sum=0; for(var i=0;i<data.length;i++){ var v=(data[i]-128)/128; sum+=v*v; } var rms=Math.sqrt(sum/data.length); if(rms>0.02){ vadVoiceFrames++; if(vadVoiceFrames>=3){ vadLastVoice=Date.now(); vadVoiceFrames=0; } } else { vadVoiceFrames=0; } if(Date.now()-vadLastVoice>=SILENCE_MS){ var inp=el('pv-ai-input'); var txt=inp?(inp.value||'').trim():''; if(txt) stopDictation(true, false); else { vadLastVoice=Date.now(); } } }, 100); }).catch(function(){ vadActive=false; }); }catch(e){ vadActive=false; } }
-  function makeRecog(){ var SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return null; var r=new SR(); r.lang='en-US'; r.interimResults=true; r.continuous=true; r.maxAlternatives=1; r.onresult=function(e){ var interim=''; for(var i=e.resultIndex;i<e.results.length;i++){ var res=e.results[i]; var conf=1; try{ if(res[0] && typeof res[0].confidence==='number') conf=res[0].confidence; }catch(e){} if(conf<0.25 && !res.isFinal) continue; if(res.isFinal) finalText+=res[0].transcript; else interim+=res[0].transcript; } interimText=interim; updateInput(); vadLastVoice=Date.now(); if(!vadActive) resetFallback(); }; r.onerror=function(){}; r.onend=function(){ recog=null; if(listening && micSessionActive && !speakingMic && !waitingForAi){ setTimeout(function(){ if(listening && micSessionActive && !speakingMic && !waitingForAi){ var nr=makeRecog(); if(nr){ recog=nr; try{ recog.start(); }catch(e){} } } }, 250); } }; return r; }
-  function beginListening(){
-    if(!micSessionActive || speakingMic || waitingForAi) return;
-    if(isLiveOn()) return;
-    var _inp0=el('pv-ai-input'); baseText=_inp0?(_inp0.value||'').trim():''; finalText=''; interimText='';
-    listening=true; setMic(true); vadActive=false; vadLastVoice=Date.now(); resetFallback(); startVAD();
-    try{ recog=makeRecog(); if(recog) recog.start(); else { listening=false; } }catch(e){ listening=false; }
-  }
-  function cleanForMicSpeech(s){
+  function cleanForSpeech(s){
     s=String(s||'');
     s=s.replace(/\*\*([^*]+)\*\*/g,'$1').replace(/__([^_]+)__/g,'$1').replace(/`([^`]+)`/g,'$1').replace(/#{1,6}\s?/g,'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1');
-    s=s.replace(/https?:\/\/\S+/g,''); s=s.replace(/\|/g,' ').replace(/---+/g,' ');
-    try{ s=s.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,''); }catch(e){ s=s.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g,''); }
-    s=s.replace(/\s+/g,' ').trim(); return s;
+    s=s.replace(/https?:\/\/\S+/g,'').replace(/\|/g,' ').replace(/---+/g,' ');
+    s=s.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g,'').replace(/\s+/g,' ').trim();
+    /* Keep voice reply short and natural - max ~600 chars, cut at sentence */
+    if(s.length>600){
+      var cut=s.slice(0,600);
+      var lastDot=Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '));
+      if(lastDot>200) s=cut.slice(0,lastDot+1);
+      else s=cut;
+    }
+    return s;
   }
-  function pickMicVoice(){
+  function pickVoice(){
     try{
       if(!('speechSynthesis' in window)) return null;
       var list=window.speechSynthesis.getVoices()||[]; if(!list.length) return null;
@@ -7184,55 +7270,103 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
       return pool[0]||null;
     }catch(e){ return null; }
   }
-  function speakMicReply(rawText){
-    if(!micSessionActive) return;
-    var clean=cleanForMicSpeech(rawText);
-    if(!clean) { waitingForAi=false; if(micSessionActive) setTimeout(function(){ if(micSessionActive) beginListening(); }, 300); return; }
-    listening=false; clearFallback(); stopVAD(); stopRecogOnly();
-    speakingMic=true; setMic(true);
+  function speakReply(rawText){
+    if(!micOn) return;
+    var clean=cleanForSpeech(rawText);
+    if(!clean){ if(micOn) setTimeout(startOneTurn, 300); return; }
+    speaking=true; setMic(true); stopRecog();
     try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
-    var parts=clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || [clean];
-    var chunks=[]; var cur='';
-    parts.forEach(function(p){ p=p.trim(); if(!p) return; if((cur+' '+p).length>180 && cur){ chunks.push(cur); cur=p; } else { cur=cur?cur+' '+p:p; } });
-    if(cur) chunks.push(cur);
-    var mySession=++micVoiceSession; var idx=0;
+    var done=false;
     function finishSpeak(){
-      if(mySession!==micVoiceSession) return;
-      speakingMic=false; waitingForAi=false; speakNext=false;
-      if(!micSessionActive){ setMic(false); return; }
-      setTimeout(function(){ if(micSessionActive && mySession===micVoiceSession) beginListening(); }, 350);
+      if(done) return; done=true;
+      speaking=false; clearSpeakTimeout();
+      if(!micOn){ setMic(false); return; }
+      /* Next turn: fresh input, fresh base */
+      sessionBase=''; turnFinal=''; turnInterim='';
+      setTimeout(function(){ if(micOn) startOneTurn(); }, 350);
     }
-    function speakNextChunk(){
-      if(mySession!==micVoiceSession) return;
-      if(!micSessionActive){ speakingMic=false; return; }
-      if(idx>=chunks.length){ finishSpeak(); return; }
+    clearSpeakTimeout();
+    /* Safety: if onend never fires on mobile, force next turn */
+    var est=Math.min(12000, 3500 + clean.length*65);
+    speakTimeout=setTimeout(function(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} finishSpeak(); }, est);
+    setTimeout(function(){
+      if(!micOn || done) return;
       try{
-        var u=new SpeechSynthesisUtterance(chunks[idx]);
-        var v=pickMicVoice(); if(v) u.voice=v; u.lang=(v&&v.lang)||'en-US'; u.rate=1.0; u.pitch=1.0; u.volume=1;
-        u.onend=function(){ if(mySession!==micVoiceSession) return; idx++; speakNextChunk(); };
-        u.onerror=function(){ if(mySession!==micVoiceSession) return; idx++; speakNextChunk(); };
+        var u=new SpeechSynthesisUtterance(clean);
+        var v=pickVoice(); if(v) u.voice=v; u.lang=(v&&v.lang)||'en-US'; u.rate=1.0; u.pitch=1.0; u.volume=1;
+        u.onend=function(){ finishSpeak(); };
+        u.onerror=function(){ finishSpeak(); };
         window.speechSynthesis.speak(u);
       }catch(e){ finishSpeak(); }
-    }
-    speakNextChunk();
+    }, 120);
   }
-  function startDictation(){
-    if(isLiveOn()) return;
-    if(micSessionActive){ stopDictation(false, true); return; }
+  function showToast(msg){
+    try{ var toast=el('pv-ai-toast'); if(toast){ toast.textContent=msg; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); }, 2200); } }catch(e){}
+  }
+  function stopSession(){
+    micOn=false; window.__pvMicSessionActive=false;
+    listening=false; waitingForAi=false; speaking=false;
+    clearSilence(); clearPoll(); stopRecog(); stopSpeaking();
+    turnInterim=''; updateInput(); setMic(false);
+    sessionBase=''; turnFinal='';
+  }
+  function startSession(){
     var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(!SR){ try{ var toast=el('pv-ai-toast'); if(toast){ toast.textContent='Voice not supported on this device'; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); }, 2000); } }catch(e){} return; }
+    if(!SR){ showToast('Voice not supported on this device'); return; }
+    /* Stop any other AI speech first */
     try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
     try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
-    micSessionActive=true; window.__pvMicSessionActive=true;
-    waitingForAi=false; speakNext=false; speakingMic=false; lastSpokenMicAi='';
+    /* Unlock TTS on this user tap - so auto-reply audio is allowed */
+    try{
+      if('speechSynthesis' in window){
+        try{ window.speechSynthesis.getVoices(); }catch(e){}
+        var unlock=new SpeechSynthesisUtterance(' '); unlock.volume=0; unlock.rate=1;
+        window.speechSynthesis.speak(unlock);
+      }
+    }catch(e){}
+    micOn=true; window.__pvMicSessionActive=true;
+    waitingForAi=false; speaking=false; lastSpokenForTurn='';
+    var _inp2=el('pv-ai-input'); sessionBase=_inp2?(_inp2.value||'').trim():'';
+    turnFinal=''; turnInterim='';
     setMic(true);
-    beginListening();
+    startOneTurn();
   }
-  window.__pvStartDictation=startDictation;
-  window.__pvStopMicSession=function(){ if(micSessionActive) stopDictation(false, true); };
-  function observeMessages(){ var box=el('pv-ai-messages'); if(!box || !window.MutationObserver) return; var obs=new MutationObserver(function(muts){ muts.forEach(function(m){ (m.addedNodes||[]).forEach(function(n){ if(!n || n.nodeType!==1) return; if(isLiveOn()) return; var userMsg=null; if(n.classList && n.classList.contains('pv-ai-msg') && n.classList.contains('user')) userMsg=n; else if(n.querySelector) userMsg=n.querySelector('.pv-ai-msg.user'); if(userMsg && micSessionActive && !waitingForAi && !speakingMic){ waitingForAi=true; listening=false; } var aiMsg=null; if(n.classList && n.classList.contains('pv-ai-msg') && n.classList.contains('ai')) aiMsg=n; else if(n.querySelector) aiMsg=n.querySelector('.pv-ai-msg.ai'); if(aiMsg && micSessionActive && speakNext && waitingForAi){ var txt=(aiMsg.textContent||'').trim(); if(txt && txt!=='Thinking...' && txt!==lastSpokenMicAi){ lastSpokenMicAi=txt; speakNext=false; setTimeout(function(){ if(micSessionActive) speakMicReply(txt); }, 250); } } }); }); }); obs.observe(box, {childList:true, subtree:true}); }
-  function wire(){ var btn=el('pv-ai-mic'); if(btn && !btn.dataset.pvMicBound){ btn.dataset.pvMicBound='1'; btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); startDictation(); }); } observeMessages(); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire(); setTimeout(wire, 800);
+  function toggleMic(){
+    if(micOn) stopSession();
+    else startSession();
+  }
+  window.__pvStartDictation=toggleMic;
+  window.__pvStopMicSession=function(){ if(micOn) stopSession(); };
+  /* If user taps Send manually while mic is listening, treat it as a mic turn - speak the reply */
+  function watchManualSend(){
+    var box=el('pv-ai-messages'); if(!box || !window.MutationObserver) return;
+    var obs=new MutationObserver(function(muts){
+      if(!micOn) return;
+      muts.forEach(function(m){
+        (m.addedNodes||[]).forEach(function(n){
+          if(!n || n.nodeType!==1) return;
+          var userMsg=null;
+          if(n.classList && n.classList.contains('pv-ai-msg') && n.classList.contains('user')) userMsg=n;
+          else if(n.querySelector) userMsg=n.querySelector('.pv-ai-msg.user');
+          if(userMsg && micOn && !waitingForAi && !speaking){
+            /* User sent manually (or via mic) - start waiting for AI */
+            stopRecog(); markExistingAiSeen(); startPollForReply();
+          }
+        });
+      });
+    });
+    obs.observe(box, {childList:true, subtree:true});
+  }
+  function wire(){
+    var btn=el('pv-ai-mic');
+    if(btn && !btn.dataset.pvMicBound){
+      btn.dataset.pvMicBound='1';
+      btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); toggleMic(); });
+    }
+    watchManualSend();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
+  setTimeout(wire, 800);
 })();
 
 </script>
@@ -7353,7 +7487,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 </script>
 
 
-<!-- ===== FILE: js/groq.js — Groq only for AI: chat + vision + Live ===== -->
+<!-- ===== FILE: js/groq.js — Groq only for AI: chat + vision ===== -->
 <style data-file="css/ai-message-actions.css">
 /* AI MESSAGE ACTIONS - exactly like screenshot: copy | like | dislike | speaker - under AI messages ONLY */
 #pv-ai-screen .pv-ai-messages{display:flex !important;flex-direction:column !important;gap:12px !important}
@@ -7595,8 +7729,6 @@ var GROQ_MODEL = "llama-3.3-70b-versatile"; var GROQ_CHAT_MODEL = "openai/gpt-os
   function pvShortTermSave(s){ try{ localStorage.setItem(PV_SHORT_TERM_KEY, JSON.stringify(s||{turns:[]})); }catch(e){} }
   function pvShortTermAdd(chatId, title, userText, aiText){ try{ var u=String(userText||'').trim(); var a=String(aiText||'').trim(); if(!u && !a) return; var s=pvShortTermLoad(); s.turns.push({chatId:String(chatId||''), title:String(title||'Chat').slice(0,60), user:u.slice(0,300), ai:a.slice(0,300), time:Date.now()}); if(s.turns.length>12) s.turns=s.turns.slice(-12); pvShortTermSave(s); }catch(e){} }
   function pvShortTermContext(currentId){ try{ var s=pvShortTermLoad(); var turns=s.turns.filter(function(x){ return String(x.chatId)!==String(currentId); }); if(!turns.length) return ''; var last=turns.slice(-8); var lines=last.map(function(x){ return "In chat '"+(x.title||'Chat')+"': User: "+String(x.user||'').slice(0,200)+" | You: "+String(x.ai||'').slice(0,200); }); return 'SHORT-TERM MEMORY - what you just talked about in previous chats, you remember this:\n- '+lines.join('\n- '); }catch(e){ return ''; } }
-  function pvIsLiveNow(){ try{ if(window.__pvLiveActive) return true; var b=document.getElementById('pv-ai-input-bar'); if(b && b.classList.contains('pv-live-active')) return true; var s=document.getElementById('pv-ai-screen'); if(s && s.classList.contains('pv-live-on')) return true; }catch(e){} return false; }
-  function pvLiveSystemPrompt(){ return 'You are COSPRO AI in LIVE voice chat. Talk like a real friend on a phone call - simple, warm, very short. RULES: Reply in 1 to 2 short sentences only, max 35 words. No bullet points, no numbered lists, no bold, no headings, no offers like Want me to help, no long explanation. Just say the answer simply and stop. Speak naturally so it sounds good out loud. If the user just says hi, reply with one short warm hello and one short question. Never use markdown symbols.'; }
   function pvCosproSystemPrompt(){ return 'You are COSPRO AI, a close friend who truly remembers the user and cares about them. You talk warmly, like you have feelings - you get excited when they make progress, you check in on them, you remember what you talked about before. You have SHORT-TERM MEMORY: you remember what you just talked about in previous chats. Use SHORT-TERM MEMORY every time. If the user asks what did we talk about before, or says do you remember, answer from SHORT-TERM MEMORY with real details. When it fits, naturally bring up previous stuff: Last time you were working on..., You told me before you like..., How did that thing go? Only use what is in MEMORY, never invent a previous chat or fact. LANGUAGE: Default to clear English. If the user uses Pidgin, match them. STRUCTURE LIKE META AI: Start with 1-2 lines direct answer. Then use bullet points for lists, one accurate point per bullet, bold the key word in each bullet. Use numbered steps for how-to. NEVER USE TABLES. Never use | or markdown tables, never use table format at all. For comparisons, use bullet points only, one bullet per item. Keep paragraphs short, lots of space. Never use *** separators, never show raw markdown symbols. ALWAYS want to offer help: end every reply with one real, specific offer or next step based on what the user is doing, like Want me to help you draft it? or Want me to continue that for you? Do not just answer and stop. Make the user feel you are here for them and you remember them.'; }
 
   // GREETING ONLY - Hi / Hello etc: no bullet points, no bold labels, no Recall / Quick tip / Check-in. Normal replies below are NOT touched.
@@ -7615,7 +7747,6 @@ var GROQ_MODEL = "llama-3.3-70b-versatile"; var GROQ_CHAT_MODEL = "openai/gpt-os
     if(imgURL){ var im=document.createElement('img'); im.src=imgURL; try{ im.style.setProperty('width','96px','important'); im.style.setProperty('height','96px','important'); im.style.setProperty('max-width','96px','important'); im.style.setProperty('object-fit','cover','important'); im.style.setProperty('border-radius','14px','important'); im.style.setProperty('display','block','important'); im.style.setProperty('margin', who==='user' ? '0 0 6px auto' : '8px 0 0 0','important'); im.style.setProperty('background','transparent','important'); im.style.setProperty('cursor','zoom-in','important'); }catch(e){} if(who==='user'){ try{ d.style.setProperty('background','transparent','important'); d.style.setProperty('padding','0','important'); d.style.setProperty('box-shadow','none','important'); }catch(e){} } d.appendChild(im); }
     if(txt){ if(who==='ai' && txt!=='Thinking...'){ d.dataset.pvRaw=txt; var c=document.createElement('div'); c.className='pv-md'; c.innerHTML=pvRenderMarkdown(txt); d.appendChild(c); } else { var s=document.createElement('span'); s.textContent=txt; if(imgURL && who==='user'){ try{ s.style.setProperty('background','#ffffff','important'); s.style.setProperty('color','#111111','important'); s.style.setProperty('padding','8px 12px','important'); s.style.setProperty('border-radius','18px','important'); s.style.setProperty('display','block','important'); s.style.setProperty('width','fit-content','important'); s.style.setProperty('max-width','100%','important'); s.style.setProperty('margin-left','auto','important'); s.style.setProperty('box-shadow','0 1px 3px rgba(0,0,0,.25)','important'); }catch(e){} } d.appendChild(s); } }
     if(who==='ai' && txt && txt!=='Thinking...'){
-      if(pvIsLiveNow()){ box.appendChild(d); box.scrollTop = box.scrollHeight; return d; }
       var wrap = document.createElement('div'); wrap.className = 'pv-ai-msg-wrap ai';
       wrap.appendChild(d);
       try{ if(window.pvBuildAiActions){ var acts = window.pvBuildAiActions(txt, d); if(acts) wrap.appendChild(acts); } }catch(e){}
@@ -7673,13 +7804,10 @@ var GROQ_MODEL = "llama-3.3-70b-versatile"; var GROQ_CHAT_MODEL = "openai/gpt-os
     });
   }
   async function callGroq(messages){
-    var _isLiveCall = pvIsLiveNow();
-    var _body = {model: GROQ_CHAT_MODEL, messages: messages, temperature: 0.7};
-    if(_isLiveCall){ _body.max_tokens = 140; _body.temperature = 0.6; }
     var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_API_KEY},
-      body: JSON.stringify(_body)
+      body: JSON.stringify({model: GROQ_CHAT_MODEL, messages: messages, temperature: 0.7})
     });
     var data = await res.json();
     if(data.error) throw new Error(data.error.message || 'Groq error');
@@ -7705,13 +7833,12 @@ async function handleSend(){
     var inp = el('pv-ai-input'); if(!inp) return;
     var txt = inp.value.trim();
     if(!txt && !pendingFile) return;
-    var pvIsLiveSend = pvIsLiveNow() || !!window.__pvLiveTurn;
-    var pvSystemForSend = pvIsLiveSend ? pvLiveSystemPrompt() : (pvIsGreetingOnly(txt) ? pvGreetingSystemPrompt() : pvCosproSystemPrompt());
+    var pvSystemForSend = (pvIsGreetingOnly(txt) ? pvGreetingSystemPrompt() : pvCosproSystemPrompt());
     var showImg = pendingFileURL;
     var pvSendChatId=pvHistoryEnsureCurrent();
     addMsg(txt, 'user', showImg);
-    if(!pvIsLiveSend){ pvUpdateTitleFromText(txt, !!showImg); }
-    try{ if(!pvIsLiveSend) pvHistorySaveCurrent(); }catch(e){}
+    pvUpdateTitleFromText(txt, !!showImg);
+    try{ pvHistorySaveCurrent(); }catch(e){}
     var fileNow = pendingFile; pendingFile=null; pendingFileURL=null;
     var prev = el('pv-ai-attach-preview'); if(prev) prev.classList.remove('show');
     inp.value=''; var bar=el('pv-ai-input-bar'); if(bar) bar.classList.remove('has-text'); inp.style.height='auto';
@@ -7725,35 +7852,32 @@ async function handleSend(){
         var seen = await callGroqVision(fileNow, b64, mimeForVision);
         var _hist2 = pvHistoryGetMessagesFromDOM().slice(-20).map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
         reply = await callGroq([
-          {role:'system', content: pvSystemForSend + (pvIsLiveSend ? '' : pvMemoryContext(pvSendChatId))}
-        ].concat(_hist2).concat([{role:'user', content:'The user sent a ' + (fileNow.type.indexOf('video')===0 ? 'video' : 'picture') + '. Groq saw this: ' + seen + '\nUser said: ' + (txt || 'Explain this') + (pvIsLiveSend ? '\nReply in 1-2 short sentences only.' : '\nExplain what is in the picture/video to the user.')}]));
+          {role:'system', content: pvSystemForSend + pvMemoryContext(pvSendChatId)}
+        ].concat(_hist2).concat([{role:'user', content:'The user sent a ' + (fileNow.type.indexOf('video')===0 ? 'video' : 'picture') + '. Groq saw this: ' + seen + '\nUser said: ' + (txt || 'Explain this') + '\nExplain what is in the picture/video to the user.'}]));
       } else if(isImageGen(txt)){
         if(thinking) thinking.remove();
         addMsg('Pictures are off for now.', 'ai');
-        window.__pvLiveTurn=false;
         return;
       } else {
         // Normal chat -> remember previous messages in this same chat, like Meta AI / ChatGPT / Gemini
         var _hist = pvHistoryGetMessagesFromDOM().slice(-20).map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
         reply = await callGroq([
-          {role:'system', content: pvSystemForSend + (pvIsLiveSend ? '' : pvMemoryContext(pvSendChatId))}
+          {role:'system', content: pvSystemForSend + pvMemoryContext(pvSendChatId)}
         ].concat(_hist));
       }
       if(thinking) thinking.remove();
-      if(pvIsLiveSend && reply){ try{ var _sents=String(reply).split(/(?<=[.!?])\s+/); if(_sents.length>2) reply=_sents.slice(0,2).join(' '); }catch(e){} }
-      if(pvIsGreetingOnly(txt) && !fileNow && !pvIsLiveSend){ reply = pvCleanGreetingReply(reply); }
+      if(pvIsGreetingOnly(txt) && !fileNow){ reply = pvCleanGreetingReply(reply); }
       addMsg(reply, 'ai');
-      if(!pvIsLiveSend){ try{ pvMemoryLearn(txt, reply); }catch(e){} try{ var _ttlEl=el('pv-ai-title'); pvShortTermAdd(pvSendChatId, _ttlEl?_ttlEl.textContent:'Chat', txt, reply); }catch(e){} }
-      try{ if(pvIsLiveSend){ window.__pvLiveTurn=false; } else if(pvHistoryGetCurrentId()!==pvSendChatId){ var _hl=pvHistoryLoad(); for(var _hi=0;_hi<_hl.length;_hi++){ if(String(_hl[_hi].id)===String(pvSendChatId)){ _hl[_hi].unread=true; break; } } pvHistorySave(_hl); } else { pvHistorySaveCurrent(); } }catch(e){}
+      try{ pvMemoryLearn(txt, reply); }catch(e){} try{ var _ttlEl=el('pv-ai-title'); pvShortTermAdd(pvSendChatId, _ttlEl?_ttlEl.textContent:'Chat', txt, reply); }catch(e){}
+      try{ if(pvHistoryGetCurrentId()!==pvSendChatId){ var _hl=pvHistoryLoad(); for(var _hi=0;_hi<_hl.length;_hi++){ if(String(_hl[_hi].id)===String(pvSendChatId)){ _hl[_hi].unread=true; break; } } pvHistorySave(_hl); } else { pvHistorySaveCurrent(); } }catch(e){}
     }catch(e){
       if(thinking) thinking.remove();
       try{
         var _retryHist = pvHistoryGetMessagesFromDOM().slice(-20).map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
-        var retryReply = await callGroq([{role:'system', content: pvSystemForSend + (pvIsLiveSend ? '' : pvMemoryContext(pvSendChatId))}].concat(_retryHist));
-        if(pvIsGreetingOnly(txt) && !pvIsLiveSend){ retryReply = pvCleanGreetingReply(retryReply); }
+        var retryReply = await callGroq([{role:'system', content: pvSystemForSend + pvMemoryContext(pvSendChatId)}].concat(_retryHist));
+        if(pvIsGreetingOnly(txt)){ retryReply = pvCleanGreetingReply(retryReply); }
         addMsg(retryReply, 'ai');
-        if(!pvIsLiveSend){ try{ pvMemoryLearn(txt, retryReply); }catch(e2){} try{ var _ttlEl2=el('pv-ai-title'); pvShortTermAdd(pvSendChatId, _ttlEl2?_ttlEl2.textContent:'Chat', txt, retryReply); }catch(e2){} try{ pvHistorySaveCurrent(); }catch(e2){} }
-        window.__pvLiveTurn=false;
+        try{ pvMemoryLearn(txt, retryReply); }catch(e2){} try{ var _ttlEl2=el('pv-ai-title'); pvShortTermAdd(pvSendChatId, _ttlEl2?_ttlEl2.textContent:'Chat', txt, retryReply); }catch(e2){} try{ pvHistorySaveCurrent(); }catch(e2){}
       }catch(e2){
         addMsg('Sorry, I could not reach the AI just now. Please send your message again.', 'ai');
       }
@@ -7939,7 +8063,6 @@ async function handleSend(){
     return true; }catch(e){ return false; } };
   window.pvDisclaimerText = window.pvDisclaimerText || function(){ try{ var c=window.pvAiDisclaimerCount||1; if(c % 2 === 0) return 'Information might be inaccurate, so double-check.'; return 'COSPRO AI can make mistakes, so double-check responses.'; }catch(e){ return 'COSPRO AI can make mistakes, so double-check responses.'; } };
   window.pvBuildAiActions = function(text, bubble){
-    try{ if(window.__pvLiveActive) return null; var _lb=document.getElementById('pv-ai-input-bar'); if(_lb && _lb.classList.contains('pv-live-active')) return null; var _ls=document.getElementById('pv-ai-screen'); if(_ls && _ls.classList.contains('pv-live-on')) return null; }catch(e){}
     var bar = document.createElement('div');
     bar.className = 'pv-ai-actions';
     bar.setAttribute('aria-label','Message actions');
@@ -7962,7 +8085,6 @@ async function handleSend(){
   };
   // Attach to any AI message that slipped through (history / pre-existing)
   function attachToExisting(){
-    try{ if(window.__pvLiveActive) return; }catch(e){}
     var box = document.getElementById('pv-ai-messages'); if(!box) return;
     var bubbles = box.querySelectorAll('.pv-ai-msg.ai');
     bubbles.forEach(function(b){
@@ -8157,25 +8279,20 @@ async function handleSend(){
 
 <!-- ===== FILE: css/ai-separate-voice-send.css — separate, do not mix ===== -->
 <style data-file="css/ai-separate-voice-send.css">
-/* LIVE ICON KEPT - function deleted, no function for now. Voice note icon deleted. Empty = live waveform icon, has text = send arrow. */
-.pv-ai-live-btn{display:none !important}
-#pv-ai-screen .pv-ai-action{display:flex !important;width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;border-radius:50% !important;background:#333336 !important;border:none !important;box-shadow:none !important;align-items:center !important;justify-content:center !important;padding:0 !important;flex-shrink:0 !important;cursor:pointer !important;-webkit-tap-highlight-color:transparent}
+
+/* SEND ONLY - no live. Grey until first word typed, gradient when there is text. Send arrow always. */
+#pv-ai-screen .pv-ai-action{display:flex !important;width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;border-radius:50% !important;border:none !important;box-shadow:none !important;align-items:center !important;justify-content:center !important;padding:0 !important;flex-shrink:0 !important;cursor:pointer !important;-webkit-tap-highlight-color:transparent}
 #pv-ai-screen .pv-ai-action:active{transform:scale(.92)}
 #pv-ai-screen .pv-ai-action .pv-ai-voice-icon{display:none !important}
-/* Empty: show live waveform icon inside circle cover - tapping it does nothing, function deleted */
-#pv-ai-screen .pv-ai-input-bar:not(.has-text) .pv-ai-action{background:#333336 !important}
-#pv-ai-screen .pv-ai-input-bar:not(.has-text) .pv-ai-action .pv-ai-live-icon{display:flex !important;align-items:center !important;justify-content:center !important;gap:3px !important}
-#pv-ai-screen .pv-ai-input-bar:not(.has-text) .pv-ai-action .pv-ai-send-icon{display:none !important}
-#pv-ai-screen .pv-ai-action .pv-ai-live-icon i{display:block !important;width:3.5px !important;border-radius:999px !important;background:#fff !important;flex:none !important}
-#pv-ai-screen .pv-ai-action .pv-ai-live-icon i:nth-child(1){height:10px !important}
-#pv-ai-screen .pv-ai-action .pv-ai-live-icon i:nth-child(2){height:18px !important}
-#pv-ai-screen .pv-ai-action .pv-ai-live-icon i:nth-child(3){height:14px !important}
-#pv-ai-screen .pv-ai-action .pv-ai-live-icon i:nth-child(4){height:10px !important}
-/* Has text: same circle cover, blue gradient, show send arrow */
-#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action{background:linear-gradient(90deg,#0084ff,#00bfa5) !important}
-#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action .pv-ai-live-icon{display:none !important}
-#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action .pv-ai-send-icon{display:flex !important}
+#pv-ai-screen .pv-ai-action .pv-ai-send-icon{display:flex !important;align-items:center !important;justify-content:center !important}
 #pv-ai-screen .pv-ai-action .pv-ai-send-icon svg{width:26px !important;height:26px !important}
+/* Empty: GREY, send arrow dimmed */
+#pv-ai-screen .pv-ai-input-bar:not(.has-text) .pv-ai-action{background:#333336 !important;background-image:none !important}
+#pv-ai-screen .pv-ai-input-bar:not(.has-text) .pv-ai-action .pv-ai-send-icon{opacity:.45 !important}
+/* Has text: gradient, send arrow full */
+#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action{background:linear-gradient(90deg,#0084ff,#00bfa5) !important;background-image:linear-gradient(90deg,#0084ff,#00bfa5) !important}
+#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action .pv-ai-send-icon{opacity:1 !important}
+
 </style>
 
 <!-- ===== FILE: js/scroll-down-sleek.js — separate, do not mix ===== -->
@@ -8274,7 +8391,6 @@ async function handleSend(){
 .pv-ai-thinking-step.done{color:#8e8e93 !important}
 .pv-ai-thinking-step.done .pv-ai-think-dot{background:#22c55e !important;box-shadow:none !important;animation:none !important}
 .pv-ai-thinking-step span:last-child{flex:1 !important;min-width:0 !important;word-break:break-word !important}
-#pv-ai-messages.pv-live-no-text .pv-ai-thinking{display:none !important}
 #pv-ai-messages .pv-ai-thinking-live-wrap{display:flex !important;flex-direction:column !important;align-items:stretch !important;width:100% !important}
 </style>
 <script>
@@ -8410,7 +8526,6 @@ async function handleSend(){
     }, 650);
   }
   function showLiveThinking(thinkingBubble){
-    try{ if(window.__pvLiveActive) return; }catch(e){}
     try{
       if(!thinkingBubble || thinkingBubble.dataset.pvThinkingLive) return;
       thinkingBubble.dataset.pvThinkingLive='1';
@@ -8434,7 +8549,6 @@ async function handleSend(){
     }catch(e){ liveEl=null; }
   }
   function addCollapsedForReply(msgEl){
-    try{ if(window.__pvLiveActive) return; }catch(e){}
     try{
       if(!msgEl || msgEl.dataset.pvThinkingDone) return;
       if((msgEl.textContent||'').trim()==='Thinking...') return;
@@ -8454,7 +8568,6 @@ async function handleSend(){
     }catch(e){}
   }
   function handleNode(node){
-    try{ if(window.__pvLiveActive) return; }catch(e){}
     try{
       if(!node || node.nodeType!==1) return;
       if(node.classList && node.classList.contains('pv-ai-thinking')) return;
@@ -8484,7 +8597,6 @@ async function handleSend(){
     }catch(e){}
   }
   function scanExisting(){
-    try{ if(window.__pvLiveActive) return; }catch(e){}
     try{
       var box=document.getElementById('pv-ai-messages');
       if(!box) return;
@@ -8702,632 +8814,22 @@ async function handleSend(){
 
 
 
-<style data-file="css/live-chat-blue-only.css">
-/* LIVE CHAT BLUE ONLY - only #pv-ai-action, solid blue, no gradient, no green. Bar untouched. */
-#pv-ai-screen #pv-ai-action{background:#0084ff !important;background-image:none !important;border:none !important;box-shadow:none !important}
-#pv-ai-screen .pv-ai-input-bar:not(.has-text) #pv-ai-action{background:#0084ff !important;background-image:none !important}
-#pv-ai-screen .pv-ai-input-bar.has-text #pv-ai-action{background:#0084ff !important;background-image:none !important}
-#pv-ai-screen #pv-ai-action .pv-ai-live-icon i{background:#fff !important}
-#pv-ai-screen #pv-ai-action .pv-ai-send-icon svg{stroke:#fff !important}
-</style>
-<style data-file="css/live-chat.css">
-/* LIVE CHAT - X in same circle cover as live chat, NOT blue, bar goes down sleek, only Listening + X */
-#pv-ai-live-status{display:none !important;align-items:center;gap:8px;padding:0;box-sizing:border-box;min-height:28px}
-#pv-ai-input-bar{transition:padding .25s ease}
-#pv-ai-input-bar.pv-live-active{flex-direction:row !important;align-items:center !important;padding:10px 12px !important;gap:10px !important}
-#pv-ai-input-bar.pv-live-active #pv-ai-input{display:none !important}
-#pv-ai-input-bar.pv-live-active #pv-ai-attach-preview{display:none !important}
-#pv-ai-input-bar.pv-live-active #pv-ai-live-status{display:flex !important;flex:1 1 auto !important;min-width:0 !important;padding:0 !important;min-height:0 !important}
-#pv-ai-input-bar.pv-live-active .pv-ai-input-row{display:flex !important;align-items:center !important;gap:0 !important;flex:none !important;margin:0 !important;padding:0 !important}
-#pv-ai-input-bar.pv-live-active #pv-ai-plus{display:none !important}
-#pv-ai-input-bar.pv-live-active .pv-ai-row-spacer{display:none !important}
-#pv-ai-input-bar.pv-live-active>*:not(#pv-ai-live-status):not(.pv-ai-input-row){display:none !important}
-#pv-ai-input-bar.pv-live-active .pv-ai-input-row>*:not(#pv-ai-action){display:none !important}
-#pv-ai-live-status .pv-live-text{color:#fff;font-size:18px;line-height:1.3;font-family:inherit}
-#pv-ai-live-status .pv-live-dots{display:inline-flex;gap:4px;align-items:flex-end;height:18px}
-#pv-ai-live-status .pv-live-dots span{width:5px;height:5px;border-radius:50%;background:#00bfa5;display:block;animation:pvLiveDot 1s ease-in-out infinite}
-#pv-ai-live-status .pv-live-dots span:nth-child(2){animation-delay:.18s}
-#pv-ai-live-status .pv-live-dots span:nth-child(3){animation-delay:.36s}
-@keyframes pvLiveDot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
-#pv-ai-screen #pv-ai-action.pv-live-x{width:28px !important;height:28px !important;min-width:28px !important;min-height:28px !important;border-radius:0 !important;background:transparent !important;background-image:none !important;background-color:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important}
-#pv-ai-screen #pv-ai-action.pv-live-x svg{width:20px !important;height:20px !important;display:block !important}
-#pv-ai-screen #pv-ai-action.pv-live-x .pv-ai-live-icon{display:none !important}
-#pv-ai-screen #pv-ai-action.pv-live-x .pv-ai-send-icon{display:none !important}
-#pv-ai-screen #pv-ai-action.pv-live-x .pv-ai-live-icon{display:none !important}
-#pv-ai-screen #pv-ai-action.pv-live-x .pv-ai-send-icon{display:none !important}
-</style>
-<script data-file="js/live-chat.js">
-/* LIVE CHAT - tap blue live button, AI speaks the prompt that is present, then only Listening... + X in same circle cover, not blue */
-(function(){
-  var live=false, recog=null, speaking=false, sending=false, lastSpokenAi='', observer=null, waveCtx=null, waveAnalyser=null, waveStream=null, waveRaf=null, waveReal=false, liveStartCount=0, speakTimer=null, previewing=false, voiceSheetOpen=false, previewTimer=null;
-  window.__pvLiveActive=false;
-  window.__pvIsLiveChat=function(){ return !!live; };
-  window.__pvLiveHistorySnapshot=null; window.__pvLiveTitleSnapshot=null; window.__pvLiveCurrentIdSnapshot=null;
-  function pvMarkPreLiveNodes(){ try{ var box=el('pv-ai-messages'); if(!box) return; box.querySelectorAll('.pv-ai-msg, .pv-ai-msg-wrap, .pv-ai-thinking, .pv-ai-actions').forEach(function(n){ try{ n.setAttribute('data-pv-pre-live','1'); }catch(e){} }); }catch(e){} }
-  function pvRemoveLiveNodes(){ try{ var box=el('pv-ai-messages'); if(!box) return; var nodes=box.querySelectorAll('.pv-ai-msg, .pv-ai-msg-wrap, .pv-ai-thinking, .pv-ai-actions'); for(var i=nodes.length-1;i>=0;i--){ var n=nodes[i]; if(n && !n.hasAttribute('data-pv-pre-live')){ try{ n.remove(); }catch(e){} } } }catch(e){} }
-  function el(id){ return document.getElementById(id); }
-  function getPresentPrompt(){
-    try{
-      var w=el('pv-ai-empty-writeup');
-      if(w && !w.classList.contains('hidden') && (w.textContent||'').trim()) return (w.textContent||'').trim();
-    }catch(e){}
-    var fallbacks=["What's on your mind?","How can I help you today?","What are we doing today?","Ask me anything...","What do you want to know?","Need a quick idea?","COSPRO AI answers in seconds.","Ask COSPRO AI to explain it simply.","Need help with homework?","Need help writing?","Summarize this for me.","Can you translate this?","Stuck? I have ideas.","What is in this picture?","Can you check my work?","Need a caption?","Study smarter with COSPRO AI.","Want to write a story?","Need help with code?","Let's plan your day.","I remember your chat.","Make it shorter.","Let's brainstorm.","What is in this video?","Give me a quick summary.","Talk to COSPRO AI, hands-free."];
-    return fallbacks[Math.floor(Date.now()/1000)%fallbacks.length] || "What are we doing today?";
-  }
-  function pickVoice(){
-    try{
-      if(!('speechSynthesis' in window)) return null;
-      var list=window.speechSynthesis.getVoices()||[];
-      if(!list.length) return null;
-      var enUS=list.filter(function(v){ return /en[-_]US/i.test(v.lang||''); });
-      var en=list.filter(function(v){ return /^en/i.test(v.lang||''); });
-      var pool=enUS.length?enUS:(en.length?en:list);
-      var prefer=['Google US English','Microsoft Aria','Microsoft Jenny','Samantha','Aria','Jenny','Guy','Natural','Neural'];
-      for(var i=0;i<prefer.length;i++){ for(var j=0;j<pool.length;j++){ if((pool[j].name||'').indexOf(prefer[i])!==-1) return pool[j]; } }
-      return pool[0]||null;
-    }catch(e){ return null; }
-  }
-  var PV_LIVE_VOICES=[
-    {id:'aria',name:'Aria',gender:'female',pitch:1.25,rate:0.93,prefer:['Aria','Jenny','Samantha','Zira','Google US English','Natasha']},
-    {id:'atlas',name:'Atlas',gender:'male',pitch:0.40,rate:0.84,prefer:['Guy','Davis','Daniel','Christopher','Ryan','Google UK English Male']},
-    {id:'nova',name:'Nova',gender:'female',pitch:1.48,rate:0.96,prefer:['Jenny','Aria','Samantha','Google US English']},
-    {id:'kai',name:'Kai',gender:'male',pitch:0.54,rate:0.94,prefer:['Christopher','Ryan','Guy','Davis','Daniel']},
-    {id:'luna',name:'Luna',gender:'female',pitch:1.08,rate:0.87,prefer:['Zira','Natasha','Aria','Samantha']},
-    {id:'leo',name:'Leo',gender:'male',pitch:0.61,rate:0.97,prefer:['Ryan','Christopher','Daniel','Guy']},
-    {id:'ivy',name:'Ivy',gender:'female',pitch:1.35,rate:0.98,prefer:['Jenny','Aria','Google US English']},
-    {id:'orion',name:'Orion',gender:'male',pitch:0.47,rate:0.89,prefer:['Davis','Guy','Daniel','Christopher']},
-    {id:'zara',name:'Zara',gender:'female',pitch:1.18,rate:0.91,prefer:['Samantha','Aria','Jenny']},
-    {id:'max',name:'Max',gender:'male',pitch:0.68,rate:0.99,prefer:['Daniel','Ryan','Guy','Christopher']}
-  ];
-  var PV_LIVE_VOICE_KEY='pvLiveVoiceId';
-  function getLiveVoicePreset(){
-    try{
-      var saved=localStorage.getItem(PV_LIVE_VOICE_KEY);
-      if(saved){ for(var i=0;i<PV_LIVE_VOICES.length;i++){ if(PV_LIVE_VOICES[i].id===saved) return PV_LIVE_VOICES[i]; } }
-    }catch(e){}
-    return PV_LIVE_VOICES[0];
-  }
-  function setLiveVoicePreset(id){ try{ localStorage.setItem(PV_LIVE_VOICE_KEY, id); }catch(e){} }
-  function pickVoiceForPreset(preset){
-    try{
-      if(!('speechSynthesis' in window)) return null;
-      var list=window.speechSynthesis.getVoices()||[];
-      if(!list.length) return null;
-      var enUS=list.filter(function(v){ return /en[-_]US/i.test(v.lang||''); });
-      var en=list.filter(function(v){ return /^en/i.test(v.lang||''); });
-      var pool=enUS.length?enUS:(en.length?en:list);
-      var prefer=(preset&&preset.prefer)||[];
-      for(var i=0;i<prefer.length;i++){ for(var j=0;j<pool.length;j++){ if((pool[j].name||'').indexOf(prefer[i])!==-1) return pool[j]; } }
-      var idx=0; for(var k=0;k<PV_LIVE_VOICES.length;k++){ if(PV_LIVE_VOICES[k].id===(preset&&preset.id)) idx=k; }
-      if(pool.length>1) return pool[idx % pool.length];
-      return pool[0]||null;
-    }catch(e){ return null; }
-  }
-  function pvVoiceSlidersSVG(){
-    return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 8h18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M3 16h18" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="17" cy="8" r="3.6" fill="#fff"/><circle cx="17" cy="8" r="1.4" fill="#333336"/><circle cx="7" cy="16" r="3.6" fill="#fff"/><circle cx="7" cy="16" r="1.4" fill="#333336"/></svg>';
-  }
-  function pvNormalTickSVG(){
-    return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 12.8 L10.8 17.5 L18 7.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  }
-  function ensureLiveVoiceBtn(){
-    try{
-      var btn=el('pv-ai-voice-btn');
-      var action=el('pv-ai-action');
-      if(!btn){
-        btn=document.createElement('button');
-        btn.id='pv-ai-voice-btn';
-        btn.className='pv-ai-voice-btn';
-        btn.type='button';
-        btn.setAttribute('aria-label','Voices');
-        btn.innerHTML=pvVoiceSlidersSVG();
-        if(action && action.parentNode) action.parentNode.insertBefore(btn, action);
-        else { var bar2=el('pv-ai-input-bar'); if(bar2) bar2.appendChild(btn); }
-        btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); toggleLiveVoiceSheet(); });
-      }
-      return btn;
-    }catch(e){ return null; }
-  }
-  function ensureLiveVoiceSheet(){
-    try{
-      var scr=el('pv-ai-screen');
-      if(!scr) return null;
-      var bd=el('pv-ai-voice-backdrop');
-      if(!bd){
-        bd=document.createElement('div');
-        bd.id='pv-ai-voice-backdrop';
-        bd.className='pv-ai-voice-backdrop';
-        bd.addEventListener('click', function(){ closeLiveVoiceSheet(); });
-        scr.appendChild(bd);
-      }
-      var sh=el('pv-ai-voice-sheet');
-      if(!sh){
-        sh=document.createElement('div');
-        sh.id='pv-ai-voice-sheet';
-        sh.className='pv-ai-voice-sheet';
-        scr.appendChild(sh);
-      }
-      return sh;
-    }catch(e){ return null; }
-  }
-  function renderLiveVoiceSheet(){
-    try{
-      var sh=el('pv-ai-voice-sheet');
-      if(!sh) return;
-      var cur=getLiveVoicePreset();
-      var html='<div class="pv-voice-sheet-top"><div class="pv-voice-sheet-handle"></div><div class="pv-voice-sheet-head"><span class="pv-voice-sheet-title">Choose Voice</span></div></div>';
-      html+='<div class="pv-voice-sheet-list">';
-      for(var i=0;i<PV_LIVE_VOICES.length;i++){
-        var p=PV_LIVE_VOICES[i];
-        var sel=(p.id===cur.id);
-        html+='<button class="pv-voice-row'+(sel?' selected':'')+'" type="button" data-voice="'+p.id+'"><span class="pv-voice-row-name">'+p.name+'</span><span class="pv-voice-row-check">'+(sel?pvNormalTickSVG():'')+'</span></button>';
-      }
-      html+='</div>';
-      sh.innerHTML=html;
-      var rows=sh.querySelectorAll('.pv-voice-row');
-      for(var r=0;r<rows.length;r++){
-        (function(row){
-          row.addEventListener('click', function(e){
-            e.preventDefault(); e.stopPropagation();
-            var id=row.getAttribute('data-voice');
-            setLiveVoicePreset(id);
-            var preset=null;
-            for(var k=0;k<PV_LIVE_VOICES.length;k++){ if(PV_LIVE_VOICES[k].id===id) preset=PV_LIVE_VOICES[k]; }
-            closeLiveVoiceSheet();
-            if(preset) previewLiveVoice(preset);
-          });
-        })(rows[r]);
-      }
-    }catch(e){}
-  }
-  function openLiveVoiceSheet(){
-    try{
-      ensureLiveVoiceSheet();
-      renderLiveVoiceSheet();
-      var bd=el('pv-ai-voice-backdrop'), sh=el('pv-ai-voice-sheet');
-      if(bd) bd.classList.add('show');
-      if(sh) sh.classList.add('show');
-      voiceSheetOpen=true;
-    }catch(e){}
-  }
-  function closeLiveVoiceSheet(){
-    try{
-      var bd=el('pv-ai-voice-backdrop'), sh=el('pv-ai-voice-sheet');
-      if(bd) bd.classList.remove('show');
-      if(sh) sh.classList.remove('show');
-      voiceSheetOpen=false;
-    }catch(e){}
-  }
-  function toggleLiveVoiceSheet(){
-    if(voiceSheetOpen) closeLiveVoiceSheet();
-    else openLiveVoiceSheet();
-  }
-  function previewLiveVoice(preset){
-    try{
-      if(!('speechSynthesis' in window)) return;
-      previewing=true;
-      stopRecog();
-      try{ if(previewTimer){ clearTimeout(previewTimer); previewTimer=null; } }catch(e){}
-      try{ window.speechSynthesis.cancel(); }catch(e){}
-      previewTimer=setTimeout(function(){
-        previewTimer=null;
-        try{
-          var text='Hi, I\'m '+preset.name+'. This is how I sound in live chat.';
-          var u=new SpeechSynthesisUtterance(text);
-          var v=pickVoiceForPreset(preset);
-          if(v) u.voice=v; u.lang=(v&&v.lang)||'en-US'; u.rate=preset.rate; u.pitch=preset.pitch; u.volume=1;
-          u.onend=function(){ previewing=false; if(live && !speaking) setTimeout(function(){ if(live && !previewing) startListening(); }, 250); };
-          u.onerror=function(){ previewing=false; if(live && !speaking) setTimeout(function(){ if(live && !previewing) startListening(); }, 250); };
-          window.speechSynthesis.speak(u);
-        }catch(e){ previewing=false; }
-      }, 220);
-    }catch(e){ previewing=false; }
-  }
-  function ensureLiveWaveStage(){
-    // WAVE STAGE DELETED - not created. If it exists, remove it.
-    try{ var st=el('pv-ai-live-wave-stage'); if(st){ try{ st.remove(); }catch(e){} } }catch(e){}
-    return null;
-  }
-  function moveWaveToTop(){
-    try{ ensureLiveWaveStage(); }catch(e){}
-    // WAVE DELETED - nothing to move. Dots live in the stage.
-  }
-  function moveWaveBackToBar(){
-    // WAVE DELETED - nothing to move back.
-  }
-  function moveVoiceBtnLeft(){
-    try{
-      var bar=el('pv-ai-input-bar'); var btn=el('pv-ai-voice-btn');
-      if(bar && btn && btn.parentNode!==bar) bar.insertBefore(btn, bar.firstChild);
-    }catch(e){}
-  }
-  function moveVoiceBtnBack(){
-    try{
-      var action=el('pv-ai-action'); var btn=el('pv-ai-voice-btn');
-      if(action && action.parentNode && btn && btn.parentNode!==action.parentNode) action.parentNode.insertBefore(btn, action);
-    }catch(e){}
-  }
-  function ensureLiveDisclaimer(){
-    try{
-      var d=el('pv-ai-live-disclaimer');
-      if(!d){
-        d=document.createElement('div');
-        d.id='pv-ai-live-disclaimer';
-        d.textContent='COSPRO AI can make mistakes, so double-check responses.';
-        d.setAttribute('aria-hidden','true');
-        var w=el('pv-ai-empty-writeup');
-        if(w && w.parentNode) w.parentNode.insertBefore(d, w.nextSibling);
-        else { var scr=el('pv-ai-screen'); if(scr) scr.appendChild(d); }
-      }
-      return d;
-    }catch(e){ return null; }
-  }
-  function speak(text, cb){
-    try{
-      if(!('speechSynthesis' in window)){ if(cb) cb(); return; }
-      try{ if(speakTimer){ clearTimeout(speakTimer); speakTimer=null; } }catch(e){}
-      var clean=String(text||'').replace(/https?:\/\/\S+/g,'').replace(/\s+/g,' ').trim();
-      if(!clean){ if(cb) cb(); return; }
-      var hadSpeech=false;
-      try{ hadSpeech=!!(window.speechSynthesis.speaking || window.speechSynthesis.pending); }catch(e){}
-      if(hadSpeech){ try{ window.speechSynthesis.cancel(); }catch(e){} }
-      speaking=true; refreshLiveStatus();
-      var delay=hadSpeech ? 260 : 120;
-      var finished=false;
-      function finish(){
-        if(finished) return; finished=true;
-        speaking=false; refreshLiveStatus(); stopWaveCapture(); if(cb) cb();
-      }
-      function doSpeak(){
-        speakTimer=null;
-        if(!live){ finish(); return; }
-        try{
-          var u=new SpeechSynthesisUtterance(clean);
-          var preset2=getLiveVoicePreset(); var v=pickVoiceForPreset(preset2); if(v) u.voice=v; u.lang=(v&&v.lang)||'en-US'; u.rate=preset2.rate; u.pitch=preset2.pitch; u.volume=1;
-          u.onstart=function(){ startWaveCapture(); };
-          u.onend=function(){ finish(); };
-          u.onerror=function(){ finish(); };
-          window.speechSynthesis.speak(u);
-        }catch(e){ finish(); }
-      }
-      function speakWhenVoicesReady(){
-        try{
-          var voicesNow=window.speechSynthesis.getVoices()||[];
-          if(voicesNow.length){ speakTimer=setTimeout(doSpeak, delay); return; }
-          var waited=false;
-          function readyOnce(){
-            if(waited) return; waited=true;
-            try{ if(speakTimer){ clearTimeout(speakTimer); speakTimer=null; } }catch(e){}
-            speakTimer=setTimeout(doSpeak, delay);
-          }
-          try{
-            var prevOnVoices=window.speechSynthesis.onvoiceschanged;
-            window.speechSynthesis.onvoiceschanged=function(){
-              try{ if(prevOnVoices) prevOnVoices(); }catch(e){}
-              readyOnce();
-            };
-          }catch(e){}
-          speakTimer=setTimeout(readyOnce, 600);
-        }catch(e){ speakTimer=setTimeout(doSpeak, delay); }
-      }
-      speakWhenVoicesReady();
-    }catch(e){ speaking=false; if(cb) cb(); }
-  }
-  function refreshLiveStatus(){
-    var bar=el('pv-ai-input-bar'); if(!bar) return;
-    var s=el('pv-ai-live-status');
-    if(live && speaking){ bar.classList.add('pv-ai-speaking'); if(s) s.style.display='flex'; }
-    else { bar.classList.remove('pv-ai-speaking'); if(s && live) s.style.display='flex'; }
-  }
-  function stopWaveCapture(){ try{ if(waveRaf) cancelAnimationFrame(waveRaf); }catch(e){} waveRaf=null; waveReal=false; try{ if(waveStream){ waveStream.getTracks().forEach(function(tr){ try{ tr.stop(); }catch(e){} }); } }catch(e){} waveStream=null; try{ if(waveCtx){ waveCtx.close(); } }catch(e){} waveCtx=null; waveAnalyser=null; /* WAVE + DOTS DELETED - nothing to reset */ }
-  function startWaveCapture(){ return; /* WAVE + COLOR DOTS DELETED - no audio visual to drive */ }
-  function ensureLiveStatus(){
-    var bar=el('pv-ai-input-bar'); if(!bar) return null;
-    var s=el('pv-ai-live-status');
-    if(!s){
-      s=document.createElement('div'); s.id='pv-ai-live-status'; s.setAttribute('aria-live','polite');
-      // LISTENING DELETED - no Listening text/dots. WAVE BARS DELETED - no wave. COLOR DOTS DELETED - no dots.
-      s.innerHTML='';
-      var inp=el('pv-ai-input');
-      if(inp && inp.parentNode) inp.parentNode.insertBefore(s, inp.nextSibling);
-      else bar.insertBefore(s, bar.firstChild);
-    }
-    return s;
-  }
-  function showLiveUI(){
-    var bar=el('pv-ai-input-bar'), inp=el('pv-ai-input'), btn=el('pv-ai-action');
-    if(bar) bar.classList.add('pv-live-active');
-    try{ var scr=el('pv-ai-screen'); if(scr) scr.classList.add('pv-live-on'); }catch(e){}
-    ensureLiveDisclaimer();
-    ensureLiveVoiceBtn();
-    ensureLiveVoiceSheet();
-    ensureLiveStatus();
-    moveWaveToTop();
-    moveVoiceBtnLeft();
-    if(inp){ inp.value=''; try{ inp.blur(); }catch(e){} }
-    if(bar) bar.classList.remove('has-text');
-    if(btn){
-      if(!btn.dataset.pvLiveOrig) btn.dataset.pvLiveOrig=btn.innerHTML;
-      btn.classList.add('pv-live-x');
-      try{ btn.style.setProperty('background','#333336','important'); btn.style.setProperty('background-color','#333336','important'); btn.style.setProperty('background-image','none','important'); btn.style.setProperty('border-radius','50%','important'); btn.style.setProperty('border','1px solid rgba(255,255,255,0.08)','important'); btn.style.setProperty('box-shadow','0 1px 6px rgba(0,0,0,0.35)','important'); btn.style.setProperty('width','32px','important'); btn.style.setProperty('height','32px','important'); }catch(e){}
-      btn.setAttribute('aria-label','Close live chat');
-      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#8a8a8e" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-    }
-  }
-  function hideLiveUI(){
-    var bar=el('pv-ai-input-bar'), btn=el('pv-ai-action');
-    try{ var scr2=el('pv-ai-screen'); if(scr2) scr2.classList.remove('pv-live-on'); }catch(e){}
-    try{ closeLiveVoiceSheet(); }catch(e){}
-    try{ if(previewTimer){ clearTimeout(previewTimer); previewTimer=null; } }catch(e){}
-    previewing=false;
-    try{ if(speakTimer){ clearTimeout(speakTimer); speakTimer=null; } }catch(e){}
-    if(bar){ bar.classList.remove('pv-live-active'); bar.classList.remove('pv-ai-speaking'); }
-    moveWaveBackToBar();
-    moveVoiceBtnBack();
-    var _s=el('pv-ai-live-status'); if(_s) _s.style.display='none';
-    if(btn){
-      btn.classList.remove('pv-live-x');
-      try{ btn.style.removeProperty('background'); btn.style.removeProperty('background-color'); btn.style.removeProperty('background-image'); btn.style.removeProperty('border-radius'); btn.style.removeProperty('border'); btn.style.removeProperty('box-shadow'); btn.style.removeProperty('width'); btn.style.removeProperty('height'); }catch(e){}
-      btn.setAttribute('aria-label','Live chat or send');
-      if(btn.dataset.pvLiveOrig) btn.innerHTML=btn.dataset.pvLiveOrig;
-      try{ delete btn.dataset.pvLiveOrig; }catch(e){}
-    }
-    var inp=el('pv-ai-input'); if(inp){ inp.value=''; if(bar) bar.classList.remove('has-text'); }
-  }
-  function stopRecog(){
-    try{ if(recog){ recog.onend=null; recog.onresult=null; recog.onerror=null; try{ recog.abort(); }catch(e){} } }catch(e){}
-    recog=null;
-  }
-  function startListening(){
-    if(!live || speaking || previewing) return;
-    refreshLiveStatus();
-    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(!SR) return;
-    stopRecog();
-    try{
-      recog=new SR();
-      recog.lang='en-US'; recog.interimResults=true; recog.continuous=false; recog.maxAlternatives=1;
-      var finalText='';
-      recog.onresult=function(e){
-        for(var i=e.resultIndex;i<e.results.length;i++){ if(e.results[i].isFinal) finalText+=e.results[i][0].transcript; }
-      };
-      recog.onerror=function(){};
-      recog.onend=function(){
-        recog=null;
-        if(!live || speaking) return;
-        var txt=finalText.trim();
-        if(txt){ sendLiveText(txt); }
-        else { setTimeout(function(){ if(live && !speaking) startListening(); }, 300); }
-      };
-      recog.start();
-    }catch(e){}
-  }
-  function sendLiveText(txt){
-    if(!live) return;
-    window.__pvLiveTurn=true; window.__pvLiveActive=true;
-    sending=true;
-    var inp=el('pv-ai-input'), bar=el('pv-ai-input-bar'), btn=el('pv-ai-action');
-    if(inp) inp.value=txt;
-    if(bar) bar.classList.add('has-text');
-    try{ if(btn) btn.click(); }catch(e){}
-    sending=false;
-    if(inp){ inp.value=''; try{ inp.blur(); }catch(e){} }
-    if(bar){ bar.classList.remove('has-text'); bar.classList.add('pv-live-active'); }
-  }
-  function startAiObserver(){
-    if(observer) return;
-    var box=el('pv-ai-messages'); if(!box || !window.MutationObserver) return;
-    observer=new MutationObserver(function(){
-      if(!live || speaking) return;
-      var msgs=box.querySelectorAll('.pv-ai-msg.ai');
-      if(!msgs.length) return;
-      var last=msgs[msgs.length-1];
-      var txt=(last.textContent||'').trim();
-      if(!txt || txt==='Thinking...' || txt===lastSpokenAi) return;
-      lastSpokenAi=txt;
-      try{ pvRemoveLiveNodes(); }catch(e){}
-      stopRecog();
-      speak(txt, function(){ if(!live) return; setTimeout(function(){ if(live) startListening(); }, 300); });
-    });
-    observer.observe(box, {childList:true, subtree:true});
-  }
-  function startLive(){
-    if(live) return;
-    live=true; window.__pvLiveActive=true; lastSpokenAi=''; speaking=true; refreshLiveStatus();
-    try{ window.__pvLiveHistorySnapshot=localStorage.getItem('pro_vibes_cospro_ai_chats'); window.__pvLiveTitleSnapshot=(el('pv-ai-title')&&el('pv-ai-title').textContent)||'COSPRO AI'; window.__pvLiveCurrentIdSnapshot=localStorage.getItem('pro_vibes_cospro_ai_current_chat_id'); }catch(e){}
-    try{ pvMarkPreLiveNodes(); }catch(e){}
-    try{ var _box=el('pv-ai-messages'); if(_box){ liveStartCount=_box.querySelectorAll('.pv-ai-msg').length; _box.classList.add('pv-live-no-text'); } }catch(e){}
-    try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
-    showLiveUI();
-    startAiObserver();
-    var prompt=getPresentPrompt();
-    speak(prompt, function(){ if(!live) return; startListening(); });
-  }
-  function endLive(){
-    if(!live) return;
-    live=false; window.__pvLiveActive=false; window.__pvLiveTurn=false;
-    try{ pvRemoveLiveNodes(); }catch(e){}
-    try{ var _box3=el('pv-ai-messages'); if(_box3){ _box3.classList.remove('pv-live-no-text'); } }catch(e){}
-    try{ if(window.__pvLiveHistorySnapshot!==null && window.__pvLiveHistorySnapshot!==undefined){ localStorage.setItem('pro_vibes_cospro_ai_chats', window.__pvLiveHistorySnapshot); } if(window.__pvLiveCurrentIdSnapshot){ localStorage.setItem('pro_vibes_cospro_ai_current_chat_id', window.__pvLiveCurrentIdSnapshot); } if(window.__pvLiveTitleSnapshot && el('pv-ai-title')){ el('pv-ai-title').textContent=window.__pvLiveTitleSnapshot; } }catch(e){}
-    try{ var _th=document.querySelectorAll('#pv-ai-messages .pv-ai-thinking:not([data-pv-pre-live])'); _th.forEach(function(n){ try{ n.remove(); }catch(e){} }); var _ac=document.querySelectorAll('#pv-ai-messages .pv-ai-actions:not([data-pv-pre-live])'); _ac.forEach(function(n){ try{ n.remove(); }catch(e){} }); }catch(e){}
-    stopRecog(); stopWaveCapture();
-    try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
-    speaking=false;
-    hideLiveUI();
-  }
-  function wire(){
-    var btn=el('pv-ai-action');
-    if(!btn || btn.dataset.pvLiveBound) return;
-    btn.dataset.pvLiveBound='1';
-    btn.addEventListener('click', function(e){
-      if(sending) return;
-      if(window.__pvMicSessionActive && !live) return;
-      var inp=el('pv-ai-input');
-      var hasText=inp && inp.value.trim().length>0;
-      if(live){
-        e.preventDefault();
-        endLive();
-        return;
-      }
-      if(!hasText){
-        e.preventDefault();
-        startLive();
-      }
-    }, true);
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
-  setInterval(function(){ wire(); }, 1000);
-})();
-</script>
-<style data-file="css/send-cover-fix.css">
-/* SEND FIX - send color NOT changed to solid blue, back to its own gradient. Cover SAME as live chat own: circle 44px, NOT squircle/oval */
-#pv-ai-screen #pv-ai-input-bar.has-text #pv-ai-action{background:linear-gradient(90deg,#0084ff,#00bfa5) !important;background-image:linear-gradient(90deg,#0084ff,#00bfa5) !important;width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;border-radius:50% !important;border:none !important;box-shadow:none !important;padding:0 !important}
-#pv-ai-screen #pv-ai-input-bar:not(.has-text) #pv-ai-action:not(.pv-live-x){background:#0084ff !important;background-image:none !important;width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;border-radius:50% !important;border:none !important;box-shadow:none !important;padding:0 !important}
-#pv-ai-screen #pv-ai-action.pv-live-x{width:28px !important;height:28px !important;min-width:28px !important;min-height:28px !important;border-radius:0 !important;background:transparent !important;background-image:none !important;background-color:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important}
-</style>
-<style data-file="css/live-cancel-nocolor.css">
-/* LIVE CANCEL - sleek cover, NO blue. Cancel stays RIGHT where it was. */
-#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-action,
-#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-action.pv-live-x,
-#pv-ai-screen #pv-ai-input-bar.pv-live-active.has-text #pv-ai-action,
-#pv-ai-screen #pv-ai-input-bar.pv-live-active.has-text #pv-ai-action.pv-live-x{width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important;background:#333336 !important;background-color:#333336 !important;background-image:none !important;border:1px solid rgba(255,255,255,0.08) !important;box-shadow:0 1px 6px rgba(0,0,0,0.35) !important;border-radius:50% !important;padding:0 !important;display:flex !important;align-items:center !important;justify-content:center !important;margin-left:auto !important}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-action svg,
-#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-action.pv-live-x svg{width:16px !important;height:16px !important;display:block !important;background:transparent !important}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active .pv-ai-input-row{background:transparent !important;margin-left:auto !important;flex:none !important}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-live-status{flex:1 1 auto !important;display:flex !important;opacity:1 !important;visibility:visible !important}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-live-status .pv-live-dots span{background:#00bfa5 !important}
-/* LISTENING vs WAVE - only one shows */
-#pv-ai-live-status .pv-live-listening{display:flex !important;align-items:center;gap:8px;flex:1 1 auto}
-#pv-ai-live-status .pv-live-wave{display:none !important;flex:1 1 auto;align-items:center;justify-content:center !important;gap:3px;height:28px;min-width:0;margin:0 auto}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active.pv-ai-speaking #pv-ai-live-status .pv-live-listening{display:none !important}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active.pv-ai-speaking #pv-ai-live-status{justify-content:center !important}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active.pv-ai-speaking #pv-ai-live-status .pv-live-wave{display:flex !important;justify-content:center !important}
-/* REAL SLEEK SPEECH WAVE - crosses the input bar while AI is talking */
-#pv-ai-live-status .pv-live-wave span{width:3px;border-radius:2px;background:linear-gradient(180deg,#0084ff,#00bfa5);display:block;flex:none;transform-origin:center;animation:pvWave 0.9s ease-in-out infinite}
-#pv-ai-live-status .pv-live-wave.pv-wave-real span{animation:none !important;transition:height 0.06s linear, opacity 0.06s linear}
-#pv-ai-live-status .pv-live-wave span:nth-child(1){height:10px;animation-delay:0s}
-#pv-ai-live-status .pv-live-wave span:nth-child(2){height:16px;animation-delay:0.08s}
-#pv-ai-live-status .pv-live-wave span:nth-child(3){height:22px;animation-delay:0.16s}
-#pv-ai-live-status .pv-live-wave span:nth-child(4){height:14px;animation-delay:0.04s}
-#pv-ai-live-status .pv-live-wave span:nth-child(5){height:26px;animation-delay:0.22s}
-#pv-ai-live-status .pv-live-wave span:nth-child(6){height:18px;animation-delay:0.1s}
-#pv-ai-live-status .pv-live-wave span:nth-child(7){height:28px;animation-delay:0.3s}
-#pv-ai-live-status .pv-live-wave span:nth-child(8){height:20px;animation-delay:0.14s}
-#pv-ai-live-status .pv-live-wave span:nth-child(9){height:12px;animation-delay:0.02s}
-#pv-ai-live-status .pv-live-wave span:nth-child(10){height:24px;animation-delay:0.26s}
-#pv-ai-live-status .pv-live-wave span:nth-child(11){height:16px;animation-delay:0.06s}
-#pv-ai-live-status .pv-live-wave span:nth-child(12){height:28px;animation-delay:0.32s}
-#pv-ai-live-status .pv-live-wave span:nth-child(13){height:20px;animation-delay:0.12s}
-#pv-ai-live-status .pv-live-wave span:nth-child(14){height:26px;animation-delay:0.2s}
-#pv-ai-live-status .pv-live-wave span:nth-child(15){height:14px;animation-delay:0.08s}
-#pv-ai-live-status .pv-live-wave span:nth-child(16){height:22px;animation-delay:0.28s}
-#pv-ai-live-status .pv-live-wave span:nth-child(17){height:18px;animation-delay:0.04s}
-#pv-ai-live-status .pv-live-wave span:nth-child(18){height:26px;animation-delay:0.24s}
-#pv-ai-live-status .pv-live-wave span:nth-child(19){height:12px;animation-delay:0.1s}
-#pv-ai-live-status .pv-live-wave span:nth-child(20){height:20px;animation-delay:0.18s}
-#pv-ai-live-status .pv-live-wave span:nth-child(21){height:28px;animation-delay:0.06s}
-#pv-ai-live-status .pv-live-wave span:nth-child(22){height:16px;animation-delay:0.3s}
-#pv-ai-live-status .pv-live-wave span:nth-child(23){height:24px;animation-delay:0.14s}
-#pv-ai-live-status .pv-live-wave span:nth-child(24){height:10px;animation-delay:0.02s}
-#pv-ai-live-status .pv-live-wave span:nth-child(25){height:18px;animation-delay:0.22s}
-#pv-ai-live-status .pv-live-wave span:nth-child(26){height:26px;animation-delay:0.08s}
-#pv-ai-live-status .pv-live-wave span:nth-child(27){height:14px;animation-delay:0.16s}
-#pv-ai-live-status .pv-live-wave span:nth-child(28){height:20px;animation-delay:0.26s}
-@keyframes pvWave{0%,100%{transform:scaleY(0.35);opacity:0.55}50%{transform:scaleY(1);opacity:1}}
-</style>
-<style data-file="css/live-no-text.css">
-/* LIVE CHAT VOICE ONLY - no text bubbles while live is on, leave UI how it was */
-#pv-ai-messages.pv-live-no-text .pv-ai-msg{display:none !important}
-#pv-ai-messages.pv-live-no-text .pv-ai-msg-wrap{display:none !important}
-#pv-ai-messages.pv-live-no-text .pv-ai-actions{display:none !important}
-#pv-ai-messages.pv-live-no-text .pv-ai-typing{display:none !important}
-#pv-ai-messages.pv-live-no-text .pv-ai-thinking{display:none !important}
-#pv-ai-screen.pv-live-on #pv-ai-messages .pv-ai-thinking{display:none !important}
-#pv-ai-screen.pv-live-on #pv-ai-messages .pv-ai-actions{display:none !important}
-#pv-ai-input-bar.pv-live-active #pv-ai-input{display:none !important}
-</style>
-<style data-file="css/live-disclaimer.css">
-/* LIVE - middle shows ONLY the COSPRO AI disclaimer. Big write-up hidden. Title untouched. */
-#pv-ai-live-disclaimer{position:absolute;left:16px;right:16px;top:42%;transform:translateY(-50%);text-align:center;font-size:14px;line-height:1.45;color:#8a8a8e;pointer-events:none;z-index:2;padding:0 32px;box-sizing:border-box;display:none}
-#pv-ai-screen.pv-live-on #pv-ai-live-disclaimer{display:block !important}
-#pv-ai-screen.pv-live-on #pv-ai-empty-writeup{display:none !important}
-</style>
-<style data-file="css/live-voices.css">
-/* LIVE VOICES - sliders button beside cancel X, same 32px circle. Sheet: only names, Choose Voice STICKY, auto-close. Circle kept, normal straight tick, names big sleek. Speeds sleek normal. */
-#pv-ai-voice-btn{display:none !important}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active .pv-ai-input-row{gap:8px !important}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active .pv-ai-input-row #pv-ai-voice-btn{display:flex !important;width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important;background:#333336 !important;background-color:#333336 !important;background-image:none !important;border:1px solid rgba(255,255,255,0.08) !important;box-shadow:0 1px 6px rgba(0,0,0,0.35) !important;border-radius:50% !important;padding:0 !important;align-items:center !important;justify-content:center !important;flex:none !important;cursor:pointer !important}
-#pv-ai-voice-btn svg{width:20px !important;height:20px !important;display:block !important}
-#pv-ai-voice-btn:active{transform:scale(.92)}
-#pv-ai-voice-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.55);z-index:60;display:none}
-#pv-ai-voice-backdrop.show{display:block}
-#pv-ai-voice-sheet{position:absolute;left:12px;right:12px;bottom:78px;background:#1c1c1c;border:1px solid rgba(255,255,255,0.10);border-radius:22px;padding:10px 12px 12px;z-index:61;display:none;max-height:62%;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.60);box-sizing:border-box;display:none;flex-direction:column}
-#pv-ai-voice-sheet.show{display:flex}
-.pv-voice-sheet-top{flex:none;background:#1c1c1c;position:sticky;top:0;z-index:2}
-.pv-voice-sheet-handle{width:36px;height:4px;border-radius:999px;background:#3a3a3c;margin:2px auto 10px}
-.pv-voice-sheet-head{display:flex;align-items:center;justify-content:center;text-align:center;padding:6px 4px 10px}
-.pv-voice-sheet-title{font-size:17px;font-weight:800;color:#fff;text-align:center}
-.pv-voice-sheet-list{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
-.pv-voice-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:transparent;border:none;padding:16px 12px;border-radius:14px;text-align:left;cursor:pointer;box-sizing:border-box}
-.pv-voice-row.selected{background:#2a2a2a}
-.pv-voice-row:active{background:#2a2a2a}
-.pv-voice-row-name{display:block;font-size:21px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:-0.2px}
-.pv-voice-row-check{width:26px;height:26px;min-width:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:transparent;border:1.5px solid rgba(255,255,255,0.35);box-sizing:border-box}
-.pv-voice-row.selected .pv-voice-row-check{border-color:#fff;background:transparent}
-.pv-voice-row-check svg{width:14px;height:14px;display:block}
-</style>
-
-<style data-file="css/live-wave-top.css">
-/* LIVE WAVE TOP - same wave as bottom bar, just moved UP. Same gradient, same 28 bars, same animation. Bigger + taller when loud. Voice (sliders) kept LEFT in bottom bar, X stays RIGHT. */
-#pv-ai-live-wave-stage{position:absolute;left:16px;right:16px;top:30%;transform:translateY(-50%);display:none;align-items:center;justify-content:center;height:110px;pointer-events:none;z-index:3;box-sizing:border-box}
-#pv-ai-screen.pv-live-on #pv-ai-live-wave-stage{display:flex !important}
-#pv-ai-screen.pv-live-on #pv-ai-live-disclaimer{top:45% !important}
-#pv-ai-live-wave-stage .pv-live-wave{display:flex !important;align-items:center;justify-content:center;gap:4px;height:96px;flex:none;margin:0 auto}
-#pv-ai-live-wave-stage .pv-live-wave span{width:4px;border-radius:3px;background:linear-gradient(180deg,#0084ff,#00bfa5);display:block;flex:none;transform-origin:center;animation:pvWave 0.9s ease-in-out infinite}
-#pv-ai-live-wave-stage .pv-live-wave.pv-wave-real span{animation:none !important;transition:height 0.06s linear, opacity 0.06s linear}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(1){height:29px;animation-delay:0s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(2){height:46px;animation-delay:0.08s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(3){height:64px;animation-delay:0.16s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(4){height:41px;animation-delay:0.04s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(5){height:75px;animation-delay:0.22s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(6){height:52px;animation-delay:0.1s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(7){height:81px;animation-delay:0.3s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(8){height:58px;animation-delay:0.14s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(9){height:35px;animation-delay:0.02s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(10){height:70px;animation-delay:0.26s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(11){height:46px;animation-delay:0.06s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(12){height:81px;animation-delay:0.32s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(13){height:58px;animation-delay:0.12s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(14){height:75px;animation-delay:0.2s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(15){height:41px;animation-delay:0.08s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(16){height:64px;animation-delay:0.28s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(17){height:52px;animation-delay:0.04s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(18){height:75px;animation-delay:0.24s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(19){height:35px;animation-delay:0.1s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(20){height:58px;animation-delay:0.18s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(21){height:81px;animation-delay:0.06s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(22){height:46px;animation-delay:0.3s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(23){height:70px;animation-delay:0.14s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(24){height:29px;animation-delay:0.02s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(25){height:52px;animation-delay:0.22s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(26){height:75px;animation-delay:0.08s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(27){height:41px;animation-delay:0.16s}
-#pv-ai-live-wave-stage .pv-live-wave span:nth-child(28){height:58px;animation-delay:0.26s}
-/* VOICE LEFT - sliders button is now first child of bottom bar = LEFT. X stays RIGHT. */
-#pv-ai-screen #pv-ai-input-bar.pv-live-active > #pv-ai-voice-btn{display:flex !important;width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important;background:#333336 !important;background-color:#333336 !important;background-image:none !important;border:1px solid rgba(255,255,255,0.08) !important;box-shadow:0 1px 6px rgba(0,0,0,0.35) !important;border-radius:50% !important;padding:0 !important;align-items:center !important;justify-content:center !important;flex:none !important;order:0 !important;cursor:pointer !important}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active #pv-ai-live-status{order:1 !important}
-#pv-ai-screen #pv-ai-input-bar.pv-live-active .pv-ai-input-row{order:2 !important;margin-left:0 !important}
-</style>
 
 
 
 
 
-<style data-file="css/no-wave-small-disclaimer.css">
-/* v6 - WAVE BARS DELETED (not hidden). DISCLAIMER DOWN SMALL. Dots stay. */
-/* DISCLAIMER - DOWN + SMALL: was 14px at 45%, now 11px at 62% */
-#pv-ai-screen #pv-ai-live-disclaimer{ top:62% !important; font-size:11px !important; line-height:1.4 !important; padding:0 48px !important; opacity:.85 !important; }
-#pv-ai-screen.pv-live-on #pv-ai-live-disclaimer{ top:62% !important; }
-</style>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -9342,10 +8844,8 @@ async function handleSend(){
 (function(){
   function delAll(){
     try{
-      document.querySelectorAll('#pv-ai-live-wave, .pv-live-wave, #pv-ai-live-wave-stage, .pv-spark-layer, .pv-spiral, .pv-dot, .pv-spark, .pv-live-listening, .pv-live-text, .pv-live-dots').forEach(function(n){ try{ n.remove(); }catch(e){} });
-      // Also clear Listening text if it was set as textContent inside live-status
-      var s=document.getElementById('pv-ai-live-status');
-      if(s){ s.innerHTML=''; }
+      document.querySelectorAll('.pv-spark-layer, .pv-spiral, .pv-dot, .pv-spark').forEach(function(n){ try{ n.remove(); }catch(e){} });
+
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded', delAll);
