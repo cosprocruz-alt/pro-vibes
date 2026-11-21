@@ -7340,9 +7340,13 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   function stopSpeakingMic(){
     speakingMic=false; clearSpeakTimeout();
+    // FIX: bump mic session + kill token so pending speakReplyNext timeouts (120ms) cannot resurrect talking in new chat
+    try{ speakReplySession++; }catch(e){}
+    try{ window.__pvAiAudioKillToken=(window.__pvAiAudioKillToken||0)+1; }catch(e){}
     try{ if(typeof clearSpeakReplyTimers==='function') clearSpeakReplyTimers(); }catch(e){}
     try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
   }
+  window.__pvForceStopMicVoice = function(){ try{ speakingMic=false; clearSpeakTimeout(); speakReplySession++; window.__pvAiAudioKillToken=(window.__pvAiAudioKillToken||0)+1; if(typeof clearSpeakReplyTimers==='function') clearSpeakReplyTimers(); if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} };
   function markExistingAiSeen(){
     try{
       var box=el('pv-ai-messages'); if(!box) return;
@@ -7470,7 +7474,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     /* MIC FULLY OFF while AI talks */
     stopRecog(); speakingMic=true; setMicVisual('speaking');
     try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
-    var mySession=++speakReplySession;
+    var mySession=++speakReplySession; var myKill=(window.__pvAiAudioKillToken||0);
     clearSpeakReplyTimers(); clearSpeakTimeout();
     // Chunk into ~180 char sentence groups - Chrome Android chokes on one long utterance and stops mid-sentence
     var parts=clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || [clean];
@@ -7489,18 +7493,19 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     }
     // Keep-alive: Chrome pauses TTS after a while - resume it so it never just stops
     speakReplyKeepAlive=setInterval(function(){
-      if(mySession!==speakReplySession || done){ clearSpeakReplyTimers(); return; }
+      if(mySession!==speakReplySession || done || myKill!==(window.__pvAiAudioKillToken||0)){ clearSpeakReplyTimers(); return; }
       try{ if('speechSynthesis' in window && window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
     }, 800);
     function speakReplyNext(){
       if(mySession!==speakReplySession || done) return;
+      if(myKill!==(window.__pvAiAudioKillToken||0)) return;
       if(speakReplyIdx>=speakReplyChunks.length){ finishSpeak(); return; }
       var chunk=speakReplyChunks[speakReplyIdx];
       var chunkStart=Date.now();
       var estimated=Math.min(20000, 3000 + chunk.length*80);
       if(speakReplyWatchdog) clearInterval(speakReplyWatchdog);
       speakReplyWatchdog=setInterval(function(){
-        if(mySession!==speakReplySession || done) return;
+        if(mySession!==speakReplySession || done || myKill!==(window.__pvAiAudioKillToken||0)) return;
         try{ if('speechSynthesis' in window && window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
         // If this chunk never ends (Chrome stall), force move to NEXT chunk - never hang, never cut whole reply
         if(Date.now()-chunkStart > estimated+6000){
@@ -7575,6 +7580,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     var box=el('pv-ai-messages'); if(!box || !window.MutationObserver) return;
     var obs=new MutationObserver(function(muts){
       if(!micOn) return;
+      if(window.__pvLoadingHistory) return;
       muts.forEach(function(m){
         (m.addedNodes||[]).forEach(function(n){
           if(!n || n.nodeType!==1) return;
@@ -7604,7 +7610,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 
 </script>
 <style data-file="css/pv-fix-x-preload-scroll.css">
-#pv-ai-input-bar .pv-ai-attach-preview #pv-ai-attach-clear{position:absolute !important;top:5px !important;left:5px !important;right:auto !important;width:22px !important;height:22px !important;min-width:22px !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;box-shadow:0 1px 4px rgba(0,0,0,.45) !important;backdrop-filter:blur(8px) !important;-webkit-backdrop-filter:blur(8px) !important;color:#fff !important;font-size:14px !important;line-height:1 !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 !important;margin:0 !important;cursor:pointer !important;z-index:3 !important;text-shadow:none !important}
+#pv-ai-input-bar .pv-ai-attach-preview #pv-ai-attach-clear{position:absolute !important;top:5px !important;right:5px !important;left:auto !important;width:22px !important;height:22px !important;min-width:22px !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;box-shadow:0 1px 4px rgba(0,0,0,.45) !important;backdrop-filter:blur(8px) !important;-webkit-backdrop-filter:blur(8px) !important;color:#fff !important;font-size:14px !important;line-height:1 !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 !important;margin:0 !important;cursor:pointer !important;z-index:3 !important;text-shadow:none !important}
 #pv-ai-attach-preview img,#pv-ai-messages img{opacity:0;transition:opacity .25s ease}
 #pv-ai-attach-preview img.pv-loaded,#pv-ai-messages img.pv-loaded{opacity:1}
 #pv-ai-attach-preview img[src=""],#pv-ai-messages img[src=""]{opacity:0;visibility:hidden}
@@ -7676,6 +7682,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   var pvAiPrev='inbox-screen';
   function openAi(){
+    try{ if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); }catch(e){}
     try{
       var cur=null;
       try{cur=document.querySelector('main section:not(.hidden), main > div#profile-screen:not(.hidden)');}catch(e){}
@@ -7733,6 +7740,9 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 (function(){
   function pvStopAllChatAudio(){
     try{
+      // KILL TOKEN: every stop bumps this. Both speaker + mic voice check it before speaking next chunk.
+      // Old bug: stop only bumped speaker counter, mic voice had a different counter, so its pending timeout restarted talking in the new chat.
+      try{ window.__pvAiAudioKillToken=(window.__pvAiAudioKillToken||0)+1; }catch(e){}
       try{
         var arr = window.__pvVoiceAudios || [];
         for(var i=0;i<arr.length;i++){
@@ -7750,14 +7760,21 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
       try{ document.querySelectorAll('.voice-msg-play').forEach(function(_b){ try{ if(_b && _b._pvAudio){ _b._pvAudio.pause(); try{ _b._pvAudio.currentTime = 0; }catch(_e){} } }catch(e){} }); }catch(e){}
       try{ document.querySelectorAll('audio, video').forEach(function(m){ try{ m.pause(); }catch(e){} }); }catch(e){}
       try{ document.querySelectorAll('.voice-msg-wave').forEach(function(w){ try{ w.classList.remove('playing'); }catch(e){} }); }catch(e){}
+      try{ document.querySelectorAll('.pv-ai-action-btn.playing').forEach(function(b){ try{ b.classList.remove('playing'); b.setAttribute('aria-label','Read aloud'); }catch(e){} }); }catch(e){}
       try{ if(window.ProVibesVoice && window.ProVibesVoice.discard) window.ProVibesVoice.discard('delete'); }catch(e){}
       try{ var pb = document.getElementById('pv-voice-paused-bar'); if(pb) pb.classList.remove('show'); }catch(e){}
       try{ if(window.__pvStopMicSession) window.__pvStopMicSession(); }catch(e){}
+      // FORCE mic voice dead even if micOn was false - stopSpeakingMic alone did not bump its session, so pending timeouts resurrected it
+      try{ if(window.__pvForceStopMicVoice) window.__pvForceStopMicVoice(); }catch(e){}
       try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
       try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
       try{ window.__pvAiSpeakerActive = false; }catch(e){}
+      // Chrome Android bug: one cancel() sometimes does not stick - cancel again after 100ms and 300ms
+      try{ setTimeout(function(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} }, 100); }catch(e){}
+      try{ setTimeout(function(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} }, 300); }catch(e){}
     }catch(e){}
   }
+  window.__pvKillAllAiAudio = pvStopAllChatAudio;
   window.pvStopAllChatAudio = pvStopAllChatAudio;
   try{ document.addEventListener('visibilitychange', function(){ if(document.hidden) pvStopAllChatAudio(); }); }catch(e){}
   try{ window.addEventListener('pagehide', function(){ pvStopAllChatAudio(); }); }catch(e){}
@@ -8107,8 +8124,8 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   function pvHistoryRender(filterText){ try{ pvHistoryMigrateUsedTitles(); pvCleanNumberedTitles(); try{ var _rl=pvHistoryLoad(); var _rc=pvHistoryGetCurrentId(); var _changed=false; for(var _ri=0;_ri<_rl.length;_ri++){ if(String(_rl[_ri].id)!==String(_rc) && !_rl[_ri].unread){ _rl[_ri].unread=true; _changed=true; } if(typeof _rl[_ri].opens!=='number'){ _rl[_ri].opens=0; _changed=true; } } if(_changed) pvHistorySave(_rl); }catch(e){} var _clr=el('pv-ai-history-search-clear'); if(_clr){ if(filterText && String(filterText).trim()) _clr.classList.remove('hidden'); else _clr.classList.add('hidden'); } var list=pvHistoryLoad(); try{ var _delBtn=el('pv-ai-history-delete-all'); if(_delBtn){ _delBtn.style.display=list.length?'':'none'; } }catch(e){} var curId=pvHistoryGetCurrentId(); var boxEl=el('pv-ai-history-list'); if(!boxEl) return; var q=String(filterText||'').toLowerCase().trim(); var shown=list.filter(function(c){ if(!q) return true; return String(c.title||'').toLowerCase().indexOf(q)!==-1; }); boxEl.innerHTML=''; if(!shown.length){ var _em=document.createElement('div'); _em.className='pv-ai-history-empty-center'; _em.textContent='No chats yet'; boxEl.appendChild(_em); } for(var i=0;i<shown.length;i++){ (function(c){ var btn=document.createElement('button'); btn.type='button'; var _isActive=String(c.id)===String(curId); var _showDot=(_isActive && (c.opens||0)>=2) || (!_isActive && c.unread); btn.className='pv-ai-history-item'+(_isActive?' selected':'')+(_showDot?' unread':''); var span=document.createElement('span'); span.className='pv-ai-history-item-text'; span.textContent=c.title||'New chat'; btn.appendChild(span); if(_showDot){ var dot=document.createElement('span'); dot.className='pv-ai-history-dot'; btn.appendChild(dot); } btn.addEventListener('click', function(){ if(pvHistLongPressed){ pvHistLongPressed=false; return; } pvHistoryOpen(c.id); });
       (function(btnEl, chat){ var startLong=function(){ pvHistLongPressed=false; if(pvHistLpTimer) clearTimeout(pvHistLpTimer); pvHistLpTimer=setTimeout(function(){ pvHistLongPressed=true; pvHistShowLongPress(chat.id, chat.title||'Chat', btnEl); }, 500); }; var cancelLong=function(){ if(pvHistLpTimer) clearTimeout(pvHistLpTimer); }; btnEl.addEventListener('touchstart', startLong, {passive:true}); btnEl.addEventListener('touchend', cancelLong); btnEl.addEventListener('touchmove', cancelLong); btnEl.addEventListener('mousedown', startLong); btnEl.addEventListener('mouseup', cancelLong); btnEl.addEventListener('mouseleave', cancelLong); btnEl.addEventListener('contextmenu', function(e){ e.preventDefault(); pvHistLongPressed=true; pvHistShowLongPress(chat.id, chat.title||'Chat', btnEl); }); })(btn, c);
       boxEl.appendChild(btn); })(shown[i]); } }catch(e){} }
-  function pvHistoryLoadMessagesToDOM(msgs){ try{ var box=el('pv-ai-messages'); if(!box) return; box.innerHTML=''; var fallbackTs=Date.now(); try{ var _cur=pvHistoryGetCurrentId(); var _list=pvHistoryLoad(); for(var _li=0;_li<_list.length;_li++){ if(String(_list[_li].id)===String(_cur) && _list[_li].updatedAt){ fallbackTs=Number(_list[_li].updatedAt); break; } } }catch(e){} var lastTs=null; for(var i=0;i<(msgs||[]).length;i++){ var _m=msgs[i]||{}; var _ts=_m.ts||_m.time||_m.timestamp||null; if(!_ts){ _ts=lastTs||fallbackTs; } lastTs=_ts; var _dm=addMsg(_m.txt||'', _m.who||'ai', _m.img||null, _ts, !!_m.isVideo); if(_dm && _m.isVideo && _m.video){ try{ var _im2=_dm.querySelector('img'); if(_im2) _im2.dataset.pvVideo=_m.video; }catch(e){} } } box.scrollTop=box.scrollHeight; }catch(e){} }
-  function pvHistoryOpen(id){ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(String(id)===String(pvHistoryGetCurrentId())){ try{ var _al=pvHistoryLoad(); for(var _ai=0;_ai<_al.length;_ai++){ if(String(_al[_ai].id)===String(id)){ _al[_ai].opens=((_al[_ai].opens||0)+1); _al[_ai].unread=false; } } pvHistorySave(_al); }catch(e){} pvHistoryClose(); pvHistoryRender(''); return; } pvHistorySaveCurrent(true); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found) return; pvHistorySetCurrentId(id); found.unread=false; found.opens=((found.opens||0)+1); pvHistorySave(list); var te=el('pv-ai-title'); if(te) te.textContent=found.title||'COSPRO AI'; try{ localStorage.setItem(TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} pvHistoryLoadMessagesToDOM(found.messages||[]); pvHistoryClose(); pvHistoryRender(''); }catch(e){} }
+  function pvHistoryLoadMessagesToDOM(msgs){ try{ window.__pvLoadingHistory=true; var box=el('pv-ai-messages'); if(!box) return; try{ if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); }catch(e){} box.innerHTML=''; var fallbackTs=Date.now(); try{ var _cur=pvHistoryGetCurrentId(); var _list=pvHistoryLoad(); for(var _li=0;_li<_list.length;_li++){ if(String(_list[_li].id)===String(_cur) && _list[_li].updatedAt){ fallbackTs=Number(_list[_li].updatedAt); break; } } }catch(e){} var lastTs=null; for(var i=0;i<(msgs||[]).length;i++){ var _m=msgs[i]||{}; var _ts=_m.ts||_m.time||_m.timestamp||null; if(!_ts){ _ts=lastTs||fallbackTs; } lastTs=_ts; var _dm=addMsg(_m.txt||'', _m.who||'ai', _m.img||null, _ts, !!_m.isVideo); if(_dm && _m.isVideo && _m.video){ try{ var _im2=_dm.querySelector('img'); if(_im2) _im2.dataset.pvVideo=_m.video; }catch(e){} } } box.scrollTop=box.scrollHeight; setTimeout(function(){ window.__pvLoadingHistory=false; }, 500); }catch(e){ window.__pvLoadingHistory=false; } }
+  function pvHistoryOpen(id){ try{ window.__pvLoadingHistory=true; if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); else if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(String(id)===String(pvHistoryGetCurrentId())){ try{ var _al=pvHistoryLoad(); for(var _ai=0;_ai<_al.length;_ai++){ if(String(_al[_ai].id)===String(id)){ _al[_ai].opens=((_al[_ai].opens||0)+1); _al[_ai].unread=false; } } pvHistorySave(_al); }catch(e){} pvHistoryClose(); pvHistoryRender(''); return; } pvHistorySaveCurrent(true); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found) return; pvHistorySetCurrentId(id); found.unread=false; found.opens=((found.opens||0)+1); pvHistorySave(list); var te=el('pv-ai-title'); if(te) te.textContent=found.title||'COSPRO AI'; try{ localStorage.setItem(TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} pvHistoryLoadMessagesToDOM(found.messages||[]); pvHistoryClose(); pvHistoryRender(''); }catch(e){} }
   function pvHistoryToggle(){ try{ var bar=el('pv-ai-history'); var back=el('pv-ai-history-backdrop'); if(!bar) return; var isOpen=bar.classList.contains('show'); if(isOpen){ pvHistoryClose(); } else { pvHistoryRender(el('pv-ai-history-search')?el('pv-ai-history-search').value:''); bar.classList.remove('hidden'); if(back) back.classList.add('show'); requestAnimationFrame(function(){ bar.classList.add('show'); }); } }catch(e){} }
   function pvHistoryClose(){ try{ try{ pvHistHideLongPress(); }catch(e){} try{ pvHistHideRename(); }catch(e){} var bar=el('pv-ai-history'); var back=el('pv-ai-history-backdrop'); if(bar) bar.classList.remove('show'); if(back) back.classList.remove('show'); setTimeout(function(){ if(bar && !bar.classList.contains('show')) bar.classList.add('hidden'); }, 280); }catch(e){} }
   function pvHistoryInit(){ try{ pvHistoryEnsureCurrent(); try{ pvAiRestoreOrFresh(); }catch(e){} pvHistoryMigrateUsedTitles(); var clearBtn=el('pv-ai-history-search-clear'); if(clearBtn && !clearBtn.dataset.pvHistBound){ clearBtn.dataset.pvHistBound='1'; clearBtn.addEventListener('click', function(){ var s=el('pv-ai-history-search'); if(s){ s.value=''; s.focus(); } pvHistoryRender(''); if(clearBtn) clearBtn.classList.add('hidden'); }); } var search=el('pv-ai-history-search'); if(search && !search.dataset.pvHistBound){ search.dataset.pvHistBound='1'; search.addEventListener('input', function(){ pvHistoryRender(search.value); }); } var back=el('pv-ai-history-backdrop'); if(back && !back.dataset.pvHistBound){ back.dataset.pvHistBound='1'; back.addEventListener('click', function(){ pvHistoryClose(); }); } var lpBack=el('pv-ai-hist-lp-backdrop'); if(lpBack && !lpBack.dataset.pvLpBound){ lpBack.dataset.pvLpBound='1'; lpBack.addEventListener('click', function(){ pvHistHideLongPress(); }); } var lpRename=el('pv-ai-hist-lp-rename'); if(lpRename && !lpRename.dataset.pvLpBound){ lpRename.dataset.pvLpBound='1'; lpRename.addEventListener('click', function(){ if(pvHistLongPressId) pvHistShowRename(pvHistLongPressId); }); } var rnBack=el('pv-ai-hist-rename-backdrop'); if(rnBack && !rnBack.dataset.pvRnBound){ rnBack.dataset.pvRnBound='1'; rnBack.addEventListener('click', function(){ pvHistHideRename(); }); } var rnCancel=el('pv-ai-hist-rename-cancel'); if(rnCancel && !rnCancel.dataset.pvRnBound){ rnCancel.dataset.pvRnBound='1'; rnCancel.addEventListener('click', function(){ pvHistHideRename(); }); } var rnSave=el('pv-ai-hist-rename-save'); if(rnSave && !rnSave.dataset.pvRnBound){ rnSave.dataset.pvRnBound='1'; rnSave.addEventListener('click', function(){ pvHistSaveRename(); }); } var rnInput=el('pv-ai-hist-rename-input'); if(rnInput && !rnInput.dataset.pvRnBound){ rnInput.dataset.pvRnBound='1'; rnInput.addEventListener('input', function(){ try{ rnInput.style.height='auto'; rnInput.style.height=Math.min(rnInput.scrollHeight,120)+'px'; }catch(e){} var cc=el('pv-ai-hist-rename-count'); if(cc) cc.textContent=String(rnInput.value.length)+' / 50'; var ss=el('pv-ai-hist-rename-save'); if(ss) ss.disabled=!rnInput.value.trim(); }); rnInput.addEventListener('contextmenu', function(e){ e.preventDefault(); }); rnInput.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); pvHistSaveRename(); } if(e.key==='Escape'){ pvHistHideRename(); } }); } var lpDel=el('pv-ai-hist-lp-delete'); if(lpDel && !lpDel.dataset.pvLpBound){ lpDel.dataset.pvLpBound='1'; lpDel.addEventListener('click', function(){ if(pvHistLongPressId) pvHistShowDeleteConfirm('single', pvHistLongPressId); }); } var delAllBtn=el('pv-ai-history-delete-all'); if(delAllBtn && !delAllBtn.dataset.pvHistDelBound){ delAllBtn.dataset.pvHistDelBound='1'; delAllBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); pvHistShowDeleteConfirm('all', null); }); } var delBack=el('pv-ai-hist-del-backdrop'); if(delBack && !delBack.dataset.pvHistDelBound){ delBack.dataset.pvHistDelBound='1'; delBack.addEventListener('click', function(){ pvHistHideDeleteConfirm(); }); } var delCancel=el('pv-ai-hist-del-cancel'); if(delCancel && !delCancel.dataset.pvHistDelBound){ delCancel.dataset.pvHistDelBound='1'; delCancel.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); pvHistHideDeleteConfirm(); }); } var delGo=el('pv-ai-hist-del-go'); if(delGo && !delGo.dataset.pvHistDelBound){ delGo.dataset.pvHistDelBound='1'; delGo.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); if(pvHistDelMode==='single' && pvHistDelSingleId) pvHistDeleteChat(pvHistDelSingleId); else pvHistDeleteAll(); }); } var lpSheet=el('pv-ai-hist-lp-sheet'); if(lpSheet && !lpSheet.dataset.pvLpBound){ lpSheet.dataset.pvLpBound='1'; lpSheet.style.touchAction='none'; var _sY=0,_dY=0,_drag=false; function _getY(e){ return e.touches?e.touches[0].clientY:e.clientY; } lpSheet.addEventListener('touchstart', function(e){ _sY=_getY(e); _dY=0; _drag=true; }); lpSheet.addEventListener('touchmove', function(e){ if(!_drag) return; _dY=_getY(e)-_sY; if(_dY>0) lpSheet.style.transform='translateY('+_dY+'px)'; }); lpSheet.addEventListener('touchend', function(){ _drag=false; if(_dY>80){ pvHistHideLongPress(); } lpSheet.style.transform=''; }); }
@@ -8363,6 +8380,12 @@ async function handleSend(){
       if(clearBtn) clearBtn.addEventListener('click', function(){ pendingFile=null; pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} var p=el('pv-ai-attach-preview'); if(p){ p.classList.remove('show'); p.classList.remove('is-loading'); p.classList.remove('is-video'); } });
     }
   }
+  // FIX: NEW CHAT must kill audio on TOUCHSTART / POINTERDOWN, not just click - mobile click is delayed and old voice kept talking over new chat
+  function pvKillForNewChat(){ try{ if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); }catch(e){} try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){} try{ if(window.__pvForceStopMicVoice) window.__pvForceStopMicVoice(); }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} }
+  window.__pvKillForNewChat = pvKillForNewChat;
+  try{ var _newBtn=document.getElementById('pv-ai-upright'); if(_newBtn){ ['touchstart','pointerdown','mousedown'].forEach(function(ev){ _newBtn.addEventListener(ev, pvKillForNewChat, {capture:true, passive:true}); }); _newBtn.addEventListener('click', pvKillForNewChat, true); } }catch(e){}
+  try{ document.addEventListener('touchstart', function(e){ try{ if(e.target && e.target.closest && e.target.closest('#pv-ai-upright')) pvKillForNewChat(); }catch(_e){} }, true); }catch(e){}
+  try{ document.addEventListener('pointerdown', function(e){ try{ if(e.target && e.target.closest && e.target.closest('#pv-ai-upright')) pvKillForNewChat(); }catch(_e){} }, true); }catch(e){}
   document.addEventListener('click', function(e){ try{ if(!e.target || !e.target.closest) return; if(!e.target.closest('#pv-ai-upright')) return; /* FIX: NEW CHAT = STOP old AI audio instantly - never keep talking into new chat */ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} try{ if(window.__pvStopMicSession) window.__pvStopMicSession(); }catch(e){} try{ pvHistorySaveCurrent(true); }catch(e){} try{ pvHistorySetCurrentId(pvHistoryNewId()); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp2=el('pv-ai-input'); if(inp2){ inp2.value=''; inp2.style.height='auto'; } var bar2=el('pv-ai-input-bar'); if(bar2) bar2.classList.remove('has-text'); var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('show'); pvResetTitle(); }catch(err){} }, true);
   pvInitTitle();
   try{ pvHistoryInit(); }catch(e){}
@@ -8442,7 +8465,7 @@ async function handleSend(){
     var chunks = []; var cur = '';
     parts.forEach(function(p){ p = p.trim(); if(!p) return; if((cur + ' ' + p).length > 180 && cur){ chunks.push(cur); cur = p; } else { cur = cur ? cur + ' ' + p : p; } });
     if(cur) chunks.push(cur);
-    var mySession = ++voiceSession;
+    var mySession = ++voiceSession; var myKill = (window.__pvAiAudioKillToken||0);
     currentBtn = btn;
     currentVoiceBubble = keyBubble;
     try{ window.__pvAiSpeakerActive=true; }catch(e){}
@@ -8460,18 +8483,19 @@ async function handleSend(){
     }
     // Keep-alive: Chrome Android pauses TTS and never resumes - force resume every 800ms
     aiSpeakKeepAlive=setInterval(function(){
-      if(mySession !== voiceSession){ clearAiSpeakTimers(); return; }
+      if(mySession !== voiceSession || myKill !== (window.__pvAiAudioKillToken||0)){ clearAiSpeakTimers(); return; }
       try{ if(window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
     }, 800);
     function speakNext(){
       if(mySession !== voiceSession) return;
+      if(myKill !== (window.__pvAiAudioKillToken||0)) return;
       if(idx >= chunks.length){ finishAll(); return; }
       var chunkText = chunks[idx];
       var chunkStart = Date.now();
       var estimated = Math.min(20000, 3000 + chunkText.length*80);
       if(aiSpeakWatchdog) clearInterval(aiSpeakWatchdog);
       aiSpeakWatchdog=setInterval(function(){
-        if(mySession !== voiceSession) return;
+        if(mySession !== voiceSession || myKill !== (window.__pvAiAudioKillToken||0)) return;
         try{ if(window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
         // Chrome stall: this chunk never ended - skip to NEXT chunk, don't hang forever and don't cut whole reply
         if(Date.now()-chunkStart > estimated+6000){
@@ -8716,7 +8740,7 @@ async function handleSend(){
 #pv-ai-input-bar .pv-ai-attach-preview.show{display:block;position:relative;width:60px;height:60px;flex:none}
 #pv-ai-input-bar .pv-ai-attach-preview img{width:60px;height:60px;min-width:60px;min-height:60px;border-radius:14px;object-fit:cover;display:block}
 #pv-ai-input-bar .pv-ai-attach-preview #pv-ai-attach-name{display:none !important}
-#pv-ai-input-bar .pv-ai-attach-preview #pv-ai-attach-clear{position:absolute;top:5px;left:5px;width:22px;height:22px;min-width:22px;border-radius:50%;background:rgba(20,20,22,.72);border:1px solid rgba(255,255,255,.28);box-shadow:0 1px 4px rgba(0,0,0,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;margin:0;cursor:pointer;z-index:3;-webkit-tap-highlight-color:transparent}
+#pv-ai-input-bar .pv-ai-attach-preview #pv-ai-attach-clear{position:absolute;top:5px;right:5px;width:22px;height:22px;min-width:22px;border-radius:50%;background:rgba(20,20,22,.72);border:1px solid rgba(255,255,255,.28);box-shadow:0 1px 4px rgba(0,0,0,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;margin:0;cursor:pointer;z-index:3;-webkit-tap-highlight-color:transparent}
 </style>
 
 <!-- ===== FILE: css/scroll-down-sleek.css — separate, do not mix ===== -->
@@ -9433,7 +9457,7 @@ async function handleSend(){
 #pv-ai-img-preview.show{display:flex}
 #pv-ai-img-preview-frame{position:relative;display:flex;align-items:center;justify-content:center;max-width:84vw;max-height:70vh;flex:none}
 #pv-ai-img-preview img{max-width:84vw;max-height:70vh;border-radius:16px;object-fit:contain;background:transparent;display:block}
-#pv-ai-img-preview-close{position:absolute;top:10px;left:10px;right:auto;width:28px;height:28px;border-radius:50%;background:rgba(20,20,22,.72);border:1px solid rgba(255,255,255,.28);box-shadow:0 1px 4px rgba(0,0,0,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}
+#pv-ai-img-preview-close{position:absolute;top:10px;right:10px;left:auto;width:28px;height:28px;border-radius:50%;background:rgba(20,20,22,.72);border:1px solid rgba(255,255,255,.28);box-shadow:0 1px 4px rgba(0,0,0,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}
 </style>
 <div id="pv-ai-img-preview" aria-label="Image preview"><div id="pv-ai-img-preview-frame"><button id="pv-ai-img-preview-close" type="button" aria-label="Close">✕</button><img id="pv-ai-img-preview-img" alt=""><video id="pv-ai-img-preview-video" controls playsinline preload="metadata" style="display:none"></video></div></div>
 <script>
@@ -9981,17 +10005,17 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
 
 <!-- ===== FILE: css/ai-preview-left-small-sleek.css — separate, do not mix ===== -->
 <style data-file="css/ai-preview-left-small-sleek.css">
-/* IMAGE PREVIEW - CANCEL INSIDE LEFT + PICTURE SMALL SLEEK, NOT TOO SMALL */
-/* Attach thumbnail: 72px -> 60px, X tucked 5px INSIDE top-left. */
-/* Full preview: picture 92vw/86vh -> 84vw/70vh, X tucked 10px INSIDE top-left of picture. */
+/* IMAGE PREVIEW - CANCEL INSIDE RIGHT + PICTURE SMALL SLEEK, NOT TOO SMALL */
+/* Attach thumbnail: 72px -> 60px, X tucked 5px INSIDE top-right. */
+/* Full preview: picture 92vw/86vh -> 84vw/70vh, X tucked 10px INSIDE top-right of picture. */
 #pv-ai-input-bar .pv-ai-attach-preview{overflow:visible !important}
 #pv-ai-input-bar .pv-ai-attach-preview.show{width:60px !important;height:60px !important}
 #pv-ai-input-bar .pv-ai-attach-preview img{width:60px !important;height:60px !important;min-width:60px !important;min-height:60px !important;border-radius:14px !important}
-#pv-ai-input-bar .pv-ai-attach-preview #pv-ai-attach-clear{position:absolute !important;top:5px !important;left:5px !important;right:auto !important;bottom:auto !important;width:22px !important;height:22px !important;min-width:22px !important;min-height:22px !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;box-shadow:0 1px 4px rgba(0,0,0,.45) !important;backdrop-filter:blur(8px) !important;-webkit-backdrop-filter:blur(8px) !important;color:#fff !important;font-size:13px !important;line-height:1 !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 !important;margin:0 !important;cursor:pointer !important;z-index:3 !important;text-shadow:none !important}
+#pv-ai-input-bar .pv-ai-attach-preview #pv-ai-attach-clear{position:absolute !important;top:5px !important;right:5px !important;left:auto !important;bottom:auto !important;width:22px !important;height:22px !important;min-width:22px !important;min-height:22px !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;box-shadow:0 1px 4px rgba(0,0,0,.45) !important;backdrop-filter:blur(8px) !important;-webkit-backdrop-filter:blur(8px) !important;color:#fff !important;font-size:13px !important;line-height:1 !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:0 !important;margin:0 !important;cursor:pointer !important;z-index:3 !important;text-shadow:none !important}
 #pv-ai-input-bar .pv-ai-attach-preview #pv-ai-attach-clear:active{transform:scale(.88) !important}
 #pv-ai-img-preview-frame{position:relative !important;display:flex !important;align-items:center !important;justify-content:center !important;max-width:84vw !important;max-height:70vh !important;flex:none !important}
 #pv-ai-img-preview img{max-width:84vw !important;max-height:70vh !important;border-radius:16px !important}
-#pv-ai-img-preview-close{position:absolute !important;top:10px !important;left:10px !important;right:auto !important;width:28px !important;height:28px !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;box-shadow:0 1px 4px rgba(0,0,0,.45) !important;backdrop-filter:blur(8px) !important;-webkit-backdrop-filter:blur(8px) !important;color:#fff !important;font-size:15px !important;line-height:1 !important;display:flex !important;align-items:center !important;justify-content:center !important;cursor:pointer !important;z-index:2 !important}
+#pv-ai-img-preview-close{position:absolute !important;top:10px !important;right:10px !important;left:auto !important;width:28px !important;height:28px !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;box-shadow:0 1px 4px rgba(0,0,0,.45) !important;backdrop-filter:blur(8px) !important;-webkit-backdrop-filter:blur(8px) !important;color:#fff !important;font-size:15px !important;line-height:1 !important;display:flex !important;align-items:center !important;justify-content:center !important;cursor:pointer !important;z-index:2 !important}
 #pv-ai-img-preview-close:active{transform:scale(.88) !important}
 </style>
 
