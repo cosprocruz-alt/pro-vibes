@@ -7340,6 +7340,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   function stopSpeakingMic(){
     speakingMic=false; clearSpeakTimeout();
+    try{ if(typeof clearSpeakReplyTimers==='function') clearSpeakReplyTimers(); }catch(e){}
     try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
   }
   function markExistingAiSeen(){
@@ -7440,7 +7441,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     s=s.replace(/\*\*([^*]+)\*\*/g,'$1').replace(/__([^_]+)__/g,'$1').replace(/`([^`]+)`/g,'$1').replace(/#{1,6}\s?/g,'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1');
     s=s.replace(/https?:\/\/\S+/g,'').replace(/\|/g,' ').replace(/---+/g,' ');
     s=s.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g,'').replace(/\s+/g,' ').trim();
-    if(s.length>600){ var cut=s.slice(0,600); var lastDot=Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? ')); if(lastDot>200) s=cut.slice(0,lastDot+1); else s=cut; }
+    // FIX: NO truncation - AI must say EVERYTHING, not just first 600 chars. Chunking below handles long replies.
     return s;
   }
   function pickVoice(){
@@ -7455,6 +7456,13 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
       return pool[0]||null;
     }catch(e){ return null; }
   }
+  // FIXED speakReply - chunked, NO 12s kill, says EVERYTHING
+  var speakReplyChunks=[];
+  var speakReplyIdx=0;
+  var speakReplyWatchdog=null;
+  var speakReplyKeepAlive=null;
+  var speakReplySession=0;
+  function clearSpeakReplyTimers(){ try{ if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } }catch(e){} try{ if(speakReplyKeepAlive){ clearInterval(speakReplyKeepAlive); speakReplyKeepAlive=null; } }catch(e){} }
   function speakReply(rawText){
     if(!micOn) return;
     var clean=cleanForSpeech(rawText);
@@ -7462,28 +7470,53 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     /* MIC FULLY OFF while AI talks */
     stopRecog(); speakingMic=true; setMicVisual('speaking');
     try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+    var mySession=++speakReplySession;
+    clearSpeakReplyTimers(); clearSpeakTimeout();
+    // Chunk into ~180 char sentence groups - Chrome Android chokes on one long utterance and stops mid-sentence
+    var parts=clean.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g) || [clean];
+    speakReplyChunks=[]; var cur='';
+    parts.forEach(function(p){ p=p.trim(); if(!p) return; if((cur+' '+p).length>180 && cur){ speakReplyChunks.push(cur); cur=p; } else { cur=cur?cur+' '+p:p; } });
+    if(cur) speakReplyChunks.push(cur);
+    speakReplyIdx=0;
     var done=false;
     function finishSpeak(){
       if(done) return; done=true;
-      speakingMic=false; clearSpeakTimeout();
+      speakingMic=false; clearSpeakTimeout(); clearSpeakReplyTimers();
       if(!micOn){ setMicVisual('off'); return; }
       if(stopAfterSend){ stopAfterSend=false; stopSession(); return; }
       heardText=''; heardInterim='';
       setTimeout(function(){ if(micOn) startOneTurn(); }, 450);
     }
-    clearSpeakTimeout();
-    var est=Math.min(12000, 3500 + clean.length*65);
-    speakTimeout=setTimeout(function(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} finishSpeak(); }, est);
-    setTimeout(function(){
-      if(!micOn || done) return;
+    // Keep-alive: Chrome pauses TTS after a while - resume it so it never just stops
+    speakReplyKeepAlive=setInterval(function(){
+      if(mySession!==speakReplySession || done){ clearSpeakReplyTimers(); return; }
+      try{ if('speechSynthesis' in window && window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
+    }, 800);
+    function speakReplyNext(){
+      if(mySession!==speakReplySession || done) return;
+      if(speakReplyIdx>=speakReplyChunks.length){ finishSpeak(); return; }
+      var chunk=speakReplyChunks[speakReplyIdx];
+      var chunkStart=Date.now();
+      var estimated=Math.min(20000, 3000 + chunk.length*80);
+      if(speakReplyWatchdog) clearInterval(speakReplyWatchdog);
+      speakReplyWatchdog=setInterval(function(){
+        if(mySession!==speakReplySession || done) return;
+        try{ if('speechSynthesis' in window && window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
+        // If this chunk never ends (Chrome stall), force move to NEXT chunk - never hang, never cut whole reply
+        if(Date.now()-chunkStart > estimated+6000){
+          if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; }
+          speakReplyIdx++; setTimeout(speakReplyNext, 120);
+        }
+      }, 700);
       try{
-        var u=new SpeechSynthesisUtterance(clean);
+        var u=new SpeechSynthesisUtterance(chunk);
         var v=pickVoice(); if(v) u.voice=v; u.lang=(v&&v.lang)||'en-US'; u.rate=1.0; u.pitch=1.0; u.volume=1;
-        u.onend=function(){ finishSpeak(); };
-        u.onerror=function(){ finishSpeak(); };
+        u.onend=function(){ if(mySession!==speakReplySession) return; if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); };
+        u.onerror=function(){ if(mySession!==speakReplySession) return; if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); };
         window.speechSynthesis.speak(u);
-      }catch(e){ finishSpeak(); }
-    }, 120);
+      }catch(e){ if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); }
+    }
+    setTimeout(speakReplyNext, 120);
   }
   function showToast(msg){ try{ var toast=el('pv-ai-toast'); if(toast){ toast.textContent=msg; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); }, 2200); } }catch(e){} }
   function stopSession(){
@@ -7497,9 +7530,13 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   function startSession(){
     var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!SR){ showToast('Voice not supported on this device'); return; }
-    if(isAiTalking()){ showToast('Wait for AI to finish talking'); return; }
+    // FIX: tapping mic STOPS AI talking instantly - never blocks with "Wait for AI to finish talking"
     try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
+    try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){}
     try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+    try{ window.__pvAiSpeakerActive=false; }catch(e){}
+    try{ stopSpeakingMic(); }catch(e){}
+    speakingMic=false; clearSpeakTimeout();
     try{
       if('speechSynthesis' in window){
         try{ window.speechSynthesis.getVoices(); }catch(e){}
@@ -7819,7 +7856,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
       return pvCleanAiTitle(cleanBase + ' again') || cleanBase;
     }catch(err){ return String(base||'').replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); }
   }
-  var pvTitleRequestId=0; var pvTitleLockedChatId=null; function pvIsRealTitle(_t){ return !!_t && _t!=='COSPRO AI'; } function pvGetLockedTitle(_id){ try{ var _lid=_id||pvHistoryGetCurrentId(); if(!_lid) return null; var _ll=pvHistoryLoad(); for(var _li=0;_li<_ll.length;_li++){ if(String(_ll[_li].id)===String(_lid) && pvIsRealTitle(_ll[_li].title)) return _ll[_li].title; } if(typeof pvTitleLockedChatId!=='undefined' && pvTitleLockedChatId && String(pvTitleLockedChatId)===String(_lid)){ try{ var _te=document.getElementById('pv-ai-title'); if(_te && pvIsRealTitle(_te.textContent)) return _te.textContent; }catch(e){} } return null; }catch(e){ return null; } } function pvIsChatTitleLocked(_id){ try{ return !!pvGetLockedTitle(_id); }catch(e){ return false; } }
+  var pvTitleRequestId=0; var pvTitleLockedChatId=null; function pvIsRealTitle(_t){ return !!_t && _t!=='COSPRO AI'; } function pvGetLockedTitle(_id){ try{ var _lid=_id||pvHistoryGetCurrentId(); if(!_lid) return null; var _ll=pvHistoryLoad(); for(var _li=0;_li<_ll.length;_li++){ if(String(_ll[_li].id)===String(_lid) && pvIsRealTitle(_ll[_li].title)) return _ll[_li].title; } /* FIX: DOM title is also locked - even if history not saved yet or page reloaded (pvTitleLockedChatId is in-memory only). First title wins, incl. Quick Hello. */ try{ if(String(_lid)===String(pvHistoryGetCurrentId())){ var _te=document.getElementById('pv-ai-title'); if(_te && pvIsRealTitle(_te.textContent)) return _te.textContent; } }catch(e){} return null; }catch(e){ return null; } } function pvIsChatTitleLocked(_id){ try{ return !!pvGetLockedTitle(_id); }catch(e){ return false; } }
   function pvToGerund(v){
     try{
       var lower=String(v||'').toLowerCase();
@@ -7915,6 +7952,8 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   function pvSetTitle(topic, skipUnique){
     if(!topic) return;
     try{ var _curId=pvHistoryGetCurrentId(); var _locked=pvGetLockedTitle(_curId); if(_locked){ var _teL=el('pv-ai-title'); if(_teL && _teL.textContent!==_locked) _teL.textContent=_locked; try{ localStorage.setItem(TITLE_KEY,_locked); }catch(e){} return; } }catch(e){}
+    // FIX: title is locked once a chat starts - if DOM already shows a real title (incl. Quick Hello), NEVER auto-replace it with a new topic
+    try{ var _teCur=el('pv-ai-title'); if(_teCur && _teCur.textContent && _teCur.textContent!=='COSPRO AI' && _teCur.textContent!==topic){ return; } }catch(e){}
     var clean=topic;
     if(topic!=='COSPRO AI' && topic!=='Quick Hello'){ clean=pvCleanAiTitle(topic); if(!clean) return; if(!skipUnique){ if(pvIsTitleUsed(clean)) clean=pvMakeTitleUnique(clean); pvRememberTitle(clean); } }
     var te=el('pv-ai-title'); if(te) te.textContent=clean; try{ if(pvIsRealTitle(clean)){ pvTitleLockedChatId=String(pvHistoryGetCurrentId()||''); } }catch(e){}
@@ -7976,7 +8015,8 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
       var _uid=pvHistoryGetCurrentId();
       if(pvIsChatTitleLocked(_uid)) return;
       var te=el('pv-ai-title');
-      if(te && te.textContent!=='COSPRO AI' && te.textContent!=='Quick Hello' && !aiText) return;
+      // FIX: once chat has ANY title (incl. Quick Hello), stop. No auto-change on 2nd / 3rd message.
+      if(te && te.textContent && te.textContent!=='COSPRO AI') return;
       // If we already have a final title and this is not a refine call, don't overwrite
       var fb=pvFallbackTopicFromText(txt, hasImage);
       if(!fb) return;
@@ -7990,16 +8030,13 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
         if(pvIsChatTitleLocked(pvHistoryGetCurrentId())) return;
         // If AI gave a good unique title, use it. If not, use local summarized title (never first-words copy).
         if(aiTitle){
-          // If current title is still placeholder, set AI title. If current is local fallback, replace it with better AI title.
-          if(cur.textContent==='COSPRO AI' || cur.textContent==='Quick Hello' || cur.textContent===fb){
-            if(aiTitle!==cur.textContent) pvSetTitle(aiTitle);
-          } else if(aiText){
-            // Refine call after AI reply: allow replacing temporary local title with smarter AI title
+          // FIX: only set title if there is NO title yet. Never replace Quick Hello or any existing title, even on refine.
+          if(cur.textContent==='COSPRO AI'){
             if(aiTitle!==cur.textContent) pvSetTitle(aiTitle);
           }
         } else {
-          // No AI - use local summarized unique title, not first-words copy
-          if(cur.textContent==='COSPRO AI' || cur.textContent==='Quick Hello'){
+          // No AI - use local summarized unique title, not first-words copy - only if no title yet
+          if(cur.textContent==='COSPRO AI'){
             var uniq = pvIsTitleUsed(fb) ? pvMakeTitleUnique(fb) : fb;
             pvSetTitle(uniq);
           }
@@ -8009,7 +8046,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
         if(pvIsChatTitleLocked(pvHistoryGetCurrentId())) return;
         var cur2=el('pv-ai-title');
         if(!cur2) return;
-        if(cur2.textContent==='COSPRO AI' || cur2.textContent==='Quick Hello'){
+        if(cur2.textContent==='COSPRO AI'){
           var uniq2 = pvIsTitleUsed(fb) ? pvMakeTitleUnique(fb) : fb;
           pvSetTitle(uniq2);
         }
@@ -8024,7 +8061,8 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
       // Only refine if title is still generic / local fallback - never overwrite a manual rename
       var te=el('pv-ai-title');
       if(!te) return;
-      if(te.textContent==='Quick Hello') return;
+      // FIX: refine runs after EVERY reply - it must NOT run if title already exists (incl. Quick Hello). First title wins.
+      if(te.textContent && te.textContent!=='COSPRO AI') return;
       pvUpdateTitleFromText(userText, false, aiText);
     }catch(e){}
   }
@@ -8198,6 +8236,10 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   }
   // Picture uses COSPRO AI vision above.
 async function handleSend(){
+    // FIX: sending a new message STOPS old AI audio instantly - old reply must not keep talking over new chat
+    try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
+    try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+    try{ window.__pvAiSpeakerActive=false; }catch(e){}
     var inp = el('pv-ai-input'); if(!inp) return;
     if(Date.now() < PV_GROQ_COOLDOWN_UNTIL){ addMsg("Couldn't Connect To COSPRO AI servers try again later...", 'ai'); return; }
     var txt = inp.value.trim();
@@ -8321,7 +8363,7 @@ async function handleSend(){
       if(clearBtn) clearBtn.addEventListener('click', function(){ pendingFile=null; pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} var p=el('pv-ai-attach-preview'); if(p){ p.classList.remove('show'); p.classList.remove('is-loading'); p.classList.remove('is-video'); } });
     }
   }
-  document.addEventListener('click', function(e){ try{ if(!e.target || !e.target.closest) return; if(!e.target.closest('#pv-ai-upright')) return; try{ pvHistorySaveCurrent(true); }catch(e){} try{ pvHistorySetCurrentId(pvHistoryNewId()); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp2=el('pv-ai-input'); if(inp2){ inp2.value=''; inp2.style.height='auto'; } var bar2=el('pv-ai-input-bar'); if(bar2) bar2.classList.remove('has-text'); var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('show'); pvResetTitle(); }catch(err){} }, true);
+  document.addEventListener('click', function(e){ try{ if(!e.target || !e.target.closest) return; if(!e.target.closest('#pv-ai-upright')) return; /* FIX: NEW CHAT = STOP old AI audio instantly - never keep talking into new chat */ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} try{ if(window.__pvStopMicSession) window.__pvStopMicSession(); }catch(e){} try{ pvHistorySaveCurrent(true); }catch(e){} try{ pvHistorySetCurrentId(pvHistoryNewId()); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp2=el('pv-ai-input'); if(inp2){ inp2.value=''; inp2.style.height='auto'; } var bar2=el('pv-ai-input-bar'); if(bar2) bar2.classList.remove('has-text'); var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('show'); pvResetTitle(); }catch(err){} }, true);
   pvInitTitle();
   try{ pvHistoryInit(); }catch(e){}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
@@ -8372,8 +8414,12 @@ async function handleSend(){
   var currentBtn = null;
   var currentVoiceBubble = null;
   var voiceSession = 0;
+  var aiSpeakWatchdog=null;
+  var aiSpeakKeepAlive=null;
+  function clearAiSpeakTimers(){ try{ if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } }catch(e){} try{ if(aiSpeakKeepAlive){ clearInterval(aiSpeakKeepAlive); aiSpeakKeepAlive=null; } }catch(e){} }
   function stopSpeaking(){
     voiceSession++;
+    clearAiSpeakTimers();
     try{ window.__pvAiSpeakerActive=false; }catch(e){}
     try{ if(window.__pvOnAiSpeechEnd) window.__pvOnAiSpeechEnd(); }catch(e){}
     try{ if('speechSynthesis' in window){ window.speechSynthesis.cancel(); } }catch(e){}
@@ -8404,15 +8450,41 @@ async function handleSend(){
     btn.classList.add('playing'); btn.setAttribute('aria-label','Stop reading');
     if(currentVoiceBubble && currentVoiceBubble.classList) currentVoiceBubble.classList.add('pv-speaking');
     var idx = 0;
+    function finishAll(){
+      clearAiSpeakTimers();
+      if(currentBtn) currentBtn.classList.remove('playing');
+      if(currentVoiceBubble && currentVoiceBubble.classList) currentVoiceBubble.classList.remove('pv-speaking');
+      currentBtn = null; currentVoiceBubble = null;
+      try{ window.__pvAiSpeakerActive=false; }catch(e){}
+      try{ if(window.__pvOnAiSpeechEnd) window.__pvOnAiSpeechEnd(); }catch(e){}
+    }
+    // Keep-alive: Chrome Android pauses TTS and never resumes - force resume every 800ms
+    aiSpeakKeepAlive=setInterval(function(){
+      if(mySession !== voiceSession){ clearAiSpeakTimers(); return; }
+      try{ if(window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
+    }, 800);
     function speakNext(){
       if(mySession !== voiceSession) return;
-      if(idx >= chunks.length){ if(currentBtn) currentBtn.classList.remove('playing'); if(currentVoiceBubble && currentVoiceBubble.classList) currentVoiceBubble.classList.remove('pv-speaking'); currentBtn = null; currentVoiceBubble = null; try{ window.__pvAiSpeakerActive=false; }catch(e){} try{ if(window.__pvOnAiSpeechEnd) window.__pvOnAiSpeechEnd(); }catch(e){} return; }
-      var u = new SpeechSynthesisUtterance(chunks[idx]);
+      if(idx >= chunks.length){ finishAll(); return; }
+      var chunkText = chunks[idx];
+      var chunkStart = Date.now();
+      var estimated = Math.min(20000, 3000 + chunkText.length*80);
+      if(aiSpeakWatchdog) clearInterval(aiSpeakWatchdog);
+      aiSpeakWatchdog=setInterval(function(){
+        if(mySession !== voiceSession) return;
+        try{ if(window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
+        // Chrome stall: this chunk never ended - skip to NEXT chunk, don't hang forever and don't cut whole reply
+        if(Date.now()-chunkStart > estimated+6000){
+          if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; }
+          idx++; setTimeout(speakNext, 120);
+        }
+      }, 700);
+      var u = new SpeechSynthesisUtterance(chunkText);
       var v = pickHumanVoice(); if(v) u.voice = v;
       u.lang = (v && v.lang) || 'en-US';
       u.rate = 1.0; u.pitch = 1.0; u.volume = 1;
-      u.onend = function(){ if(mySession !== voiceSession) return; idx++; speakNext(); };
-      u.onerror = function(){ if(mySession !== voiceSession) return; idx++; speakNext(); };
+      u.onend = function(){ if(mySession !== voiceSession) return; if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } idx++; setTimeout(speakNext, 120); };
+      u.onerror = function(){ if(mySession !== voiceSession) return; if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } idx++; setTimeout(speakNext, 120); };
       window.speechSynthesis.speak(u);
     }
     speakNext();
