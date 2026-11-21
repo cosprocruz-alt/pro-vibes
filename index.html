@@ -7355,8 +7355,14 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   function startPollForReply(){
     clearPoll(); waitingForAi=true; pollStart=Date.now();
+    var myPollChatId=null; try{ myPollChatId=String(pvHistoryGetCurrentId()||''); }catch(e){}
+    var myPollKill=(window.__pvAiAudioKillToken||0);
     pollTimer=setInterval(function(){
       if(!micOn || !waitingForAi){ clearPoll(); return; }
+      // FIX: after some time audio started talking - poller was still waiting for old chat, then found new chat's old AI msg and spoke it. If chat changed or kill happened, stop, never speak.
+      try{ if(window.__pvLoadingHistory) return; }catch(e){}
+      try{ if(myPollKill!==(window.__pvAiAudioKillToken||0)){ clearPoll(); waitingForAi=false; return; } }catch(e){}
+      try{ if(myPollChatId && String(pvHistoryGetCurrentId()||'')!==myPollChatId){ clearPoll(); waitingForAi=false; return; } }catch(e){}
       if(Date.now()-pollStart>25000){ clearPoll(); waitingForAi=false; if(stopAfterSend){ stopAfterSend=false; stopSession(); return; } if(micOn) setTimeout(startOneTurn, 400); return; }
       try{
         var box=el('pv-ai-messages'); if(!box) return;
@@ -7516,8 +7522,8 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
       try{
         var u=new SpeechSynthesisUtterance(chunk);
         var v=pickVoice(); if(v) u.voice=v; u.lang=(v&&v.lang)||'en-US'; u.rate=1.0; u.pitch=1.0; u.volume=1;
-        u.onend=function(){ if(mySession!==speakReplySession) return; if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); };
-        u.onerror=function(){ if(mySession!==speakReplySession) return; if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); };
+        u.onend=function(){ if(mySession!==speakReplySession || myKill!==(window.__pvAiAudioKillToken||0)) return; if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); };
+        u.onerror=function(){ if(mySession!==speakReplySession || myKill!==(window.__pvAiAudioKillToken||0)) return; if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); };
         window.speechSynthesis.speak(u);
       }catch(e){ if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); }
     }
@@ -7554,6 +7560,10 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     setMicVisual('listening');
     startOneTurn();
   }
+  window.__pvMarkAllAiSeen = markExistingAiSeen;
+  window.__pvClearPollers = function(){ try{ clearPoll(); }catch(e){} try{ clearRetry(); }catch(e){} try{ waitingForAi=false; }catch(e){} };
+  // Force-clear pollers even if micOn is false - old bug: __pvStopMicSession did nothing when micOn was false, so poller kept running and spoke after some time
+  window.__pvForceClearPollers = window.__pvClearPollers;
   function toggleMic(){ if(micOn) stopSession(); else startSession(); }
   window.__pvStartDictation=toggleMic;
   window.__pvStopMicSession=function(){ if(micOn) stopSession(); };
@@ -7764,14 +7774,17 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
       try{ if(window.ProVibesVoice && window.ProVibesVoice.discard) window.ProVibesVoice.discard('delete'); }catch(e){}
       try{ var pb = document.getElementById('pv-voice-paused-bar'); if(pb) pb.classList.remove('show'); }catch(e){}
       try{ if(window.__pvStopMicSession) window.__pvStopMicSession(); }catch(e){}
+      // FORCE clear pollers even if micOn was false - poller was the "after some time it talks" leak
+      try{ if(window.__pvForceClearPollers) window.__pvForceClearPollers(); }catch(e){}
+      try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(e){}
       // FORCE mic voice dead even if micOn was false - stopSpeakingMic alone did not bump its session, so pending timeouts resurrected it
       try{ if(window.__pvForceStopMicVoice) window.__pvForceStopMicVoice(); }catch(e){}
       try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
-      try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+      // FIX: Chrome bug - cancel() while paused does NOTHING, then voice comes back after some time. Must resume() first, then cancel().
+      try{ if('speechSynthesis' in window){ try{ window.speechSynthesis.resume(); }catch(e){} window.speechSynthesis.cancel(); } }catch(e){}
       try{ window.__pvAiSpeakerActive = false; }catch(e){}
-      // Chrome Android bug: one cancel() sometimes does not stick - cancel again after 100ms and 300ms
-      try{ setTimeout(function(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} }, 100); }catch(e){}
-      try{ setTimeout(function(){ try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} }, 300); }catch(e){}
+      // Long-tail killer: if Chrome resurrected a paused utterance after some time, kill it again - but only if no NEW audio started (kill token unchanged)
+      try{ var _killAtStop=(window.__pvAiAudioKillToken||0); [100,300,1000,3000,10000].forEach(function(_d){ setTimeout(function(){ try{ if((window.__pvAiAudioKillToken||0)!==_killAtStop) return; if('speechSynthesis' in window && window.speechSynthesis.speaking){ try{ window.speechSynthesis.resume(); }catch(e){} try{ window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} } }catch(e){} }, _d); }); }catch(e){}
     }catch(e){}
   }
   window.__pvKillAllAiAudio = pvStopAllChatAudio;
@@ -8124,7 +8137,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   function pvHistoryRender(filterText){ try{ pvHistoryMigrateUsedTitles(); pvCleanNumberedTitles(); try{ var _rl=pvHistoryLoad(); var _rc=pvHistoryGetCurrentId(); var _changed=false; for(var _ri=0;_ri<_rl.length;_ri++){ if(String(_rl[_ri].id)!==String(_rc) && !_rl[_ri].unread){ _rl[_ri].unread=true; _changed=true; } if(typeof _rl[_ri].opens!=='number'){ _rl[_ri].opens=0; _changed=true; } } if(_changed) pvHistorySave(_rl); }catch(e){} var _clr=el('pv-ai-history-search-clear'); if(_clr){ if(filterText && String(filterText).trim()) _clr.classList.remove('hidden'); else _clr.classList.add('hidden'); } var list=pvHistoryLoad(); try{ var _delBtn=el('pv-ai-history-delete-all'); if(_delBtn){ _delBtn.style.display=list.length?'':'none'; } }catch(e){} var curId=pvHistoryGetCurrentId(); var boxEl=el('pv-ai-history-list'); if(!boxEl) return; var q=String(filterText||'').toLowerCase().trim(); var shown=list.filter(function(c){ if(!q) return true; return String(c.title||'').toLowerCase().indexOf(q)!==-1; }); boxEl.innerHTML=''; if(!shown.length){ var _em=document.createElement('div'); _em.className='pv-ai-history-empty-center'; _em.textContent='No chats yet'; boxEl.appendChild(_em); } for(var i=0;i<shown.length;i++){ (function(c){ var btn=document.createElement('button'); btn.type='button'; var _isActive=String(c.id)===String(curId); var _showDot=(_isActive && (c.opens||0)>=2) || (!_isActive && c.unread); btn.className='pv-ai-history-item'+(_isActive?' selected':'')+(_showDot?' unread':''); var span=document.createElement('span'); span.className='pv-ai-history-item-text'; span.textContent=c.title||'New chat'; btn.appendChild(span); if(_showDot){ var dot=document.createElement('span'); dot.className='pv-ai-history-dot'; btn.appendChild(dot); } btn.addEventListener('click', function(){ if(pvHistLongPressed){ pvHistLongPressed=false; return; } pvHistoryOpen(c.id); });
       (function(btnEl, chat){ var startLong=function(){ pvHistLongPressed=false; if(pvHistLpTimer) clearTimeout(pvHistLpTimer); pvHistLpTimer=setTimeout(function(){ pvHistLongPressed=true; pvHistShowLongPress(chat.id, chat.title||'Chat', btnEl); }, 500); }; var cancelLong=function(){ if(pvHistLpTimer) clearTimeout(pvHistLpTimer); }; btnEl.addEventListener('touchstart', startLong, {passive:true}); btnEl.addEventListener('touchend', cancelLong); btnEl.addEventListener('touchmove', cancelLong); btnEl.addEventListener('mousedown', startLong); btnEl.addEventListener('mouseup', cancelLong); btnEl.addEventListener('mouseleave', cancelLong); btnEl.addEventListener('contextmenu', function(e){ e.preventDefault(); pvHistLongPressed=true; pvHistShowLongPress(chat.id, chat.title||'Chat', btnEl); }); })(btn, c);
       boxEl.appendChild(btn); })(shown[i]); } }catch(e){} }
-  function pvHistoryLoadMessagesToDOM(msgs){ try{ window.__pvLoadingHistory=true; var box=el('pv-ai-messages'); if(!box) return; try{ if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); }catch(e){} box.innerHTML=''; var fallbackTs=Date.now(); try{ var _cur=pvHistoryGetCurrentId(); var _list=pvHistoryLoad(); for(var _li=0;_li<_list.length;_li++){ if(String(_list[_li].id)===String(_cur) && _list[_li].updatedAt){ fallbackTs=Number(_list[_li].updatedAt); break; } } }catch(e){} var lastTs=null; for(var i=0;i<(msgs||[]).length;i++){ var _m=msgs[i]||{}; var _ts=_m.ts||_m.time||_m.timestamp||null; if(!_ts){ _ts=lastTs||fallbackTs; } lastTs=_ts; var _dm=addMsg(_m.txt||'', _m.who||'ai', _m.img||null, _ts, !!_m.isVideo); if(_dm && _m.isVideo && _m.video){ try{ var _im2=_dm.querySelector('img'); if(_im2) _im2.dataset.pvVideo=_m.video; }catch(e){} } } box.scrollTop=box.scrollHeight; setTimeout(function(){ window.__pvLoadingHistory=false; }, 500); }catch(e){ window.__pvLoadingHistory=false; } }
+  function pvHistoryLoadMessagesToDOM(msgs){ try{ window.__pvLoadingHistory=true; try{ if(window.__pvForceClearPollers) window.__pvForceClearPollers(); }catch(e){} var box=el('pv-ai-messages'); if(!box) return; try{ if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); }catch(e){} box.innerHTML=''; var fallbackTs=Date.now(); try{ var _cur=pvHistoryGetCurrentId(); var _list=pvHistoryLoad(); for(var _li=0;_li<_list.length;_li++){ if(String(_list[_li].id)===String(_cur) && _list[_li].updatedAt){ fallbackTs=Number(_list[_li].updatedAt); break; } } }catch(e){} var lastTs=null; for(var i=0;i<(msgs||[]).length;i++){ var _m=msgs[i]||{}; var _ts=_m.ts||_m.time||_m.timestamp||null; if(!_ts){ _ts=lastTs||fallbackTs; } lastTs=_ts; var _dm=addMsg(_m.txt||'', _m.who||'ai', _m.img||null, _ts, !!_m.isVideo); if(_dm && _m.isVideo && _m.video){ try{ var _im2=_dm.querySelector('img'); if(_im2) _im2.dataset.pvVideo=_m.video; }catch(e){} } } box.scrollTop=box.scrollHeight; try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(e){} setTimeout(function(){ window.__pvLoadingHistory=false; try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(e){} }, 500); }catch(e){ window.__pvLoadingHistory=false; } }
   function pvHistoryOpen(id){ try{ window.__pvLoadingHistory=true; if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); else if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(String(id)===String(pvHistoryGetCurrentId())){ try{ var _al=pvHistoryLoad(); for(var _ai=0;_ai<_al.length;_ai++){ if(String(_al[_ai].id)===String(id)){ _al[_ai].opens=((_al[_ai].opens||0)+1); _al[_ai].unread=false; } } pvHistorySave(_al); }catch(e){} pvHistoryClose(); pvHistoryRender(''); return; } pvHistorySaveCurrent(true); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found) return; pvHistorySetCurrentId(id); found.unread=false; found.opens=((found.opens||0)+1); pvHistorySave(list); var te=el('pv-ai-title'); if(te) te.textContent=found.title||'COSPRO AI'; try{ localStorage.setItem(TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} pvHistoryLoadMessagesToDOM(found.messages||[]); pvHistoryClose(); pvHistoryRender(''); }catch(e){} }
   function pvHistoryToggle(){ try{ var bar=el('pv-ai-history'); var back=el('pv-ai-history-backdrop'); if(!bar) return; var isOpen=bar.classList.contains('show'); if(isOpen){ pvHistoryClose(); } else { pvHistoryRender(el('pv-ai-history-search')?el('pv-ai-history-search').value:''); bar.classList.remove('hidden'); if(back) back.classList.add('show'); requestAnimationFrame(function(){ bar.classList.add('show'); }); } }catch(e){} }
   function pvHistoryClose(){ try{ try{ pvHistHideLongPress(); }catch(e){} try{ pvHistHideRename(); }catch(e){} var bar=el('pv-ai-history'); var back=el('pv-ai-history-backdrop'); if(bar) bar.classList.remove('show'); if(back) back.classList.remove('show'); setTimeout(function(){ if(bar && !bar.classList.contains('show')) bar.classList.add('hidden'); }, 280); }catch(e){} }
@@ -8381,7 +8394,7 @@ async function handleSend(){
     }
   }
   // FIX: NEW CHAT must kill audio on TOUCHSTART / POINTERDOWN, not just click - mobile click is delayed and old voice kept talking over new chat
-  function pvKillForNewChat(){ try{ if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); }catch(e){} try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){} try{ if(window.__pvForceStopMicVoice) window.__pvForceStopMicVoice(); }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} }
+  function pvKillForNewChat(){ try{ if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); }catch(e){} try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){} try{ if(window.__pvForceStopMicVoice) window.__pvForceStopMicVoice(); }catch(e){} try{ if(window.__pvForceClearPollers) window.__pvForceClearPollers(); }catch(e){} try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(e){} try{ if('speechSynthesis' in window){ try{ window.speechSynthesis.resume(); }catch(e){} window.speechSynthesis.cancel(); } }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} }
   window.__pvKillForNewChat = pvKillForNewChat;
   try{ var _newBtn=document.getElementById('pv-ai-upright'); if(_newBtn){ ['touchstart','pointerdown','mousedown'].forEach(function(ev){ _newBtn.addEventListener(ev, pvKillForNewChat, {capture:true, passive:true}); }); _newBtn.addEventListener('click', pvKillForNewChat, true); } }catch(e){}
   try{ document.addEventListener('touchstart', function(e){ try{ if(e.target && e.target.closest && e.target.closest('#pv-ai-upright')) pvKillForNewChat(); }catch(_e){} }, true); }catch(e){}
@@ -8507,8 +8520,8 @@ async function handleSend(){
       var v = pickHumanVoice(); if(v) u.voice = v;
       u.lang = (v && v.lang) || 'en-US';
       u.rate = 1.0; u.pitch = 1.0; u.volume = 1;
-      u.onend = function(){ if(mySession !== voiceSession) return; if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } idx++; setTimeout(speakNext, 120); };
-      u.onerror = function(){ if(mySession !== voiceSession) return; if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } idx++; setTimeout(speakNext, 120); };
+      u.onend = function(){ if(mySession !== voiceSession || myKill !== (window.__pvAiAudioKillToken||0)) return; if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } idx++; setTimeout(speakNext, 120); };
+      u.onerror = function(){ if(mySession !== voiceSession || myKill !== (window.__pvAiAudioKillToken||0)) return; if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } idx++; setTimeout(speakNext, 120); };
       window.speechSynthesis.speak(u);
     }
     speakNext();
