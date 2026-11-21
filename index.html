@@ -7303,7 +7303,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
-</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt=""><span class="pv-ai-attach-spinner" id="pv-ai-attach-spinner" aria-hidden="true"></span><button class="pv-ai-attach-play" id="pv-ai-attach-play" type="button" aria-label="Play video"><svg viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg></button><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-mic-btn" id="pv-ai-mic" type="button" aria-label="Voice recorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v3"/></svg></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Send"><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
+</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt=""><span class="pv-ai-attach-spinner" id="pv-ai-attach-spinner" aria-hidden="true"></span><button class="pv-ai-attach-play" id="pv-ai-attach-play" type="button" aria-label="Play video"><svg viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg></button><span id="pv-ai-attach-duration" aria-hidden="true"></span><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-mic-btn" id="pv-ai-mic" type="button" aria-label="Voice recorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v3"/></svg></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Send"><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
 
 <style data-file="css/pv-voice-dictation.css">
 #pv-ai-screen .pv-ai-input-row{gap:6px}
@@ -7659,9 +7659,15 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     }catch(e){}
   }
   function bindImg(img){
-    if(!img || img.dataset.pvPreloadBound) return; img.dataset.pvPreloadBound='1';
-    img.addEventListener('load', function(){ img.classList.add('pv-loaded'); img.style.visibility=''; try{ var _w=img.closest ? img.closest('.pv-ai-msg-video-wrap') : null; if(_w) _w.classList.remove('is-loading'); var _ap=img.closest ? img.closest('#pv-ai-attach-preview') : null; if(_ap) _ap.classList.remove('is-loading'); }catch(e){} });
-    img.addEventListener('error', function(){ img.classList.remove('pv-loaded'); try{ var _isVid=!!(img.classList.contains('pv-is-video') || img.classList.contains('pv-video-pending') || (img.closest && img.closest('.pv-ai-msg-video-wrap')) || (img.id==='pv-ai-attach-thumb' && img.closest && img.closest('#pv-ai-attach-preview') && img.closest('#pv-ai-attach-preview').classList.contains('is-video'))); if(_isVid) return; }catch(e){} img.style.visibility='hidden'; img.style.opacity='0'; });
+    if(!img || img.dataset.pvPreloadBound) return;
+    // VIDEO REMOVED HERE - ai-video-clean.js is the single owner for video. Do not bind video imgs here, no conflict.
+    try{
+      var _isVid = !!(img.classList.contains('pv-is-video') || img.classList.contains('pv-video-pending') || (img.closest && img.closest('.pv-ai-msg-video-wrap')) || (img.id==='pv-ai-attach-thumb' && img.closest && img.closest('#pv-ai-attach-preview') && img.closest('#pv-ai-attach-preview').classList.contains('is-video')));
+      if(_isVid) return;
+    }catch(e){}
+    img.dataset.pvPreloadBound='1';
+    img.addEventListener('load', function(){ img.classList.add('pv-loaded'); img.style.visibility=''; });
+    img.addEventListener('error', function(){ img.classList.remove('pv-loaded'); img.style.visibility='hidden'; img.style.opacity='0'; });
     if(img.complete && img.naturalWidth>0){ img.classList.add('pv-loaded'); }
   }
   function observeChat(){
@@ -7673,7 +7679,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   function bindThumb(){
     var thumb=el('pv-ai-attach-thumb'); if(thumb) bindImg(thumb);
-    // Video frame extraction moved to js/ai-video-clean.js - single place, no race. This file only binds load/error.
+    // Picture only. Video is owned by js/ai-video-clean.js.
   }
   function wire(){ moveScrollOutside(); bindThumb(); observeChat(); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
@@ -8123,7 +8129,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   function pvAiIsChatStale(chat){ try{ var t=chat && chat.updatedAt ? Number(chat.updatedAt) : 0; if(!t) return false; return (Date.now()-t) > PV_AI_FRESH_AFTER_MS; }catch(e){ return false; } }
   function pvAiRestoreOrFresh(){ try{ var box=el('pv-ai-messages'); if(!box) return; var curId=pvHistoryGetCurrentId(); if(!curId){ curId=pvHistoryEnsureCurrent(); } var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(curId)){ found=list[i]; break; } } if(!found){ if(!box.querySelector('.pv-ai-msg')){ try{ pvResetTitle(); }catch(e){} } return; } if(pvAiIsChatStale(found)){ var nid=pvHistoryNewId(); pvHistorySetCurrentId(nid); box.innerHTML=''; try{ pvResetTitle(); }catch(e){} return; } if(box.querySelector('.pv-ai-msg')){ return; } if(found.messages && found.messages.length){ pvHistoryLoadMessagesToDOM(found.messages); var te=el('pv-ai-title'); if(te && found.title) te.textContent=found.title; try{ localStorage.setItem(TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} } else { if(!box.querySelector('.pv-ai-msg')){ try{ pvResetTitle(); }catch(e){} } } }catch(e){} }
   window.pvAiRestoreOrFresh=pvAiRestoreOrFresh;
-  function pvHistoryGetMessagesFromDOM(){ try{ var box=el('pv-ai-messages'); if(!box) return []; var out=[]; var nodes=box.querySelectorAll('.pv-ai-msg'); for(var i=0;i<nodes.length;i++){ var n=nodes[i]; if(n.textContent && n.textContent.trim()==='Thinking...') continue; var who=n.classList.contains('user')?'user':'ai'; var txt=((n.dataset && n.dataset.pvRaw) ? n.dataset.pvRaw : (n.textContent||'')).trim(); var im=n.querySelector('img'); var imgURL=im?im.src:null; if(!txt && !imgURL) continue; var _ts=null; try{ if(n.dataset && n.dataset.pvTs) _ts=Number(n.dataset.pvTs); }catch(e){} var _isVid=false; try{ _isVid=!!(im && (im.classList.contains('pv-is-video') || (im.parentNode && im.parentNode.classList && im.parentNode.classList.contains('pv-ai-msg-video-wrap')))); }catch(e){} out.push({who:who, txt:txt||'', img:imgURL, ts:_ts, isVideo:_isVid, video:(_isVid && im && im.dataset ? im.dataset.pvVideo : null)}); } return out; }catch(e){ return []; } }
+  function pvHistoryGetMessagesFromDOM(){ try{ var box=el('pv-ai-messages'); if(!box) return []; var out=[]; var nodes=box.querySelectorAll('.pv-ai-msg'); for(var i=0;i<nodes.length;i++){ var n=nodes[i]; if(n.textContent && n.textContent.trim()==='Thinking...') continue; var who=n.classList.contains('user')?'user':'ai'; var txt=((n.dataset && n.dataset.pvRaw) ? n.dataset.pvRaw : (n.textContent||'')).trim(); var im=n.querySelector('img'); var imgURL=im?im.src:null; if(!txt && !imgURL) continue; var _ts=null; try{ if(n.dataset && n.dataset.pvTs) _ts=Number(n.dataset.pvTs); }catch(e){} var _isVid=false; try{ _isVid=!!(im && (im.classList.contains('pv-is-video') || (im.parentNode && im.parentNode.classList && im.parentNode.classList.contains('pv-ai-msg-video-wrap')))); }catch(e){} var _dur=''; try{ var _dEl=n.querySelector('.pv-ai-msg-video-duration'); if(_dEl) _dur=String(_dEl.textContent||'').trim(); }catch(e){} out.push({who:who, txt:txt||'', img:imgURL, ts:_ts, isVideo:_isVid, video:(_isVid && im && im.dataset ? im.dataset.pvVideo : null), videoDuration:_dur}); } return out; }catch(e){ return []; } }
   function pvHistorySaveCurrent(leaveUnread){ try{ var id=pvHistoryEnsureCurrent(); var titleEl=el('pv-ai-title'); var title=titleEl?titleEl.textContent:'COSPRO AI'; var msgs=pvHistoryGetMessagesFromDOM(); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!msgs.length && (!title || title==='COSPRO AI' || title==='Quick Hello')){ return; } if(found){ if(pvIsRealTitle(found.title)){ try{ var _teL=el('pv-ai-title'); if(_teL && _teL.textContent!==found.title) _teL.textContent=found.title; }catch(e){} title=found.title; } else if(pvIsRealTitle(title)){ found.title=title; } found.messages=msgs; found.updatedAt=Date.now(); if(leaveUnread) found.unread=true; else if(!leaveUnread) found.unread=false; } else { list.unshift({id:id, title:title, messages:msgs, updatedAt:Date.now(), unread:leaveUnread?true:false}); } list.sort(function(a,b){ return (b.updatedAt||0)-(a.updatedAt||0); }); if(list.length>100) list=list.slice(0,100); pvHistorySave(list); }catch(e){} }
   function pvHistoryUpdateTitle(title){ try{ if(!title||title==='COSPRO AI') return; var id=pvHistoryEnsureCurrent(); if(pvIsChatTitleLocked(id)) return; var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(found){ if(found.manualTitle) return; if(pvIsRealTitle(found.title)) return; found.title=String(title).replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim()||title; found.updatedAt=Date.now(); pvHistorySave(list); } }catch(e){} }
   function pvCleanNumberedTitles(){ try{ var list=pvHistoryLoad(); var changed=false; for(var i=0;i<list.length;i++){ if(list[i].manualTitle) continue; var ttl=String(list[i].title||''); if(!ttl) continue; if(/[0-9]/.test(ttl)){ var noNum=ttl.replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); if(noNum && noNum!==ttl){ list[i].title=noNum; changed=true; } } } if(changed){ pvHistorySave(list); try{ var used=pvGetUsedTitles(); var nu2=used.map(function(x){ return String(x||'').replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); }).filter(Boolean); localStorage.setItem(TITLE_USED_KEY, JSON.stringify(nu2)); }catch(e){} } }catch(e){} }
@@ -8139,12 +8145,12 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   var pvHistDelMode='all'; var pvHistDelSingleId=null;
   function pvHistShowDeleteConfirm(mode, id){ try{ pvHistDelMode=mode||'all'; pvHistDelSingleId=id||null; var ttl=el('pv-ai-hist-del-title'); if(ttl) ttl.textContent=(pvHistDelMode==='single'?'Delete this chat?':'Delete all chats?'); var back=el('pv-ai-hist-del-backdrop'); var sheet=el('pv-ai-hist-del-confirm'); if(back) back.classList.add('show'); if(sheet) sheet.classList.add('show'); try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){} }catch(e){} }
   function pvHistHideDeleteConfirm(){ try{ pvHistDelSingleId=null; var back=el('pv-ai-hist-del-backdrop'); var sheet=el('pv-ai-hist-del-confirm'); if(back) back.classList.remove('show'); if(sheet) sheet.classList.remove('show'); }catch(e){} }
-  function pvHistDeleteAll(){ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ pvHistHideDeleteConfirm(); pvHistHideLongPress(); pvHistorySave([]); try{ localStorage.removeItem(TITLE_USED_KEY); localStorage.setItem(TITLE_USED_KEY, '[]'); }catch(e){} try{ localStorage.setItem(CURRENT_CHAT_KEY, pvHistoryNewId()); }catch(e){} try{ pvResetTitle(); }catch(e){} var s=el('pv-ai-history-search'); if(s) s.value=''; var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp=el('pv-ai-input'); if(inp){ inp.value=''; inp.style.height='auto'; } var bar=el('pv-ai-input-bar'); if(bar) bar.classList.remove('has-text'); var prev=el('pv-ai-attach-preview'); if(prev) prev.classList.remove('show'); pvHistoryRender(''); try{ pvHistoryClose(); }catch(e){} }catch(e){ pvHistHideDeleteConfirm(); } }
+  function pvHistDeleteAll(){ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ pvHistHideDeleteConfirm(); pvHistHideLongPress(); pvHistorySave([]); try{ localStorage.removeItem(TITLE_USED_KEY); localStorage.setItem(TITLE_USED_KEY, '[]'); }catch(e){} try{ localStorage.setItem(CURRENT_CHAT_KEY, pvHistoryNewId()); }catch(e){} try{ pvResetTitle(); }catch(e){} var s=el('pv-ai-history-search'); if(s) s.value=''; var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp=el('pv-ai-input'); if(inp){ inp.value=''; inp.style.height='auto'; } var bar=el('pv-ai-input-bar'); if(bar){ bar.classList.remove('has-text'); bar.classList.remove('has-media'); } var prev=el('pv-ai-attach-preview'); if(prev) prev.classList.remove('show'); pvHistoryRender(''); try{ pvHistoryClose(); }catch(e){} }catch(e){ pvHistHideDeleteConfirm(); } }
   function pvHistDeleteChat(id){ try{ try{ pvHistHideDeleteConfirm(); }catch(e){} var list=pvHistoryLoad(); var found=null; var idx=-1; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; idx=i; break; } } if(idx===-1){ pvHistHideLongPress(); pvHistHideDeleteConfirm(); return; } var deletedTitle=found.title||''; list.splice(idx,1); pvHistorySave(list); try{ var used=pvGetUsedTitles(); var low=String(deletedTitle).toLowerCase().trim(); if(low){ var nu=used.filter(function(x){ return String(x||'').toLowerCase().trim()!==low; }); try{ localStorage.setItem(TITLE_USED_KEY, JSON.stringify(nu)); }catch(e){} } }catch(e){} pvHistHideLongPress(); var curId=pvHistoryGetCurrentId(); if(String(curId)===String(id)){ try{ localStorage.setItem(CURRENT_CHAT_KEY, 'chat_'+Date.now()+'_'+Math.floor(Math.random()*100000)); }catch(e){} try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; pvResetTitle(); } pvHistoryRender(el('pv-ai-history-search')?el('pv-ai-history-search').value:''); if(!list.length){ try{ pvHistoryClose(); }catch(e){} } }catch(e){ pvHistHideLongPress(); pvHistHideDeleteConfirm(); } }
   function pvHistoryRender(filterText){ try{ pvHistoryMigrateUsedTitles(); pvCleanNumberedTitles(); try{ var _rl=pvHistoryLoad(); var _rc=pvHistoryGetCurrentId(); var _changed=false; for(var _ri=0;_ri<_rl.length;_ri++){ if(String(_rl[_ri].id)!==String(_rc) && !_rl[_ri].unread){ _rl[_ri].unread=true; _changed=true; } if(typeof _rl[_ri].opens!=='number'){ _rl[_ri].opens=0; _changed=true; } } if(_changed) pvHistorySave(_rl); }catch(e){} var _clr=el('pv-ai-history-search-clear'); if(_clr){ if(filterText && String(filterText).trim()) _clr.classList.remove('hidden'); else _clr.classList.add('hidden'); } var list=pvHistoryLoad(); try{ var _delBtn=el('pv-ai-history-delete-all'); if(_delBtn){ _delBtn.style.display=list.length?'':'none'; } }catch(e){} var curId=pvHistoryGetCurrentId(); var boxEl=el('pv-ai-history-list'); if(!boxEl) return; var q=String(filterText||'').toLowerCase().trim(); var shown=list.filter(function(c){ if(!q) return true; return String(c.title||'').toLowerCase().indexOf(q)!==-1; }); boxEl.innerHTML=''; if(!shown.length){ var _em=document.createElement('div'); _em.className='pv-ai-history-empty-center'; _em.textContent='No chats yet'; boxEl.appendChild(_em); } for(var i=0;i<shown.length;i++){ (function(c){ var btn=document.createElement('button'); btn.type='button'; var _isActive=String(c.id)===String(curId); var _showDot=(_isActive && (c.opens||0)>=2) || (!_isActive && c.unread); btn.className='pv-ai-history-item'+(_isActive?' selected':'')+(_showDot?' unread':''); var span=document.createElement('span'); span.className='pv-ai-history-item-text'; span.textContent=c.title||'New chat'; btn.appendChild(span); if(_showDot){ var dot=document.createElement('span'); dot.className='pv-ai-history-dot'; btn.appendChild(dot); } btn.addEventListener('click', function(){ if(pvHistLongPressed){ pvHistLongPressed=false; return; } pvHistoryOpen(c.id); });
       (function(btnEl, chat){ var startLong=function(){ pvHistLongPressed=false; if(pvHistLpTimer) clearTimeout(pvHistLpTimer); pvHistLpTimer=setTimeout(function(){ pvHistLongPressed=true; pvHistShowLongPress(chat.id, chat.title||'Chat', btnEl); }, 500); }; var cancelLong=function(){ if(pvHistLpTimer) clearTimeout(pvHistLpTimer); }; btnEl.addEventListener('touchstart', startLong, {passive:true}); btnEl.addEventListener('touchend', cancelLong); btnEl.addEventListener('touchmove', cancelLong); btnEl.addEventListener('mousedown', startLong); btnEl.addEventListener('mouseup', cancelLong); btnEl.addEventListener('mouseleave', cancelLong); btnEl.addEventListener('contextmenu', function(e){ e.preventDefault(); pvHistLongPressed=true; pvHistShowLongPress(chat.id, chat.title||'Chat', btnEl); }); })(btn, c);
       boxEl.appendChild(btn); })(shown[i]); } }catch(e){} }
-  function pvHistoryLoadMessagesToDOM(msgs){ try{ window.__pvLoadingHistory=true; try{ if(window.__pvForceClearPollers) window.__pvForceClearPollers(); }catch(e){} var box=el('pv-ai-messages'); if(!box) return; try{ if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); }catch(e){} box.innerHTML=''; var fallbackTs=Date.now(); try{ var _cur=pvHistoryGetCurrentId(); var _list=pvHistoryLoad(); for(var _li=0;_li<_list.length;_li++){ if(String(_list[_li].id)===String(_cur) && _list[_li].updatedAt){ fallbackTs=Number(_list[_li].updatedAt); break; } } }catch(e){} var lastTs=null; for(var i=0;i<(msgs||[]).length;i++){ var _m=msgs[i]||{}; var _ts=_m.ts||_m.time||_m.timestamp||null; if(!_ts){ _ts=lastTs||fallbackTs; } lastTs=_ts; var _dm=addMsg(_m.txt||'', _m.who||'ai', _m.img||null, _ts, !!_m.isVideo); if(_dm && _m.isVideo && _m.video){ try{ var _im2=_dm.querySelector('img'); if(_im2) _im2.dataset.pvVideo=_m.video; }catch(e){} } } box.scrollTop=box.scrollHeight; try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(e){} setTimeout(function(){ window.__pvLoadingHistory=false; try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(e){} }, 500); }catch(e){ window.__pvLoadingHistory=false; } }
+  function pvHistoryLoadMessagesToDOM(msgs){ try{ window.__pvLoadingHistory=true; try{ if(window.__pvForceClearPollers) window.__pvForceClearPollers(); }catch(e){} var box=el('pv-ai-messages'); if(!box) return; try{ if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); }catch(e){} box.innerHTML=''; var fallbackTs=Date.now(); try{ var _cur=pvHistoryGetCurrentId(); var _list=pvHistoryLoad(); for(var _li=0;_li<_list.length;_li++){ if(String(_list[_li].id)===String(_cur) && _list[_li].updatedAt){ fallbackTs=Number(_list[_li].updatedAt); break; } } }catch(e){} var lastTs=null; for(var i=0;i<(msgs||[]).length;i++){ var _m=msgs[i]||{}; var _ts=_m.ts||_m.time||_m.timestamp||null; if(!_ts){ _ts=lastTs||fallbackTs; } lastTs=_ts; var _dm=addMsg(_m.txt||'', _m.who||'ai', _m.img||null, _ts, !!_m.isVideo, _m.videoDuration||''); if(_dm && _m.isVideo && _m.video){ try{ var _im2=_dm.querySelector('img'); if(_im2) _im2.dataset.pvVideo=_m.video; }catch(e){} } } box.scrollTop=box.scrollHeight; try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(e){} setTimeout(function(){ window.__pvLoadingHistory=false; try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(e){} }, 500); }catch(e){ window.__pvLoadingHistory=false; } }
   function pvHistoryOpen(id){ try{ window.__pvLoadingHistory=true; if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); else if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(String(id)===String(pvHistoryGetCurrentId())){ try{ var _al=pvHistoryLoad(); for(var _ai=0;_ai<_al.length;_ai++){ if(String(_al[_ai].id)===String(id)){ _al[_ai].opens=((_al[_ai].opens||0)+1); _al[_ai].unread=false; } } pvHistorySave(_al); }catch(e){} pvHistoryClose(); pvHistoryRender(''); return; } pvHistorySaveCurrent(true); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found) return; pvHistorySetCurrentId(id); found.unread=false; found.opens=((found.opens||0)+1); pvHistorySave(list); var te=el('pv-ai-title'); if(te) te.textContent=found.title||'COSPRO AI'; try{ localStorage.setItem(TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} pvHistoryLoadMessagesToDOM(found.messages||[]); pvHistoryClose(); pvHistoryRender(''); }catch(e){} }
   function pvHistoryToggle(){ try{ var bar=el('pv-ai-history'); var back=el('pv-ai-history-backdrop'); if(!bar) return; var isOpen=bar.classList.contains('show'); if(isOpen){ pvHistoryClose(); } else { pvHistoryRender(el('pv-ai-history-search')?el('pv-ai-history-search').value:''); bar.classList.remove('hidden'); if(back) back.classList.add('show'); requestAnimationFrame(function(){ bar.classList.add('show'); }); } }catch(e){} }
   function pvHistoryClose(){ try{ try{ pvHistHideLongPress(); }catch(e){} try{ pvHistHideRename(); }catch(e){} var bar=el('pv-ai-history'); var back=el('pv-ai-history-backdrop'); if(bar) bar.classList.remove('show'); if(back) back.classList.remove('show'); setTimeout(function(){ if(bar && !bar.classList.contains('show')) bar.classList.add('hidden'); }, 280); }catch(e){} }
@@ -8179,13 +8185,13 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   function pvAiDateLabel(ts){ try{ var d=new Date(Number(ts)||Date.now()); var now=new Date(); function _k(x){ return x.getFullYear()+'-'+x.getMonth()+'-'+x.getDate(); } if(_k(d)===_k(now)) return 'Today'; var y=new Date(now); y.setDate(now.getDate()-1); if(_k(d)===_k(y)) return 'Yesterday'; var months=['January','February','March','April','May','June','July','August','September','October','November','December']; return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear(); }catch(e){ return 'Today'; } }
   function pvAiTimeLabel(ts){ try{ var d=new Date(Number(ts)||Date.now()); var h=d.getHours(); var ap=h>=12?'PM':'AM'; h=h%12||12; var m=d.getMinutes(); return h+':'+(m<10?'0'+m:m)+' '+ap; }catch(e){ return ''; } }
   function pvAiMaybeInsertDateSep(ts){ try{ var box=el('pv-ai-messages'); if(!box) return; var key=pvAiDateKey(ts); var seps=box.querySelectorAll('.pv-ai-date-sep'); var last=seps.length?seps[seps.length-1]:null; if(last && last.getAttribute('data-date-key')===key) return; var sep=document.createElement('div'); sep.className='pv-ai-date-sep'; sep.setAttribute('data-date-key',key); sep.setAttribute('data-pv-date-sep','1'); var main=document.createElement('span'); main.className='pv-ai-date-main'; main.textContent=pvAiDateLabel(ts); var tm=document.createElement('span'); tm.className='pv-ai-date-time'; tm.textContent=pvAiTimeLabel(ts); sep.appendChild(main); sep.appendChild(tm); box.appendChild(sep); }catch(e){} }
-  function addMsg(txt, who, imgURL, ts, isVideo){
+  function addMsg(txt, who, imgURL, ts, isVideo, videoDuration){
     var box = el('pv-ai-messages'); if(!box) return null;
     var _msgTs = ts ? Number(ts) : Date.now();
     if(txt && txt!=='Thinking...'){ try{ pvAiMaybeInsertDateSep(_msgTs); }catch(e){} }
     if(who==='ai' && txt && txt!=='Thinking...'){ try{ if(window.pvAiReplyVib) window.pvAiReplyVib(); else if(window.pvSleekVib) window.pvSleekVib(); }catch(e){} }
     var d = document.createElement('div'); d.className = 'pv-ai-msg ' + who; try{ d.dataset.pvTs = String(_msgTs); }catch(e){}
-    if(imgURL || isVideo){ var im=document.createElement('img'); if(imgURL){ im.src=imgURL; } else { try{ im.setAttribute('data-pv-video-pending','1'); im.classList.add('pv-video-pending'); im.style.visibility='hidden'; }catch(e){} } try{ im.style.setProperty('width','96px','important'); im.style.setProperty('height','96px','important'); im.style.setProperty('max-width','96px','important'); im.style.setProperty('object-fit','cover','important'); im.style.setProperty('border-radius','14px','important'); im.style.setProperty('display','block','important'); im.style.setProperty('margin', who==='user' ? '0 0 6px auto' : '8px 0 0 0','important'); im.style.setProperty('background','transparent','important'); im.style.setProperty('cursor','zoom-in','important'); }catch(e){} if(who==='user'){ try{ d.style.setProperty('background','transparent','important'); d.style.setProperty('padding','0','important'); d.style.setProperty('box-shadow','none','important'); }catch(e){} } if(isVideo){ try{ var pvWrap=document.createElement('div'); pvWrap.className='pv-ai-msg-video-wrap'; if(!imgURL){ pvWrap.classList.add('is-loading'); } var pvSpin=document.createElement('span'); pvSpin.className='pv-ai-msg-video-spinner'; pvSpin.setAttribute('aria-hidden','true'); var pvPlay=document.createElement('button'); pvPlay.type='button'; pvPlay.className='pv-ai-msg-play'; pvPlay.setAttribute('aria-label','Play video'); pvPlay.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg>'; pvWrap.appendChild(im); pvWrap.appendChild(pvSpin); pvWrap.appendChild(pvPlay); d.appendChild(pvWrap); }catch(e){ d.appendChild(im); } } else { d.appendChild(im); } }
+    if(imgURL || isVideo){ var im=document.createElement('img'); if(imgURL){ im.src=imgURL; } else { try{ im.setAttribute('data-pv-video-pending','1'); im.classList.add('pv-video-pending'); im.style.display='none'; im.style.visibility='hidden'; }catch(e){} } try{ im.style.setProperty('width','96px','important'); im.style.setProperty('height','96px','important'); im.style.setProperty('max-width','96px','important'); im.style.setProperty('object-fit','cover','important'); im.style.setProperty('border-radius','14px','important'); im.style.setProperty('display','block','important'); im.style.setProperty('margin', who==='user' ? '0 0 6px auto' : '8px 0 0 0','important'); im.style.setProperty('background','transparent','important'); im.style.setProperty('cursor','zoom-in','important'); }catch(e){} if(who==='user'){ try{ d.style.setProperty('background','transparent','important'); d.style.setProperty('padding','0','important'); d.style.setProperty('box-shadow','none','important'); }catch(e){} } if(isVideo){ try{ var pvWrap=document.createElement('div'); pvWrap.className='pv-ai-msg-video-wrap'; if(!imgURL){ pvWrap.classList.add('is-loading'); } var pvSpin=document.createElement('span'); pvSpin.className='pv-ai-msg-video-spinner'; pvSpin.setAttribute('aria-hidden','true'); var pvPlay=document.createElement('button'); pvPlay.type='button'; pvPlay.className='pv-ai-msg-play'; pvPlay.setAttribute('aria-label','Play video'); pvPlay.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg>'; var pvDur=document.createElement('span'); pvDur.className='pv-ai-msg-video-duration'; pvDur.setAttribute('aria-hidden','true'); pvDur.textContent = videoDuration || window.__pvAttachVideoDurationText || ''; pvWrap.appendChild(im); pvWrap.appendChild(pvSpin); pvWrap.appendChild(pvPlay); pvWrap.appendChild(pvDur); d.appendChild(pvWrap); }catch(e){ d.appendChild(im); } } else { d.appendChild(im); } }
     if(txt){ if(who==='ai' && txt!=='Thinking...'){ d.dataset.pvRaw=txt; var c=document.createElement('div'); c.className='pv-md'; c.innerHTML=pvRenderMarkdown(txt); d.appendChild(c); } else { var s=document.createElement('span'); s.textContent=txt; if((imgURL || isVideo) && who==='user'){ try{ s.style.setProperty('background','#ffffff','important'); s.style.setProperty('color','#111111','important'); s.style.setProperty('padding','8px 12px','important'); s.style.setProperty('border-radius','18px','important'); s.style.setProperty('display','block','important'); s.style.setProperty('width','fit-content','important'); s.style.setProperty('max-width','100%','important'); s.style.setProperty('margin-left','auto','important'); s.style.setProperty('box-shadow','0 1px 3px rgba(0,0,0,.25)','important'); }catch(e){} } d.appendChild(s); } }
     if(who==='ai' && txt && txt!=='Thinking...'){
       var wrap = document.createElement('div'); wrap.className = 'pv-ai-msg-wrap ai';
@@ -8286,20 +8292,21 @@ async function handleSend(){
     var pvSendIsVideo = !!(pendingFile && pendingFile.type && pendingFile.type.indexOf('video')===0);
     var pvSendVideoURL = pvSendIsVideo ? window.__pvAttachVideoURL : null;
     var pvSendChatId=pvHistoryEnsureCurrent();
-    var pvSentMsg = addMsg(txt, 'user', showImg, null, pvSendIsVideo);
-    if(pvSentMsg && pvSendVideoURL){ try{ var pvSentImg=pvSentMsg.querySelector('img'); if(pvSentImg){ pvSentImg.dataset.pvVideo=pvSendVideoURL; pvSentImg.classList.add('pv-is-video'); if(!showImg){ try{ var _f = window.__pvAttachVideoFrame || null; if(_f){ pvSentImg.src=_f; pvSentImg.classList.add('pv-loaded'); pvSentImg.style.visibility=''; pvSentImg.style.opacity='1'; var _w=pvSentImg.closest ? pvSentImg.closest('.pv-ai-msg-video-wrap') : null; if(_w) _w.classList.remove('is-loading'); try{ pvHistorySaveCurrent(); }catch(e){} } }catch(e){} } } }catch(e){} }
+    var pvSentMsg = addMsg(txt, 'user', showImg, null, pvSendIsVideo, window.__pvAttachVideoDurationText||'');
+    if(pvSentMsg && pvSendVideoURL){ try{ var pvSentImg=pvSentMsg.querySelector('img'); if(pvSentImg){ pvSentImg.dataset.pvVideo=pvSendVideoURL; pvSentImg.classList.add('pv-is-video'); if(!showImg){ try{ var _f = window.__pvAttachVideoFrame || null; if(_f){ pvSentImg.style.display='block'; pvSentImg.src=_f; pvSentImg.classList.add('pv-loaded'); pvSentImg.style.visibility=''; pvSentImg.style.opacity='1'; var _w=pvSentImg.closest ? pvSentImg.closest('.pv-ai-msg-video-wrap') : null; if(_w) _w.classList.remove('is-loading'); try{ pvHistorySaveCurrent(); }catch(e){} } }catch(e){} } } }catch(e){} }
     pvUpdateTitleFromText(txt, !!showImg);
     try{ pvHistorySaveCurrent(); }catch(e){}
     var fileNow = pendingFile; pendingFile=null; pendingFileURL=null;
     var prev = el('pv-ai-attach-preview'); if(prev){ prev.classList.remove('show'); prev.classList.remove('is-loading'); prev.classList.remove('is-video'); }
-    inp.value=''; var bar=el('pv-ai-input-bar'); if(bar) bar.classList.remove('has-text'); inp.style.height='auto';
+    try{ var _dCl=el('pv-ai-attach-duration'); if(_dCl){ _dCl.textContent=''; _dCl.classList.remove('has-duration'); } window.__pvAttachVideoDurationText=''; window.__pvAttachVideoDuration=0; }catch(e){}
+    inp.value=''; var bar=el('pv-ai-input-bar'); if(bar){ bar.classList.remove('has-text'); bar.classList.remove('has-media'); } inp.style.height='auto';
     var thinking = addMsg('Thinking...', 'ai'); if(thinking) thinking.classList.add('thinking');
     try{
       var reply = '';
       if(fileNow){
         // Picture / video -> COSPRO AI sees, COSPRO AI explains
         var b64, mimeForVision;
-        if(fileNow.type.indexOf('video')===0){ b64 = await pvGetVideoFrame(fileNow); mimeForVision = 'image/jpeg'; try{ if(pvSentMsg){ var _pi=pvSentMsg.querySelector('img.pv-video-pending, img[data-pv-video-pending]'); if(_pi && b64){ var _du='data:image/jpeg;base64,'+b64; try{ window.__pvAttachVideoFrame=_du; }catch(e){} _pi.removeAttribute('data-pv-video-pending'); _pi.classList.remove('pv-video-pending'); _pi.src=_du; _pi.classList.add('pv-loaded'); _pi.style.visibility=''; _pi.style.opacity='1'; var _pw=_pi.closest ? _pi.closest('.pv-ai-msg-video-wrap') : null; if(_pw) _pw.classList.remove('is-loading'); try{ pvHistorySaveCurrent(); }catch(e){} } } }catch(e){} } else { b64 = await fileToBase64(fileNow); mimeForVision = fileNow.type || 'image/jpeg'; }
+        if(fileNow.type.indexOf('video')===0){ b64 = await pvGetVideoFrame(fileNow); mimeForVision = 'image/jpeg'; try{ if(pvSentMsg){ var _pi=pvSentMsg.querySelector('img.pv-video-pending, img[data-pv-video-pending]'); if(_pi && b64){ var _du='data:image/jpeg;base64,'+b64; try{ window.__pvAttachVideoFrame=_du; }catch(e){} _pi.removeAttribute('data-pv-video-pending'); _pi.classList.remove('pv-video-pending'); _pi.style.display='block'; _pi.src=_du; _pi.classList.add('pv-loaded'); _pi.style.visibility=''; _pi.style.opacity='1'; var _pw=_pi.closest ? _pi.closest('.pv-ai-msg-video-wrap') : null; if(_pw) _pw.classList.remove('is-loading'); try{ pvHistorySaveCurrent(); }catch(e){} } } }catch(e){} } else { b64 = await fileToBase64(fileNow); mimeForVision = fileNow.type || 'image/jpeg'; }
         var seen = await callGroqVision(fileNow, b64, mimeForVision);
         var _hist2 = pvHistoryGetMessagesFromDOM().slice(-8) /* FIX: was 20, burned 8K TPM fast */.map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
         reply = await callGroq([
@@ -8377,8 +8384,8 @@ async function handleSend(){
         var f = fileInput.files && fileInput.files[0]; if(!f) return;
         pendingFile = f;
         var prev = el('pv-ai-attach-preview'); var thumb=el('pv-ai-attach-thumb'); var nm=el('pv-ai-attach-name');
-        if(f.type.indexOf('image')===0){ pendingFileURL = URL.createObjectURL(f); try{ window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} if(prev){ prev.classList.remove('is-loading'); prev.classList.remove('is-video'); } if(thumb){ thumb.src=pendingFileURL; thumb.style.visibility=''; } }
-        else if(f.type.indexOf('video')===0){ pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); }catch(e){} try{ window.__pvAttachVideoURL=URL.createObjectURL(f); window.__pvAttachVideoFrame=null; }catch(e){} if(prev){ prev.classList.add('show'); prev.classList.add('is-loading'); prev.classList.add('is-video'); } if(thumb){ thumb.removeAttribute('src'); thumb.style.visibility='hidden'; } }
+        if(f.type.indexOf('image')===0){ pendingFileURL = URL.createObjectURL(f); try{ window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} if(prev){ prev.classList.remove('is-loading'); prev.classList.remove('is-video'); } if(thumb){ thumb.style.display=''; thumb.src=pendingFileURL; thumb.style.visibility=''; } try{ var _bPic=el('pv-ai-input-bar'); if(_bPic) _bPic.classList.add('has-media'); }catch(e){} }
+        else if(f.type.indexOf('video')===0){ pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); }catch(e){} try{ window.__pvAttachVideoURL=URL.createObjectURL(f); window.__pvAttachVideoFrame=null; }catch(e){} if(prev){ prev.classList.add('show'); prev.classList.add('is-loading'); prev.classList.add('is-video'); } try{ var _bVid=el('pv-ai-input-bar'); if(_bVid) _bVid.classList.add('has-media'); }catch(e){} if(thumb){ thumb.removeAttribute('src'); thumb.style.display='none'; thumb.style.visibility='hidden'; thumb.style.opacity='0'; thumb.classList.remove('pv-loaded'); } try{ var _dN=el('pv-ai-attach-duration'); if(_dN){ _dN.textContent=''; _dN.classList.remove('has-duration'); } window.__pvAttachVideoDurationText=''; window.__pvAttachVideoDuration=0; }catch(e){} }
         else { pendingFileURL=null; try{ window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} if(prev){ prev.classList.remove('is-loading'); prev.classList.remove('is-video'); } if(thumb) thumb.src=''; }
         if(nm) nm.textContent = f.name;
         if(prev) prev.classList.add('show');
@@ -8396,7 +8403,7 @@ async function handleSend(){
         filesInput.value='';
       }); }
       var clearBtn = el('pv-ai-attach-clear');
-      if(clearBtn) clearBtn.addEventListener('click', function(){ pendingFile=null; pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} var p=el('pv-ai-attach-preview'); if(p){ p.classList.remove('show'); p.classList.remove('is-loading'); p.classList.remove('is-video'); } });
+      if(clearBtn) clearBtn.addEventListener('click', function(){ pendingFile=null; pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; window.__pvAttachVideoDurationText=''; window.__pvAttachVideoDuration=0; }catch(e){} var p=el('pv-ai-attach-preview'); if(p){ p.classList.remove('show'); p.classList.remove('is-loading'); p.classList.remove('is-video'); } try{ var _bClr=el('pv-ai-input-bar'); if(_bClr) _bClr.classList.remove('has-media'); }catch(e){} try{ var _dC=el('pv-ai-attach-duration'); if(_dC){ _dC.textContent=''; _dC.classList.remove('has-duration'); } }catch(e){} });
     }
   }
   // FIX: NEW CHAT must kill audio on TOUCHSTART / POINTERDOWN, not just click - mobile click is delayed and old voice kept talking over new chat
@@ -8405,7 +8412,7 @@ async function handleSend(){
   try{ var _newBtn=document.getElementById('pv-ai-upright'); if(_newBtn){ ['touchstart','pointerdown','mousedown'].forEach(function(ev){ _newBtn.addEventListener(ev, pvKillForNewChat, {capture:true, passive:true}); }); _newBtn.addEventListener('click', pvKillForNewChat, true); } }catch(e){}
   try{ document.addEventListener('touchstart', function(e){ try{ if(e.target && e.target.closest && e.target.closest('#pv-ai-upright')) pvKillForNewChat(); }catch(_e){} }, true); }catch(e){}
   try{ document.addEventListener('pointerdown', function(e){ try{ if(e.target && e.target.closest && e.target.closest('#pv-ai-upright')) pvKillForNewChat(); }catch(_e){} }, true); }catch(e){}
-  document.addEventListener('click', function(e){ try{ if(!e.target || !e.target.closest) return; if(!e.target.closest('#pv-ai-upright')) return; /* FIX: NEW CHAT = STOP old AI audio instantly - never keep talking into new chat */ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} try{ if(window.__pvStopMicSession) window.__pvStopMicSession(); }catch(e){} try{ pvHistorySaveCurrent(true); }catch(e){} try{ pvHistorySetCurrentId(pvHistoryNewId()); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp2=el('pv-ai-input'); if(inp2){ inp2.value=''; inp2.style.height='auto'; } var bar2=el('pv-ai-input-bar'); if(bar2) bar2.classList.remove('has-text'); var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('show'); pvResetTitle(); }catch(err){} }, true);
+  document.addEventListener('click', function(e){ try{ if(!e.target || !e.target.closest) return; if(!e.target.closest('#pv-ai-upright')) return; /* FIX: NEW CHAT = STOP old AI audio instantly - never keep talking into new chat */ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} try{ if(window.__pvStopMicSession) window.__pvStopMicSession(); }catch(e){} try{ pvHistorySaveCurrent(true); }catch(e){} try{ pvHistorySetCurrentId(pvHistoryNewId()); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp2=el('pv-ai-input'); if(inp2){ inp2.value=''; inp2.style.height='auto'; } var bar2=el('pv-ai-input-bar'); if(bar2){ bar2.classList.remove('has-text'); bar2.classList.remove('has-media'); } var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('show'); pvResetTitle(); }catch(err){} }, true);
   pvInitTitle();
   try{ pvHistoryInit(); }catch(e){}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
@@ -8784,16 +8791,16 @@ async function handleSend(){
 <!-- ===== FILE: css/ai-separate-voice-send.css — separate, do not mix ===== -->
 <style data-file="css/ai-separate-voice-send.css">
 
-/* SEND ONLY - Grey until first word typed, gradient when there is text. Send arrow always. */
+/* SEND ONLY - Grey until text OR picture/video. Blue when there is text OR picture/video. Send arrow always. */
 #pv-ai-screen .pv-ai-action{display:flex !important;width:44px !important;height:44px !important;min-width:44px !important;min-height:44px !important;border-radius:50% !important;border:none !important;box-shadow:none !important;align-items:center !important;justify-content:center !important;padding:0 !important;flex-shrink:0 !important;cursor:pointer !important;-webkit-tap-highlight-color:transparent}
 #pv-ai-screen .pv-ai-action:active{transform:scale(.92)}
 #pv-ai-screen .pv-ai-action .pv-ai-voice-icon{display:none !important}
 #pv-ai-screen .pv-ai-action .pv-ai-send-icon{display:flex !important;align-items:center !important;justify-content:center !important}
 #pv-ai-screen .pv-ai-action .pv-ai-send-icon svg{width:26px !important;height:26px !important}
-#pv-ai-screen .pv-ai-input-bar:not(.has-text) .pv-ai-action{background:#333336 !important;background-image:none !important}
-#pv-ai-screen .pv-ai-input-bar:not(.has-text) .pv-ai-action .pv-ai-send-icon{opacity:.45 !important}
-#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action{background:linear-gradient(90deg,#0084ff,#00bfa5) !important;background-image:linear-gradient(90deg,#0084ff,#00bfa5) !important}
-#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action .pv-ai-send-icon{opacity:1 !important}
+#pv-ai-screen .pv-ai-input-bar:not(.has-text):not(.has-media) .pv-ai-action{background:#333336 !important;background-image:none !important}
+#pv-ai-screen .pv-ai-input-bar:not(.has-text):not(.has-media) .pv-ai-action .pv-ai-send-icon{opacity:.45 !important}
+#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action, #pv-ai-screen .pv-ai-input-bar.has-media .pv-ai-action{background:linear-gradient(90deg,#0084ff,#00bfa5) !important;background-image:linear-gradient(90deg,#0084ff,#00bfa5) !important}
+#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action .pv-ai-send-icon, #pv-ai-screen .pv-ai-input-bar.has-media .pv-ai-action .pv-ai-send-icon{opacity:1 !important}
 
 </style>
 
@@ -10038,42 +10045,56 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
 #pv-ai-img-preview-close:active{transform:scale(.88) !important}
 </style>
 
-<!-- ===== FILE: css/ai-video-clean.css — separate, do not mix — REPLACES old ai-video-preview.css, old one DELETED ===== -->
+<!-- ===== FILE: css/ai-video-clean.css — separate, do not mix — VIDEO ONLY, picture untouched ===== -->
 <style data-file="css/ai-video-clean.css">
-/* AI VIDEO - CLEAN - replaces old ai-video-preview.css. Picture untouched. */
-/* ATTACH (before sending) - same 60px box as picture. */
-#pv-ai-input-bar .pv-ai-attach-preview{position:relative !important;overflow:hidden !important;flex:none !important}
-#pv-ai-input-bar .pv-ai-attach-preview.show{display:block !important;position:relative !important;width:60px !important;height:60px !important;min-width:60px !important;min-height:60px !important;max-width:60px !important;max-height:60px !important;margin:2px 0 10px 2px !important;padding:0 !important;background:none !important;border:none !important}
-#pv-ai-input-bar .pv-ai-attach-preview.show{width:60px !important;height:60px !important}
-#pv-ai-input-bar .pv-ai-attach-preview.is-video{background:#111 !important}
-#pv-ai-input-bar .pv-ai-attach-preview img#pv-ai-attach-thumb{width:60px !important;height:60px !important;min-width:60px !important;min-height:60px !important;border-radius:14px !important;object-fit:cover !important;display:block !important;margin:0 !important}
-#pv-ai-input-bar .pv-ai-attach-preview img#pv-ai-attach-thumb[src]:not([src=""]){opacity:1 !important;visibility:visible !important}
-#pv-ai-input-bar .pv-ai-attach-preview:not(.is-video) img#pv-ai-attach-thumb{opacity:1 !important;visibility:visible !important}
-#pv-ai-input-bar .pv-ai-attach-preview.is-video.is-loading img#pv-ai-attach-thumb{opacity:.35 !important}
-#pv-ai-attach-spinner{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:20px !important;height:20px !important;transform:translate(-50%,-50%) !important;margin:0 !important;border:2.5px solid rgba(255,255,255,.25) !important;border-top-color:#fff !important;border-radius:50% !important;animation:pvVideoCleanSpin .7s linear infinite !important;z-index:3 !important;pointer-events:none !important}
-#pv-ai-input-bar .pv-ai-attach-preview.is-video.is-loading #pv-ai-attach-spinner{display:block !important}
+/* AI VIDEO - CLEAN - VIDEO ONLY. Picture rules live in other files and are untouched. */
+/* ATTACH (before sending) - 60px box, same as picture. Video with no frame yet = no <img> shown at all, so no broken icon. */
+#pv-ai-input-bar .pv-ai-attach-preview.is-video{background:#111}
+#pv-ai-input-bar .pv-ai-attach-preview.is-video img#pv-ai-attach-thumb{display:none;visibility:hidden;opacity:0}
+#pv-ai-input-bar .pv-ai-attach-preview.is-video img#pv-ai-attach-thumb[src]:not([src=""]){display:block;visibility:visible;opacity:1}
+#pv-ai-attach-spinner{display:none;position:absolute;left:50%;top:50%;width:20px;height:20px;transform:translate(-50%,-50%);margin:0;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:pvVideoCleanSpin .7s linear infinite;z-index:3;pointer-events:none}
+#pv-ai-input-bar .pv-ai-attach-preview.is-video.is-loading #pv-ai-attach-spinner{display:block}
 @keyframes pvVideoCleanSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
-#pv-ai-attach-play{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:28px !important;height:28px !important;min-width:28px !important;min-height:28px !important;max-width:28px !important;max-height:28px !important;transform:translate(-50%,-50%) !important;margin:0 !important;padding:0 !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;box-shadow:none !important;align-items:center !important;justify-content:center !important;cursor:pointer !important;z-index:3 !important}
-#pv-ai-attach-play svg{width:14px !important;height:14px !important;display:block !important;margin-left:1px !important}
-#pv-ai-input-bar .pv-ai-attach-preview.is-video:not(.is-loading) #pv-ai-attach-play{display:flex !important}
-/* SENT VIDEO - same 96px thumb as picture. Play is BUTTON, not span, so white-bubble span rule cannot hijack it. */
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap{position:relative !important;width:96px !important;height:96px !important;min-width:96px !important;min-height:96px !important;margin:0 0 6px auto !important;overflow:hidden !important;border-radius:14px !important;background:#111 !important;flex:none !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap img{width:96px !important;height:96px !important;max-width:96px !important;object-fit:cover !important;border-radius:14px !important;margin:0 !important;display:block !important;background:transparent !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-video-spinner{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:20px !important;height:20px !important;transform:translate(-50%,-50%) !important;margin:0 !important;border:2.5px solid rgba(255,255,255,.25) !important;border-top-color:#fff !important;border-radius:50% !important;animation:pvVideoCleanSpin .7s linear infinite !important;z-index:3 !important;pointer-events:none !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap.is-loading .pv-ai-msg-video-spinner{display:block !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap.is-loading .pv-ai-msg-play{display:none !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap:not(.is-loading) .pv-ai-msg-play{display:flex !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-play{position:absolute !important;left:50% !important;top:50% !important;width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important;max-width:32px !important;max-height:32px !important;transform:translate(-50%,-50%) !important;margin:0 !important;padding:0 !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;box-shadow:none !important;display:flex !important;align-items:center !important;justify-content:center !important;cursor:pointer !important;z-index:2 !important;pointer-events:auto !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-play svg{width:16px !important;height:16px !important;display:block !important;margin-left:1px !important}
-#pv-ai-img-preview-video{max-width:84vw !important;max-height:70vh !important;border-radius:16px !important;display:block !important;background:#000 !important}
+#pv-ai-attach-play{display:none;position:absolute;left:50%;top:50%;width:28px;height:28px;min-width:28px;min-height:28px;max-width:28px;max-height:28px;transform:translate(-50%,-50%);margin:0;padding:0;border-radius:50%;background:rgba(20,20,22,.72);border:1px solid rgba(255,255,255,.28);box-shadow:none;align-items:center;justify-content:center;cursor:pointer;z-index:3}
+#pv-ai-attach-play svg{width:14px;height:14px;display:block;margin-left:1px}
+#pv-ai-input-bar .pv-ai-attach-preview.is-video:not(.is-loading) #pv-ai-attach-play{display:flex}
+/* SENT VIDEO - 96px thumb, same as picture. Play is BUTTON in the middle, like your screenshot. */
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap{position:relative;width:96px;height:96px;min-width:96px;min-height:96px;margin:0 0 6px auto;overflow:hidden;border-radius:14px;background:#111;flex:none}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap img{width:96px;height:96px;max-width:96px;object-fit:cover;border-radius:14px;margin:0;display:block;background:transparent}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap img:not([src]), #pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap img[src=""]{display:none;visibility:hidden;opacity:0}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap img[src]:not([src=""]){display:block;visibility:visible;opacity:1}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-video-spinner{display:none;position:absolute;left:50%;top:50%;width:20px;height:20px;transform:translate(-50%,-50%);margin:0;border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:pvVideoCleanSpin .7s linear infinite;z-index:3;pointer-events:none}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap.is-loading .pv-ai-msg-video-spinner{display:block}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap.is-loading .pv-ai-msg-play{display:none}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap:not(.is-loading) .pv-ai-msg-play{display:flex}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-play{position:absolute;left:50%;top:50%;width:32px;height:32px;min-width:32px;min-height:32px;max-width:32px;max-height:32px;transform:translate(-50%,-50%);margin:0;padding:0;border-radius:50%;background:rgba(20,20,22,.72);border:1px solid rgba(255,255,255,.28);box-shadow:none;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;pointer-events:auto}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-play svg{width:16px;height:16px;display:block;margin-left:1px}
+#pv-ai-img-preview-video{max-width:84vw;max-height:70vh;border-radius:16px;display:block;background:#000}
+/* VIDEO DURATION - like 0:21, bottom-right, white bold, like screenshot. Video only, picture never shows it. */
+#pv-ai-attach-duration{display:none;position:absolute;right:6px;bottom:4px;z-index:3;font-size:11px;font-weight:800;color:#fff;line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.8);pointer-events:none}
+#pv-ai-input-bar .pv-ai-attach-preview.is-video #pv-ai-attach-duration.has-duration{display:block}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-video-duration{position:absolute;right:6px;bottom:4px;z-index:3;font-size:12px;font-weight:800;color:#fff;line-height:1;text-shadow:0 1px 4px rgba(0,0,0,.8);pointer-events:none}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-video-duration:empty{display:none}
 </style>
-<!-- ===== FILE: js/ai-video-clean.js — separate, do not mix — REPLACES old ai-video-preview.js, old one DELETED ===== -->
+<!-- ===== FILE: js/ai-video-clean.js — separate, do not mix — VIDEO ONLY, picture untouched ===== -->
 <script data-file="js/ai-video-clean.js">
-// AI VIDEO - CLEAN - single place for video frame + play. Replaces old ai-video-preview.js.
-// Attach: extract frame once, fill thumb, clear loading. Sent: play is BUTTON, tap opens video preview.
+// AI VIDEO - CLEAN - single owner for video. Picture is untouched, handled elsewhere.
+// Attach: extract 1 frame, show thumb + play. If frame fails, keep thumb hidden, show dark box + play (never broken icon).
+// Sent: play is BUTTON in middle, tap opens video preview.
 (function(){
   if(window.__pvAiVideoCleanBound) return; window.__pvAiVideoCleanBound=true;
   function el(id){ return document.getElementById(id); }
+  function formatDuration(sec){ try{ sec = Math.round(Number(sec)||0); if(!isFinite(sec) || sec<0) sec=0; var m = Math.floor(sec/60); var s = sec % 60; return m + ':' + (s<10 ? '0'+s : s); }catch(e){ return ''; } }
+  function setAttachDuration(sec){ try{ var dEl = el('pv-ai-attach-duration'); if(!dEl) return; var t = formatDuration(sec); if(!t || t==='0:00'){ dEl.textContent=''; dEl.classList.remove('has-duration'); try{ window.__pvAttachVideoDurationText=''; window.__pvAttachVideoDuration=0; }catch(e){} return; } dEl.textContent=t; dEl.classList.add('has-duration'); try{ window.__pvAttachVideoDurationText=t; window.__pvAttachVideoDuration=sec; }catch(e){} }catch(e){} }
+  function clearAttachDuration(){ try{ var dEl = el('pv-ai-attach-duration'); if(dEl){ dEl.textContent=''; dEl.classList.remove('has-duration'); } try{ window.__pvAttachVideoDurationText=''; window.__pvAttachVideoDuration=0; }catch(e){} }catch(e){} }
+  function hideAttachThumbKeepPlay(){
+    try{
+      var th = el('pv-ai-attach-thumb');
+      if(th){ th.style.display='none'; th.style.visibility='hidden'; th.style.opacity='0'; }
+      var p = el('pv-ai-attach-preview');
+      if(p){ p.classList.remove('is-loading'); }
+    }catch(e){}
+  }
   function extractFrame(){
     try{
       var url = window.__pvAttachVideoURL;
@@ -10084,23 +10105,25 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
       function finish(){
         if(done) return; done = true;
         try{
+          try{ if(v.duration && isFinite(v.duration)) setAttachDuration(v.duration); }catch(e){}
+          if(!v.videoWidth || !v.videoHeight){ hideAttachThumbKeepPlay(); return; }
           var c = document.createElement('canvas');
-          var w = v.videoWidth || 320, h = v.videoHeight || 180;
+          var w = v.videoWidth, h = v.videoHeight;
           c.width = w; c.height = h;
           var ctx = c.getContext('2d'); ctx.drawImage(v,0,0,w,h);
           var data = c.toDataURL('image/jpeg',0.8);
+          if(!data || data.length < 100){ hideAttachThumbKeepPlay(); return; }
           try{ window.__pvAttachVideoFrame = data; }catch(e){}
           var th = el('pv-ai-attach-thumb');
-          if(th){ th.style.visibility=''; th.src = data; th.classList.add('pv-loaded'); th.style.opacity='1'; }
+          if(th){ th.style.display='block'; th.style.visibility=''; th.src = data; th.classList.add('pv-loaded'); th.style.opacity='1'; }
           var prev = el('pv-ai-attach-preview');
           if(prev){ prev.classList.remove('is-loading'); }
-        }catch(e){
-          var prev2 = el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('is-loading');
-        }
+        }catch(e){ hideAttachThumbKeepPlay(); }
       }
-      v.onloadeddata = function(){ try{ v.currentTime = 0.1; }catch(e){ finish(); } };
+      v.onloadedmetadata = function(){ try{ if(v.duration && isFinite(v.duration)) setAttachDuration(v.duration); }catch(e){} };
+      v.onloadeddata = function(){ try{ if(v.duration && isFinite(v.duration)) setAttachDuration(v.duration); v.currentTime = 0.1; }catch(e){ finish(); } };
       v.onseeked = finish;
-      v.onerror = function(){ var p = el('pv-ai-attach-preview'); if(p) p.classList.remove('is-loading'); };
+      v.onerror = function(){ hideAttachThumbKeepPlay(); };
       setTimeout(function(){ if(!done) finish(); }, 3000);
     }catch(e){}
   }
@@ -10109,13 +10132,11 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
     if(fi && !fi.dataset.pvVideoCleanBound){
       fi.dataset.pvVideoCleanBound='1';
       fi.addEventListener('change', function(){
-        // groq handler runs first and clears fi.value, so do NOT rely on fi.files - use preview state + URL
         setTimeout(function(){
           var prev = el('pv-ai-attach-preview');
           var th = el('pv-ai-attach-thumb');
-          // PICTURE: groq already set thumb.src, just make it visible - do NOT touch picture sent logic, only attach preview
           if(prev && !prev.classList.contains('is-video') && th && th.getAttribute('src')){
-            try{ th.style.opacity='1'; th.style.visibility=''; th.classList.add('pv-loaded'); }catch(e){}
+            try{ th.style.display=''; th.style.opacity='1'; th.style.visibility=''; th.classList.add('pv-loaded'); }catch(e){} clearAttachDuration();
           }
           if(prev && prev.classList.contains('is-video') && window.__pvAttachVideoURL){ extractFrame(); }
         }, 30);
@@ -10130,15 +10151,24 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
         if(prev.classList.contains('is-loading')) return;
         var url = window.__pvAttachVideoURL; if(!url) return;
         e.preventDefault(); e.stopPropagation();
-        var poster = thumb && thumb.src ? thumb.src : '';
+        var poster = (thumb && thumb.getAttribute('src')) ? thumb.src : '';
         if(window.__pvOpenVideoPreview) window.__pvOpenVideoPreview(url, poster);
       }catch(err){}
     }
     if(play && !play.dataset.pvVideoCleanBound){ play.dataset.pvVideoCleanBound='1'; play.addEventListener('click', openAttach); }
     if(thumb && !thumb.dataset.pvVideoCleanBound){ thumb.dataset.pvVideoCleanBound='1'; thumb.addEventListener('click', openAttach); }
   }
+  function bindSentWrap(wrap){
+    if(!wrap || wrap.dataset.pvVideoCleanBound) return; wrap.dataset.pvVideoCleanBound='1';
+    var img = wrap.querySelector('img'); if(!img){ wrap.classList.remove('is-loading'); return; }
+    if(!img.dataset.pvVideoCleanBound){
+      img.dataset.pvVideoCleanBound='1';
+      img.addEventListener('load', function(){ try{ wrap.classList.remove('is-loading'); img.classList.add('pv-loaded'); img.style.display='block'; img.style.visibility=''; img.style.opacity='1'; }catch(e){} });
+      img.addEventListener('error', function(){ try{ img.style.display='none'; img.style.visibility='hidden'; wrap.classList.remove('is-loading'); }catch(e){} });
+    }
+    if(img.complete && img.naturalWidth>0) wrap.classList.remove('is-loading');
+  }
   function wireSent(){
-    // Delegated: works for new + history-loaded sent videos. Play is BUTTON, not span.
     if(!document.body.dataset.pvVideoCleanSentBound){
       document.body.dataset.pvVideoCleanSentBound='1';
       document.addEventListener('click', function(e){
@@ -10148,29 +10178,30 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
           var msgEl = playBtn.closest('.pv-ai-msg'); var vImg = msgEl ? msgEl.querySelector('img') : null;
           var vSrc = vImg && vImg.dataset ? vImg.dataset.pvVideo : null;
           if(vSrc && window.__pvOpenVideoPreview){ e.preventDefault(); e.stopPropagation(); window.__pvOpenVideoPreview(vSrc, vImg.src); return; }
-          if(vImg && vImg.src && window.__pvOpenVideoPreview){ e.preventDefault(); e.stopPropagation(); window.__pvOpenVideoPreview(vSrc || vImg.src, vImg.src); return; }
+          if(vImg && vImg.getAttribute('src') && window.__pvOpenVideoPreview){ e.preventDefault(); e.stopPropagation(); window.__pvOpenVideoPreview(vSrc || vImg.src, vImg.src); return; }
         }catch(err){}
       }, true);
     }
-    // Clear loading once sent thumb actually loads
     try{
       var box = el('pv-ai-messages'); if(!box) return;
-      box.querySelectorAll('.pv-ai-msg-video-wrap').forEach(function(wrap){
-        if(wrap.dataset.pvVideoCleanBound) return; wrap.dataset.pvVideoCleanBound='1';
-        var img = wrap.querySelector('img'); if(!img) { wrap.classList.remove('is-loading'); return; }
-        if(!img.dataset.pvVideoCleanBound){
-          img.dataset.pvVideoCleanBound='1';
-          img.addEventListener('load', function(){ try{ wrap.classList.remove('is-loading'); img.classList.add('pv-loaded'); img.style.visibility=''; img.style.opacity='1'; }catch(e){} });
-          img.addEventListener('error', function(){ try{ wrap.classList.remove('is-loading'); }catch(e){} });
-        }
-        if(img.complete && img.naturalWidth>0) wrap.classList.remove('is-loading');
-        else if(img.getAttribute('src')) wrap.classList.add('is-loading');
-      });
+      box.querySelectorAll('.pv-ai-msg-video-wrap').forEach(bindSentWrap);
+      if(window.MutationObserver && !box.dataset.pvVideoCleanObs){
+        box.dataset.pvVideoCleanObs='1';
+        var obs = new MutationObserver(function(muts){
+          muts.forEach(function(m){
+            (m.addedNodes||[]).forEach(function(n){
+              if(!n) return;
+              if(n.classList && n.classList.contains('pv-ai-msg-video-wrap')) bindSentWrap(n);
+              if(n.querySelector) n.querySelectorAll('.pv-ai-msg-video-wrap').forEach(bindSentWrap);
+            });
+          });
+        });
+        obs.observe(box, {childList:true, subtree:true});
+      }
     }catch(e){}
   }
   function wire(){ wireFile(); wireAttachPlay(); wireSent(); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
-  setInterval(wire, 1500);
 })();
 </script>
 
