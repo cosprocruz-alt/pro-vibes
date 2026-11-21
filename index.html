@@ -7303,7 +7303,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
-</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt=""><span class="pv-ai-attach-spinner" id="pv-ai-attach-spinner" aria-hidden="true"></span><button class="pv-ai-attach-play" id="pv-ai-attach-play" type="button" aria-label="Play video"><svg viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg></button><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-mic-btn" id="pv-ai-mic" type="button" aria-label="Voice recorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v3"/></svg></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Send"><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
+</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt="" style="display:none"><video id="pv-ai-attach-video" muted playsinline preload="metadata" style="display:none"></video><span class="pv-ai-attach-spinner" id="pv-ai-attach-spinner" aria-hidden="true"></span><button class="pv-ai-attach-play" id="pv-ai-attach-play" type="button" aria-label="Play video"><svg viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg></button><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-mic-btn" id="pv-ai-mic" type="button" aria-label="Voice recorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v3"/></svg></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Send"><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
 
 <style data-file="css/pv-voice-dictation.css">
 #pv-ai-screen .pv-ai-input-row{gap:6px}
@@ -7730,7 +7730,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
       var back=el('pv-ai-back-btn');if(back&&!back.dataset.pvAiBound){back.dataset.pvAiBound='1';back.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();closeAi();});}
       try{
         var aiIn=el('pv-ai-input');var aiBar=el('pv-ai-input-bar');
-        if(aiIn&&!aiIn.dataset.pvAiBound){aiIn.dataset.pvAiBound='1';aiIn.addEventListener('input',function(){try{if(aiBar)aiBar.classList.toggle('has-text',!!aiIn.value.trim().length||!!(document.getElementById('pv-ai-attach-preview')&&document.getElementById('pv-ai-attach-preview').classList.contains('show')));aiIn.style.height='auto';aiIn.style.height=Math.min(aiIn.scrollHeight,100)+'px';}catch(e){}});}
+        if(aiIn&&!aiIn.dataset.pvAiBound){aiIn.dataset.pvAiBound='1';aiIn.addEventListener('input',function(){try{var _pvA=document.getElementById('pv-ai-attach-preview');var _hasA=_pvA&&_pvA.classList.contains('show');if(aiBar)aiBar.classList.toggle('has-text',!!aiIn.value.trim().length||!!_hasA);aiIn.style.height='auto';aiIn.style.height=Math.min(aiIn.scrollHeight,100)+'px';}catch(e){}});}
         ['pv-ai-action','pv-ai-upright'].forEach(function(id){var b=el(id);if(b&&!b.dataset.pvAiBound){b.dataset.pvAiBound='1';b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();});}});
       }catch(e){}
       // Keep pill alive across every nav / screen switch, even when nav is hidden/shown
@@ -8291,7 +8291,7 @@ async function handleSend(){
     pvUpdateTitleFromText(txt, !!showImg);
     try{ pvHistorySaveCurrent(); }catch(e){}
     var fileNow = pendingFile; pendingFile=null; pendingFileURL=null;
-    var prev = el('pv-ai-attach-preview'); if(prev){ prev.classList.remove('show'); prev.classList.remove('is-loading'); prev.classList.remove('is-video'); }
+    var prev = el('pv-ai-attach-preview'); if(prev){ prev.classList.remove('show'); prev.classList.remove('is-loading'); prev.classList.remove('is-video'); } try{ var _sv=el('pv-ai-attach-video'); if(_sv){ _sv.pause(); _sv.removeAttribute('src'); _sv.load(); _sv.style.display='none'; } }catch(e){} try{ var _st=el('pv-ai-attach-thumb'); if(_st){ _st.style.display='none'; _st.removeAttribute('src'); } }catch(e){}
     inp.value=''; var bar=el('pv-ai-input-bar'); if(bar) bar.classList.remove('has-text'); inp.style.height='auto';
     var thinking = addMsg('Thinking...', 'ai'); if(thinking) thinking.classList.add('thinking');
     try{
@@ -8350,7 +8350,7 @@ async function handleSend(){
     if(action && !action.dataset.pvGroqBound){
       action.dataset.pvGroqBound='1';
       action.addEventListener('click', function(){
-        var inp=el('pv-ai-input'); if(inp && inp.value.trim().length>0 || pendingFile) handleSend();
+        var inp=el('pv-ai-input'); if(pendingFile || (inp && inp.value.trim().length>0)) handleSend();
       });
     }
     var inp2 = el('pv-ai-input');
@@ -8376,11 +8376,11 @@ async function handleSend(){
           fileInput.addEventListener('change', function(){
         var f = fileInput.files && fileInput.files[0]; if(!f) return;
         pendingFile = f;
-        try{ var _bar=el('pv-ai-input-bar'); if(_bar) _bar.classList.add('has-text'); }catch(e){}
-        var prev = el('pv-ai-attach-preview'); var thumb=el('pv-ai-attach-thumb'); var nm=el('pv-ai-attach-name');
-        if(f.type.indexOf('image')===0){ pendingFileURL = URL.createObjectURL(f); try{ window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} if(prev){ prev.classList.remove('is-loading'); prev.classList.remove('is-video'); } if(thumb){ thumb.style.display=''; thumb.src=pendingFileURL; thumb.style.visibility=''; } }
-        else if(f.type.indexOf('video')===0){ pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); }catch(e){} try{ window.__pvAttachVideoURL=URL.createObjectURL(f); window.__pvAttachVideoFrame=null; }catch(e){} if(prev){ prev.classList.add('show'); prev.classList.add('is-loading'); prev.classList.add('is-video'); } if(thumb){ thumb.removeAttribute('src'); thumb.style.display='none'; thumb.style.visibility='hidden'; } }
-        else { pendingFileURL=null; try{ window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} if(prev){ prev.classList.remove('is-loading'); prev.classList.remove('is-video'); } if(thumb) thumb.src=''; }
+        var prev = el('pv-ai-attach-preview'); var thumb=el('pv-ai-attach-thumb'); var vid=el('pv-ai-attach-video'); var bar=el('pv-ai-input-bar'); var nm=el('pv-ai-attach-name');
+        if(bar) bar.classList.add('has-text');
+        if(f.type.indexOf('image')===0){ pendingFileURL = URL.createObjectURL(f); try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} try{ if(vid){ vid.pause(); vid.removeAttribute('src'); vid.load(); vid.style.display='none'; } }catch(e){} if(prev){ prev.classList.remove('is-loading'); prev.classList.remove('is-video'); } if(thumb){ thumb.style.display='block'; thumb.style.visibility=''; thumb.src=pendingFileURL; } }
+        else if(f.type.indexOf('video')===0){ pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); }catch(e){} try{ window.__pvAttachVideoURL=URL.createObjectURL(f); window.__pvAttachVideoFrame=null; }catch(e){} if(prev){ prev.classList.add('show'); prev.classList.remove('is-loading'); prev.classList.add('is-video'); } if(thumb){ thumb.style.display='none'; thumb.removeAttribute('src'); thumb.style.visibility='hidden'; } if(vid){ vid.style.display='block'; vid.src=window.__pvAttachVideoURL; try{ vid.load(); }catch(e){} } }
+        else { pendingFileURL=null; try{ window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} try{ if(vid){ vid.pause(); vid.removeAttribute('src'); vid.load(); vid.style.display='none'; } }catch(e){} if(prev){ prev.classList.remove('is-loading'); prev.classList.remove('is-video'); } if(thumb){ thumb.style.display='none'; thumb.src=''; } }
         if(nm) nm.textContent = f.name;
         if(prev) prev.classList.add('show');
         fileInput.value='';
@@ -8389,16 +8389,17 @@ async function handleSend(){
       if(filesInput && !filesInput.dataset.pvFilesBound){ filesInput.dataset.pvFilesBound='1'; filesInput.addEventListener('change', function(){
         var f = filesInput.files && filesInput.files[0]; if(!f) return;
         pendingFile = f;
-        try{ var _barF=el('pv-ai-input-bar'); if(_barF) _barF.classList.add('has-text'); }catch(e){}
-        var prev = el('pv-ai-attach-preview'); var thumb=el('pv-ai-attach-thumb'); var nm=el('pv-ai-attach-name');
-        if(f.type.indexOf('image')===0){ pendingFileURL = URL.createObjectURL(f); if(thumb){ thumb.style.display=''; thumb.src=pendingFileURL; } }
-        else { pendingFileURL=null; if(thumb) thumb.src=''; }
+        var prev = el('pv-ai-attach-preview'); var thumb=el('pv-ai-attach-thumb'); var vid=el('pv-ai-attach-video'); var bar=el('pv-ai-input-bar'); var nm=el('pv-ai-attach-name');
+        if(bar) bar.classList.add('has-text');
+        if(f.type.indexOf('image')===0){ pendingFileURL = URL.createObjectURL(f); try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); window.__pvAttachVideoURL=null; }catch(e){} try{ if(vid){ vid.pause(); vid.removeAttribute('src'); vid.load(); vid.style.display='none'; } }catch(e){} if(prev){ prev.classList.remove('is-loading'); prev.classList.remove('is-video'); } if(thumb){ thumb.style.display='block'; thumb.style.visibility=''; thumb.src=pendingFileURL; } }
+        else if(f.type.indexOf('video')===0){ pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); }catch(e){} try{ window.__pvAttachVideoURL=URL.createObjectURL(f); }catch(e){} if(prev){ prev.classList.add('show'); prev.classList.remove('is-loading'); prev.classList.add('is-video'); } if(thumb){ thumb.style.display='none'; thumb.removeAttribute('src'); } if(vid){ vid.style.display='block'; vid.src=window.__pvAttachVideoURL; try{ vid.load(); }catch(e){} } }
+        else { pendingFileURL=null; try{ if(vid){ vid.pause(); vid.removeAttribute('src'); vid.load(); vid.style.display='none'; } }catch(e){} if(prev){ prev.classList.remove('is-loading'); prev.classList.remove('is-video'); } if(thumb){ thumb.style.display='none'; thumb.src=''; } }
         if(nm) nm.textContent = f.name;
         if(prev) prev.classList.add('show');
         filesInput.value='';
       }); }
       var clearBtn = el('pv-ai-attach-clear');
-      if(clearBtn) clearBtn.addEventListener('click', function(){ pendingFile=null; pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} var p=el('pv-ai-attach-preview'); if(p){ p.classList.remove('show'); p.classList.remove('is-loading'); p.classList.remove('is-video'); } try{ var _barC=el('pv-ai-input-bar'); var _inpC=el('pv-ai-input'); if(_barC) _barC.classList.toggle('has-text', !!(_inpC && _inpC.value.trim().length)); var _thC=el('pv-ai-attach-thumb'); if(_thC){ _thC.style.display=''; _thC.style.visibility=''; } }catch(e){} });
+      if(clearBtn) clearBtn.addEventListener('click', function(){ pendingFile=null; pendingFileURL=null; try{ if(window.__pvAttachVideoURL) URL.revokeObjectURL(window.__pvAttachVideoURL); window.__pvAttachVideoURL=null; window.__pvAttachVideoFrame=null; }catch(e){} try{ var _v=el('pv-ai-attach-video'); if(_v){ _v.pause(); _v.removeAttribute('src'); _v.load(); _v.style.display='none'; } }catch(e){} try{ var _t=el('pv-ai-attach-thumb'); if(_t){ _t.style.display='none'; _t.removeAttribute('src'); } }catch(e){} var p=el('pv-ai-attach-preview'); if(p){ p.classList.remove('show'); p.classList.remove('is-loading'); p.classList.remove('is-video'); } var _inp=el('pv-ai-input'); var _bar=el('pv-ai-input-bar'); if(_bar) _bar.classList.toggle('has-text', !!(_inp && _inp.value.trim().length)); });
     }
   }
   // FIX: NEW CHAT must kill audio on TOUCHSTART / POINTERDOWN, not just click - mobile click is delayed and old voice kept talking over new chat
@@ -10071,76 +10072,26 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
 </style>
 <!-- ===== FILE: js/ai-video-clean.js — separate, do not mix — REPLACES old ai-video-preview.js, old one DELETED ===== -->
 <script data-file="js/ai-video-clean.js">
-// AI VIDEO - CLEAN - single place for video frame + play. Replaces old ai-video-preview.js.
-// Attach: extract frame once, fill thumb, clear loading. Sent: play is BUTTON, tap opens video preview.
+/* AI VIDEO - FIX ONLY: attach preview is a real <video>, not an <img>. No canvas frame extraction - that was what made the broken-image icon. Sent-video play kept as-is. */
 (function(){
   if(window.__pvAiVideoCleanBound) return; window.__pvAiVideoCleanBound=true;
   function el(id){ return document.getElementById(id); }
-  function extractFrame(){
-    try{
-      var url = window.__pvAttachVideoURL;
-      if(!url) return;
-      var v = document.createElement('video');
-      v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
-      var done = false;
-      function finish(){
-        if(done) return; done = true;
-        try{
-          var c = document.createElement('canvas');
-          var w = v.videoWidth || 320, h = v.videoHeight || 180;
-          c.width = w; c.height = h;
-          var ctx = c.getContext('2d'); ctx.drawImage(v,0,0,w,h);
-          var data = c.toDataURL('image/jpeg',0.8);
-          try{ window.__pvAttachVideoFrame = data; }catch(e){}
-          var th = el('pv-ai-attach-thumb');
-          if(th){ th.style.display=''; th.style.visibility=''; th.src = data; th.classList.add('pv-loaded'); th.style.opacity='1'; }
-          var prev = el('pv-ai-attach-preview');
-          if(prev){ prev.classList.remove('is-loading'); }
-        }catch(e){
-          var prev2 = el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('is-loading');
-        }
-      }
-      v.onloadeddata = function(){ try{ v.currentTime = 0.1; }catch(e){ finish(); } };
-      v.onseeked = finish;
-      v.onerror = function(){ var p = el('pv-ai-attach-preview'); if(p) p.classList.remove('is-loading'); };
-      setTimeout(function(){ if(!done) finish(); }, 3000);
-    }catch(e){}
-  }
-  function wireFile(){
-    var fi = el('pv-ai-file');
-    if(fi && !fi.dataset.pvVideoCleanBound){
-      fi.dataset.pvVideoCleanBound='1';
-      fi.addEventListener('change', function(){
-        // groq handler runs first and clears fi.value, so do NOT rely on fi.files - use preview state + URL
-        setTimeout(function(){
-          var prev = el('pv-ai-attach-preview');
-          var th = el('pv-ai-attach-thumb');
-          // PICTURE: groq already set thumb.src, just make it visible - do NOT touch picture sent logic, only attach preview
-          if(prev && !prev.classList.contains('is-video') && th && th.getAttribute('src')){
-            try{ th.style.display=''; th.style.opacity='1'; th.style.visibility=''; th.classList.add('pv-loaded'); }catch(e){}
-          }
-          if(prev && prev.classList.contains('is-video') && window.__pvAttachVideoURL){ extractFrame(); }
-        }, 30);
-      });
-    }
-  }
   function wireAttachPlay(){
-    var play = el('pv-ai-attach-play'); var thumb = el('pv-ai-attach-thumb'); var prev = el('pv-ai-attach-preview');
+    var play = el('pv-ai-attach-play'); var thumb = el('pv-ai-attach-thumb'); var vid = el('pv-ai-attach-video'); var prev = el('pv-ai-attach-preview');
     function openAttach(e){
       try{
         if(!prev || !prev.classList.contains('is-video')) return;
-        if(prev.classList.contains('is-loading')) return;
-        var url = window.__pvAttachVideoURL; if(!url) return;
+        var url = window.__pvAttachVideoURL || (vid && vid.src ? vid.src : null); if(!url) return;
         e.preventDefault(); e.stopPropagation();
-        var poster = thumb && thumb.src ? thumb.src : '';
+        var poster = (thumb && thumb.src) ? thumb.src : '';
         if(window.__pvOpenVideoPreview) window.__pvOpenVideoPreview(url, poster);
       }catch(err){}
     }
     if(play && !play.dataset.pvVideoCleanBound){ play.dataset.pvVideoCleanBound='1'; play.addEventListener('click', openAttach); }
+    if(vid && !vid.dataset.pvVideoCleanBound){ vid.dataset.pvVideoCleanBound='1'; vid.addEventListener('click', openAttach); }
     if(thumb && !thumb.dataset.pvVideoCleanBound){ thumb.dataset.pvVideoCleanBound='1'; thumb.addEventListener('click', openAttach); }
   }
   function wireSent(){
-    // Delegated: works for new + history-loaded sent videos. Play is BUTTON, not span.
     if(!document.body.dataset.pvVideoCleanSentBound){
       document.body.dataset.pvVideoCleanSentBound='1';
       document.addEventListener('click', function(e){
@@ -10154,7 +10105,6 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
         }catch(err){}
       }, true);
     }
-    // Clear loading once sent thumb actually loads
     try{
       var box = el('pv-ai-messages'); if(!box) return;
       box.querySelectorAll('.pv-ai-msg-video-wrap').forEach(function(wrap){
@@ -10170,7 +10120,7 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
       });
     }catch(e){}
   }
-  function wire(){ wireFile(); wireAttachPlay(); wireSent(); }
+  function wire(){ wireAttachPlay(); wireSent(); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
   setInterval(wire, 1500);
 })();
@@ -10221,6 +10171,18 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
   try{ window.addEventListener('blur', function(){ stopAiAll(); }); }catch(e){}
 })();
 </script>
-<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script>
+<style data-file="css/pv-ai-attach-video-fix.css">
+/* FIX ONLY - attach preview: video is <video>, picture is <img>. Never show broken-image icon. */
+#pv-ai-input-bar .pv-ai-attach-preview img#pv-ai-attach-thumb:not([src]),
+#pv-ai-input-bar .pv-ai-attach-preview img#pv-ai-attach-thumb[src=""]{display:none !important;visibility:hidden !important;opacity:0 !important}
+#pv-ai-input-bar .pv-ai-attach-preview.is-video img#pv-ai-attach-thumb{display:none !important}
+#pv-ai-input-bar .pv-ai-attach-preview:not(.is-video) video#pv-ai-attach-video{display:none !important}
+#pv-ai-input-bar .pv-ai-attach-preview.is-video video#pv-ai-attach-video{display:block !important;width:60px !important;height:60px !important;min-width:60px !important;min-height:60px !important;border-radius:14px !important;object-fit:cover !important;background:#111 !important;margin:0 !important}
+#pv-ai-input-bar .pv-ai-attach-preview:not(.is-video) img#pv-ai-attach-thumb{display:block !important}
+#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action{background:linear-gradient(90deg,#0084ff,#00bfa5) !important;background-image:linear-gradient(90deg,#0084ff,#00bfa5) !important}
+#pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action .pv-ai-send-icon{opacity:1 !important}
+</style>
+</body>
 
 </html>
