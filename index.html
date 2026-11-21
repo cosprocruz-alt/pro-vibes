@@ -7282,7 +7282,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
-</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><span class="pv-ai-attach-thumb-wrap" id="pv-ai-attach-thumb-wrap"><img id="pv-ai-attach-thumb" alt=""><span class="pv-ai-attach-spinner" id="pv-ai-attach-spinner" aria-hidden="true"></span><button class="pv-ai-attach-play" id="pv-ai-attach-play" type="button" aria-label="Play video"><svg viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg></button></span><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-mic-btn" id="pv-ai-mic" type="button" aria-label="Voice recorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v3"/></svg></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Send"><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
+</script><button class="pv-ai-scroll-down" id="pv-ai-scroll-down" aria-label="Scroll to down"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div id="pv-ai-toast" role="status" aria-live="polite"></div><input type="file" id="pv-ai-file" accept="image/*,video/*" hidden><input type="file" id="pv-ai-files-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.csv,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden><div class="pv-ai-input-wrap"><div class="pv-ai-input-bar" id="pv-ai-input-bar"><div class="pv-ai-attach-preview" id="pv-ai-attach-preview"><img id="pv-ai-attach-thumb" alt=""><span class="pv-ai-attach-spinner" id="pv-ai-attach-spinner" aria-hidden="true"></span><button class="pv-ai-attach-play" id="pv-ai-attach-play" type="button" aria-label="Play video"><svg viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg></button><span id="pv-ai-attach-name">Attached</span><button id="pv-ai-attach-clear" type="button">×</button></div><textarea class="pv-ai-input" id="pv-ai-input" placeholder="Ask anything..." rows="1" enterkeyhint="enter" spellcheck="false" autocorrect="off" autocomplete="off" autocapitalize="sentences"></textarea><div class="pv-ai-input-row"><button class="pv-ai-plus" id="pv-ai-plus" type="button" aria-label="Add">+</button><div class="pv-ai-row-spacer"></div><button class="pv-ai-mic-btn" id="pv-ai-mic" type="button" aria-label="Voice recorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v3"/></svg></button><button class="pv-ai-action" id="pv-ai-action" type="button" aria-label="Send"><span class="pv-ai-send-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></span></button></div></div></div></div>
 
 <style data-file="css/pv-voice-dictation.css">
 #pv-ai-screen .pv-ai-input-row{gap:6px}
@@ -7639,8 +7639,8 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   function bindImg(img){
     if(!img || img.dataset.pvPreloadBound) return; img.dataset.pvPreloadBound='1';
-    img.addEventListener('load', function(){ img.classList.add('pv-loaded'); img.style.visibility=''; try{ var _w=img.closest && img.closest('.pv-ai-msg-video-wrap'); if(_w) _w.classList.remove('is-loading'); var _ap=img.closest && img.closest('#pv-ai-attach-preview'); if(_ap) _ap.classList.remove('is-loading'); }catch(e){} });
-    img.addEventListener('error', function(){ img.classList.remove('pv-loaded'); try{ var _isVid=!!( (img.classList && (img.classList.contains('pv-is-video') || img.classList.contains('pv-video-pending'))) || (img.closest && img.closest('.pv-ai-msg-video-wrap')) || (img.id==='pv-ai-attach-thumb' && img.closest && img.closest('#pv-ai-attach-preview') && img.closest('#pv-ai-attach-preview').classList.contains('is-video')) ); if(_isVid){ try{ var _w2=img.closest && img.closest('.pv-ai-msg-video-wrap'); if(_w2) _w2.classList.remove('is-loading'); }catch(e){} return; } }catch(e){} img.style.visibility='hidden'; img.style.opacity='0'; });
+    img.addEventListener('load', function(){ img.classList.add('pv-loaded'); img.style.visibility=''; try{ var _w=img.closest ? img.closest('.pv-ai-msg-video-wrap') : null; if(_w) _w.classList.remove('is-loading'); var _ap=img.closest ? img.closest('#pv-ai-attach-preview') : null; if(_ap) _ap.classList.remove('is-loading'); }catch(e){} });
+    img.addEventListener('error', function(){ img.classList.remove('pv-loaded'); try{ var _isVid=!!(img.classList.contains('pv-is-video') || img.classList.contains('pv-video-pending') || (img.closest && img.closest('.pv-ai-msg-video-wrap')) || (img.id==='pv-ai-attach-thumb' && img.closest && img.closest('#pv-ai-attach-preview') && img.closest('#pv-ai-attach-preview').classList.contains('is-video'))); if(_isVid) return; }catch(e){} img.style.visibility='hidden'; img.style.opacity='0'; });
     if(img.complete && img.naturalWidth>0){ img.classList.add('pv-loaded'); }
   }
   function observeChat(){
@@ -7652,21 +7652,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   }
   function bindThumb(){
     var thumb=el('pv-ai-attach-thumb'); if(thumb) bindImg(thumb);
-    var fileInput=el('pv-ai-file');
-    if(fileInput && !fileInput.dataset.pvVideoThumbBound){
-      fileInput.dataset.pvVideoThumbBound='1';
-      fileInput.addEventListener('change', function(){
-        var f=fileInput.files && fileInput.files[0]; if(!f) return;
-        if(f.type.indexOf('video')===0){
-          try{
-            var url=URL.createObjectURL(f); var v=document.createElement('video'); v.preload='auto'; v.muted=true; v.playsInline=true; v.src=url;
-            v.onloadeddata=function(){ try{ v.currentTime=0.1; }catch(e){} };
-            v.onseeked=function(){ try{ var c=document.createElement('canvas'); c.width=v.videoWidth||320; c.height=v.videoHeight||180; var ctx=c.getContext('2d'); ctx.drawImage(v,0,0,c.width,c.height); var data=c.toDataURL('image/jpeg',0.8); try{ window.__pvAttachVideoFrame=data; }catch(e){} var th=el('pv-ai-attach-thumb'); if(th){ th.style.visibility=''; th.src=data; th.classList.add('pv-loaded'); } var prev=el('pv-ai-attach-preview'); if(prev){ prev.classList.add('show'); prev.classList.remove('is-loading'); prev.classList.add('is-video'); } }catch(e){ var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('is-loading'); } try{ URL.revokeObjectURL(url); }catch(e){} };
-            v.onerror=function(){ try{ URL.revokeObjectURL(url); }catch(e){} var prevE=el('pv-ai-attach-preview'); if(prevE) prevE.classList.remove('is-loading'); };
-          }catch(e){}
-        }
-      });
-    }
+    // Video frame extraction moved to js/ai-video-clean.js - single place, no race. This file only binds load/error.
   }
   function wire(){ moveScrollOutside(); bindThumb(); observeChat(); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
@@ -8116,7 +8102,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   function pvAiIsChatStale(chat){ try{ var t=chat && chat.updatedAt ? Number(chat.updatedAt) : 0; if(!t) return false; return (Date.now()-t) > PV_AI_FRESH_AFTER_MS; }catch(e){ return false; } }
   function pvAiRestoreOrFresh(){ try{ var box=el('pv-ai-messages'); if(!box) return; var curId=pvHistoryGetCurrentId(); if(!curId){ curId=pvHistoryEnsureCurrent(); } var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(curId)){ found=list[i]; break; } } if(!found){ if(!box.querySelector('.pv-ai-msg')){ try{ pvResetTitle(); }catch(e){} } return; } if(pvAiIsChatStale(found)){ var nid=pvHistoryNewId(); pvHistorySetCurrentId(nid); box.innerHTML=''; try{ pvResetTitle(); }catch(e){} return; } if(box.querySelector('.pv-ai-msg')){ return; } if(found.messages && found.messages.length){ pvHistoryLoadMessagesToDOM(found.messages); var te=el('pv-ai-title'); if(te && found.title) te.textContent=found.title; try{ localStorage.setItem(TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} } else { if(!box.querySelector('.pv-ai-msg')){ try{ pvResetTitle(); }catch(e){} } } }catch(e){} }
   window.pvAiRestoreOrFresh=pvAiRestoreOrFresh;
-  function pvHistoryGetMessagesFromDOM(){ try{ var box=el('pv-ai-messages'); if(!box) return []; var out=[]; var nodes=box.querySelectorAll('.pv-ai-msg'); for(var i=0;i<nodes.length;i++){ var n=nodes[i]; if(n.textContent && n.textContent.trim()==='Thinking...') continue; var who=n.classList.contains('user')?'user':'ai'; var txt=((n.dataset && n.dataset.pvRaw) ? n.dataset.pvRaw : (n.textContent||'')).trim(); var im=n.querySelector('img'); var imgURL=null; try{ imgURL=im ? im.getAttribute('src') : null; if(!imgURL) imgURL=null; }catch(e){ imgURL=im?im.src:null; } if(!txt && !imgURL) continue; var _ts=null; try{ if(n.dataset && n.dataset.pvTs) _ts=Number(n.dataset.pvTs); }catch(e){} var _isVid=false; try{ _isVid=!!(im && (im.classList.contains('pv-is-video') || (im.parentNode && im.parentNode.classList && im.parentNode.classList.contains('pv-ai-msg-video-wrap')))); }catch(e){} out.push({who:who, txt:txt||'', img:imgURL, ts:_ts, isVideo:_isVid, video:(_isVid && im && im.dataset ? im.dataset.pvVideo : null)}); } return out; }catch(e){ return []; } }
+  function pvHistoryGetMessagesFromDOM(){ try{ var box=el('pv-ai-messages'); if(!box) return []; var out=[]; var nodes=box.querySelectorAll('.pv-ai-msg'); for(var i=0;i<nodes.length;i++){ var n=nodes[i]; if(n.textContent && n.textContent.trim()==='Thinking...') continue; var who=n.classList.contains('user')?'user':'ai'; var txt=((n.dataset && n.dataset.pvRaw) ? n.dataset.pvRaw : (n.textContent||'')).trim(); var im=n.querySelector('img'); var imgURL=im?im.src:null; if(!txt && !imgURL) continue; var _ts=null; try{ if(n.dataset && n.dataset.pvTs) _ts=Number(n.dataset.pvTs); }catch(e){} var _isVid=false; try{ _isVid=!!(im && (im.classList.contains('pv-is-video') || (im.parentNode && im.parentNode.classList && im.parentNode.classList.contains('pv-ai-msg-video-wrap')))); }catch(e){} out.push({who:who, txt:txt||'', img:imgURL, ts:_ts, isVideo:_isVid, video:(_isVid && im && im.dataset ? im.dataset.pvVideo : null)}); } return out; }catch(e){ return []; } }
   function pvHistorySaveCurrent(leaveUnread){ try{ var id=pvHistoryEnsureCurrent(); var titleEl=el('pv-ai-title'); var title=titleEl?titleEl.textContent:'COSPRO AI'; var msgs=pvHistoryGetMessagesFromDOM(); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!msgs.length && (!title || title==='COSPRO AI' || title==='Quick Hello')){ return; } if(found){ if(pvIsRealTitle(found.title)){ try{ var _teL=el('pv-ai-title'); if(_teL && _teL.textContent!==found.title) _teL.textContent=found.title; }catch(e){} title=found.title; } else if(pvIsRealTitle(title)){ found.title=title; } found.messages=msgs; found.updatedAt=Date.now(); if(leaveUnread) found.unread=true; else if(!leaveUnread) found.unread=false; } else { list.unshift({id:id, title:title, messages:msgs, updatedAt:Date.now(), unread:leaveUnread?true:false}); } list.sort(function(a,b){ return (b.updatedAt||0)-(a.updatedAt||0); }); if(list.length>100) list=list.slice(0,100); pvHistorySave(list); }catch(e){} }
   function pvHistoryUpdateTitle(title){ try{ if(!title||title==='COSPRO AI') return; var id=pvHistoryEnsureCurrent(); if(pvIsChatTitleLocked(id)) return; var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(found){ if(found.manualTitle) return; if(pvIsRealTitle(found.title)) return; found.title=String(title).replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim()||title; found.updatedAt=Date.now(); pvHistorySave(list); } }catch(e){} }
   function pvCleanNumberedTitles(){ try{ var list=pvHistoryLoad(); var changed=false; for(var i=0;i<list.length;i++){ if(list[i].manualTitle) continue; var ttl=String(list[i].title||''); if(!ttl) continue; if(/[0-9]/.test(ttl)){ var noNum=ttl.replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); if(noNum && noNum!==ttl){ list[i].title=noNum; changed=true; } } } if(changed){ pvHistorySave(list); try{ var used=pvGetUsedTitles(); var nu2=used.map(function(x){ return String(x||'').replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); }).filter(Boolean); localStorage.setItem(TITLE_USED_KEY, JSON.stringify(nu2)); }catch(e){} } }catch(e){} }
@@ -8178,8 +8164,8 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
     if(txt && txt!=='Thinking...'){ try{ pvAiMaybeInsertDateSep(_msgTs); }catch(e){} }
     if(who==='ai' && txt && txt!=='Thinking...'){ try{ if(window.pvAiReplyVib) window.pvAiReplyVib(); else if(window.pvSleekVib) window.pvSleekVib(); }catch(e){} }
     var d = document.createElement('div'); d.className = 'pv-ai-msg ' + who; try{ d.dataset.pvTs = String(_msgTs); }catch(e){}
-    if(imgURL || isVideo){ var im=document.createElement('img'); if(imgURL){ im.src=imgURL; } else { try{ im.setAttribute('data-pv-video-pending','1'); im.classList.add('pv-video-pending'); }catch(e){} } try{ im.style.setProperty('width','96px','important'); im.style.setProperty('height','96px','important'); im.style.setProperty('max-width','96px','important'); im.style.setProperty('object-fit','cover','important'); im.style.setProperty('border-radius','14px','important'); im.style.setProperty('display','block','important'); im.style.setProperty('margin', who==='user' ? '0 0 6px auto' : '8px 0 0 0','important'); im.style.setProperty('background','transparent','important'); im.style.setProperty('cursor','zoom-in','important'); }catch(e){} if(who==='user'){ try{ d.style.setProperty('background','transparent','important'); d.style.setProperty('padding','0','important'); d.style.setProperty('box-shadow','none','important'); }catch(e){} } if(isVideo){ try{ var pvWrap=document.createElement('div'); pvWrap.className='pv-ai-msg-video-wrap'; if(!imgURL){ pvWrap.classList.add('is-loading'); } var pvSpin=document.createElement('span'); pvSpin.className='pv-ai-msg-video-spinner'; pvSpin.setAttribute('aria-hidden','true'); var pvPlay=document.createElement('span'); pvPlay.className='pv-ai-msg-play'; pvPlay.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg>'; pvWrap.appendChild(im); pvWrap.appendChild(pvSpin); pvWrap.appendChild(pvPlay); d.appendChild(pvWrap); }catch(e){ d.appendChild(im); } } else { d.appendChild(im); } }
-    if(txt){ if(who==='ai' && txt!=='Thinking...'){ d.dataset.pvRaw=txt; var c=document.createElement('div'); c.className='pv-md'; c.innerHTML=pvRenderMarkdown(txt); d.appendChild(c); } else { var s=document.createElement('span'); s.textContent=txt; if(imgURL && who==='user'){ try{ s.style.setProperty('background','#ffffff','important'); s.style.setProperty('color','#111111','important'); s.style.setProperty('padding','8px 12px','important'); s.style.setProperty('border-radius','18px','important'); s.style.setProperty('display','block','important'); s.style.setProperty('width','fit-content','important'); s.style.setProperty('max-width','100%','important'); s.style.setProperty('margin-left','auto','important'); s.style.setProperty('box-shadow','0 1px 3px rgba(0,0,0,.25)','important'); }catch(e){} } d.appendChild(s); } }
+    if(imgURL || isVideo){ var im=document.createElement('img'); if(imgURL){ im.src=imgURL; } else { try{ im.setAttribute('data-pv-video-pending','1'); im.classList.add('pv-video-pending'); im.style.visibility='hidden'; }catch(e){} } try{ im.style.setProperty('width','96px','important'); im.style.setProperty('height','96px','important'); im.style.setProperty('max-width','96px','important'); im.style.setProperty('object-fit','cover','important'); im.style.setProperty('border-radius','14px','important'); im.style.setProperty('display','block','important'); im.style.setProperty('margin', who==='user' ? '0 0 6px auto' : '8px 0 0 0','important'); im.style.setProperty('background','transparent','important'); im.style.setProperty('cursor','zoom-in','important'); }catch(e){} if(who==='user'){ try{ d.style.setProperty('background','transparent','important'); d.style.setProperty('padding','0','important'); d.style.setProperty('box-shadow','none','important'); }catch(e){} } if(isVideo){ try{ var pvWrap=document.createElement('div'); pvWrap.className='pv-ai-msg-video-wrap'; if(!imgURL){ pvWrap.classList.add('is-loading'); } var pvSpin=document.createElement('span'); pvSpin.className='pv-ai-msg-video-spinner'; pvSpin.setAttribute('aria-hidden','true'); var pvPlay=document.createElement('button'); pvPlay.type='button'; pvPlay.className='pv-ai-msg-play'; pvPlay.setAttribute('aria-label','Play video'); pvPlay.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5z" fill="#fff"/></svg>'; pvWrap.appendChild(im); pvWrap.appendChild(pvSpin); pvWrap.appendChild(pvPlay); d.appendChild(pvWrap); }catch(e){ d.appendChild(im); } } else { d.appendChild(im); } }
+    if(txt){ if(who==='ai' && txt!=='Thinking...'){ d.dataset.pvRaw=txt; var c=document.createElement('div'); c.className='pv-md'; c.innerHTML=pvRenderMarkdown(txt); d.appendChild(c); } else { var s=document.createElement('span'); s.textContent=txt; if((imgURL || isVideo) && who==='user'){ try{ s.style.setProperty('background','#ffffff','important'); s.style.setProperty('color','#111111','important'); s.style.setProperty('padding','8px 12px','important'); s.style.setProperty('border-radius','18px','important'); s.style.setProperty('display','block','important'); s.style.setProperty('width','fit-content','important'); s.style.setProperty('max-width','100%','important'); s.style.setProperty('margin-left','auto','important'); s.style.setProperty('box-shadow','0 1px 3px rgba(0,0,0,.25)','important'); }catch(e){} } d.appendChild(s); } }
     if(who==='ai' && txt && txt!=='Thinking...'){
       var wrap = document.createElement('div'); wrap.className = 'pv-ai-msg-wrap ai';
       wrap.appendChild(d);
@@ -8280,12 +8266,10 @@ async function handleSend(){
     var pvSendVideoURL = pvSendIsVideo ? window.__pvAttachVideoURL : null;
     var pvSendChatId=pvHistoryEnsureCurrent();
     var pvSentMsg = addMsg(txt, 'user', showImg, null, pvSendIsVideo);
-    if(pvSentMsg && pvSendVideoURL){ try{ var pvSentImg=pvSentMsg.querySelector('img'); if(pvSentImg){ pvSentImg.dataset.pvVideo=pvSendVideoURL; pvSentImg.classList.add('pv-is-video'); } }catch(e){} }
-    if(pvSendIsVideo && !showImg && pvSentMsg){ try{ (function(_msg){ var _tries=0; var _timer=setInterval(function(){ try{ _tries++; var _frame=window.__pvAttachVideoFrame||null; if(_frame){ clearInterval(_timer); try{ var _im=_msg.querySelector('img'); if(_im){ _im.removeAttribute('data-pv-video-pending'); _im.classList.remove('pv-video-pending'); _im.src=_frame; _im.classList.add('pv-loaded'); _im.style.visibility=''; _im.style.opacity='1'; var _w=_im.closest ? _im.closest('.pv-ai-msg-video-wrap') : null; if(_w) _w.classList.remove('is-loading'); } }catch(e){} try{ pvHistorySaveCurrent(); }catch(e){} return; } if(_tries>30){ clearInterval(_timer); try{ var _im2=_msg.querySelector('img'); var _w2=_im2 && _im2.closest ? _im2.closest('.pv-ai-msg-video-wrap') : null; if(_w2) _w2.classList.remove('is-loading'); }catch(e){} } }catch(e){} },100); })(pvSentMsg); }catch(e){} }
+    if(pvSentMsg && pvSendVideoURL){ try{ var pvSentImg=pvSentMsg.querySelector('img'); if(pvSentImg){ pvSentImg.dataset.pvVideo=pvSendVideoURL; pvSentImg.classList.add('pv-is-video'); if(!showImg){ try{ var _f = window.__pvAttachVideoFrame || null; if(_f){ pvSentImg.src=_f; pvSentImg.classList.add('pv-loaded'); pvSentImg.style.visibility=''; pvSentImg.style.opacity='1'; var _w=pvSentImg.closest ? pvSentImg.closest('.pv-ai-msg-video-wrap') : null; if(_w) _w.classList.remove('is-loading'); try{ pvHistorySaveCurrent(); }catch(e){} } }catch(e){} } } }catch(e){} }
     pvUpdateTitleFromText(txt, !!showImg);
     try{ pvHistorySaveCurrent(); }catch(e){}
     var fileNow = pendingFile; pendingFile=null; pendingFileURL=null;
-    try{ window.__pvAttachVideoFrame=null; }catch(e){}
     var prev = el('pv-ai-attach-preview'); if(prev){ prev.classList.remove('show'); prev.classList.remove('is-loading'); prev.classList.remove('is-video'); }
     inp.value=''; var bar=el('pv-ai-input-bar'); if(bar) bar.classList.remove('has-text'); inp.style.height='auto';
     var thinking = addMsg('Thinking...', 'ai'); if(thinking) thinking.classList.add('thinking');
@@ -8294,7 +8278,7 @@ async function handleSend(){
       if(fileNow){
         // Picture / video -> COSPRO AI sees, COSPRO AI explains
         var b64, mimeForVision;
-        if(fileNow.type.indexOf('video')===0){ b64 = await pvGetVideoFrame(fileNow); mimeForVision = 'image/jpeg'; if(pvSentMsg){ try{ var _pi=pvSentMsg.querySelector('img.pv-video-pending, img[data-pv-video-pending]'); if(_pi && b64){ var _du='data:image/jpeg;base64,'+b64; try{ window.__pvAttachVideoFrame=_du; }catch(e){} _pi.removeAttribute('data-pv-video-pending'); _pi.classList.remove('pv-video-pending'); _pi.src=_du; _pi.classList.add('pv-loaded'); _pi.style.visibility=''; _pi.style.opacity='1'; var _pw=_pi.closest ? _pi.closest('.pv-ai-msg-video-wrap') : null; if(_pw) _pw.classList.remove('is-loading'); try{ pvHistorySaveCurrent(); }catch(e){} } }catch(e){} } } else { b64 = await fileToBase64(fileNow); mimeForVision = fileNow.type || 'image/jpeg'; }
+        if(fileNow.type.indexOf('video')===0){ b64 = await pvGetVideoFrame(fileNow); mimeForVision = 'image/jpeg'; try{ if(pvSentMsg){ var _pi=pvSentMsg.querySelector('img.pv-video-pending, img[data-pv-video-pending]'); if(_pi && b64){ var _du='data:image/jpeg;base64,'+b64; try{ window.__pvAttachVideoFrame=_du; }catch(e){} _pi.removeAttribute('data-pv-video-pending'); _pi.classList.remove('pv-video-pending'); _pi.src=_du; _pi.classList.add('pv-loaded'); _pi.style.visibility=''; _pi.style.opacity='1'; var _pw=_pi.closest ? _pi.closest('.pv-ai-msg-video-wrap') : null; if(_pw) _pw.classList.remove('is-loading'); try{ pvHistorySaveCurrent(); }catch(e){} } } }catch(e){} } else { b64 = await fileToBase64(fileNow); mimeForVision = fileNow.type || 'image/jpeg'; }
         var seen = await callGroqVision(fileNow, b64, mimeForVision);
         var _hist2 = pvHistoryGetMessagesFromDOM().slice(-8) /* FIX: was 20, burned 8K TPM fast */.map(function(m){ return {role: m.who==='user'?'user':'assistant', content: m.txt||''}; }).filter(function(m){ return m.content; });
         reply = await callGroq([
@@ -9463,7 +9447,7 @@ async function handleSend(){
 /* User picture: small, no white around it. Parent becomes transparent, text gets its own white bubble separate below. */
 .pv-ai-msg.user:has(img){background:transparent !important;padding:0 !important;box-shadow:none !important;border-radius:0 !important;max-width:85% !important;width:auto !important}
 .pv-ai-msg.user:has(img) img{width:96px !important;max-width:96px !important;height:96px !important;border-radius:14px !important;display:block !important;margin:0 0 6px auto !important;object-fit:cover !important;cursor:zoom-in !important;background:transparent !important}
-.pv-ai-msg.user:has(img) span{background:#ffffff !important;color:#111111 !important;padding:8px 12px !important;border-radius:18px !important;border-bottom-right-radius:6px !important;display:block !important;width:fit-content !important;max-width:100% !important;margin-left:auto !important;box-shadow:0 1px 3px rgba(0,0,0,.25) !important}
+.pv-ai-msg.user:has(img) > span{background:#ffffff !important;color:#111111 !important;padding:8px 12px !important;border-radius:18px !important;border-bottom-right-radius:6px !important;display:block !important;width:fit-content !important;max-width:100% !important;margin-left:auto !important;box-shadow:0 1px 3px rgba(0,0,0,.25) !important}
 /* AI picture: also small, no white */
 .pv-ai-msg.ai img{width:96px !important;max-width:96px !important;height:96px !important;border-radius:14px !important;display:block !important;margin:8px 0 0 0 !important;object-fit:cover !important;cursor:zoom-in !important;background:transparent !important}
 /* Preview overlay */
@@ -9623,7 +9607,7 @@ html[data-pv-accent="blue"] .unread-badge, html[data-pv-accent="blue"] .pv-new-d
 html[data-pv-accent="blue"] #pv-ai-screen .pv-ai-msg.user{background:linear-gradient(135deg,#2f7bff,#1e6bff) !important;background-image:linear-gradient(135deg,#2f7bff,#1e6bff) !important;color:#fff !important}
 html[data-pv-accent="blue"] #pv-ai-screen .pv-ai-msg.user span{color:#fff !important;background:transparent !important}
 html[data-pv-accent="blue"] #pv-ai-screen .pv-ai-msg.user:has(img){background:transparent !important;background-image:none !important}
-html[data-pv-accent="blue"] #pv-ai-screen .pv-ai-msg.user:has(img) span{background:linear-gradient(135deg,#2f7bff,#1e6bff) !important;background-image:linear-gradient(135deg,#2f7bff,#1e6bff) !important;color:#fff !important}
+html[data-pv-accent="blue"] #pv-ai-screen .pv-ai-msg.user:has(img) > span{background:linear-gradient(135deg,#2f7bff,#1e6bff) !important;background-image:linear-gradient(135deg,#2f7bff,#1e6bff) !important;color:#fff !important}
 html[data-pv-accent="blue"] .pv-ai-msg.user{background:linear-gradient(135deg,#2f7bff,#1e6bff) !important;background-image:linear-gradient(135deg,#2f7bff,#1e6bff) !important;color:#fff !important}
 html[data-pv-accent="blue"] .pv-ai-msg.user span{color:#fff !important}
 html[data-pv-accent="white"] #pv-ai-screen .pv-ai-input-bar.has-text .pv-ai-action{background:linear-gradient(90deg,#ffffff,#e5e5ea) !important;background-image:linear-gradient(90deg,#ffffff,#e5e5ea) !important;border:none !important;box-shadow:none !important;color:#000 !important}
@@ -9696,42 +9680,42 @@ html[data-pv-accent="default"] .dm-msg:not(.other){background:linear-gradient(13
 html[data-pv-accent="white"] #pv-ai-screen .pv-ai-msg.user{background:linear-gradient(135deg,#ffffff,#e5e5ea) !important;background-image:linear-gradient(135deg,#ffffff,#e5e5ea) !important;color:#000 !important}
 html[data-pv-accent="white"] #pv-ai-screen .pv-ai-msg.user span{color:#000 !important;background:transparent !important}
 html[data-pv-accent="white"] #pv-ai-screen .pv-ai-msg.user:has(img){background:transparent !important;background-image:none !important}
-html[data-pv-accent="white"] #pv-ai-screen .pv-ai-msg.user:has(img) span{background:linear-gradient(135deg,#ffffff,#e5e5ea) !important;background-image:linear-gradient(135deg,#ffffff,#e5e5ea) !important;color:#000 !important}
+html[data-pv-accent="white"] #pv-ai-screen .pv-ai-msg.user:has(img) > span{background:linear-gradient(135deg,#ffffff,#e5e5ea) !important;background-image:linear-gradient(135deg,#ffffff,#e5e5ea) !important;color:#000 !important}
 html[data-pv-accent="white"] .pv-ai-msg.user{background:linear-gradient(135deg,#ffffff,#e5e5ea) !important;background-image:linear-gradient(135deg,#ffffff,#e5e5ea) !important;color:#000 !important}
 html[data-pv-accent="white"] .pv-ai-msg.user span{color:#000 !important}
 html[data-pv-accent="green"] #pv-ai-screen .pv-ai-msg.user{background:linear-gradient(135deg,#22c55e,#16a34a) !important;background-image:linear-gradient(135deg,#22c55e,#16a34a) !important;color:#fff !important}
 html[data-pv-accent="green"] #pv-ai-screen .pv-ai-msg.user span{color:#fff !important;background:transparent !important}
 html[data-pv-accent="green"] #pv-ai-screen .pv-ai-msg.user:has(img){background:transparent !important;background-image:none !important}
-html[data-pv-accent="green"] #pv-ai-screen .pv-ai-msg.user:has(img) span{background:linear-gradient(135deg,#22c55e,#16a34a) !important;background-image:linear-gradient(135deg,#22c55e,#16a34a) !important;color:#fff !important}
+html[data-pv-accent="green"] #pv-ai-screen .pv-ai-msg.user:has(img) > span{background:linear-gradient(135deg,#22c55e,#16a34a) !important;background-image:linear-gradient(135deg,#22c55e,#16a34a) !important;color:#fff !important}
 html[data-pv-accent="green"] .pv-ai-msg.user{background:linear-gradient(135deg,#22c55e,#16a34a) !important;background-image:linear-gradient(135deg,#22c55e,#16a34a) !important;color:#fff !important}
 html[data-pv-accent="green"] .pv-ai-msg.user span{color:#fff !important}
 html[data-pv-accent="yellow"] #pv-ai-screen .pv-ai-msg.user{background:linear-gradient(135deg,#ffcc00,#ffaa00) !important;background-image:linear-gradient(135deg,#ffcc00,#ffaa00) !important;color:#000 !important}
 html[data-pv-accent="yellow"] #pv-ai-screen .pv-ai-msg.user span{color:#000 !important;background:transparent !important}
 html[data-pv-accent="yellow"] #pv-ai-screen .pv-ai-msg.user:has(img){background:transparent !important;background-image:none !important}
-html[data-pv-accent="yellow"] #pv-ai-screen .pv-ai-msg.user:has(img) span{background:linear-gradient(135deg,#ffcc00,#ffaa00) !important;background-image:linear-gradient(135deg,#ffcc00,#ffaa00) !important;color:#000 !important}
+html[data-pv-accent="yellow"] #pv-ai-screen .pv-ai-msg.user:has(img) > span{background:linear-gradient(135deg,#ffcc00,#ffaa00) !important;background-image:linear-gradient(135deg,#ffcc00,#ffaa00) !important;color:#000 !important}
 html[data-pv-accent="yellow"] .pv-ai-msg.user{background:linear-gradient(135deg,#ffcc00,#ffaa00) !important;background-image:linear-gradient(135deg,#ffcc00,#ffaa00) !important;color:#000 !important}
 html[data-pv-accent="yellow"] .pv-ai-msg.user span{color:#000 !important}
 html[data-pv-accent="pink"] #pv-ai-screen .pv-ai-msg.user{background:linear-gradient(135deg,#ff6eb4,#ff4d9d) !important;background-image:linear-gradient(135deg,#ff6eb4,#ff4d9d) !important;color:#fff !important}
 html[data-pv-accent="pink"] #pv-ai-screen .pv-ai-msg.user span{color:#fff !important;background:transparent !important}
 html[data-pv-accent="pink"] #pv-ai-screen .pv-ai-msg.user:has(img){background:transparent !important;background-image:none !important}
-html[data-pv-accent="pink"] #pv-ai-screen .pv-ai-msg.user:has(img) span{background:linear-gradient(135deg,#ff6eb4,#ff4d9d) !important;background-image:linear-gradient(135deg,#ff6eb4,#ff4d9d) !important;color:#fff !important}
+html[data-pv-accent="pink"] #pv-ai-screen .pv-ai-msg.user:has(img) > span{background:linear-gradient(135deg,#ff6eb4,#ff4d9d) !important;background-image:linear-gradient(135deg,#ff6eb4,#ff4d9d) !important;color:#fff !important}
 html[data-pv-accent="pink"] .pv-ai-msg.user{background:linear-gradient(135deg,#ff6eb4,#ff4d9d) !important;background-image:linear-gradient(135deg,#ff6eb4,#ff4d9d) !important;color:#fff !important}
 html[data-pv-accent="pink"] .pv-ai-msg.user span{color:#fff !important}
 html[data-pv-accent="orange"] #pv-ai-screen .pv-ai-msg.user{background:linear-gradient(135deg,#ff7a00,#ff5500) !important;background-image:linear-gradient(135deg,#ff7a00,#ff5500) !important;color:#fff !important}
 html[data-pv-accent="orange"] #pv-ai-screen .pv-ai-msg.user span{color:#fff !important;background:transparent !important}
 html[data-pv-accent="orange"] #pv-ai-screen .pv-ai-msg.user:has(img){background:transparent !important;background-image:none !important}
-html[data-pv-accent="orange"] #pv-ai-screen .pv-ai-msg.user:has(img) span{background:linear-gradient(135deg,#ff7a00,#ff5500) !important;background-image:linear-gradient(135deg,#ff7a00,#ff5500) !important;color:#fff !important}
+html[data-pv-accent="orange"] #pv-ai-screen .pv-ai-msg.user:has(img) > span{background:linear-gradient(135deg,#ff7a00,#ff5500) !important;background-image:linear-gradient(135deg,#ff7a00,#ff5500) !important;color:#fff !important}
 html[data-pv-accent="orange"] .pv-ai-msg.user{background:linear-gradient(135deg,#ff7a00,#ff5500) !important;background-image:linear-gradient(135deg,#ff7a00,#ff5500) !important;color:#fff !important}
 html[data-pv-accent="orange"] .pv-ai-msg.user span{color:#fff !important}
 html[data-pv-accent="purple"] #pv-ai-screen .pv-ai-msg.user{background:linear-gradient(135deg,#a855f7,#8b5cf6) !important;background-image:linear-gradient(135deg,#a855f7,#8b5cf6) !important;color:#fff !important}
 html[data-pv-accent="purple"] #pv-ai-screen .pv-ai-msg.user span{color:#fff !important;background:transparent !important}
 html[data-pv-accent="purple"] #pv-ai-screen .pv-ai-msg.user:has(img){background:transparent !important;background-image:none !important}
-html[data-pv-accent="purple"] #pv-ai-screen .pv-ai-msg.user:has(img) span{background:linear-gradient(135deg,#a855f7,#8b5cf6) !important;background-image:linear-gradient(135deg,#a855f7,#8b5cf6) !important;color:#fff !important}
+html[data-pv-accent="purple"] #pv-ai-screen .pv-ai-msg.user:has(img) > span{background:linear-gradient(135deg,#a855f7,#8b5cf6) !important;background-image:linear-gradient(135deg,#a855f7,#8b5cf6) !important;color:#fff !important}
 html[data-pv-accent="purple"] .pv-ai-msg.user{background:linear-gradient(135deg,#a855f7,#8b5cf6) !important;background-image:linear-gradient(135deg,#a855f7,#8b5cf6) !important;color:#fff !important}
 html[data-pv-accent="purple"] .pv-ai-msg.user span{color:#fff !important}
 html[data-pv-accent="default"] #pv-ai-screen .pv-ai-msg.user{background:#ffffff !important;background-image:none !important;color:#111111 !important}
 html[data-pv-accent="default"] #pv-ai-screen .pv-ai-msg.user span{color:#111111 !important;background:transparent !important}
-html[data-pv-accent="default"] #pv-ai-screen .pv-ai-msg.user:has(img) span{background:#ffffff !important;background-image:none !important;color:#111111 !important}
+html[data-pv-accent="default"] #pv-ai-screen .pv-ai-msg.user:has(img) > span{background:#ffffff !important;background-image:none !important;color:#111111 !important}
 html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
 </style>
 <script data-file="js/pv-ai-accounts.js">
@@ -10033,49 +10017,135 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
 #pv-ai-img-preview-close:active{transform:scale(.88) !important}
 </style>
 
-<!-- ===== FILE: css/ai-video-preview.css — separate, do not mix ===== -->
-<style data-file="css/ai-video-preview.css">
-/* VIDEO - PICTURE FIRST, SPINNER WHILE LOADING, PLAY NOT PLAIN, TAP OPENS VIDEO PREVIEW */
-/* Attach thumbnail: spinner while frame loads, play badge once ready. Never empty dark box. */
-#pv-ai-input-bar .pv-ai-attach-preview{overflow:visible !important}
-#pv-ai-attach-spinner{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:20px !important;height:20px !important;margin:-10px 0 0 -10px !important;border:2.5px solid rgba(255,255,255,.25) !important;border-top-color:#fff !important;border-radius:50% !important;animation:pvAttachSpin .7s linear infinite !important;z-index:3 !important;pointer-events:none !important}
-#pv-ai-input-bar .pv-ai-attach-preview.is-loading #pv-ai-attach-spinner{display:block !important}
-#pv-ai-input-bar .pv-ai-attach-preview.is-loading #pv-ai-attach-thumb{opacity:.35 !important}
-@keyframes pvAttachSpin{to{transform:rotate(360deg)}}
-#pv-ai-attach-play{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:28px !important;height:28px !important;margin:-14px 0 0 -14px !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;backdrop-filter:blur(8px) !important;-webkit-backdrop-filter:blur(8px) !important;align-items:center !important;justify-content:center !important;cursor:pointer !important;z-index:3 !important;padding:0 !important}
+<!-- ===== FILE: css/ai-video-clean.css — separate, do not mix — REPLACES old ai-video-preview.css, old one DELETED ===== -->
+<style data-file="css/ai-video-clean.css">
+/* AI VIDEO - CLEAN - replaces old ai-video-preview.css. Picture untouched. */
+/* ATTACH (before sending) - same 60px box as picture. */
+#pv-ai-input-bar .pv-ai-attach-preview{position:relative !important;overflow:hidden !important}
+#pv-ai-input-bar .pv-ai-attach-preview.show{width:60px !important;height:60px !important}
+#pv-ai-input-bar .pv-ai-attach-preview.is-video{background:#111 !important}
+#pv-ai-input-bar .pv-ai-attach-preview img#pv-ai-attach-thumb{width:60px !important;height:60px !important;min-width:60px !important;min-height:60px !important;border-radius:14px !important;object-fit:cover !important;display:block !important;margin:0 !important}
+#pv-ai-input-bar .pv-ai-attach-preview.is-video.is-loading img#pv-ai-attach-thumb{opacity:.35 !important}
+#pv-ai-attach-spinner{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:20px !important;height:20px !important;transform:translate(-50%,-50%) !important;margin:0 !important;border:2.5px solid rgba(255,255,255,.25) !important;border-top-color:#fff !important;border-radius:50% !important;animation:pvVideoCleanSpin .7s linear infinite !important;z-index:3 !important;pointer-events:none !important}
+#pv-ai-input-bar .pv-ai-attach-preview.is-video.is-loading #pv-ai-attach-spinner{display:block !important}
+@keyframes pvVideoCleanSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+#pv-ai-attach-play{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:28px !important;height:28px !important;min-width:28px !important;min-height:28px !important;max-width:28px !important;max-height:28px !important;transform:translate(-50%,-50%) !important;margin:0 !important;padding:0 !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;box-shadow:none !important;align-items:center !important;justify-content:center !important;cursor:pointer !important;z-index:3 !important}
 #pv-ai-attach-play svg{width:14px !important;height:14px !important;display:block !important;margin-left:1px !important}
 #pv-ai-input-bar .pv-ai-attach-preview.is-video:not(.is-loading) #pv-ai-attach-play{display:flex !important}
-/* SENT VIDEO - SAME DESIGN AS SENT PICTURE: same 96px thumb + white bubble below. Only difference = play badge + tap plays video. */
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap{position:relative !important;width:96px !important;height:96px !important;margin:0 0 6px auto !important;flex:none !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap img{margin:0 !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-play{position:absolute !important;left:50% !important;top:50% !important;width:32px !important;height:32px !important;margin:-16px 0 0 -16px !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;backdrop-filter:blur(8px) !important;-webkit-backdrop-filter:blur(8px) !important;display:flex !important;align-items:center !important;justify-content:center !important;cursor:pointer !important;z-index:2 !important;pointer-events:auto !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-play svg{width:16px !important;height:16px !important;display:block !important;margin-left:1px !important}
-/* FULL VIDEO PREVIEW - same size as picture preview */
+/* SENT VIDEO - same 96px thumb as picture. Play is BUTTON, not span, so white-bubble span rule cannot hijack it. */
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap{position:relative !important;width:96px !important;height:96px !important;min-width:96px !important;min-height:96px !important;margin:0 0 6px auto !important;overflow:hidden !important;border-radius:14px !important;background:#111 !important;flex:none !important}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap img{width:96px !important;height:96px !important;max-width:96px !important;object-fit:cover !important;border-radius:14px !important;margin:0 !important;display:block !important;background:transparent !important}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-video-spinner{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:20px !important;height:20px !important;transform:translate(-50%,-50%) !important;margin:0 !important;border:2.5px solid rgba(255,255,255,.25) !important;border-top-color:#fff !important;border-radius:50% !important;animation:pvVideoCleanSpin .7s linear infinite !important;z-index:3 !important;pointer-events:none !important}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap.is-loading .pv-ai-msg-video-spinner{display:block !important}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap.is-loading .pv-ai-msg-play{display:none !important}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap:not(.is-loading) .pv-ai-msg-play{display:flex !important}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-play{position:absolute !important;left:50% !important;top:50% !important;width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important;max-width:32px !important;max-height:32px !important;transform:translate(-50%,-50%) !important;margin:0 !important;padding:0 !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;box-shadow:none !important;display:flex !important;align-items:center !important;justify-content:center !important;cursor:pointer !important;z-index:2 !important;pointer-events:auto !important}
+#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-play svg{width:16px !important;height:16px !important;display:block !important;margin-left:1px !important}
 #pv-ai-img-preview-video{max-width:84vw !important;max-height:70vh !important;border-radius:16px !important;display:block !important;background:#000 !important}
 </style>
-<script data-file="js/ai-video-preview.js">
-// VIDEO ATTACH: tap thumbnail / play in composer opens video preview. Never plain.
+<!-- ===== FILE: js/ai-video-clean.js — separate, do not mix — REPLACES old ai-video-preview.js, old one DELETED ===== -->
+<script data-file="js/ai-video-clean.js">
+// AI VIDEO - CLEAN - single place for video frame + play. Replaces old ai-video-preview.js.
+// Attach: extract frame once, fill thumb, clear loading. Sent: play is BUTTON, tap opens video preview.
 (function(){
+  if(window.__pvAiVideoCleanBound) return; window.__pvAiVideoCleanBound=true;
   function el(id){ return document.getElementById(id); }
-  function wire(){
-    var play=el('pv-ai-attach-play'); var prev=el('pv-ai-attach-preview'); var thumb=el('pv-ai-attach-thumb');
-    function openAttachVideo(e){
+  function extractFrame(){
+    try{
+      var url = window.__pvAttachVideoURL;
+      if(!url) return;
+      var v = document.createElement('video');
+      v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+      var done = false;
+      function finish(){
+        if(done) return; done = true;
+        try{
+          var c = document.createElement('canvas');
+          var w = v.videoWidth || 320, h = v.videoHeight || 180;
+          c.width = w; c.height = h;
+          var ctx = c.getContext('2d'); ctx.drawImage(v,0,0,w,h);
+          var data = c.toDataURL('image/jpeg',0.8);
+          try{ window.__pvAttachVideoFrame = data; }catch(e){}
+          var th = el('pv-ai-attach-thumb');
+          if(th){ th.style.visibility=''; th.src = data; th.classList.add('pv-loaded'); th.style.opacity='1'; }
+          var prev = el('pv-ai-attach-preview');
+          if(prev){ prev.classList.remove('is-loading'); }
+        }catch(e){
+          var prev2 = el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('is-loading');
+        }
+      }
+      v.onloadeddata = function(){ try{ v.currentTime = 0.1; }catch(e){ finish(); } };
+      v.onseeked = finish;
+      v.onerror = function(){ var p = el('pv-ai-attach-preview'); if(p) p.classList.remove('is-loading'); };
+      setTimeout(function(){ if(!done) finish(); }, 3000);
+    }catch(e){}
+  }
+  function wireFile(){
+    var fi = el('pv-ai-file');
+    if(fi && !fi.dataset.pvVideoCleanBound){
+      fi.dataset.pvVideoCleanBound='1';
+      fi.addEventListener('change', function(){
+        // groq handler runs first and clears fi.value, so do NOT rely on fi.files - use preview state + URL
+        setTimeout(function(){
+          var prev = el('pv-ai-attach-preview');
+          if(prev && prev.classList.contains('is-video') && window.__pvAttachVideoURL){ extractFrame(); }
+        }, 30);
+      });
+    }
+  }
+  function wireAttachPlay(){
+    var play = el('pv-ai-attach-play'); var thumb = el('pv-ai-attach-thumb'); var prev = el('pv-ai-attach-preview');
+    function openAttach(e){
       try{
         if(!prev || !prev.classList.contains('is-video')) return;
         if(prev.classList.contains('is-loading')) return;
-        var url=window.__pvAttachVideoURL; if(!url) return;
+        var url = window.__pvAttachVideoURL; if(!url) return;
         e.preventDefault(); e.stopPropagation();
-        var poster=thumb && thumb.src ? thumb.src : '';
+        var poster = thumb && thumb.src ? thumb.src : '';
         if(window.__pvOpenVideoPreview) window.__pvOpenVideoPreview(url, poster);
       }catch(err){}
     }
-    if(play && !play.dataset.pvVideoBound){ play.dataset.pvVideoBound='1'; play.addEventListener('click', openAttachVideo); }
-    if(thumb && !thumb.dataset.pvVideoBound){ thumb.dataset.pvVideoBound='1'; thumb.addEventListener('click', openAttachVideo); }
+    if(play && !play.dataset.pvVideoCleanBound){ play.dataset.pvVideoCleanBound='1'; play.addEventListener('click', openAttach); }
+    if(thumb && !thumb.dataset.pvVideoCleanBound){ thumb.dataset.pvVideoCleanBound='1'; thumb.addEventListener('click', openAttach); }
   }
+  function wireSent(){
+    // Delegated: works for new + history-loaded sent videos. Play is BUTTON, not span.
+    if(!document.body.dataset.pvVideoCleanSentBound){
+      document.body.dataset.pvVideoCleanSentBound='1';
+      document.addEventListener('click', function(e){
+        try{
+          var playBtn = e.target && e.target.closest ? e.target.closest('.pv-ai-msg-play') : null;
+          if(!playBtn) return;
+          var msgEl = playBtn.closest('.pv-ai-msg'); var vImg = msgEl ? msgEl.querySelector('img') : null;
+          var vSrc = vImg && vImg.dataset ? vImg.dataset.pvVideo : null;
+          if(vSrc && window.__pvOpenVideoPreview){ e.preventDefault(); e.stopPropagation(); window.__pvOpenVideoPreview(vSrc, vImg.src); return; }
+          if(vImg && vImg.src && window.__pvOpenVideoPreview){ e.preventDefault(); e.stopPropagation(); window.__pvOpenVideoPreview(vSrc || vImg.src, vImg.src); return; }
+        }catch(err){}
+      }, true);
+    }
+    // Clear loading once sent thumb actually loads
+    try{
+      var box = el('pv-ai-messages'); if(!box) return;
+      box.querySelectorAll('.pv-ai-msg-video-wrap').forEach(function(wrap){
+        if(wrap.dataset.pvVideoCleanBound) return; wrap.dataset.pvVideoCleanBound='1';
+        var img = wrap.querySelector('img'); if(!img) { wrap.classList.remove('is-loading'); return; }
+        if(!img.dataset.pvVideoCleanBound){
+          img.dataset.pvVideoCleanBound='1';
+          img.addEventListener('load', function(){ try{ wrap.classList.remove('is-loading'); img.classList.add('pv-loaded'); img.style.visibility=''; img.style.opacity='1'; }catch(e){} });
+          img.addEventListener('error', function(){ try{ wrap.classList.remove('is-loading'); }catch(e){} });
+        }
+        if(img.complete && img.naturalWidth>0) wrap.classList.remove('is-loading');
+        else if(img.getAttribute('src')) wrap.classList.add('is-loading');
+      });
+    }catch(e){}
+  }
+  function wire(){ wireFile(); wireAttachPlay(); wireSent(); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
-  setInterval(wire, 1000);
+  setInterval(wire, 1500);
 })();
 </script>
+
+
 
 <!-- ===== FILE: js/ai-mic-stop-on-leave.js — separate, do not mix — AI ONLY ===== -->
 <script data-file="js/ai-mic-stop-on-leave.js">
@@ -10120,123 +10190,6 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
   try{ window.addEventListener('blur', function(){ stopAiAll(); }); }catch(e){}
 })();
 </script>
-
-<!-- ===== FILE: css/ai-video-sleek-play-fix.css — separate, do not mix — AI VIDEO ONLY, PICTURE UNTOUCHED ===== -->
-<style data-file="css/ai-video-sleek-play-fix.css">
-/* AI VIDEO ONLY - sleek play button to tell video apart from picture. Picture: no play, no spinner, no change. */
-/* 1) ATTACH (upload) - thumb-wrap is the anchor so play/spinner sit ON the thumb, not floating in the bar. */
-#pv-ai-input-bar .pv-ai-attach-preview{position:relative !important}
-#pv-ai-input-bar .pv-ai-attach-preview .pv-ai-attach-thumb-wrap{position:relative !important;width:36px !important;height:36px !important;flex:none !important;border-radius:8px !important;overflow:hidden !important;background:transparent !important;display:block !important}
-#pv-ai-input-bar .pv-ai-attach-preview.is-video .pv-ai-attach-thumb-wrap{background:#111 !important}
-#pv-ai-input-bar .pv-ai-attach-preview .pv-ai-attach-thumb-wrap #pv-ai-attach-thumb{width:100% !important;height:100% !important;max-width:100% !important;max-height:100% !important;border-radius:8px !important;object-fit:cover !important;display:block !important;margin:0 !important}
-/* Attach spinner - VIDEO ONLY, ONLY while .is-loading (loading actually necessary). Never for picture. */
-#pv-ai-input-bar .pv-ai-attach-preview .pv-ai-attach-thumb-wrap #pv-ai-attach-spinner{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:18px !important;height:18px !important;margin:-9px 0 0 -9px !important;border:2.5px solid rgba(255,255,255,.25) !important;border-top-color:#fff !important;border-radius:50% !important;animation:pvAiVideoSpin .7s linear infinite !important;z-index:3 !important;pointer-events:none !important}
-#pv-ai-input-bar .pv-ai-attach-preview.is-video.is-loading .pv-ai-attach-thumb-wrap #pv-ai-attach-spinner{display:block !important}
-/* Attach play - VIDEO ONLY, sleek, same style as sent video play but smaller. Hidden while loading, hidden for picture. */
-#pv-ai-input-bar .pv-ai-attach-preview .pv-ai-attach-thumb-wrap #pv-ai-attach-play{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:22px !important;height:22px !important;margin:-11px 0 0 -11px !important;border-radius:50% !important;background:rgba(20,20,22,.72) !important;border:1px solid rgba(255,255,255,.28) !important;backdrop-filter:blur(8px) !important;-webkit-backdrop-filter:blur(8px) !important;align-items:center !important;justify-content:center !important;cursor:pointer !important;z-index:3 !important;padding:0 !important}
-#pv-ai-input-bar .pv-ai-attach-preview .pv-ai-attach-thumb-wrap #pv-ai-attach-play svg{width:11px !important;height:11px !important;display:block !important;margin-left:1px !important}
-#pv-ai-input-bar .pv-ai-attach-preview.is-video:not(.is-loading) .pv-ai-attach-thumb-wrap #pv-ai-attach-play{display:flex !important}
-/* 2) SENT VIDEO - same sleek play, picture thumb underneath. Never empty black box: dark bg + spinner while loading, then picture + play. */
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap{position:relative !important;width:96px !important;height:96px !important;overflow:hidden !important;background:#111 !important;border-radius:14px !important;flex:none !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap img{width:96px !important;height:96px !important;max-width:96px !important;object-fit:cover !important;border-radius:14px !important;margin:0 !important;display:block !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-video-spinner{display:none !important;position:absolute !important;left:50% !important;top:50% !important;width:20px !important;height:20px !important;margin:-10px 0 0 -10px !important;border:2.5px solid rgba(255,255,255,.25) !important;border-top-color:#fff !important;border-radius:50% !important;animation:pvAiVideoSpin .7s linear infinite !important;z-index:3 !important;pointer-events:none !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap.is-loading .pv-ai-msg-video-spinner{display:block !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap.is-loading .pv-ai-msg-play{display:none !important}
-#pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap:not(.is-loading) .pv-ai-msg-play{display:flex !important}
-@keyframes pvAiVideoSpin{to{transform:rotate(360deg)}}
-</style>
-<script data-file="js/ai-video-sleek-play-fix.js">
-// AI VIDEO ONLY - sleek play + spinner-only-if-loading. Picture untouched.
-// 1) Upload: play only for video, only after thumb ready. Spinner only while is-loading.
-// 2) Sent: wrap always shows picture + same play, never empty. Spinner only while thumb actually loading.
-(function(){
-  if(window.__pvAiVideoSleekFixBound) return; window.__pvAiVideoSleekFixBound=true;
-  function el(id){ return document.getElementById(id); }
-  function ensureAttachWrap(){
-    try{
-      var prev=el('pv-ai-attach-preview'); if(!prev) return;
-      var wrap=el('pv-ai-attach-thumb-wrap');
-      if(!wrap){
-        var thumb=el('pv-ai-attach-thumb'); var spin=el('pv-ai-attach-spinner'); var play=el('pv-ai-attach-play');
-        if(!thumb) return;
-        wrap=document.createElement('span'); wrap.className='pv-ai-attach-thumb-wrap'; wrap.id='pv-ai-attach-thumb-wrap';
-        thumb.parentNode.insertBefore(wrap, thumb);
-        wrap.appendChild(thumb); if(spin) wrap.appendChild(spin); if(play) wrap.appendChild(play);
-      }
-    }catch(e){}
-  }
-  function wireAttach(){
-    try{
-      ensureAttachWrap();
-      var prev=el('pv-ai-attach-preview'); var thumb=el('pv-ai-attach-thumb'); if(!prev || !thumb) return;
-      if(!thumb.dataset.pvSleekAttachBound){
-        thumb.dataset.pvSleekAttachBound='1';
-        thumb.addEventListener('load', function(){ try{ thumb.classList.add('pv-loaded'); thumb.style.visibility=''; thumb.style.opacity='1'; if(prev.classList.contains('is-video')) prev.classList.remove('is-loading'); }catch(e){} });
-        thumb.addEventListener('error', function(){ try{ if(prev.classList.contains('is-video')) prev.classList.remove('is-loading'); }catch(e){} });
-      }
-      if(prev.classList.contains('is-video') && prev.classList.contains('is-loading')){
-        var src=thumb.getAttribute('src');
-        if(src && thumb.complete && thumb.naturalWidth>0){ prev.classList.remove('is-loading'); }
-      }
-    }catch(e){}
-  }
-  function retryAttachFrame(){
-    try{
-      var prev=el('pv-ai-attach-preview'); var thumb=el('pv-ai-attach-thumb');
-      if(!prev || !thumb) return;
-      if(!prev.classList.contains('is-video') || !prev.classList.contains('is-loading')) return;
-      if(thumb.getAttribute('src')) return;
-      var url=window.__pvAttachVideoURL; if(!url) return;
-      var v=document.createElement('video'); v.muted=true; v.playsInline=true; v.preload='auto'; v.src=url;
-      var done=false;
-      v.onloadeddata=function(){ try{ v.currentTime=0.1; }catch(e){} };
-      v.onseeked=function(){ if(done) return; done=true; try{ var c=document.createElement('canvas'); c.width=v.videoWidth||320; c.height=v.videoHeight||180; var ctx=c.getContext('2d'); ctx.drawImage(v,0,0,c.width,c.height); var data=c.toDataURL('image/jpeg',0.8); try{ window.__pvAttachVideoFrame=data; }catch(e){} thumb.style.visibility=''; thumb.src=data; thumb.classList.add('pv-loaded'); prev.classList.remove('is-loading'); }catch(e){ prev.classList.remove('is-loading'); } };
-      v.onerror=function(){ prev.classList.remove('is-loading'); };
-      setTimeout(function(){ if(!done){ try{ prev.classList.remove('is-loading'); }catch(e){} } }, 3000);
-    }catch(e){}
-  }
-  function wireSentWrap(wrap){
-    try{
-      if(!wrap || wrap.dataset.pvSleekBound) return; wrap.dataset.pvSleekBound='1';
-      var img=wrap.querySelector('img');
-      var spin=wrap.querySelector('.pv-ai-msg-video-spinner');
-      if(!spin){ spin=document.createElement('span'); spin.className='pv-ai-msg-video-spinner'; spin.setAttribute('aria-hidden','true'); wrap.appendChild(spin); }
-      if(!img) { wrap.classList.remove('is-loading'); return; }
-      function onLoad(){ try{ img.classList.add('pv-loaded'); img.style.visibility=''; img.style.opacity='1'; wrap.classList.remove('is-loading'); }catch(e){} }
-      function onError(){ try{ wrap.classList.remove('is-loading'); }catch(e){} }
-      if(!img.dataset.pvSleekImgBound){ img.dataset.pvSleekImgBound='1'; img.addEventListener('load', onLoad); img.addEventListener('error', onError); }
-      if(img.complete && img.naturalWidth>0){ onLoad(); }
-      else if(img.getAttribute('src')){ wrap.classList.add('is-loading'); }
-      else if(img.hasAttribute('data-pv-video-pending') || img.classList.contains('pv-video-pending')){ wrap.classList.add('is-loading'); setTimeout(function(){ try{ if(wrap.classList.contains('is-loading') && !img.getAttribute('src')) wrap.classList.remove('is-loading'); }catch(e){} }, 4000); }
-      else { wrap.classList.remove('is-loading'); }
-    }catch(e){}
-  }
-  function wireAllSent(){
-    try{ var box=el('pv-ai-messages'); if(!box) return; box.querySelectorAll('.pv-ai-msg-video-wrap').forEach(wireSentWrap); }catch(e){}
-  }
-  function observe(){
-    try{
-      var prev=el('pv-ai-attach-preview');
-      if(prev && window.MutationObserver && !prev.dataset.pvSleekObs){
-        prev.dataset.pvSleekObs='1';
-        var o1=new MutationObserver(function(){ wireAttach(); try{ if(prev.classList.contains('is-video') && prev.classList.contains('is-loading')){ setTimeout(retryAttachFrame, 2500); } }catch(e){} });
-        o1.observe(prev, {attributes:true, attributeFilter:['class']});
-      }
-      var box=el('pv-ai-messages');
-      if(box && window.MutationObserver && !box.dataset.pvSleekObs){
-        box.dataset.pvSleekObs='1';
-        var o2=new MutationObserver(function(muts){ muts.forEach(function(m){ (m.addedNodes||[]).forEach(function(n){ if(!n) return; if(n.classList && n.classList.contains('pv-ai-msg-video-wrap')) wireSentWrap(n); if(n.querySelector) n.querySelectorAll('.pv-ai-msg-video-wrap').forEach(wireSentWrap); }); }); });
-        o2.observe(box, {childList:true, subtree:true});
-      }
-    }catch(e){}
-  }
-  function wire(){ ensureAttachWrap(); wireAttach(); wireAllSent(); observe(); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
-  setInterval(function(){ wireAttach(); wireAllSent(); }, 1500);
-})();
-</script>
-
 </body>
-
 
 </html>
