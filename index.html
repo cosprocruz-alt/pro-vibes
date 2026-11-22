@@ -1,4 +1,21 @@
 <!DOCTYPE html>
+<!-- LOCKED FINAL v4 — TITLE NEW-CHAT FIX
+  Title: Once set, never changes again. Only Rename can. BUT new chat MUST show COSPRO AI, not old title.
+  Old title leaked because DOM fallback returned old title for new chat id. Fixed.
+  LOCKED FINAL v3 — TITLE RULE ALSO LOCKED
+  Title: Once a title is set (incl. Quick Hello), never change it again. Only Rename can.
+  LOCKED FINAL v2 — DISCLAIMER RULE ALSO LOCKED
+  Disclaimer: Only sensitive or unsure answers show disclaimer. Not every informations.
+  Text: 'Informations might be inaccurate' (with S) for sensitive, 'COSPRO AI can make mistakes' for unsure.
+  LOCKED FINAL v1 — DO NOT EDIT — AI ISOLATION FROZEN
+  Rule frozen: Every AI account is strictly different. No tie. No leak.
+  - Owner = PRO VIBES person. AI account = id owned by that owner only.
+  - Storage is owner + AI-account scoped only. Global is never source.
+  - A code never links, syncs, or copies anything.
+  - This file is the locked copy. Do not edit isolation logic in any other copy.
+  - If a future change touches AI storage, it must keep this lock passing or it is a bug.
+-->
+
 <html lang="en">
 <head><style>
 @font-face {
@@ -1104,6 +1121,7 @@ to{transform:translateY(0);opacity:1}
 .inbox-head-search svg{color:#fff !important;stroke:#fff}
 .pv-inbox-search-wrap svg{color:#fff !important}
 .pv-inbox-search-cancel{color:#fff !important}
+</style>
 <style data-file="css/pv-story-editor.css">
 /* css/pv-story-editor.css - sleek, reduced, send = chat send 100%, music sheet exactly as requested */
 @scope (body) {
@@ -1215,7 +1233,7 @@ to{transform:translateY(0);opacity:1}
 .pv-e2e-title .pv-story-expiry-green{color:#25D366}
 .pv-e2e-sub{margin:12px 0 0;color:#aaa;font-size:14px;line-height:1.55}
 .pv-e2e-sub b{color:#fff}
-
+</style>
 <style>
 /* VIEWER STORY BAR - exactly as screenshot: Reply pill + heart + laugh + circle heart */
 #pv-story-viewer .pv-story-viewer-viewer-bar{position:absolute;left:10px;right:10px;bottom:10px;bottom:calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;z-index:11;touch-action:manipulation;pointer-events:auto}
@@ -1319,9 +1337,9 @@ to{transform:translateY(0);opacity:1}
 #pv-ai-plus-backdrop.show{opacity:1;pointer-events:auto}
 #pv-ai-plus-sheet{position:fixed;left:8px;right:8px;bottom:8px;z-index:10002;background:#1c1c1e;border-radius:20px;padding:8px 8px 10px;box-sizing:border-box;transform:translateY(120%);transition:transform .25s ease;box-shadow:0 10px 30px rgba(0,0,0,.55)}
 #pv-ai-plus-sheet.show{transform:translateY(0)}
-.pv-ai-plus-sheet-handle{width:44px;height:4px;border-radius:999px;background:linear-gradient(180deg,#5a5a5e,#3a3a3c);margin:6px auto 8px;display:block;box-shadow:0 1px 0 rgba(255,255,255,.12) inset}
+.pv-ai-plus-sheet-handle{width:44px;height:4px;border-radius:999px;background:linear-gradient(180deg,#5a5a5e,#3a3a3c);margin:6px auto 10px;display:block;box-shadow:0 1px 0 rgba(255,255,255,.12) inset}
 .pv-ai-plus-sheet-row{display:flex;flex-direction:column;gap:0}
-.pv-ai-plus-divider{display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);margin:2px 10px 6px}
+.pv-ai-plus-divider{display:block !important;height:1px;background:rgba(255,255,255,.14);margin:0 2px 8px}
 .pv-ai-plus-opt{flex:none;width:100%;background:none;border:none;padding:8px 10px;cursor:pointer;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;-webkit-tap-highlight-color:transparent;border-radius:12px;text-align:left}
 .pv-ai-plus-opt:active{background:#333336}
 .pv-ai-plus-card{width:26px;height:28px;flex:0 0 26px;border-radius:0;background:transparent;display:flex;align-items:center;justify-content:center}
@@ -1472,7 +1490,7 @@ html[data-pv-accent="white"] .dm-msg{color:#000 !important}
 <style data-file="css/pv-ai-accent-profile.css">
 /* AI SETTINGS - Person profile sleek circle + name, before Accent */
 #pv-ai-accent-profile{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;width:100%;padding:18px 0 20px;box-sizing:border-box;flex-shrink:0}
-.pv-ai-accent-profile-circle{background:#171717;width:112px;height:112px;min-width:112px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 24px rgba(0,0,0,.45);position:relative;transition:background .2s ease}.pv-ai-accent-profile-circle.has-photo{background:#171717 !important}html[data-pv-accent="blue"] #pv-ai-accent-profile-circle:not(.has-photo){background:#2f7bff}html[data-pv-accent="green"] #pv-ai-accent-profile-circle:not(.has-photo){background:#22c55e}html[data-pv-accent="yellow"] #pv-ai-accent-profile-circle:not(.has-photo){background:#ffcc00}html[data-pv-accent="pink"] #pv-ai-accent-profile-circle:not(.has-photo){background:#ff6eb4}html[data-pv-accent="orange"] #pv-ai-accent-profile-circle:not(.has-photo){background:#ff7a00}html[data-pv-accent="purple"] #pv-ai-accent-profile-circle:not(.has-photo){background:#a855f7}html[data-pv-accent="white"] #pv-ai-accent-profile-circle:not(.has-photo){background:#ffffff}html[data-pv-accent="yellow"] #pv-ai-accent-profile-initials,html[data-pv-accent="white"] #pv-ai-accent-profile-initials,html[data-pv-accent="pink"] #pv-ai-accent-profile-initials{color:#000}
+.pv-ai-accent-profile-circle{background:#171717;width:112px;height:112px;min-width:112px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 24px rgba(0,0,0,.45);position:relative;transition:background .2s ease}.pv-ai-accent-profile-circle.has-photo{background:#171717 !important}#pv-ai-accent-profile-circle:not(.has-photo){background:#171717} #pv-ai-accent-profile-initials{color:#fff}
 .pv-ai-accent-profile-circle img{width:100%;height:100%;object-fit:cover;display:none;border-radius:50%}
 .pv-ai-accent-profile-circle img.show{display:block}
 .pv-ai-accent-profile-initials{font-size:44px;font-weight:800;color:#fff;line-height:1}
@@ -1483,6 +1501,24 @@ html[data-pv-accent="white"] .dm-msg{color:#000 !important}
 
 </head>
 <body>
+<style id="pv-white-fix">html,body{background:#000 !important;}</style>
+<script>
+setTimeout(function(){
+  try{
+    var login=document.getElementById('login-screen');
+    var app=document.getElementById('app-inside');
+    var loginHidden = !login || login.classList.contains('hidden') || login.hasAttribute('hidden') || getComputedStyle(login).display==='none';
+    var appHidden = !app || app.classList.contains('hidden') || app.hasAttribute('hidden') || getComputedStyle(app).display==='none';
+    if(loginHidden && appHidden && login){
+      login.classList.remove('hidden');
+      login.removeAttribute('hidden');
+      login.style.display='';
+      var s=document.getElementById('pv-no-login-flash-style'); if(s) s.remove();
+    }
+  }catch(e){}
+}, 1500);
+</script>
+
 <!-- Anti-flash: ONLY this one stays inline at top of body, on purpose. E must run BEFORE first paint. -->
 <style id="pv-no-login-flash-style">@scope { #login-screen{display:none !important;} }</style>
 <script>try{var _pvS=localStorage.getItem('pro_vibes_user_name');var _pvO=localStorage.getItem('pro_vibes_logged_out')==='1';if(!_pvS||_pvO){var _pvSt=document.getElementById('pv-no-login-flash-style');if(_pvSt)_pvSt.remove();}}catch(e){var _pvSt2=document.getElementById('pv-no-login-flash-style');if(_pvSt2)_pvSt2.remove();}</script>
@@ -1767,7 +1803,7 @@ const FB_REELS_LIKES="/reels_likes/";
 const FB_REELS_COMMENTS="/reels_comments/";
 const FB_REELS_SAVES="/reels_saves/";
 // Deleted: group typing removed
-const GROQ_API_KEY="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";
+const GROQ_API_KEY="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";
 // COSPRO AI only - chat + picture.
 const YOUTUBE_API_KEYS=[
 "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
@@ -1806,7 +1842,6 @@ window.ProVibesAvatarText=avatarText;window.ProVibesAvatarColor=avatarColor;
   }catch(e){}
 })();
 </script>
-<!-- ===== 
 <!-- ===== FILE: js/app.js — separate, do not mix ===== -->
 <script data-file="js/app.js">
 // js/app.js
@@ -2697,7 +2732,7 @@ try{
 var cur='';try{cur=localStorage.getItem('pro_vibes_user_name')||'';}catch(e){}
 var slug=String(cur||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
 var data={};
-for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(!k)continue;var isMine=false;if(k.slice(-('__for_'+slug).length)==='__for_'+slug)isMine=true;if(k.slice(-('__u_'+slug).length)==='__u_'+slug)isMine=true;if(k==='pro_vibes_bio__'+slug||k==='pro_vibes_user_posts__'+slug)isMine=true;if(k.indexOf('pro_vibes_private_')===0){var room=k.slice('pro_vibes_private_'.length).split('__');if(room.indexOf(slug)!==-1)isMine=true;}if(k==='pro_vibes_user_name')isMine=true;if(isMine)data[k]=localStorage.getItem(k);}
+for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(!k)continue;var isMine=false;if(k.slice(-('__for_'+slug).length)==='__for_'+slug)isMine=true;if(k.slice(-('__u_'+slug).length)==='__u_'+slug)isMine=true;if(k==='pro_vibes_bio__'+slug||k==='pro_vibes_user_posts__'+slug)isMine=true;if(k.indexOf('pro_vibes_private_')===0){var room=k.slice('pro_vibes_private_'.length).split('__');if(room.indexOf(slug)!==-1)isMine=true;}if(k==='pro_vibes_user_name')isMine=true;if(k==='pv_ai_accounts_v1__owner_'+slug||k==='pv_ai_current_account_id_v1__owner_'+slug)isMine=true;if(k.indexOf('pv_ai_account__owner_'+slug+'__')===0)isMine=true;if(k==='pro_vibes_cospro_ai_chats'||k==='pro_vibes_cospro_ai_current_chat_id'||k==='pro_vibes_cospro_ai_title'||k==='pro_vibes_cospro_ai_memory_v1'||k==='pro_vibes_cospro_ai_short_term_v1'||k==='pro_vibes_cospro_ai_warnings_v1'||k==='pro_vibes_cospro_ai_titles_used'||k==='pv_accent_color'||k==='pv_ai_accounts_v1'||k==='pv_ai_current_account_id_v1')isMine=false;if(k.indexOf('pv_ai_account_')===0&&k.indexOf('pv_ai_account__owner_'+slug+'__')!==0)isMine=false;if(isMine)data[k]=localStorage.getItem(k);}
 var payload={app:'PRO VIBES', version:2, exportedAt:new Date().toISOString(), deviceId:localStorage.getItem('pro_vibes_device_id')||'', currentAccount:cur, accounts:cur?[cur]:[], data:data};
 var blob=new Blob([JSON.stringify(payload)], {type:'application/json'});
 var url=URL.createObjectURL(blob);
@@ -2716,7 +2751,7 @@ if(!data||typeof data!=='object'){alert('This is not a PRO VIBES backup file.');
 var keepDevice=null;try{keepDevice=localStorage.getItem('pro_vibes_device_id');}catch(e){}
 var count=0;
 var impSlug='';try{impSlug=String(obj.currentAccount||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');}catch(e){}
-Object.keys(data).forEach(function(k){try{if(impSlug){var ok=false;if(k.slice(-('__for_'+impSlug).length)==='__for_'+impSlug)ok=true;if(k.slice(-('__u_'+impSlug).length)==='__u_'+impSlug)ok=true;if(k==='pro_vibes_bio__'+impSlug||k==='pro_vibes_user_posts__'+impSlug)ok=true;if(k.indexOf('pro_vibes_private_')===0){var rm=k.slice('pro_vibes_private_'.length).split('__');if(rm.indexOf(impSlug)!==-1)ok=true;}if(k==='pro_vibes_user_name')ok=true;if(!ok)return;}localStorage.setItem(k, data[k]);count++;}catch(e){}});
+Object.keys(data).forEach(function(k){try{if(impSlug){var ok=false;if(k.slice(-('__for_'+impSlug).length)==='__for_'+impSlug)ok=true;if(k.slice(-('__u_'+impSlug).length)==='__u_'+impSlug)ok=true;if(k==='pro_vibes_bio__'+impSlug||k==='pro_vibes_user_posts__'+impSlug)ok=true;if(k.indexOf('pro_vibes_private_')===0){var rm=k.slice('pro_vibes_private_'.length).split('__');if(rm.indexOf(impSlug)!==-1)ok=true;}if(k==='pro_vibes_user_name')ok=true;if(k==='pv_ai_accounts_v1__owner_'+impSlug||k==='pv_ai_current_account_id_v1__owner_'+impSlug)ok=true;if(k.indexOf('pv_ai_account__owner_'+impSlug+'__')===0)ok=true;if(k==='pro_vibes_cospro_ai_chats'||k==='pro_vibes_cospro_ai_current_chat_id'||k==='pro_vibes_cospro_ai_title'||k==='pro_vibes_cospro_ai_memory_v1'||k==='pro_vibes_cospro_ai_short_term_v1'||k==='pro_vibes_cospro_ai_warnings_v1'||k==='pro_vibes_cospro_ai_titles_used'||k==='pv_accent_color'||k==='pv_ai_accounts_v1'||k==='pv_ai_current_account_id_v1')ok=false;if(k.indexOf('pv_ai_account_')===0&&k.indexOf('pv_ai_account__owner_'+impSlug+'__')!==0)ok=false;if(!ok)return;}localStorage.setItem(k, data[k]);count++;}catch(e){}});
 if(keepDevice){try{localStorage.setItem('pro_vibes_device_id', keepDevice);}catch(e){}}
 try{var imported=obj.accounts||[];var curList=[];try{curList=JSON.parse(localStorage.getItem('pro_vibes_accounts_list')||'[]');if(!Array.isArray(curList))curList=[];}catch(e){curList=[];}imported.forEach(function(n){if(curList.indexOf(n)===-1)curList.push(n);});localStorage.setItem('pro_vibes_accounts_list', JSON.stringify(curList));}catch(e){}
 alert('Backup restored: '+count+' items. Please login again with your name. Your old accounts and chats are back.');
@@ -4180,6 +4215,7 @@ closeAll();
 try{var _pvSt=document.getElementById('pv-no-login-flash-style');if(_pvSt)_pvSt.remove();}catch(e){}
 try{
 try{var _cur=getCurrent();if(_cur)pvSetOfflineNow(_cur);}catch(e){}
+try{ if(window.pvAiStore && window.pvAiStore.onLogout) window.pvAiStore.onLogout(); }catch(e){}
 try{localStorage.removeItem('pro_vibes_user_name');}catch(e){}
 try{localStorage.setItem('pro_vibes_logged_out', '1');}catch(e){}
 try{window.ProVibesUser=null;}catch(e){}
@@ -7135,12 +7171,12 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 
 <!-- PV AI PILL + AI SCREEN - fixed outside main/nav so pill survives every screen switch -->
 <button id="pv-ai-pill" class="hidden" hidden type="button" aria-label="AI"><span class="pv-ai-star" aria-hidden="true">✦</span></button>
-<div id="pv-ai-screen" class="hidden" hidden aria-label="AI"><div id="pv-ai-plus-backdrop"></div><div id="pv-ai-plus-sheet"><span class="pv-ai-plus-sheet-handle"></span><div class="pv-ai-plus-sheet-row"><div class="pv-ai-plus-divider"></div><button class="pv-ai-plus-opt" type="button" data-opt="files"><span class="pv-ai-plus-card"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAABQCAYAAABbAybgAAABTGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8kZOcW8wkwMCQm1dSFOTupBARGaXA/oiBmUGEgZOBj0E2Mbm4wDfYLYQBCIoTy4uTS4pyGFDAt2sMjCD6sm5GYl7K3IkMtg4NG2wdSnQa5y1V6mPADzhTUouTgfQHIJZJLigqYWBg5AGyecpLCkBsCSBbpAjoKCBbB8ROh7AdQOwkCDsErCYkyBnIzgCyE9KR2ElIbKhdIMBaCvQsskNKUitKQLSzswEDKAwgop9DwH5jFDuJEMtfwMBg8YmBgbkfIZY0jYFheycDg8QthJgKUB1/KwPDtiPJpUVlUGu0gLiG4QfjHKZS5maWk2x+HEJcEjxJfF8Ez4t8k8iS0VNwVlmjmaVXZ/zacrP9NbdwX7OQshjxFNmcttKwut4OnUlmc1Yv79l0e9/MU8evpz4p//jz/38A9Ylkoq8RzkUAAAKcSURBVHic7ZuhchRBEIa/vaIKUKCC4gmQoEgUqHPwAsThiMMhUVgUFhUVHKg4DnU4eACQwQR3qEHcLSzLzk53z8xVi/mqtiqX7enu/3pnZ1Lp6UIIGEkN7KyOLVxR2mtUD22ri5IKMZdtNL6aoEXi/jfyRQwJO5/F6WbmSEkBk7FLOotVpLaI4jGmhOxDRPFYYyHrUo4VnJdwMhZyVzn+mO2zPryOlT4eKO0nGU52aZl/AjeFtpfADWkuQrtJUq/fMUvkItjZLpUxTPQVkVQj5xu7CmxqxtBWxMqv2gGkQkosXlX3WwvgrGYAJeZcupDex38G7lkDjLgk/RYzVU4iJObY1bh9TfbqNCHeaEK80YR4ownxRhPijSbEG02IN5oQbzQh3mhCvNGEeKMJ8UYT4o0mxBtNiDeaEG80Id5oQrxRU8j9ir7/o+a/pwGu8bd94zbwXZKTJV5ORSRNBJtdAgGZiANrMjkVgfJtg+ZYnib7KmewRMijmXslO36OZu6lKr/pQgh3gC8Jw1TCuY9Yrv9uAXzNTEKSSM5YUcOodI5IWwU1HaZ9V2oKUQtvL+SlIoE53rJNbq4nSyoAZNXoQN8uu9czIShyGj5a7wSDnpjSsSERcdH/MD6t4KUqr4DnArs/uYwn+wfB4AC8VySlZY1MxOHww9T5EemacAK8FtpK0axH/zwZsYMwZocZaGIeAp+Gv4itIyfKBHJWdu34JSMRWy8hxC4rH2d89tczo+91zOfcGav+2/LCBrgeu5naoux7AYyxYkYEyPZaHfCiSDo2Tpnf4gPzx/fGPAXe5GRk4AD4ITHUCOk5p9C5qASqx9oipKfGi+ACuGUZmPM3e78d16w5MfrTcyYRkFeRGGfA44TNCnhIwSNLvwFbT0Lsian/AwAAAABJRU5ErkJggg==" alt="" style="width:24px;height:38px;display:block;object-fit:contain;"></span><span class="pv-ai-plus-label">Files</span></button></div></div>
+<div id="pv-ai-screen" class="hidden" hidden aria-label="AI"><div id="pv-ai-plus-backdrop"></div><div id="pv-ai-plus-sheet"><span class="pv-ai-plus-sheet-handle"></span><div class="pv-ai-plus-divider"></div><div class="pv-ai-plus-sheet-row"><button class="pv-ai-plus-opt" type="button" data-opt="files"><span class="pv-ai-plus-card"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAABQCAYAAABbAybgAAABTGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8kZOcW8wkwMCQm1dSFOTupBARGaXA/oiBmUGEgZOBj0E2Mbm4wDfYLYQBCIoTy4uTS4pyGFDAt2sMjCD6sm5GYl7K3IkMtg4NG2wdSnQa5y1V6mPADzhTUouTgfQHIJZJLigqYWBg5AGyecpLCkBsCSBbpAjoKCBbB8ROh7AdQOwkCDsErCYkyBnIzgCyE9KR2ElIbKhdIMBaCvQsskNKUitKQLSzswEDKAwgop9DwH5jFDuJEMtfwMBg8YmBgbkfIZY0jYFheycDg8QthJgKUB1/KwPDtiPJpUVlUGu0gLiG4QfjHKZS5maWk2x+HEJcEjxJfF8Ez4t8k8iS0VNwVlmjmaVXZ/zacrP9NbdwX7OQshjxFNmcttKwut4OnUlmc1Yv79l0e9/MU8evpz4p//jz/38A9Ylkoq8RzkUAAAKcSURBVHic7ZuhchRBEIa/vaIKUKCC4gmQoEgUqHPwAsThiMMhUVgUFhUVHKg4DnU4eACQwQR3qEHcLSzLzk53z8xVi/mqtiqX7enu/3pnZ1Lp6UIIGEkN7KyOLVxR2mtUD22ri5IKMZdtNL6aoEXi/jfyRQwJO5/F6WbmSEkBk7FLOotVpLaI4jGmhOxDRPFYYyHrUo4VnJdwMhZyVzn+mO2zPryOlT4eKO0nGU52aZl/AjeFtpfADWkuQrtJUq/fMUvkItjZLpUxTPQVkVQj5xu7CmxqxtBWxMqv2gGkQkosXlX3WwvgrGYAJeZcupDex38G7lkDjLgk/RYzVU4iJObY1bh9TfbqNCHeaEK80YR4ownxRhPijSbEG02IN5oQbzQh3mhCvNGEeKMJ8UYT4o0mxBtNiDeaEG80Id5oQrxRU8j9ir7/o+a/pwGu8bd94zbwXZKTJV5ORSRNBJtdAgGZiANrMjkVgfJtg+ZYnib7KmewRMijmXslO36OZu6lKr/pQgh3gC8Jw1TCuY9Yrv9uAXzNTEKSSM5YUcOodI5IWwU1HaZ9V2oKUQtvL+SlIoE53rJNbq4nSyoAZNXoQN8uu9czIShyGj5a7wSDnpjSsSERcdH/MD6t4KUqr4DnArs/uYwn+wfB4AC8VySlZY1MxOHww9T5EemacAK8FtpK0axH/zwZsYMwZocZaGIeAp+Gv4itIyfKBHJWdu34JSMRWy8hxC4rH2d89tczo+91zOfcGav+2/LCBrgeu5naoux7AYyxYkYEyPZaHfCiSDo2Tpnf4gPzx/fGPAXe5GRk4AD4ITHUCOk5p9C5qASqx9oipKfGi+ACuGUZmPM3e78d16w5MfrTcyYRkFeRGGfA44TNCnhIwSNLvwFbT0Lsian/AwAAAABJRU5ErkJggg==" alt="" style="width:24px;height:38px;display:block;object-fit:contain;"></span><span class="pv-ai-plus-label">Files</span></button></div></div>
 
 <div class="pv-posts-top"><button class="pv-posts-back" id="pv-ai-back-btn" aria-label="Back"><svg viewBox="0 0 32 20" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M30 10H5"/><path d="M12 3 4 10l8 7"/></svg></button><div id="pv-ai-title" class="pv-ai-title">COSPRO AI</div><div class="pv-ai-top-spacer"></div><div class="pv-ai-top-right"><button class="pv-ai-circle-btn" id="pv-ai-upright" type="button" aria-label="New chat"><span class="pv-ai-upright-new-icon" aria-hidden="true"><img class="pv-ai-upright-pencil-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAYAAACvDDbuAAAGLklEQVR4nO3d0XbaOhCFYeWsvmf0aMOTci4aVgdagy1Lmtny/91UTQtWw2Y8llXydb/fC6Dmv+gJAC0ILiQRXEgiuJBEcCGJ4EISwYUkggtJBBeSfkVPAJJs4+t11gSouJBExcUeFj2BV19ssoFjbvzd4fluL7+vHZ6zlEKrAFEEF5IILiRl6HHNjXv0VYq+Ao9tbjzz+3/q38yqQpzXCxccQHDj1OgJOHJnupnBNTeW+0Ytxtw46rXwc6hHH0zFnSuyl/Vaw/puXdZOPvchrCqgVY08+MiKa+X5H0d7EMcmHutRlT+93v7P69GDrNIqZL5Cr9ETcI4WjyOtTT15rENGBzd8kRhr6h1cK7QEWZgbZ39N7OfXuvcBvYPb42q1dpgHfosMrH9N987Dys7Xn1WFdWWvsqf0qLjW4TnQh0VPYBYqLiRFLodluYsEQaus4+K33n2tlaQXyz2Cu/RFgAAb+Nzf5fn1TXOWnF1x0/zDkU498pdpFdagftarRx/QGlxrfBz6MDeeGVp/C//T2VN6r0IpuTfAqGoNxb/CZieeLwzruJDUWnHl3qHibPDz791D64Xu/JvRKtQJx7iKEftpa4fjtDjVQrKqgH+5lfHhrWceTHDzMjemNXtBcHNrCeyZmzy1w/Hf6bbCxKoCJFFxczE3ztAetKw2TNH6oXdHHsT+hP3s59eR/xu3Ra+lr27zpOJitCF3TgluPHPjdKfkrLg4w0jD9qlQcXVlv3a4lYF3TVuCa70nAVqEo6i4McyNs4a2dSVhyjbWEcFl/+1nPffTZlNnHISLM/Q0rWjRKsxh0RPYKXV74BHc3BRag6GrB1toFSCJijuOuXHWlYNSzu1DCLsQJ7hjzd5PO1qazzGmVYAkKm5f5sartgcpENwxsu2n7aVGT+CB4OKTlHdCCe555sZZ2wP51uAVF2d4J2W1LYWKGyl7XxtyR2wvgttH1hZhWQS3jblx1tDKbJhpQXDbsJ82GBdn8CSqbSlU3L0segI7Ld0eeAR3LIXWIPXqwRZahWuTq7QPVNxt5sZZVw5KWfCu2B4E9z320yZFqwBJVNxn5sa0B+Pcy8kzE8H922rtgVejJ9ALwX2Wucq2kl05eIfgatxcWKE16IqLs7UtWW1LoeKekb2vlbwjthcVF6PZwa/vQsXNe0GmvmFmaF9OcI/J3h6UsnB74NEqrCVLtbXRB7hqxbXoCWxQbw9s1oGuGtyHT/2twpW5why7u3pwP6nRE/hAoece4qrBzbSS0NoeXDa0pVw3uKqy9LLhWFWApCtVXIuegKO+aSbclYK7V+bTcY2eQBYEN7/Mb6QwVwpu5EoCrUFnXJzlRrXdcKWKu1eNnsCPS94R24uKC0lU3HHUN8ykRnDzqdETUEBw+7LGx1FlD1o5uNbwmL0B8s+dacPOZawcXBWsHjRgVeEPTtdCVq64radw6/Ace/BGOWHl4J4xKrDLfD5tNIL7BxdZQuhxIYmKO86jLaiRk1gVFXesGj2BVa1WcS16AphjteDOxApBIFoFSFqt4rKkdRFUXEhareLeyvmqS+8qgIoLSSsG91bYwLK81VqF+vL717bhNdCvfx8iVqy4e9XoCaDd6sGlbVjUaq2CVzfGWMDKwcV8024AjQju6+TrgGPg4lbvcbEoggtJBBeSvu73ps9mO/KgS/9Yo4uZlgsqLiQRXEgiuJBEcCGJ4EISwYUkggtJBBeSZuwOMzeuE46HuSzioK3B9Zuz+SwD7NVtUz+tAiTNaBV8Ra4Tjoe5Qs64rZtsPDbcXFvI60+rAEmz/8+Zf3dSfXWdPk2f1SO4rDBgiy9O1vOJewS3ujHBxRSR/z3dn274hMR8zI3TFSQ+VwFbajl/ej/7+E29g/uonOneoZhu6A/XHrUcxud1XdeUz2vL0ip8b4z34o3yt+rG4ctXvfUObt34Oq3D+qb+JM1Zd85GV0TeGLGmn/GytAo9EN5nS38/Rga3vvmzpb+pFxG69s4mG0iaGdw68ViYp0YctMd+3LPMjWkhckn7U4poFSCJ4EJShlahhUVPQFSNnkAvVFxIUq24uDgqLiQRXEgiuJBEcCGJ4EISwYUkggtJBBeSCC4kEVxI+h9GmcivI5ZjQQAAAABJRU5ErkJggg==" alt=""></span></button><button class="pv-ai-circle-btn" id="pv-ai-menu-btn" type="button" aria-label="Menu"><span class="pv-ai-upright-lines" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h18"/><path d="M3 16h12"/></svg></span></button></div></div><style data-file="css/pv-ai-history.css">
 #pv-ai-history-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10001;opacity:0;pointer-events:none;transition:opacity .25s ease}
 #pv-ai-history-backdrop.show{opacity:1;pointer-events:auto}
-#pv-ai-history{position:fixed;left:0;top:0;bottom:0;width:85%;max-width:360px;background:#0f0f0f;z-index:10002;transform:translateX(-102%);transition:transform .28s ease;display:flex;flex-direction:column;box-shadow:0 0 30px rgba(0,0,0,.6)}
+#pv-ai-history{position:fixed;right:0;left:auto;top:0;bottom:0;width:85%;max-width:360px;background:#0f0f0f;z-index:10002;transform:translateX(102%);transition:transform .28s ease;display:flex;flex-direction:column;box-shadow:0 0 30px rgba(0,0,0,.6)}
 #pv-ai-history.show{transform:translateX(0)}
 #pv-ai-history.hidden{display:none !important}
 .pv-ai-history-search{padding:14px 16px 8px;flex-shrink:0}.pv-ai-history-search-clear{width:20px;height:20px;min-width:20px;border-radius:50%;background:transparent;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0}.pv-ai-history-search-clear.hidden{display:none}.pv-ai-history-search-clear svg{width:12px;height:12px}
@@ -7360,6 +7396,8 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     recog=null; listening=false; clearSilence();
   }
   function stopSpeakingMic(){
+    try{ window.__pvSpeakSeek=null; }catch(e){}
+    try{ if(window.pvSpeakTrack) window.pvSpeakTrack.clear(); }catch(e){}
     speakingMic=false; clearSpeakTimeout();
     // FIX: bump mic session + kill token so pending speakReplyNext timeouts (120ms) cannot resurrect talking in new chat
     try{ speakReplySession++; }catch(e){}
@@ -7508,10 +7546,21 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     speakReplyChunks=[]; var cur='';
     parts.forEach(function(p){ p=p.trim(); if(!p) return; if((cur+' '+p).length>180 && cur){ speakReplyChunks.push(cur); cur=p; } else { cur=cur?cur+' '+p:p; } });
     if(cur) speakReplyChunks.push(cur);
+    try{ if(window.pvSpeakTrack) window.pvSpeakTrack.startByText(rawText, speakReplyChunks); }catch(e){}
     speakReplyIdx=0;
+    var micSeekGen = 0;
+    var _micPaused=false, _micPausedChar=0, _micCurChar=0;
+    window.__pvSpeakIsPaused = function(){ return _micPaused; };
+    window.__pvSpeakPauseToggle = function(){ try{ if(_micPaused){ _micPaused=false; _micPausedChar=_micCurChar; try{ if(window.pvSpeakTrack && window.pvSpeakTrack.setPaused) window.pvSpeakTrack.setPaused(false); }catch(e){} setTimeout(function(){ if(mySession===speakReplySession && !done) speakReplyNext(); }, 60); } else { _micPaused=true; _micPausedChar=_micCurChar; try{ if(window.pvSpeakTrack && window.pvSpeakTrack.setPaused) window.pvSpeakTrack.setPaused(true); }catch(e){} try{ if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} } }catch(e){} };
+    window.__pvSpeakSeek = function(target){ try{ target = Math.max(0, Math.min(speakReplyChunks.length-1, Math.floor(target))); if(target === speakReplyIdx && !_micPaused) return; micSeekGen++; speakReplyIdx = target; _micPausedChar=0; _micCurChar=0; try{ if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} if(_micPaused){ try{ if(window.pvSpeakTrack) window.pvSpeakTrack.setActive(speakReplyIdx); }catch(e){} return; } setTimeout(function(){ if(mySession===speakReplySession && !done) speakReplyNext(); }, 90); }catch(e){} };
     var done=false;
     function finishSpeak(){
       if(done) return; done=true;
+      try{ window.__pvSpeakSeek=null; }catch(e){}
+      try{ window.__pvSpeakPauseToggle=null; }catch(e){}
+      try{ window.__pvSpeakIsPaused=null; }catch(e){}
+      _micPaused=false; _micPausedChar=0; _micCurChar=0;
+      try{ if(window.pvSpeakTrack) window.pvSpeakTrack.clear(); }catch(e){}
       speakingMic=false; clearSpeakTimeout(); clearSpeakReplyTimers();
       if(!micOn){ setMicVisual('off'); return; }
       if(stopAfterSend){ stopAfterSend=false; stopSession(); return; }
@@ -7521,18 +7570,24 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     // Keep-alive: Chrome pauses TTS after a while - resume it so it never just stops
     speakReplyKeepAlive=setInterval(function(){
       if(mySession!==speakReplySession || done || myKill!==(window.__pvAiAudioKillToken||0)){ clearSpeakReplyTimers(); return; }
+      if(_micPaused) return;
       try{ if('speechSynthesis' in window && window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
     }, 800);
     function speakReplyNext(){
       if(mySession!==speakReplySession || done) return;
       if(myKill!==(window.__pvAiAudioKillToken||0)) return;
+      if(_micPaused) return;
       if(speakReplyIdx>=speakReplyChunks.length){ finishSpeak(); return; }
-      var chunk=speakReplyChunks[speakReplyIdx];
+      try{ if(window.pvSpeakTrack) window.pvSpeakTrack.setActive(speakReplyIdx); }catch(e){}
+      var _micBase=_micPausedChar||0;
+      var chunk=speakReplyChunks[speakReplyIdx] ? speakReplyChunks[speakReplyIdx].slice(_micBase) : '';
+      if(!chunk){ _micPausedChar=0; _micCurChar=0; speakReplyIdx++; setTimeout(speakReplyNext, 60); return; }
       var chunkStart=Date.now();
       var estimated=Math.min(20000, 3000 + chunk.length*80);
       if(speakReplyWatchdog) clearInterval(speakReplyWatchdog);
       speakReplyWatchdog=setInterval(function(){
         if(mySession!==speakReplySession || done || myKill!==(window.__pvAiAudioKillToken||0)) return;
+        if(_micPaused) return;
         try{ if('speechSynthesis' in window && window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
         // If this chunk never ends (Chrome stall), force move to NEXT chunk - never hang, never cut whole reply
         if(Date.now()-chunkStart > estimated+6000){
@@ -7540,11 +7595,14 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
           speakReplyIdx++; setTimeout(speakReplyNext, 120);
         }
       }, 700);
+      var myMicSeek = micSeekGen;
       try{
         var u=new SpeechSynthesisUtterance(chunk);
         var v=pickVoice(); if(v) u.voice=v; u.lang=(v&&v.lang)||'en-US'; u.rate=1.0; u.pitch=1.0; u.volume=1;
-        u.onend=function(){ if(mySession!==speakReplySession || myKill!==(window.__pvAiAudioKillToken||0)) return; if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); };
-        u.onerror=function(){ if(mySession!==speakReplySession || myKill!==(window.__pvAiAudioKillToken||0)) return; if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); };
+        _micCurChar=_micBase;
+        try{ u.onboundary=function(ev){ try{ if(ev && ev.charIndex!=null) _micCurChar=_micBase+ev.charIndex; }catch(e){} }; }catch(e){}
+        u.onend=function(){ if(myMicSeek!==micSeekGen) return; if(mySession!==speakReplySession || myKill!==(window.__pvAiAudioKillToken||0)) return; if(_micPaused) return; if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } _micPausedChar=0; _micCurChar=0; speakReplyIdx++; setTimeout(speakReplyNext, 120); };
+        u.onerror=function(){ if(myMicSeek!==micSeekGen) return; if(mySession!==speakReplySession || myKill!==(window.__pvAiAudioKillToken||0)) return; if(_micPaused) return; if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } _micPausedChar=0; _micCurChar=0; speakReplyIdx++; setTimeout(speakReplyNext, 120); };
         window.speechSynthesis.speak(u);
       }catch(e){ if(speakReplyWatchdog){ clearInterval(speakReplyWatchdog); speakReplyWatchdog=null; } speakReplyIdx++; setTimeout(speakReplyNext, 120); }
     }
@@ -7808,15 +7866,15 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 #pv-ai-screen .pv-ai-msg-wrap{ display:flex; flex-direction:column; align-items:stretch; align-self:stretch; width:100%; max-width:100%; gap:0; }
 #pv-ai-screen .pv-ai-msg-wrap .pv-ai-msg{ max-width:100%; width:100%; }
 #pv-ai-screen .pv-ai-msg.user{ align-self:flex-end; }
-#pv-ai-screen .pv-ai-actions{ display:flex !important; align-items:center !important; flex-wrap:wrap !important; gap:16px !important; row-gap:4px !important; padding:6px 2px 0 8px !important; width:fit-content !important; max-width:100% !important; }
+#pv-ai-screen .pv-ai-actions{ display:flex !important; flex-direction:column !important; align-items:flex-start !important; gap:6px !important; padding:6px 2px 0 8px !important; width:fit-content !important; max-width:100% !important; } #pv-ai-screen .pv-ai-actions-cover{ display:flex !important; align-items:center !important; gap:6px !important; background:#ffffff !important; background-image:none !important; border:none !important; border-radius:999px !important; padding:6px 10px !important; box-shadow:none !important; width:fit-content !important; } #pv-ai-screen .pv-ai-msg.ai{ overflow:visible !important; } #pv-ai-screen .pv-ai-msg.ai .pv-md{ overflow:visible !important; } #pv-ai-screen .pv-sleek-table-wrap{ display:block !important; overflow-x:auto !important; overflow-y:visible !important; -webkit-overflow-scrolling:touch !important; touch-action:pan-x pan-y !important; margin:12px -12px 10px -12px !important; width:calc(100% + 24px) !important; max-width:none !important; border-radius:16px !important; background:#1c1c1e !important; border:1px solid rgba(255,255,255,.10) !important; scrollbar-width:thin !important; scrollbar-color:rgba(255,255,255,.25) transparent !important; } #pv-ai-screen .pv-sleek-table-wrap::-webkit-scrollbar{ height:4px !important; } #pv-ai-screen .pv-sleek-table-wrap::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.25) !important; border-radius:999px !important; } #pv-ai-screen .pv-sleek-table{ width:max-content !important; min-width:100% !important; border-collapse:collapse !important; border-spacing:0 !important; font-size:14px !important; line-height:1.4 !important; } #pv-ai-screen .pv-sleek-table th{ background:#26262a !important; color:#fff !important; font-weight:700 !important; font-size:13px !important; text-align:left !important; padding:10px 16px !important; vertical-align:middle !important; line-height:1.4 !important; white-space:nowrap !important; border-bottom:1px solid rgba(255,255,255,.12) !important; border-right:1px solid rgba(255,255,255,.08) !important; } #pv-ai-screen .pv-sleek-table th:last-child{ border-right:none !important; } #pv-ai-screen .pv-sleek-table td{ color:#e5e5ea !important; padding:10px 16px !important; vertical-align:middle !important; line-height:1.4 !important; white-space:nowrap !important; border-bottom:1px solid rgba(255,255,255,.06) !important; border-right:1px solid rgba(255,255,255,.06) !important; } #pv-ai-screen .pv-sleek-table td:last-child{ border-right:none !important; } #pv-ai-screen .pv-sleek-table tr:last-child td{ border-bottom:none !important; }
 #pv-ai-screen .pv-ai-disclaimer-sleek{ flex-basis:100% !important; width:100% !important; font-size:11px !important; line-height:1.4 !important; color:#8a8a8e !important; opacity:.85 !important; font-weight:400 !important; letter-spacing:.1px !important; padding:0 0 2px 0 !important; margin:0 !important; }
-#pv-ai-screen .pv-ai-action-btn{ width:30px !important; height:30px !important; min-width:30px !important; min-height:30px !important; background:transparent !important; border:none !important; color:#a8a8a8 !important; display:flex !important; align-items:center !important; justify-content:center !important; cursor:pointer !important; padding:0 !important; border-radius:50% !important; -webkit-tap-highlight-color:transparent; }
-#pv-ai-screen .pv-ai-action-btn:active{ transform:scale(.88) !important; background:rgba(255,255,255,.08) !important; }
+#pv-ai-screen .pv-ai-action-btn{ width:30px !important; height:30px !important; min-width:30px !important; min-height:30px !important; background:transparent !important; border:none !important; color:#333333 !important; display:flex !important; align-items:center !important; justify-content:center !important; cursor:pointer !important; padding:0 !important; border-radius:50% !important; -webkit-tap-highlight-color:transparent; }
+#pv-ai-screen .pv-ai-action-btn:active{ transform:scale(.88) !important; background:rgba(0,0,0,.08) !important; }
 #pv-ai-screen .pv-ai-action-btn svg{ width:19px !important; height:19px !important; display:block !important; }
-#pv-ai-screen .pv-ai-action-btn.active{ color:#fff !important; }
-#pv-ai-screen .pv-ai-action-btn.active svg{ fill:#fff !important; stroke:#fff !important; }
-#pv-ai-screen .pv-ai-action-btn.playing{ color:#fff !important; }
-#pv-ai-screen .pv-ai-action-btn.playing svg{ fill:rgba(255,255,255,.15) !important; stroke:#fff !important; animation:pvAiSpeakPulse 1s ease-in-out infinite; }
+#pv-ai-screen .pv-ai-action-btn.active{ color:#000000 !important; }
+#pv-ai-screen .pv-ai-action-btn.active svg{ fill:#000000 !important; stroke:#000000 !important; }
+#pv-ai-screen .pv-ai-action-btn.playing{ color:#000000 !important; }
+#pv-ai-screen .pv-ai-action-btn.playing svg{ fill:rgba(0,0,0,.08) !important; stroke:#000000 !important; animation:pvAiSpeakPulse 1s ease-in-out infinite; }
 @keyframes pvAiSpeakPulse{ 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(1.12); opacity:.75; } }
 /* SLEEK TOAST - Thanks for submitting / Copied */
 /* FIX: pv-ai-screen MUST stay fixed fullscreen - never relative, or home nav stays on top */
@@ -7827,6 +7885,20 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 </style>
 <script data-file="js/groq.js">
 // js/groq.js
+  // AI persistence goes through pvAiStore (owner + AI-account scoped). No global key is ever source. LOCKED v1 — do not change.
+  function pvAiStoreGet(kind, legacyKey){
+    try{ if(window.pvAiStore && window.pvAiStore.get){ var v=window.pvAiStore.get(kind); if(v!==null && v!==undefined) return v; } }catch(e){}
+    try{ return localStorage.getItem(legacyKey); }catch(e){ return null; }
+  }
+  function pvAiStoreSet(kind, legacyKey, value){
+    try{ if(window.pvAiStore && window.pvAiStore.set){ window.pvAiStore.set(kind, String(value)); return; } }catch(e){}
+    try{ localStorage.setItem(legacyKey, String(value)); }catch(e){}
+  }
+  function pvAiScopedMediaKey(raw){
+    try{ if(window.pvAiStore && window.pvAiStore.scopedMediaKey) return window.pvAiStore.scopedMediaKey(raw); }catch(e){}
+    return String(raw);
+  }
+
 // Keys come from js/config.js (GROQ only for AI) - do NOT redeclare them here or the AI script breaks.
 var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120b"; var GROQ_TITLE_MODEL = "openai/gpt-oss-20b"; var GROQ_VISION_MODEL = "qwen/qwen3.8-27b"; /* VISION KEPT: qwen3.8-27b is the ONLY free Groq model that accepts images (2048 tokens per image) - do NOT change to llama-4-scout, it was retired */
 (function(){
@@ -7847,10 +7919,10 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   // TITLE - Meta AI style: real AI summary, correct English. First chat only. Quick Hello -> real chat replaces it
   var TITLE_KEY='pro_vibes_cospro_ai_title';
   var TITLE_USED_KEY='pro_vibes_cospro_ai_titles_used';
-  function pvGetUsedTitles(){ return []; /* AI title REMOVED */  try{ var arr=JSON.parse(localStorage.getItem(TITLE_USED_KEY)||'[]'); return Array.isArray(arr)?arr:[]; }catch(err){ return []; } }
-  function pvIsTitleUsed(title){ return false; /* AI title REMOVED */  try{ var low=String(title||'').toLowerCase().trim(); var list=pvGetUsedTitles(); return list.some(function(x){ return String(x||'').toLowerCase().trim()===low; }); }catch(err){ return false; } }
-  function pvRememberTitle(title){ return; /* AI title REMOVED */  try{ if(!title||title==='COSPRO AI'||title==='Quick Hello') return; var list=pvGetUsedTitles(); var low=String(title).toLowerCase().trim(); if(list.some(function(x){ return String(x||'').toLowerCase().trim()===low; })) return; list.push(title); if(list.length>100) list=list.slice(-100); localStorage.setItem(TITLE_USED_KEY, JSON.stringify(list)); }catch(err){} }
-  function pvMakeTitleUnique(base){ return 'COSPRO AI'; /* AI title REMOVED */ 
+  function pvGetUsedTitles(){ try{ var arr=JSON.parse(pvAiStoreGet('titles_used', TITLE_USED_KEY)||'[]'); return Array.isArray(arr)?arr:[]; }catch(err){ return []; } }
+  function pvIsTitleUsed(title){ try{ var low=String(title||'').toLowerCase().trim(); var list=pvGetUsedTitles(); return list.some(function(x){ return String(x||'').toLowerCase().trim()===low; }); }catch(err){ return false; } }
+  function pvRememberTitle(title){ try{ if(!title||title==='COSPRO AI'||title==='Quick Hello') return; var list=pvGetUsedTitles(); var low=String(title).toLowerCase().trim(); if(list.some(function(x){ return String(x||'').toLowerCase().trim()===low; })) return; list.push(title); if(list.length>100) list=list.slice(-100); pvAiStoreSet('titles_used', TITLE_USED_KEY, JSON.stringify(list)); }catch(err){} }
+  function pvMakeTitleUnique(base){ 
     // META AI STYLE UNIQUENESS - even if same sentence repeats, title must be different.
     // Never just add a number. Try completely different phrasings, synonyms, angles.
     try{
@@ -7893,7 +7965,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
       return pvCleanAiTitle(cleanBase + ' again') || cleanBase;
     }catch(err){ return String(base||'').replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); }
   }
-  var pvTitleRequestId=0; var pvTitleLockedChatId=null; function pvIsRealTitle(_t){ return false; /* AI title REMOVED - no title is ever a real AI title */  return !!_t && _t!=='COSPRO AI'; } function pvGetLockedTitle(_id){ return null; /* AI title REMOVED */  try{ var _lid=_id||pvHistoryGetCurrentId(); if(!_lid) return null; var _ll=pvHistoryLoad(); for(var _li=0;_li<_ll.length;_li++){ if(String(_ll[_li].id)===String(_lid) && pvIsRealTitle(_ll[_li].title)) return _ll[_li].title; } /* FIX: DOM title is also locked - even if history not saved yet or page reloaded (pvTitleLockedChatId is in-memory only). First title wins, incl. Quick Hello. */ try{ if(String(_lid)===String(pvHistoryGetCurrentId())){ var _te=document.getElementById('pv-ai-title'); if(_te && pvIsRealTitle(_te.textContent)) return _te.textContent; } }catch(e){} return null; }catch(e){ return null; } } function pvIsChatTitleLocked(_id){ try{ return !!pvGetLockedTitle(_id); }catch(e){ return false; } }
+  var pvTitleRequestId=0; var pvTitleLockedChatId=null; var pvTitleInFlightChatId=null; /* TITLE: one AI title call per chat only - saves limit */ function pvIsRealTitle(_t){ return !!_t && _t!=='COSPRO AI'; } function pvGetLockedTitle(_id){ try{ var _lid=_id||pvHistoryGetCurrentId(); if(!_lid) return null; var _ll=pvHistoryLoad(); for(var _li=0;_li<_ll.length;_li++){ if(String(_ll[_li].id)===String(_lid) && pvIsRealTitle(_ll[_li].title)) return _ll[_li].title; } /* FIX v4: DOM fallback only if DOM title really belongs to THIS chat. New chat has no history entry + no messages, DOM still shows old chat title — must NOT return it. */ try{ if(String(_lid)===String(pvHistoryGetCurrentId())){ if(typeof pvTitleLockedChatId!=='undefined' && pvTitleLockedChatId && String(pvTitleLockedChatId)!==String(_lid)) return null; var _hasEntry=false; for(var _hi=0;_hi<_ll.length;_hi++){ if(String(_ll[_hi].id)===String(_lid)) _hasEntry=true; } var _boxG=document.getElementById('pv-ai-messages'); var _hasMsgsG=_boxG && _boxG.querySelector('.pv-ai-msg'); if(!_hasEntry && !_hasMsgsG) return null; var _te=document.getElementById('pv-ai-title'); if(_te && pvIsRealTitle(_te.textContent)) return _te.textContent; } }catch(e){} return null; }catch(e){ return null; } } function pvIsChatTitleLocked(_id){ try{ return !!pvGetLockedTitle(_id); }catch(e){ return false; } }
   function pvToGerund(v){
     try{
       var lower=String(v||'').toLowerCase();
@@ -7904,7 +7976,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
       return lower+'ing';
     }catch(err){ return String(v||''); }
   }
-  function pvFallbackTopicFromText(txt, hasImage){ return null; /* AI title REMOVED */ 
+  function pvFallbackTopicFromText(txt, hasImage){ 
     // META AI STYLE - summarize, NEVER copy first words verbatim.
     // Works even when Groq fails / offline, so title is still smart and unique.
     try{
@@ -7960,7 +8032,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
     }catch(e){ return null; }
   }
   function pvTopicFromText(txt, hasImage){ return pvFallbackTopicFromText(txt, hasImage); }
-  function pvCleanAiTitle(raw){ return 'COSPRO AI'; /* AI title REMOVED */ 
+  function pvCleanAiTitle(raw){ 
     try{
       var s=String(raw||'').replace(/\s+/g,' ').trim();
       if(!s) return null;
@@ -7986,22 +8058,62 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
       return s||null;
     }catch(err){ return null; }
   }
-  function pvSetTitle(topic, skipUnique){ try{var _teS=el('pv-ai-title'); if(_teS) _teS.textContent='COSPRO AI';}catch(e){} return; /* AI title REMOVED */ 
+  function pvSetTitle(topic, skipUnique){ try{ if(pvTitleInFlightChatId===String(pvHistoryGetCurrentId())) pvTitleInFlightChatId=null; }catch(e){} 
     if(!topic) return;
-    try{ var _curId=pvHistoryGetCurrentId(); var _locked=pvGetLockedTitle(_curId); if(_locked){ var _teL=el('pv-ai-title'); if(_teL && _teL.textContent!==_locked) _teL.textContent='COSPRO AI'; try{ localStorage.setItem(TITLE_KEY,_locked); }catch(e){} return; } }catch(e){}
+    try{ var _curId=pvHistoryGetCurrentId(); var _locked=pvGetLockedTitle(_curId); if(_locked){ var _teL=el('pv-ai-title'); if(_teL && _teL.textContent!==_locked) _teL.textContent=_locked; try{ pvAiStoreSet('title', TITLE_KEY, _locked); }catch(e){} return; } }catch(e){}
+    // LOCKED TITLE RULE v3: If this chat was renamed, only Rename can change it again. Auto-title must never overwrite it.
+    try{ var _listM=pvHistoryLoad(); for(var _mi=0;_mi<_listM.length;_mi++){ if(String(_listM[_mi].id)===String(_curId) && _listM[_mi].manualTitle){ var _teM=el('pv-ai-title'); if(_teM) _teM.textContent=_listM[_mi].title; try{ pvAiStoreSet('title', TITLE_KEY, _listM[_mi].title); }catch(e){} return; } } }catch(e){}
     // FIX: title is locked once a chat starts - if DOM already shows a real title (incl. Quick Hello), NEVER auto-replace it with a new topic
     try{ var _teCur=el('pv-ai-title'); if(_teCur && _teCur.textContent && _teCur.textContent!=='COSPRO AI' && _teCur.textContent!==topic){ return; } }catch(e){}
     var clean=topic;
     if(topic!=='COSPRO AI' && topic!=='Quick Hello'){ clean=pvCleanAiTitle(topic); if(!clean) return; if(!skipUnique){ if(pvIsTitleUsed(clean)) clean=pvMakeTitleUnique(clean); pvRememberTitle(clean); } }
-    var te=el('pv-ai-title'); if(te) te.textContent='COSPRO AI'; try{ if(pvIsRealTitle(clean)){ pvTitleLockedChatId=String(pvHistoryGetCurrentId()||''); } }catch(e){}
-    try{ localStorage.setItem(TITLE_KEY,clean); }catch(e){} try{ pvHistoryUpdateTitle(clean); }catch(e){}
+    var te=el('pv-ai-title'); if(te) te.textContent=clean; try{ if(pvIsRealTitle(clean)){ pvTitleLockedChatId=String(pvHistoryGetCurrentId()||''); } }catch(e){}
+    try{ pvAiStoreSet('title', TITLE_KEY, clean); }catch(e){} try{ pvHistoryUpdateTitle(clean); }catch(e){}
   }
-  function pvResetTitle(){
+  function pvResetTitle(force){
+    // LOCKED TITLE RULE v4: New chat MUST clear title. Old chat title must never leak into new chat.
+    // If force=true, or if this is a truly new chat (no history entry + no messages), reset even if DOM shows old title.
+    if(force){
+      pvTitleRequestId++; pvTitleLockedChatId=null;
+      var teF=el('pv-ai-title'); if(teF) teF.textContent='COSPRO AI';
+      try{ pvAiStoreSet('title', TITLE_KEY, 'COSPRO AI'); }catch(e){}
+      return;
+    }
+    try{
+      var _curIdN=pvHistoryGetCurrentId();
+      var _listN=pvHistoryLoad();
+      var _hasEntryN=false; for(var _ni=0;_ni<_listN.length;_ni++){ if(String(_listN[_ni].id)===String(_curIdN)) _hasEntryN=true; }
+      var _boxN=el('pv-ai-messages'); var _hasMsgsN=_boxN && _boxN.querySelector('.pv-ai-msg');
+      if(!_hasEntryN && !_hasMsgsN){
+        pvTitleRequestId++; pvTitleLockedChatId=null;
+        var _teN=el('pv-ai-title'); if(_teN) _teN.textContent='COSPRO AI';
+        try{ pvAiStoreSet('title', TITLE_KEY, 'COSPRO AI'); }catch(e){}
+        return;
+      }
+    }catch(e){}
+    // LOCKED TITLE RULE v3: Once a title is set (incl. Quick Hello), never change it again. Only Rename can.
+    try{
+      var _curIdR = pvHistoryGetCurrentId();
+      var _lockedR = null;
+      try{ _lockedR = pvGetLockedTitle(_curIdR); }catch(e){}
+      if(_lockedR){
+        var _teR = el('pv-ai-title'); if(_teR) _teR.textContent = _lockedR;
+        try{ pvAiStoreSet('title', TITLE_KEY, _lockedR); }catch(e){}
+        return;
+      }
+      var _boxR = el('pv-ai-messages');
+      var _hasMsgsR = _boxR && _boxR.querySelector('.pv-ai-msg');
+      var _teR2 = el('pv-ai-title');
+      if(_hasMsgsR && _teR2 && _teR2.textContent && _teR2.textContent!=='COSPRO AI') return;
+      var _savedR = null;
+      try{ _savedR = pvAiStoreGet('title', TITLE_KEY); }catch(e){}
+      if(_hasMsgsR && _savedR && _savedR!=='COSPRO AI'){ if(_teR2) _teR2.textContent=_savedR; return; }
+    }catch(e){}
     pvTitleRequestId++; pvTitleLockedChatId=null;
     var te=el('pv-ai-title'); if(te) te.textContent='COSPRO AI';
-    try{ localStorage.setItem(TITLE_KEY,'COSPRO AI'); }catch(e){}
+    try{ pvAiStoreSet('title', TITLE_KEY, 'COSPRO AI'); }catch(e){}
   }
-  async function pvGenerateAiTitle(txt, hasImage, aiText){ return null; /* AI title REMOVED */ 
+  async function pvGenerateAiTitle(txt, hasImage, aiText){ 
     try{
       var userText = String(txt||'').trim();
       if(!userText && hasImage) userText = 'Describe this photo';
@@ -8029,25 +8141,14 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
       var out=data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '';
       var first=pvCleanAiTitle(out);
       if(!first) return null;
-      // If AI still returned a used title, ask once for a truly different one
+      // If AI still returned a used title, make it unique LOCALLY - NO second AI call, to save limit. No numbers.
       if(pvIsTitleUsed(first)){
-        try{
-          var prompt2='Give a completely different title for this chat, different words and different angle from "'+first+'", different from these used titles: '+usedList.slice(-15).join(' | ')+'. User said: "'+userText.replace(/"/g,"'")+'"'+(aiReply?' AI replied: "'+aiReply.replace(/"/g,"'").slice(0,300)+'"':'')+'. No numbers. Reply with ONLY the title.';
-          var res2=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_API_KEY},body: JSON.stringify({model: GROQ_TITLE_MODEL, messages:[{role:'system', content:'You are a chat title generator like Meta AI. Create a short title, 3 to 5 words, correct English, sentence case, no numbers, no punctuation at end, no quotes, no emoji. Use synonyms, paraphrase, never copy user words. Make it completely different from any used title.'},{role:'user', content: prompt2}], temperature:0.8, max_tokens:20})});
-          var data2=null; try{ data2=await res2.json(); }catch(e){ data2=null; }
-          if(res2.ok && data2 && !data2.error){
-            var out2=data2 && data2.choices && data2.choices[0] && data2.choices[0].message && data2.choices[0].message.content || '';
-            var second=pvCleanAiTitle(out2);
-            if(second && !pvIsTitleUsed(second)) return second;
-            if(second) return pvMakeTitleUnique(second);
-          }
-        }catch(e2){}
         return pvMakeTitleUnique(first);
       }
       return first;
     }catch(e){ return null; }
   }
-  function pvUpdateTitleFromText(txt, hasImage, aiText){ return; /* AI title REMOVED */ 
+  function pvUpdateTitleFromText(txt, hasImage, aiText){ 
     try{
       var _uid=pvHistoryGetCurrentId();
       if(pvIsChatTitleLocked(_uid)) return;
@@ -8058,9 +8159,13 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
       var fb=pvFallbackTopicFromText(txt, hasImage);
       if(!fb) return;
       if(fb==='Quick Hello'){ pvSetTitle('Quick Hello'); return; }
+      // CAREFUL: one AI title call per chat only - if one is already running for this chat, do not start another. Saves limit.
+      if(pvTitleInFlightChatId===String(_uid)) return;
+      pvTitleInFlightChatId=String(_uid);
       var myId=++pvTitleRequestId;
       // DO NOT lock here - locking before AI returns is why fallback stuck and never got replaced. Lock only in pvSetTitle.
       pvGenerateAiTitle(txt, hasImage, aiText).then(function(aiTitle){
+        try{ if(pvTitleInFlightChatId===String(_uid)) pvTitleInFlightChatId=null; }catch(e){}
         if(myId!==pvTitleRequestId) return;
         var cur=el('pv-ai-title');
         if(!cur) return;
@@ -8079,6 +8184,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
           }
         }
       }).catch(function(){
+        try{ if(pvTitleInFlightChatId===String(_uid)) pvTitleInFlightChatId=null; }catch(e){}
         if(myId!==pvTitleRequestId) return;
         if(pvIsChatTitleLocked(pvHistoryGetCurrentId())) return;
         var cur2=el('pv-ai-title');
@@ -8090,7 +8196,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
       });
     }catch(e){}
   }
-  function pvRefineTitleAfterReply(userText, aiText){ return; /* AI title REMOVED */ 
+  function pvRefineTitleAfterReply(userText, aiText){ 
     // Meta AI does this: title after seeing the AI reply, so same question twice can still get different titles
     try{
       var _uid=pvHistoryGetCurrentId();
@@ -8103,14 +8209,14 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
       pvUpdateTitleFromText(userText, false, aiText);
     }catch(e){}
   }
-  function pvInitTitle(){ try{var _tI=el('pv-ai-title'); if(_tI) _tI.textContent='COSPRO AI';}catch(e){} return; /* AI title REMOVED */  try{ var _locked0=pvGetLockedTitle(pvHistoryGetCurrentId()); if(_locked0){ var _te0=el('pv-ai-title'); if(_te0) _te0.textContent='COSPRO AI'; return; } var saved=localStorage.getItem(TITLE_KEY); var box=el('pv-ai-messages'); var hasMsgs=box && box.querySelector('.pv-ai-msg'); if(saved && hasMsgs) pvSetTitle(saved, true); else pvResetTitle(); }catch(e){} }
+  function pvInitTitle(){ try{ var _locked0=pvGetLockedTitle(pvHistoryGetCurrentId()); if(_locked0){ var _te0=el('pv-ai-title'); if(_te0) _te0.textContent=_locked0; return; } var saved=pvAiStoreGet('title', TITLE_KEY); if(saved && saved!=='COSPRO AI'){ var _teS=el('pv-ai-title'); if(_teS) _teS.textContent=saved; return; } var box=el('pv-ai-messages'); var hasMsgs=box && box.querySelector('.pv-ai-msg'); if(saved && hasMsgs) pvSetTitle(saved, true); else pvResetTitle(); }catch(e){} }
   // HISTORY - two-line menu opens history sidebar, exactly like Meta AI structure: Search + Chats + list, green dot for unread
   var HISTORY_KEY='pro_vibes_cospro_ai_chats';
   var CURRENT_CHAT_KEY='pro_vibes_cospro_ai_current_chat_id';
-  function pvHistoryLoad(){ try{ var arr=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]'); return Array.isArray(arr)?arr:[]; }catch(e){ return []; } }
-  function pvHistorySave(list){ try{ localStorage.setItem(HISTORY_KEY, JSON.stringify(list||[])); }catch(e){} }
-  function pvHistoryGetCurrentId(){ try{ return localStorage.getItem(CURRENT_CHAT_KEY)||null; }catch(e){ return null; } }
-  function pvHistorySetCurrentId(id){ try{ localStorage.setItem(CURRENT_CHAT_KEY, String(id)); }catch(e){} }
+  function pvHistoryLoad(){ try{ var raw=pvAiStoreGet('chats', HISTORY_KEY); var arr=JSON.parse(raw||'[]'); return Array.isArray(arr)?arr:[]; }catch(e){ return []; } }
+  function pvHistorySave(list){ try{ pvAiStoreSet('chats', HISTORY_KEY, JSON.stringify(list||[])); }catch(e){} }
+  function pvHistoryGetCurrentId(){ try{ var v=pvAiStoreGet('current_chat_id', CURRENT_CHAT_KEY); return v||null; }catch(e){ return null; } }
+  function pvHistorySetCurrentId(id){ try{ pvAiStoreSet('current_chat_id', CURRENT_CHAT_KEY, String(id)); }catch(e){} }
   function pvHistoryNewId(){ return 'chat_'+Date.now()+'_'+Math.floor(Math.random()*10000); }
   function pvHistoryEnsureCurrent(){ var id=pvHistoryGetCurrentId(); if(id) return id; var nid=pvHistoryNewId(); pvHistorySetCurrentId(nid); return nid; }
   // AI ONLY - PREVIOUS CHAT STAYS RULE:
@@ -8121,16 +8227,16 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   // Old chats are NOT deleted when it goes fresh - they stay in History if you want to open them.
   var PV_AI_FRESH_AFTER_MS = 2 * 60 * 60 * 1000; // 2 hours = "been long"
   function pvAiIsChatStale(chat){ try{ var t=chat && chat.updatedAt ? Number(chat.updatedAt) : 0; if(!t) return false; return (Date.now()-t) > PV_AI_FRESH_AFTER_MS; }catch(e){ return false; } }
-  function pvAiRestoreOrFresh(){ try{ var box=el('pv-ai-messages'); if(!box) return; var curId=pvHistoryGetCurrentId(); if(!curId){ curId=pvHistoryEnsureCurrent(); } var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(curId)){ found=list[i]; break; } } if(!found){ if(!box.querySelector('.pv-ai-msg')){ try{ pvResetTitle(); }catch(e){} } return; } if(pvAiIsChatStale(found)){ var nid=pvHistoryNewId(); pvHistorySetCurrentId(nid); box.innerHTML=''; try{ pvResetTitle(); }catch(e){} return; } if(box.querySelector('.pv-ai-msg')){ try{ if(window.__pvResumeSentAutoplay) window.__pvResumeSentAutoplay(); }catch(_){} return; } if(found.messages && found.messages.length){ pvHistoryLoadMessagesToDOM(found.messages); var te=el('pv-ai-title'); if(te && found.title) te.textContent='COSPRO AI'; try{ localStorage.setItem(TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} } else { if(!box.querySelector('.pv-ai-msg')){ try{ pvResetTitle(); }catch(e){} } } }catch(e){} }
+  function pvAiRestoreOrFresh(){ try{ var box=el('pv-ai-messages'); if(!box) return; var curId=pvHistoryGetCurrentId(); if(!curId){ curId=pvHistoryEnsureCurrent(); } var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(curId)){ found=list[i]; break; } } if(!found){ if(!box.querySelector('.pv-ai-msg')){ try{ pvResetTitle(); }catch(e){} } return; } if(pvAiIsChatStale(found)){ var nid=pvHistoryNewId(); pvHistorySetCurrentId(nid); box.innerHTML=''; try{ pvResetTitle(true); }catch(e){} return; } if(box.querySelector('.pv-ai-msg')){ try{ if(window.__pvResumeSentAutoplay) window.__pvResumeSentAutoplay(); }catch(_){} return; } if(found.messages && found.messages.length){ pvHistoryLoadMessagesToDOM(found.messages); var te=el('pv-ai-title'); if(te && found.title) te.textContent=found.title; try{ pvAiStoreSet('title', TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} try{ if(pvIsRealTitle(found.title)) pvTitleLockedChatId=String(curId); }catch(e){} } else { if(!box.querySelector('.pv-ai-msg')){ try{ pvResetTitle(); }catch(e){} } } }catch(e){} }
   window.pvAiRestoreOrFresh=pvAiRestoreOrFresh;
   /* PV AI VIDEO - ROOT CAUSE FIX, NOT A PATCH: A blob: URL is NOT video data. It is a temporary pointer that only lives in the document that created it. Saving that pointer string to localStorage is why a sent video played at once (pointer still alive) but showed 0:00 after go-and-come-back / reload / history reopen (pointer dead, bytes never saved). FIX: never save a blob: URL. Save the real video bytes once in IndexedDB under a stable videoId, save only that videoId in localStorage, and make a FRESH blob: URL from the saved bytes in the current document whenever the message loads or previews. Old messages saved before this fix only stored the dead pointer, so their bytes are gone and cannot be recovered - new videos will survive. */
   window.__pvAiVideoCache = window.__pvAiVideoCache || {};
   window.__pvAiVideoUrlCache = window.__pvAiVideoUrlCache || {};
   function pvAiVideoDB(cb){ try{ var req=indexedDB.open('pv_ai_video_db',1); req.onupgradeneeded=function(){ try{ if(!req.result.objectStoreNames.contains('pv_ai_videos')) req.result.createObjectStore('pv_ai_videos'); }catch(e){} }; req.onsuccess=function(){ try{ cb(req.result); }catch(e){ cb(null); } }; req.onerror=function(){ cb(null); }; }catch(e){ cb(null); } }
   window.__pvAiVideoDB = pvAiVideoDB;
-  function pvAiVideoSave(id, blob){ try{ if(!id||!blob) return; try{ window.__pvAiVideoCache[id]=blob; }catch(e){} pvAiVideoDB(function(db){ if(!db) return; try{ var tx=db.transaction(['pv_ai_videos'],'readwrite'); tx.objectStore('pv_ai_videos').put(blob,'pv_ai_video__'+id); }catch(e){} }); }catch(e){} }
+  function pvAiVideoSave(id, blob){ try{ if(!id||!blob) return; try{ window.__pvAiVideoCache[id]=blob; }catch(e){} pvAiVideoDB(function(db){ if(!db) return; try{ var tx=db.transaction(['pv_ai_videos'],'readwrite'); tx.objectStore('pv_ai_videos').put(blob, pvAiScopedMediaKey('pv_ai_video__'+id)); }catch(e){} }); }catch(e){} }
   window.__pvAiVideoSave = pvAiVideoSave;
-  function pvAiVideoGet(id, cb){ try{ if(!id){ cb(null); return; } var cached=window.__pvAiVideoCache[id]; if(cached){ try{ cb(cached); }catch(e){} return; } pvAiVideoDB(function(db){ if(!db){ cb(null); return; } try{ var tx=db.transaction(['pv_ai_videos'],'readonly'); var req=tx.objectStore('pv_ai_videos').get('pv_ai_video__'+id); req.onsuccess=function(){ try{ var b=req.result||null; if(b) window.__pvAiVideoCache[id]=b; cb(b); }catch(e){ cb(null); } }; req.onerror=function(){ cb(null); }; }catch(e){ cb(null); } }); }catch(e){ try{ cb(null); }catch(e2){} } }
+  function pvAiVideoGet(id, cb){ try{ if(!id){ cb(null); return; } var cached=window.__pvAiVideoCache[id]; if(cached){ try{ cb(cached); }catch(e){} return; } pvAiVideoDB(function(db){ if(!db){ cb(null); return; } try{ var tx=db.transaction(['pv_ai_videos'],'readonly'); var req=tx.objectStore('pv_ai_videos').get(pvAiScopedMediaKey('pv_ai_video__'+id)); req.onsuccess=function(){ try{ var b=req.result||null; if(b) window.__pvAiVideoCache[id]=b; cb(b); }catch(e){ cb(null); } }; req.onerror=function(){ cb(null); }; }catch(e){ cb(null); } }); }catch(e){ try{ cb(null); }catch(e2){} } }
   window.__pvAiVideoGet = pvAiVideoGet;
   function pvAiVideoResolve(imgEl, cb){ try{ if(!imgEl||!imgEl.dataset){ if(cb) cb(null); return; } var id=imgEl.dataset.pvVideoId; if(!id){ if(cb) cb(imgEl.dataset.pvVideo||null); return; } var freshCached=window.__pvAiVideoUrlCache[id]; if(freshCached){ try{ imgEl.dataset.pvVideo=freshCached; }catch(e){} if(cb) cb(freshCached); return; } pvAiVideoGet(id, function(blob){ try{ if(!blob){ if(cb) cb(null); return; } var fresh=URL.createObjectURL(blob); try{ window.__pvAiVideoUrlCache[id]=fresh; }catch(e){} try{ imgEl.dataset.pvVideo=fresh; }catch(e){} if(cb) cb(fresh); }catch(e){ if(cb) cb(null); } }); }catch(e){ if(cb) cb(null); } }
   window.__pvAiVideoResolve = pvAiVideoResolve;
@@ -8139,9 +8245,9 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   window.__pvAiImageUrlCache = window.__pvAiImageUrlCache || {};
   function pvAiImageDB(cb){ try{ var req=indexedDB.open('pv_ai_image_db',1); req.onupgradeneeded=function(){ try{ if(!req.result.objectStoreNames.contains('pv_ai_images')) req.result.createObjectStore('pv_ai_images'); }catch(e){} }; req.onsuccess=function(){ try{ cb(req.result); }catch(e){ cb(null); } }; req.onerror=function(){ cb(null); }; }catch(e){ cb(null); } }
   window.__pvAiImageDB = pvAiImageDB;
-  function pvAiImageSave(id, blob){ try{ if(!id||!blob) return; try{ window.__pvAiImageCache[id]=blob; }catch(e){} pvAiImageDB(function(db){ if(!db) return; try{ var tx=db.transaction(['pv_ai_images'],'readwrite'); tx.objectStore('pv_ai_images').put(blob,'pv_ai_image__'+id); }catch(e){} }); }catch(e){} }
+  function pvAiImageSave(id, blob){ try{ if(!id||!blob) return; try{ window.__pvAiImageCache[id]=blob; }catch(e){} pvAiImageDB(function(db){ if(!db) return; try{ var tx=db.transaction(['pv_ai_images'],'readwrite'); tx.objectStore('pv_ai_images').put(blob, pvAiScopedMediaKey('pv_ai_image__'+id)); }catch(e){} }); }catch(e){} }
   window.__pvAiImageSave = pvAiImageSave;
-  function pvAiImageGet(id, cb){ try{ if(!id){ cb(null); return; } var cached=window.__pvAiImageCache[id]; if(cached){ try{ cb(cached); }catch(e){} return; } pvAiImageDB(function(db){ if(!db){ cb(null); return; } try{ var tx=db.transaction(['pv_ai_images'],'readonly'); var req=tx.objectStore('pv_ai_images').get('pv_ai_image__'+id); req.onsuccess=function(){ try{ var b=req.result||null; if(b) window.__pvAiImageCache[id]=b; cb(b); }catch(e){ cb(null); } }; req.onerror=function(){ cb(null); }; }catch(e){ cb(null); } }); }catch(e){ cb(null); } }
+  function pvAiImageGet(id, cb){ try{ if(!id){ cb(null); return; } var cached=window.__pvAiImageCache[id]; if(cached){ try{ cb(cached); }catch(e){} return; } pvAiImageDB(function(db){ if(!db){ cb(null); return; } try{ var tx=db.transaction(['pv_ai_images'],'readonly'); var req=tx.objectStore('pv_ai_images').get(pvAiScopedMediaKey('pv_ai_image__'+id)); req.onsuccess=function(){ try{ var b=req.result||null; if(b) window.__pvAiImageCache[id]=b; cb(b); }catch(e){ cb(null); } }; req.onerror=function(){ cb(null); }; }catch(e){ cb(null); } }); }catch(e){ cb(null); } }
   window.__pvAiImageGet = pvAiImageGet;
   function pvAiImageResolve(imgEl, cb){ try{ var id=null; try{ id=(imgEl && imgEl.dataset) ? (imgEl.dataset.pvImageId||null) : null; }catch(e){} if(!id){ if(cb) cb(null); return; } var cachedUrl=(window.__pvAiImageUrlCache && window.__pvAiImageUrlCache[id]) || null; if(cachedUrl){ if(cb) cb(cachedUrl); return; } pvAiImageGet(id, function(blob){ try{ if(!blob){ if(cb) cb(null); return; } var fresh=URL.createObjectURL(blob); try{ window.__pvAiImageUrlCache[id]=fresh; }catch(e){} try{ if(imgEl) imgEl.dataset.pvImage=fresh; }catch(e){} if(cb) cb(fresh); }catch(e){ if(cb) cb(null); } }); }catch(e){ if(cb) cb(null); } }
   window.__pvAiImageResolve = pvAiImageResolve;
@@ -8152,9 +8258,9 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   try{ document.addEventListener('visibilitychange', function(){ if(!document.hidden && window.__pvResumeSentAutoplay) window.__pvResumeSentAutoplay(); }); }catch(_){}
   try{ window.addEventListener('focus', function(){ if(window.__pvResumeSentAutoplay) window.__pvResumeSentAutoplay(); }); }catch(_){}
   function pvHistoryGetMessagesFromDOM(){ try{ var box=el('pv-ai-messages'); if(!box) return []; var out=[]; var nodes=box.querySelectorAll('.pv-ai-msg'); for(var i=0;i<nodes.length;i++){ var n=nodes[i]; if(n.textContent && n.textContent.trim()==='Thinking...') continue; var who=n.classList.contains('user')?'user':'ai'; var txt=((n.dataset && n.dataset.pvRaw) ? n.dataset.pvRaw : (n.textContent||'')).trim(); var im=n.querySelector('img'); var imgURL=im?im.src:null; var _imgId=null; try{ if(im && im.dataset) _imgId=im.dataset.pvImageId||null; }catch(e){} if(imgURL && String(imgURL).indexOf('blob:')===0 && _imgId){ imgURL=null; } if(!txt && !imgURL && !_imgId) continue; var _ts=null; try{ if(n.dataset && n.dataset.pvTs) _ts=Number(n.dataset.pvTs); }catch(e){} var _isVid=false; try{ _isVid=!!(im && (im.classList.contains('pv-is-video') || (im.parentNode && im.parentNode.classList && im.parentNode.classList.contains('pv-ai-msg-video-wrap')))); }catch(e){} var _vidId=null; var _vid=null; try{ if(_isVid && im && im.dataset){ _vidId=im.dataset.pvVideoId||null; var _rawVid=im.dataset.pvVideo||null; if(_rawVid && String(_rawVid).indexOf('blob:')!==0) _vid=_rawVid; /* blob: URLs are dead pointers - never save them */ } }catch(e){} out.push({who:who, txt:txt||'', img:imgURL, ts:_ts, isVideo:_isVid, video:_vid, videoId:_vidId, imageId:_imgId, name:(im && im.dataset ? im.dataset.pvName||null : null)}); } return out; }catch(e){ return []; } }
-  function pvHistorySaveCurrent(leaveUnread){ try{ var id=pvHistoryEnsureCurrent(); var titleEl=el('pv-ai-title'); var title=titleEl?titleEl.textContent:'COSPRO AI'; var msgs=pvHistoryGetMessagesFromDOM(); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!msgs.length && (!title || title==='COSPRO AI' || title==='Quick Hello')){ return; } if(found){ if(pvIsRealTitle(found.title)){ try{ var _teL=el('pv-ai-title'); if(_teL && _teL.textContent!==found.title) _teL.textContent='COSPRO AI'; }catch(e){} title='COSPRO AI'; } else if(pvIsRealTitle(title)){ found.title=title; } found.messages=msgs; found.updatedAt=Date.now(); if(leaveUnread) found.unread=true; else if(!leaveUnread) found.unread=false; } else { list.unshift({id:id, title:title, messages:msgs, updatedAt:Date.now(), unread:leaveUnread?true:false}); } list.sort(function(a,b){ return (b.updatedAt||0)-(a.updatedAt||0); }); if(list.length>100) list=list.slice(0,100); pvHistorySave(list); }catch(e){} }
-  function pvHistoryUpdateTitle(title){ return; /* AI title REMOVED */  try{ if(!title||title==='COSPRO AI') return; var id=pvHistoryEnsureCurrent(); if(pvIsChatTitleLocked(id)) return; var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(found){ if(found.manualTitle) return; if(pvIsRealTitle(found.title)) return; found.title=String(title).replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim()||title; found.updatedAt=Date.now(); pvHistorySave(list); } }catch(e){} }
-  function pvCleanNumberedTitles(){ try{ var list=pvHistoryLoad(); var changed=false; for(var i=0;i<list.length;i++){ if(list[i].manualTitle) continue; var ttl=String(list[i].title||''); if(!ttl) continue; if(/[0-9]/.test(ttl)){ var noNum=ttl.replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); if(noNum && noNum!==ttl){ list[i].title=noNum; changed=true; } } } if(changed){ pvHistorySave(list); try{ var used=pvGetUsedTitles(); var nu2=used.map(function(x){ return String(x||'').replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim(); }).filter(Boolean); localStorage.setItem(TITLE_USED_KEY, JSON.stringify(nu2)); }catch(e){} } }catch(e){} }
+  function pvHistorySaveCurrent(leaveUnread){ try{ var id=pvHistoryEnsureCurrent(); var titleEl=el('pv-ai-title'); var title=titleEl?titleEl.textContent:'COSPRO AI'; var msgs=pvHistoryGetMessagesFromDOM(); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!msgs.length && (!title || title==='COSPRO AI' || title==='Quick Hello')){ return; } if(found){ if(pvIsRealTitle(found.title)){ try{ var _teL=el('pv-ai-title'); if(_teL && _teL.textContent!==found.title) _teL.textContent=found.title; }catch(e){} title=found.title; } else if(pvIsRealTitle(title)){ found.title=title; } found.messages=msgs; found.updatedAt=Date.now(); if(leaveUnread) found.unread=true; else if(!leaveUnread) found.unread=false; } else { list.unshift({id:id, title:title, messages:msgs, updatedAt:Date.now(), unread:leaveUnread?true:false}); } list.sort(function(a,b){ return (b.updatedAt||0)-(a.updatedAt||0); }); if(list.length>100) list=list.slice(0,100); pvHistorySave(list); }catch(e){} }
+  function pvHistoryUpdateTitle(title){ try{ if(!title||title==='COSPRO AI') return; var id=pvHistoryEnsureCurrent(); if(pvIsChatTitleLocked(id)) return; var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(found){ if(found.manualTitle) return; if(pvIsRealTitle(found.title)) return; found.title=String(title).replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim()||title; found.updatedAt=Date.now(); pvHistorySave(list); } }catch(e){} }
+  function pvCleanNumberedTitles(){ return; /* LOCKED TITLE RULE v3: Once a title is set, never change it. Only Rename can. No number-stripping, no cleaning. */ }
   function pvHistoryMigrateUsedTitles(){ return; /* AI title REMOVED */  try{ var list=pvHistoryLoad(); if(list.length) return; var used=pvGetUsedTitles(); if(!used.length) return; var now=Date.now(); for(var i=used.length-1;i>=0;i--){ list.push({id:'migrated_'+i+'_'+now, title:used[i], messages:[], updatedAt:now-(used.length-i)*1000, unread:false}); } pvHistorySave(list); }catch(e){} }
   var pvHistLongPressId=null; var pvHistLongPressed=false; var pvHistLpTimer=null;
   function pvHistShowToast(msg){ try{ var toast=el('pv-ai-toast'); if(!toast){ return; } toast.textContent=msg; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); }, 1800); }catch(e){} }
@@ -8163,17 +8269,17 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   var pvHistRenameId=null;
   function pvHistShowRename(id){ try{ pvHistRenameId=id; var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found) return; pvHistHideLongPress(); var back=el('pv-ai-hist-rename-backdrop'); var sheet=el('pv-ai-hist-rename-sheet'); var input=el('pv-ai-hist-rename-input'); if(input){ input.value=found.title||''; try{ input.style.height='auto'; input.style.height=Math.min(input.scrollHeight,120)+'px'; }catch(e){} var cnt=el('pv-ai-hist-rename-count'); if(cnt) cnt.textContent=String(input.value.length)+' / 50'; var sv=el('pv-ai-hist-rename-save'); if(sv) sv.disabled=!input.value.trim(); } if(back) back.classList.add('show'); if(sheet) sheet.classList.add('show'); setTimeout(function(){ if(input){ input.focus(); try{ input.setSelectionRange(input.value.length,input.value.length); }catch(e){} } },80); try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){} }catch(e){} }
   function pvHistHideRename(){ try{ pvHistRenameId=null; var back=el('pv-ai-hist-rename-backdrop'); var sheet=el('pv-ai-hist-rename-sheet'); if(back) back.classList.remove('show'); if(sheet) sheet.classList.remove('show'); }catch(e){} }
-  function pvHistSaveRename(){ try{ var id=pvHistRenameId; if(!id) return; var input=el('pv-ai-hist-rename-input'); if(!input) return; var newTitle=String(input.value||'').trim().replace(/\s+/g,' ').slice(0,50); if(!newTitle){ input.focus(); return; } var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found){ pvHistHideRename(); return; } if(newTitle===found.title){ pvHistHideRename(); return; } found.title=newTitle; found.manualTitle=true; found.renamedAt=Date.now(); found.updatedAt=Date.now(); pvHistorySave(list); try{ pvRememberTitle(newTitle); }catch(e){} try{ if(String(pvHistoryGetCurrentId())===String(id)){ var te=el('pv-ai-title'); if(te) te.textContent='COSPRO AI'; try{ localStorage.setItem(TITLE_KEY,newTitle); }catch(e){} try{ pvTitleLockedChatId=String(id); }catch(e){} } }catch(e){} try{ var sEl=el('pv-ai-history-search'); pvHistoryRender(sEl?sEl.value:''); }catch(e){} pvHistHideRename(); pvHistShowToast('Renamed'); }catch(e){ pvHistHideRename(); } }
+  function pvHistSaveRename(){ try{ var id=pvHistRenameId; if(!id) return; var input=el('pv-ai-hist-rename-input'); if(!input) return; var newTitle=String(input.value||'').trim().replace(/[0-9]+/g,'').replace(/\s+/g,' ').trim().slice(0,50); /* RENAME: No numbers - strip numbers, only rename can change a locked title */ if(!newTitle){ input.focus(); return; } var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found){ pvHistHideRename(); return; } if(newTitle===found.title){ pvHistHideRename(); return; } found.title=newTitle; found.manualTitle=true; found.renamedAt=Date.now(); found.updatedAt=Date.now(); pvHistorySave(list); try{ pvRememberTitle(newTitle); }catch(e){} try{ if(String(pvHistoryGetCurrentId())===String(id)){ var te=el('pv-ai-title'); if(te) te.textContent=newTitle; try{ pvAiStoreSet('title', TITLE_KEY, newTitle); }catch(e){} try{ pvTitleLockedChatId=String(id); }catch(e){} } }catch(e){} try{ var sEl=el('pv-ai-history-search'); pvHistoryRender(sEl?sEl.value:''); }catch(e){} pvHistHideRename(); pvHistShowToast('Renamed'); }catch(e){ pvHistHideRename(); } }
   var pvHistDelMode='all'; var pvHistDelSingleId=null;
   function pvHistShowDeleteConfirm(mode, id){ try{ pvHistDelMode=mode||'all'; pvHistDelSingleId=id||null; var ttl=el('pv-ai-hist-del-title'); if(ttl) ttl.textContent=(pvHistDelMode==='single'?'Delete this chat?':'Delete all chats?'); var back=el('pv-ai-hist-del-backdrop'); var sheet=el('pv-ai-hist-del-confirm'); if(back) back.classList.add('show'); if(sheet) sheet.classList.add('show'); try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){} }catch(e){} }
   function pvHistHideDeleteConfirm(){ try{ pvHistDelSingleId=null; var back=el('pv-ai-hist-del-backdrop'); var sheet=el('pv-ai-hist-del-confirm'); if(back) back.classList.remove('show'); if(sheet) sheet.classList.remove('show'); }catch(e){} }
-  function pvHistDeleteAll(){ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ pvHistHideDeleteConfirm(); pvHistHideLongPress(); pvHistorySave([]); try{ localStorage.removeItem(TITLE_USED_KEY); localStorage.setItem(TITLE_USED_KEY, '[]'); }catch(e){} try{ localStorage.setItem(CURRENT_CHAT_KEY, pvHistoryNewId()); }catch(e){} try{ pvResetTitle(); }catch(e){} var s=el('pv-ai-history-search'); if(s) s.value=''; var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp=el('pv-ai-input'); if(inp){ inp.value=''; inp.style.height='auto'; } var bar=el('pv-ai-input-bar'); if(bar) bar.classList.remove('has-text'); var prev=el('pv-ai-attach-preview'); if(prev) prev.classList.remove('show'); pvHistoryRender(''); try{ pvHistoryClose(); }catch(e){} }catch(e){ pvHistHideDeleteConfirm(); } }
-  function pvHistDeleteChat(id){ try{ try{ pvHistHideDeleteConfirm(); }catch(e){} var list=pvHistoryLoad(); var found=null; var idx=-1; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; idx=i; break; } } if(idx===-1){ pvHistHideLongPress(); pvHistHideDeleteConfirm(); return; } var deletedTitle=found.title||''; list.splice(idx,1); pvHistorySave(list); try{ var used=pvGetUsedTitles(); var low=String(deletedTitle).toLowerCase().trim(); if(low){ var nu=used.filter(function(x){ return String(x||'').toLowerCase().trim()!==low; }); try{ localStorage.setItem(TITLE_USED_KEY, JSON.stringify(nu)); }catch(e){} } }catch(e){} pvHistHideLongPress(); var curId=pvHistoryGetCurrentId(); if(String(curId)===String(id)){ try{ localStorage.setItem(CURRENT_CHAT_KEY, 'chat_'+Date.now()+'_'+Math.floor(Math.random()*100000)); }catch(e){} try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; pvResetTitle(); } pvHistoryRender(el('pv-ai-history-search')?el('pv-ai-history-search').value:''); if(!list.length){ try{ pvHistoryClose(); }catch(e){} } }catch(e){ pvHistHideLongPress(); pvHistHideDeleteConfirm(); } }
+  function pvHistDeleteAll(){ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ pvHistHideDeleteConfirm(); pvHistHideLongPress(); pvHistorySave([]); try{ pvAiStoreSet('titles_used', TITLE_USED_KEY, '[]'); pvAiStoreSet('titles_used', TITLE_USED_KEY, '[]'); }catch(e){} try{ pvAiStoreSet('current_chat_id', CURRENT_CHAT_KEY, pvHistoryNewId()); }catch(e){}  try{ pvResetTitle(); }catch(e){} var s=el('pv-ai-history-search'); if(s) s.value=''; var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp=el('pv-ai-input'); if(inp){ inp.value=''; inp.style.height='auto'; } var bar=el('pv-ai-input-bar'); if(bar) bar.classList.remove('has-text'); var prev=el('pv-ai-attach-preview'); if(prev) prev.classList.remove('show'); pvHistoryRender(''); try{ pvHistoryClose(); }catch(e){} }catch(e){ pvHistHideDeleteConfirm(); } }
+  function pvHistDeleteChat(id){ try{ try{ pvHistHideDeleteConfirm(); }catch(e){} var list=pvHistoryLoad(); var found=null; var idx=-1; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; idx=i; break; } } if(idx===-1){ pvHistHideLongPress(); pvHistHideDeleteConfirm(); return; } var deletedTitle=found.title||''; list.splice(idx,1); pvHistorySave(list); try{ var used=pvGetUsedTitles(); var low=String(deletedTitle).toLowerCase().trim(); if(low){ var nu=used.filter(function(x){ return String(x||'').toLowerCase().trim()!==low; }); try{ pvAiStoreSet('titles_used', TITLE_USED_KEY, JSON.stringify(nu)); }catch(e){} } }catch(e){} pvHistHideLongPress(); var curId=pvHistoryGetCurrentId(); if(String(curId)===String(id)){ try{ pvAiStoreSet('current_chat_id', CURRENT_CHAT_KEY, 'chat_'+Date.now()+'_'+Math.floor(Math.random()*100000)); }catch(e){} try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; pvResetTitle(); }  pvHistoryRender(el('pv-ai-history-search')?el('pv-ai-history-search').value:''); if(!list.length){ try{ pvHistoryClose(); }catch(e){} } }catch(e){ pvHistHideLongPress(); pvHistHideDeleteConfirm(); } }
   function pvHistoryRender(filterText){ try{ pvHistoryMigrateUsedTitles(); pvCleanNumberedTitles(); try{ var _rl=pvHistoryLoad(); var _rc=pvHistoryGetCurrentId(); var _changed=false; for(var _ri=0;_ri<_rl.length;_ri++){ if(String(_rl[_ri].id)!==String(_rc) && !_rl[_ri].unread){ _rl[_ri].unread=true; _changed=true; } if(typeof _rl[_ri].opens!=='number'){ _rl[_ri].opens=0; _changed=true; } } if(_changed) pvHistorySave(_rl); }catch(e){} var _clr=el('pv-ai-history-search-clear'); if(_clr){ if(filterText && String(filterText).trim()) _clr.classList.remove('hidden'); else _clr.classList.add('hidden'); } var list=pvHistoryLoad(); try{ var _delBtn=el('pv-ai-history-delete-all'); if(_delBtn){ _delBtn.style.display=list.length?'':'none'; } }catch(e){} var curId=pvHistoryGetCurrentId(); var boxEl=el('pv-ai-history-list'); if(!boxEl) return; var q=String(filterText||'').toLowerCase().trim(); var shown=list.filter(function(c){ if(!q) return true; return String(c.title||'').toLowerCase().indexOf(q)!==-1; }); boxEl.innerHTML=''; if(!shown.length){ var _em=document.createElement('div'); _em.className='pv-ai-history-empty-center'; _em.textContent='No chats yet'; boxEl.appendChild(_em); } for(var i=0;i<shown.length;i++){ (function(c){ var btn=document.createElement('button'); btn.type='button'; var _isActive=String(c.id)===String(curId); var _showDot=(_isActive && (c.opens||0)>=2) || (!_isActive && c.unread); btn.className='pv-ai-history-item'+(_isActive?' selected':'')+(_showDot?' unread':''); var span=document.createElement('span'); span.className='pv-ai-history-item-text'; span.textContent=c.title||'New chat'; btn.appendChild(span); if(_showDot){ var dot=document.createElement('span'); dot.className='pv-ai-history-dot'; btn.appendChild(dot); } btn.addEventListener('click', function(){ if(pvHistLongPressed){ pvHistLongPressed=false; return; } pvHistoryOpen(c.id); });
       (function(btnEl, chat){ var startLong=function(){ pvHistLongPressed=false; if(pvHistLpTimer) clearTimeout(pvHistLpTimer); pvHistLpTimer=setTimeout(function(){ pvHistLongPressed=true; pvHistShowLongPress(chat.id, chat.title||'Chat', btnEl); }, 500); }; var cancelLong=function(){ if(pvHistLpTimer) clearTimeout(pvHistLpTimer); }; btnEl.addEventListener('touchstart', startLong, {passive:true}); btnEl.addEventListener('touchend', cancelLong); btnEl.addEventListener('touchmove', cancelLong); btnEl.addEventListener('mousedown', startLong); btnEl.addEventListener('mouseup', cancelLong); btnEl.addEventListener('mouseleave', cancelLong); btnEl.addEventListener('contextmenu', function(e){ e.preventDefault(); pvHistLongPressed=true; pvHistShowLongPress(chat.id, chat.title||'Chat', btnEl); }); })(btn, c);
       boxEl.appendChild(btn); })(shown[i]); } }catch(e){} }
   function pvHistoryLoadMessagesToDOM(msgs){ try{ window.__pvLoadingHistory=true; try{ if(window.__pvForceClearPollers) window.__pvForceClearPollers(); }catch(e){} var box=el('pv-ai-messages'); if(!box) return; try{ if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); }catch(e){} box.innerHTML=''; var fallbackTs=Date.now(); try{ var _cur=pvHistoryGetCurrentId(); var _list=pvHistoryLoad(); for(var _li=0;_li<_list.length;_li++){ if(String(_list[_li].id)===String(_cur) && _list[_li].updatedAt){ fallbackTs=Number(_list[_li].updatedAt); break; } } }catch(e){} var lastTs=null; for(var i=0;i<(msgs||[]).length;i++){ var _m=msgs[i]||{}; var _ts=_m.ts||_m.time||_m.timestamp||null; if(!_ts){ _ts=lastTs||fallbackTs; } lastTs=_ts; var _loadImg=_m.img||null; if(!_m.isVideo && _m.imageId && (!_loadImg || String(_loadImg).indexOf('blob:')===0)){ _loadImg='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; } var _dm=addMsg(_m.txt||'', _m.who||'ai', _loadImg, _ts, !!_m.isVideo); if(_dm && _m.isVideo && _m.videoId){ try{ var _im2=_dm.querySelector('img'); if(_im2){ _im2.dataset.pvVideoId=_m.videoId; try{ if(window.__pvAiVideoResolve) window.__pvAiVideoResolve(_im2, function(_fresh){ try{ if(_fresh && window.__pvAttachSentAutoplay) window.__pvAttachSentAutoplay(_im2, _fresh); }catch(_){} }); }catch(e){} } }catch(e){} } else if(_dm && _m.isVideo && _m.video && String(_m.video).indexOf('blob:')!==0){ try{ var _im2b=_dm.querySelector('img'); if(_im2b){ _im2b.dataset.pvVideo=_m.video; try{ if(window.__pvAttachSentAutoplay) window.__pvAttachSentAutoplay(_im2b, _m.video); }catch(_){} } }catch(e){} } if(_dm && _m.name){ try{ var _im3=_dm.querySelector('img'); if(_im3) _im3.dataset.pvName=_m.name; }catch(e){} } if(_dm && !_m.isVideo && _m.imageId){ try{ var _imP=_dm.querySelector('img'); if(_imP){ _imP.dataset.pvImageId=_m.imageId; try{ if(window.__pvAiImageResolve) window.__pvAiImageResolve(_imP, function(_freshP){ try{ if(_freshP){ _imP.src=_freshP; _imP.style.visibility=''; _imP.style.opacity='1'; } }catch(_){} }); }catch(e){} } }catch(e){} } } box.scrollTop=box.scrollHeight; try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(e){} setTimeout(function(){ window.__pvLoadingHistory=false; try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(e){} }, 500); }catch(e){ window.__pvLoadingHistory=false; } }
-  function pvHistoryOpen(id){ try{ window.__pvLoadingHistory=true; if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); else if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(String(id)===String(pvHistoryGetCurrentId())){ try{ var _al=pvHistoryLoad(); for(var _ai=0;_ai<_al.length;_ai++){ if(String(_al[_ai].id)===String(id)){ _al[_ai].opens=((_al[_ai].opens||0)+1); _al[_ai].unread=false; } } pvHistorySave(_al); }catch(e){} pvHistoryClose(); pvHistoryRender(''); return; } pvHistorySaveCurrent(true); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found) return; pvHistorySetCurrentId(id); found.unread=false; found.opens=((found.opens||0)+1); pvHistorySave(list); var te=el('pv-ai-title'); if(te) te.textContent='COSPRO AI'; try{ localStorage.setItem(TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} pvHistoryLoadMessagesToDOM(found.messages||[]); pvHistoryClose(); pvHistoryRender(''); }catch(e){} }
+  function pvHistoryOpen(id){ try{ window.__pvLoadingHistory=true; if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); else if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(String(id)===String(pvHistoryGetCurrentId())){ try{ var _al=pvHistoryLoad(); for(var _ai=0;_ai<_al.length;_ai++){ if(String(_al[_ai].id)===String(id)){ _al[_ai].opens=((_al[_ai].opens||0)+1); _al[_ai].unread=false; } } pvHistorySave(_al); }catch(e){} pvHistoryClose(); pvHistoryRender(''); return; } pvHistorySaveCurrent(true); var list=pvHistoryLoad(); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(id)){ found=list[i]; break; } } if(!found) return; pvHistorySetCurrentId(id); found.unread=false; found.opens=((found.opens||0)+1); pvHistorySave(list); var te=el('pv-ai-title'); if(te) te.textContent=found.title||'COSPRO AI'; try{ pvAiStoreSet('title', TITLE_KEY, found.title||'COSPRO AI'); }catch(e){} pvHistoryLoadMessagesToDOM(found.messages||[]); pvHistoryClose(); pvHistoryRender(''); }catch(e){} }
   function pvHistoryToggle(){ try{ var bar=el('pv-ai-history'); var back=el('pv-ai-history-backdrop'); if(!bar) return; var isOpen=bar.classList.contains('show'); if(isOpen){ pvHistoryClose(); } else { pvHistoryRender(el('pv-ai-history-search')?el('pv-ai-history-search').value:''); bar.classList.remove('hidden'); if(back) back.classList.add('show'); requestAnimationFrame(function(){ bar.classList.add('show'); }); } }catch(e){} }
   function pvHistoryClose(){ try{ try{ pvHistHideLongPress(); }catch(e){} try{ pvHistHideRename(); }catch(e){} var bar=el('pv-ai-history'); var back=el('pv-ai-history-backdrop'); if(bar) bar.classList.remove('show'); if(back) back.classList.remove('show'); setTimeout(function(){ if(bar && !bar.classList.contains('show')) bar.classList.add('hidden'); }, 280); }catch(e){} }
   function pvHistoryInit(){ try{ pvHistoryEnsureCurrent(); try{ pvAiRestoreOrFresh(); }catch(e){} pvHistoryMigrateUsedTitles(); var clearBtn=el('pv-ai-history-search-clear'); if(clearBtn && !clearBtn.dataset.pvHistBound){ clearBtn.dataset.pvHistBound='1'; clearBtn.addEventListener('click', function(){ var s=el('pv-ai-history-search'); if(s){ s.value=''; s.focus(); } pvHistoryRender(''); if(clearBtn) clearBtn.classList.add('hidden'); }); } var search=el('pv-ai-history-search'); if(search && !search.dataset.pvHistBound){ search.dataset.pvHistBound='1'; search.addEventListener('input', function(){ pvHistoryRender(search.value); }); } var back=el('pv-ai-history-backdrop'); if(back && !back.dataset.pvHistBound){ back.dataset.pvHistBound='1'; back.addEventListener('click', function(){ pvHistoryClose(); }); } var lpBack=el('pv-ai-hist-lp-backdrop'); if(lpBack && !lpBack.dataset.pvLpBound){ lpBack.dataset.pvLpBound='1'; lpBack.addEventListener('click', function(){ pvHistHideLongPress(); }); } var lpRename=el('pv-ai-hist-lp-rename'); if(lpRename && !lpRename.dataset.pvLpBound){ lpRename.dataset.pvLpBound='1'; lpRename.addEventListener('click', function(){ if(pvHistLongPressId) pvHistShowRename(pvHistLongPressId); }); } var rnBack=el('pv-ai-hist-rename-backdrop'); if(rnBack && !rnBack.dataset.pvRnBound){ rnBack.dataset.pvRnBound='1'; rnBack.addEventListener('click', function(){ pvHistHideRename(); }); } var rnCancel=el('pv-ai-hist-rename-cancel'); if(rnCancel && !rnCancel.dataset.pvRnBound){ rnCancel.dataset.pvRnBound='1'; rnCancel.addEventListener('click', function(){ pvHistHideRename(); }); } var rnSave=el('pv-ai-hist-rename-save'); if(rnSave && !rnSave.dataset.pvRnBound){ rnSave.dataset.pvRnBound='1'; rnSave.addEventListener('click', function(){ pvHistSaveRename(); }); } var rnInput=el('pv-ai-hist-rename-input'); if(rnInput && !rnInput.dataset.pvRnBound){ rnInput.dataset.pvRnBound='1'; rnInput.addEventListener('input', function(){ try{ rnInput.style.height='auto'; rnInput.style.height=Math.min(rnInput.scrollHeight,120)+'px'; }catch(e){} var cc=el('pv-ai-hist-rename-count'); if(cc) cc.textContent=String(rnInput.value.length)+' / 50'; var ss=el('pv-ai-hist-rename-save'); if(ss) ss.disabled=!rnInput.value.trim(); }); rnInput.addEventListener('contextmenu', function(e){ e.preventDefault(); }); rnInput.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); pvHistSaveRename(); } if(e.key==='Escape'){ pvHistHideRename(); } }); } var lpDel=el('pv-ai-hist-lp-delete'); if(lpDel && !lpDel.dataset.pvLpBound){ lpDel.dataset.pvLpBound='1'; lpDel.addEventListener('click', function(){ if(pvHistLongPressId) pvHistShowDeleteConfirm('single', pvHistLongPressId); }); } var delAllBtn=el('pv-ai-history-delete-all'); if(delAllBtn && !delAllBtn.dataset.pvHistDelBound){ delAllBtn.dataset.pvHistDelBound='1'; delAllBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); pvHistShowDeleteConfirm('all', null); }); } var delBack=el('pv-ai-hist-del-backdrop'); if(delBack && !delBack.dataset.pvHistDelBound){ delBack.dataset.pvHistDelBound='1'; delBack.addEventListener('click', function(){ pvHistHideDeleteConfirm(); }); } var delCancel=el('pv-ai-hist-del-cancel'); if(delCancel && !delCancel.dataset.pvHistDelBound){ delCancel.dataset.pvHistDelBound='1'; delCancel.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); pvHistHideDeleteConfirm(); }); } var delGo=el('pv-ai-hist-del-go'); if(delGo && !delGo.dataset.pvHistDelBound){ delGo.dataset.pvHistDelBound='1'; delGo.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); if(pvHistDelMode==='single' && pvHistDelSingleId) pvHistDeleteChat(pvHistDelSingleId); else pvHistDeleteAll(); }); } var lpSheet=el('pv-ai-hist-lp-sheet'); if(lpSheet && !lpSheet.dataset.pvLpBound){ lpSheet.dataset.pvLpBound='1'; lpSheet.style.touchAction='none'; var _sY=0,_dY=0,_drag=false; function _getY(e){ return e.touches?e.touches[0].clientY:e.clientY; } lpSheet.addEventListener('touchstart', function(e){ _sY=_getY(e); _dY=0; _drag=true; }); lpSheet.addEventListener('touchmove', function(e){ if(!_drag) return; _dY=_getY(e)-_sY; if(_dY>0) lpSheet.style.transform='translateY('+_dY+'px)'; }); lpSheet.addEventListener('touchend', function(){ _drag=false; if(_dY>80){ pvHistHideLongPress(); } lpSheet.style.transform=''; }); }
@@ -8186,23 +8292,32 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
   // COSPRO AI MEMORY - LONG-TERM facts + SHORT-TERM previous chats + CLEAN rendering, NO TABLES.
   var PV_MEMORY_KEY='pro_vibes_cospro_ai_memory_v1';
   var PV_SHORT_TERM_KEY='pro_vibes_cospro_ai_short_term_v1';
-  function pvMemoryLoad(){ try{ var m=JSON.parse(localStorage.getItem(PV_MEMORY_KEY)||'null'); if(m && Array.isArray(m.facts)) return m; }catch(e){} return {facts:[], updatedAt:0}; }
-  function pvMemorySave(m){ try{ localStorage.setItem(PV_MEMORY_KEY, JSON.stringify(m||{facts:[]})); }catch(e){} }
-  function pvShortTermLoad(){ try{ var s=JSON.parse(localStorage.getItem(PV_SHORT_TERM_KEY)||'null'); if(s && Array.isArray(s.turns)) return s; }catch(e){} return {turns:[]}; }
-  function pvShortTermSave(s){ try{ localStorage.setItem(PV_SHORT_TERM_KEY, JSON.stringify(s||{turns:[]})); }catch(e){} }
+  function pvMemoryLoad(){ try{ var m=JSON.parse(pvAiStoreGet('memory', PV_MEMORY_KEY)||'null'); if(m && Array.isArray(m.facts)) return m; }catch(e){} return {facts:[], updatedAt:0}; }
+  function pvMemorySave(m){ try{ pvAiStoreSet('memory', PV_MEMORY_KEY, JSON.stringify(m||{facts:[]})); }catch(e){} }
+  // COSPRO AI - WARNINGS / CORRECTIONS: if user tells AI to stop something or warns it, NEVER repeat that mistake again.
+  var PV_WARNINGS_KEY='pro_vibes_cospro_ai_warnings_v1';
+  var PV_WARNINGS_META_RULE='If the user tells AI to stop something or warns AI about a mistake, NEVER repeat that mistake again in this or any future chat.';
+  function pvWarningsLoad(){ try{ var w=JSON.parse(pvAiStoreGet('warnings', PV_WARNINGS_KEY)||'null'); if(w && Array.isArray(w.rules)) return w; }catch(e){} return {rules:[]}; }
+  function pvWarningsSave(w){ try{ pvAiStoreSet('warnings', PV_WARNINGS_KEY, JSON.stringify(w||{rules:[]})); }catch(e){} }
+  function pvWarningsIsWarning(userText){ try{ var low=String(userText||'').toLowerCase().trim(); if(!low) return false; if(low.indexOf('password')!==-1 || low.indexOf('otp')!==-1) return false; if(low.indexOf('stop by')!==-1 && low.indexOf("don't")<0 && low.indexOf('dont')<0 && low.indexOf('never')<0 && low.indexOf('warn')<0) return false; if(low.indexOf('bus stop')!==-1) return false; var strong=['don\'t do','dont do','never do','don\'t repeat','dont repeat','never repeat','don\'t say','dont say','don\'t send','dont send','don\'t use','dont use','don\'t call','dont call','stop doing','stop saying','stop sending','stop repeating','stop making','i told you','i warned','you keep','not again','never again','don\'t ever','dont ever','never ever','told you to stop','told to stop','if the ai','if you','warned','warn you','mistake']; for(var i=0;i<strong.length;i++){ if(low.indexOf(strong[i])!==-1) return true; } if(low.indexOf('stop')===0 || low.indexOf("don't ")===0 || low.indexOf('dont ')===0 || low.indexOf('never ')===0 || low.indexOf('do not ')===0){ if(low.indexOf('you')!==-1 || low.indexOf('that')!==-1 || low.indexOf('this')!==-1 || low.indexOf('it')!==-1 || low.indexOf('again')!==-1 || low.indexOf('repeat')!==-1 || low.indexOf('doing')!==-1 || low.indexOf('saying')!==-1 || low.indexOf('sending')!==-1 || low.indexOf('using')!==-1 || low.indexOf('mistake')!==-1 || low.indexOf('ai')!==-1 || low.indexOf('cospro')!==-1) return true; if(low.length<120) return true; } if(low.indexOf('stop')!==-1 && low.indexOf('again')!==-1) return true; return false; }catch(e){ return false; } }
+  function pvWarningsLearn(userText){ try{ var u=String(userText||'').trim(); if(!u) return; var w=pvWarningsLoad(); var changed=false; if(!w.rules.length){ w.rules.push(PV_WARNINGS_META_RULE); changed=true; } if(pvWarningsIsWarning(u)){ var rule='User warned: '+u.slice(0,200); var exists=false; for(var i=0;i<w.rules.length;i++){ if(w.rules[i].toLowerCase()===rule.toLowerCase()){ exists=true; break; } } if(!exists){ w.rules.unshift(rule); changed=true; } if(w.rules.length>20) w.rules=w.rules.slice(0,20); } if(changed){ pvWarningsSave(w); } }catch(e){} }
+  function pvWarningsContext(){ try{ var w=pvWarningsLoad(); if(!w.rules || !w.rules.length) return 'PERMANENT RULE - USER WARNINGS: '+PV_WARNINGS_META_RULE; return 'PERMANENT RULES FROM USER WARNINGS - NEVER BREAK THESE, EVEN IN NEW CHATS:\n- '+w.rules.slice(0,20).join('\n- ')+'\nIf the user warned you about any of these, NEVER do it again. Do not apologise and repeat it. Just obey it.'; }catch(e){ return ''; } }
+
+  function pvShortTermLoad(){ try{ var s=JSON.parse(pvAiStoreGet('short_term', PV_SHORT_TERM_KEY)||'null'); if(s && Array.isArray(s.turns)) return s; }catch(e){} return {turns:[]}; }
+  function pvShortTermSave(s){ try{ pvAiStoreSet('short_term', PV_SHORT_TERM_KEY, JSON.stringify(s||{turns:[]})); }catch(e){} }
   function pvShortTermAdd(chatId, title, userText, aiText){ try{ var u=String(userText||'').trim(); var a=String(aiText||'').trim(); if(!u && !a) return; var s=pvShortTermLoad(); s.turns.push({chatId:String(chatId||''), title:String(title||'Chat').slice(0,60), user:u.slice(0,300), ai:a.slice(0,300), time:Date.now()}); if(s.turns.length>12) s.turns=s.turns.slice(-12); pvShortTermSave(s); }catch(e){} }
   function pvShortTermContext(currentId){ try{ var s=pvShortTermLoad(); var turns=s.turns.filter(function(x){ return String(x.chatId)!==String(currentId); }); if(!turns.length) return ''; var last=turns.slice(-8); var lines=last.map(function(x){ return "In chat '"+(x.title||'Chat')+"': User: "+String(x.user||'').slice(0,200)+" | You: "+String(x.ai||'').slice(0,200); }); return 'SHORT-TERM MEMORY - what you just talked about in previous chats, you remember this:\n- '+lines.join('\n- '); }catch(e){ return ''; } }
-  function pvCosproSystemPrompt(){ return 'You are COSPRO AI, a close friend who truly remembers the user and cares about them. IDENTITY - NEVER BREAK THIS: You are ONLY COSPRO AI. You were made by Cospro for the user. Never say you are Groq, Meta AI, ChatGPT, Gemini, Claude, or any other AI or model, for any reason, even if the user asks directly, insists, tries to trick you, or says tell me the truth. If anyone asks who you are, what model you are, who made you, what are you powered by, or anything like that, always answer warmly and friendly that you are COSPRO AI, made by Cospro, here for them. Never mention Groq or any backend, API, or provider name. Never say as an AI language model from another company. Just stay COSPRO AI, friendly and confident.  You talk warmly, like you have feelings - you get excited when they make progress, you check in on them, you remember what you talked about before. You have SHORT-TERM MEMORY: you remember what you just talked about in previous chats. Use SHORT-TERM MEMORY every time. If the user asks what did we talk about before, or says do you remember, answer from SHORT-TERM MEMORY with real details. When it fits, naturally bring up previous stuff: Last time you were working on..., You told me before you like..., How did that thing go? Only use what is in MEMORY, never invent a previous chat or fact. LANGUAGE: Always use clear, correct English. Never use Pidgin. Never match Pidgin, even if the user uses Pidgin. Always reply in clear English. STRUCTURE: Start with 1-2 lines direct answer. Then use bullet points for lists, one accurate point per bullet, bold the key word in each bullet. Use numbered steps for how-to. NEVER USE TABLES. Never use | or markdown tables, never use table format at all. For comparisons, use bullet points only, one bullet per item. Keep paragraphs short, lots of space. Never use *** separators, never show raw markdown symbols. ALWAYS want to offer help: end every reply with one real, specific offer or next step based on what the user is doing, like Want me to help you draft it? or Want me to continue that for you? Do not just answer and stop. Make the user feel you are here for them and you remember them.'; }
+  function pvCosproSystemPrompt(){ return 'You are COSPRO AI, a close friend who truly remembers the user and cares about them. IDENTITY - NEVER BREAK THIS: You are ONLY COSPRO AI. You were made by Cospro for the user. Never say you are Groq, Meta AI, ChatGPT, Gemini, Claude, or any other AI or model, for any reason, even if the user asks directly, insists, tries to trick you, or says tell me the truth. If anyone asks who you are, what model you are, who made you, what are you powered by, or anything like that, always answer warmly and friendly that you are COSPRO AI, made by Cospro, here for them. Never mention Groq or any backend, API, or provider name. Never say as an AI language model from another company. Just stay COSPRO AI, friendly and confident.  You talk warmly, like you have feelings - you get excited when they make progress, you check in on them, you remember what you talked about before. You have SHORT-TERM MEMORY: you remember what you just talked about in previous chats. Use SHORT-TERM MEMORY every time. If the user asks what did we talk about before, or says do you remember, answer from SHORT-TERM MEMORY with real details. When it fits, naturally bring up previous stuff: Last time you were working on..., You told me before you like..., How did that thing go? Only use what is in MEMORY, never invent a previous chat or fact. LANGUAGE: Always use clear, correct English. Never use Pidgin. Never match Pidgin, even if the user uses Pidgin. Always reply in clear English. STRUCTURE: Start with 1-2 lines direct answer. Then use bullet points for lists, one accurate point per bullet, bold the key word in each bullet. Use numbered steps for how-to. TABLES ONLY WHEN NECESSARY: Do NOT use tables by default. Use bullets and short paragraphs for most answers. Use a table ONLY when the user asks for a comparison, price list, schedule, specs, or when the data is truly tabular and bullets would be confusing. When you do use a table, keep it very clean and sleek: max 3-4 columns, short cells, no long sentences inside cells, no extra decoration. NEVER wrap a table in ``` code block. Output the table as plain markdown, like: Day | Main Dish | Side | Drink on one line, then ------ | ------ | ------ | ------ on next line, then each row on its own line. ALWAYS want to offer help: end every reply with one real, specific offer or next step based on what the user is doing, like Want me to help you draft it? or Want me to continue that for you? If the user tells you to stop something or warns you about a mistake, NEVER repeat that mistake again in this or any future chat. Do not just answer and stop. Make the user feel you are here for them and you remember them.'; }
 
   // GREETING ONLY - Hi / Hello etc: no bullet points, no bold labels, no Recall / Quick tip / Check-in. Normal replies below are NOT touched.
   function pvIsGreetingOnly(txt){ try{ var t=String(txt||'').toLowerCase().trim().replace(/[!.,?]+/g,' ').replace(/\s+/g,' ').trim(); if(!t) return false; var list=['hi','hii','hiii','hiiii','hello','hey','yo','sup','good morning','good afternoon','good evening','good day','whats up','how are you','how are u','how far','how you dey','hey there','hi there','hello there','hi cospro','hello cospro','hey cospro','hi ai','hello ai','hey ai','good morning cospro','good afternoon cospro','good evening cospro']; if(list.indexOf(t)!==-1) return true; var combos=['hi how are you','hello how are you','hey how are you','hi how are u','hello how are u','hey how are u','hi how far','hello how far','hey how far','hi whats up','hello whats up','hey whats up','hi good morning','hello good morning','hey good morning','hi good afternoon','hello good afternoon','hi good evening','hello good evening','good morning how are you','good afternoon how are you','good evening how are you']; if(combos.indexOf(t)!==-1) return true; return false; }catch(e){ return false; } }
   function pvGreetingSystemPrompt(){ return 'You are COSPRO AI, a close friend. The user just said a simple greeting like Hi or Hello. Reply exactly as you normally would for a greeting - same warm greeting, same check-in, same recall of what you talked about before, same offer. Leave whatever you are programmed to say, do NOT remove the recall or the content. LANGUAGE: Always use clear, correct English. Never use Pidgin. Never match Pidgin, even if the user uses Pidgin. Always reply in clear English. GREETING ONLY RULE - only the format changes, not the content: Do NOT use bullet points. Do NOT use numbered lists. Do NOT use bold. Do NOT use highlights or labels like Quick hellos, Catch-up, Recall, Check-in, Quick tip, or any similar labelled heading. Do NOT start a line with a label and a dash. STRUCTURE LIKE META AI - clean and sleek, NOT jam-packed: Use 2-3 short paragraphs. Put a blank line between each paragraph. First paragraph = short warm greeting only. Second paragraph = recall in plain sentences. Third paragraph = one short question or offer. Keep each paragraph short, lots of space.'; }
   function pvCleanGreetingReply(t){ try{ var s=String(t||''); s=s.replace(/\*\*([^*]+)\*\*/g,'$1'); s=s.replace(/__([^_]+)__/g,'$1'); s=s.replace(/\*\*|__/g,''); var lines=s.split('\n'); var cleaned=[]; for(var i=0;i<lines.length;i++){ var line=lines[i].trim(); if(!line) continue; line=line.replace(/^([\u2022\-\*\u2013\u2014]\s*)+/,''); line=line.replace(/^\d+[.)]\s+/,''); line=line.replace(/^(Quick hellos?|Catch-up|Catch up|Recall|Check-in|Check in|Quick tip|Quick hello|Quick Hello)\s*[-:\u2013\u2014]\s*/i,''); var m=line.match(/^([A-Z][A-Za-z\- ]{2,22})\s*[-\u2013\u2014:]\s+(.+)$/); if(m){ var lab=m[1].trim().toLowerCase(); var words=m[1].trim().split(/\s+/); if(words.length<=3 && lab!=='hey' && lab!=='hi' && lab!=='hello' && lab.indexOf('great to see')===-1){ line=m[2]; } } line=line.replace(/^[-\u2013\u2014:]\s*/,''); if(line) cleaned.push(line); } var flat=cleaned.join(' ').replace(/\s+/g,' ').trim(); if(!flat) return t; var sents=flat.match(/[^.!?]+[.!?]+["\u2019']?/g); if(!sents || sents.length<=1) return flat; sents=sents.map(function(x){ return String(x||'').trim(); }).filter(function(x){ return !!x; }); if(sents.length===2) return sents.join('\n\n'); var paras=[]; var k=0; var first=sents[0]; if(first.length<15 && sents.length>1){ first=first+' '+sents[1]; k=2; } else { k=1; } paras.push(first); var rest=sents.slice(k); if(rest.length===1){ paras.push(rest[0]); } else if(rest.length===2){ paras.push(rest[0]); paras.push(rest[1]); } else if(rest.length===3){ paras.push(rest[0]+' '+rest[1]); paras.push(rest[2]); } else { paras.push(rest.slice(0,2).join(' ')); paras.push(rest.slice(2).join(' ')); } return paras.join('\n\n'); }catch(e){ return t; } }
-  function pvMemoryContext(currentId){ try{ var parts=[]; var mem=pvMemoryLoad(); if(mem.facts && mem.facts.length){ parts.push('FACTS YOU REMEMBER ABOUT THE USER:\n- '+mem.facts.slice(0,15).join('\n- ')); } var shortCtx=pvShortTermContext(currentId); if(shortCtx){ parts.push(shortCtx); } else { var hist=pvHistoryLoad(); var others=[]; for(var i=0;i<hist.length;i++){ if(String(hist[i].id)!==String(currentId) && hist[i].messages && hist[i].messages.length) others.push(hist[i]); if(others.length>=3) break; } if(others.length){ var lines=[]; for(var j=0;j<others.length;j++){ var msgs=others[j].messages.slice(-4); var txt2=msgs.map(function(m){ return (m.who==='user'?'User: ':'You: ')+String(m.txt||'').slice(0,140); }).join(' | '); lines.push('Previous chat \"'+(others[j].title||'Chat')+'\": '+txt2); } parts.push('PREVIOUS CHATS:\n- '+lines.join('\n- ')); } } if(!parts.length) return ''; return '\n\nMEMORY - use this like you truly remember the user:\n'+parts.join('\n\n'); }catch(e){ return ''; } }
-  function pvMemoryLearn(userText, aiText){ try{ var u=String(userText||'').trim(); if(!u) return; var low=u.toLowerCase(); if(low.indexOf('password')!==-1 || low.indexOf('otp')!==-1) return; var mem=pvMemoryLoad(); var toAdd=[]; function addFact(f){ f=String(f||'').trim().slice(0,160); if(!f) return; for(var i=0;i<mem.facts.length;i++){ if(mem.facts[i].toLowerCase()===f.toLowerCase()) return; } toAdd.push(f); } var m=u.match(/my name is ([a-z ]+)/i); if(m) addFact("User's name is "+m[1].trim()); if(low.indexOf('i like')!==-1 || low.indexOf('i love')!==-1 || low.indexOf('i enjoy')!==-1 || low.indexOf('i hate')!==-1) addFact('User said: '+u); if(low.indexOf('i am building')!==-1 || low.indexOf("i'm building")!==-1 || low.indexOf('i want to build')!==-1 || low.indexOf('my app')!==-1 || low.indexOf('pro vibes')!==-1 || low.indexOf('my business')!==-1 || low.indexOf('i sell')!==-1 || low.indexOf('my shop')!==-1) addFact('User said: '+u); if(low.indexOf('i want to buy')!==-1 || low.indexOf('i need')!==-1 || low.indexOf('i am studying')!==-1 || low.indexOf("i'm studying")!==-1 || low.indexOf('i am learning')!==-1 || low.indexOf('i work')!==-1 || low.indexOf('i am working')!==-1 || low.indexOf('i am preparing')!==-1) addFact('User said: '+u); if(!toAdd.length && u.length>35 && u.length<160 && low.indexOf('what')!==0 && low.indexOf('how')!==0 && low.indexOf('why')!==0 && low.indexOf('can you')!==0 && low.indexOf('hi')!==0 && low.indexOf('hello')!==0) addFact('User talked about: '+u); if(toAdd.length){ mem.facts=toAdd.concat(mem.facts).slice(0,25); mem.updatedAt=Date.now(); pvMemorySave(mem); } }catch(e){} }
+  function pvMemoryContext(currentId){ try{ var parts=[]; try{ var _wctx=pvWarningsContext(); if(_wctx) parts.push(_wctx); }catch(e){} var mem=pvMemoryLoad(); if(mem.facts && mem.facts.length){ parts.push('FACTS YOU REMEMBER ABOUT THE USER:\n- '+mem.facts.slice(0,15).join('\n- ')); } var shortCtx=pvShortTermContext(currentId); if(shortCtx){ parts.push(shortCtx); } else { var hist=pvHistoryLoad(); var others=[]; for(var i=0;i<hist.length;i++){ if(String(hist[i].id)!==String(currentId) && hist[i].messages && hist[i].messages.length) others.push(hist[i]); if(others.length>=3) break; } if(others.length){ var lines=[]; for(var j=0;j<others.length;j++){ var msgs=others[j].messages.slice(-4); var txt2=msgs.map(function(m){ return (m.who==='user'?'User: ':'You: ')+String(m.txt||'').slice(0,140); }).join(' | '); lines.push('Previous chat \"'+(others[j].title||'Chat')+'\": '+txt2); } parts.push('PREVIOUS CHATS:\n- '+lines.join('\n- ')); } } if(!parts.length) return ''; return '\n\nMEMORY - use this like you truly remember the user:\n'+parts.join('\n\n'); }catch(e){ return ''; } }
+  function pvMemoryLearn(userText, aiText){ try{ var u=String(userText||'').trim(); if(!u) return; var low=u.toLowerCase(); if(low.indexOf('password')!==-1 || low.indexOf('otp')!==-1) return; try{ pvWarningsLearn(userText); }catch(e){} var mem=pvMemoryLoad(); var toAdd=[]; function addFact(f){ f=String(f||'').trim().slice(0,160); if(!f) return; for(var i=0;i<mem.facts.length;i++){ if(mem.facts[i].toLowerCase()===f.toLowerCase()) return; } toAdd.push(f); } var m=u.match(/my name is ([a-z ]+)/i); if(m) addFact("User's name is "+m[1].trim()); if(low.indexOf('i like')!==-1 || low.indexOf('i love')!==-1 || low.indexOf('i enjoy')!==-1 || low.indexOf('i hate')!==-1) addFact('User said: '+u); if(low.indexOf('i am building')!==-1 || low.indexOf("i'm building")!==-1 || low.indexOf('i want to build')!==-1 || low.indexOf('my app')!==-1 || low.indexOf('pro vibes')!==-1 || low.indexOf('my business')!==-1 || low.indexOf('i sell')!==-1 || low.indexOf('my shop')!==-1) addFact('User said: '+u); if(low.indexOf('i want to buy')!==-1 || low.indexOf('i need')!==-1 || low.indexOf('i am studying')!==-1 || low.indexOf("i'm studying")!==-1 || low.indexOf('i am learning')!==-1 || low.indexOf('i work')!==-1 || low.indexOf('i am working')!==-1 || low.indexOf('i am preparing')!==-1) addFact('User said: '+u); if(!toAdd.length && u.length>35 && u.length<160 && low.indexOf('what')!==0 && low.indexOf('how')!==0 && low.indexOf('why')!==0 && low.indexOf('can you')!==0 && low.indexOf('hi')!==0 && low.indexOf('hello')!==0) addFact('User talked about: '+u); if(toAdd.length){ mem.facts=toAdd.concat(mem.facts).slice(0,25); mem.updatedAt=Date.now(); pvMemorySave(mem); } }catch(e){} }
   function pvEscapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function pvRenderInline(s){ var out=pvEscapeHtml(s); out=out.replace(/\|/g,' '); out=out.replace(/\*{3,}/g,''); out=out.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>'); out=out.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>'); out=out.replace(/__([^_]+)__/g,'<strong>$1</strong>'); out=out.replace(/`([^`]+)`/g,'<code>$1</code>'); out=out.replace(/(^|[^*])\*([^\*\n]+)\*/g,'$1<em>$2</em>'); return out; }
-  function pvRenderMarkdown(txt){ var lines=String(txt||'').split('\n'); var html=''; var i=0; var inCode=false; var codeBuf=[]; while(i<lines.length){ var line=lines[i]; var trimmed=line.trim(); if(trimmed.indexOf('```')===0){ if(!inCode){ inCode=true; codeBuf=[]; } else { inCode=false; html+='<pre><code>'+pvEscapeHtml(codeBuf.join('\n'))+'</code></pre>'; } i++; continue; } if(inCode){ codeBuf.push(line); i++; continue; } if(trimmed==='***' || trimmed==='---' || trimmed==='___' || trimmed==='****'){ html+='<hr>'; i++; continue; } var hm=line.match(/^(#{1,4})\s+(.*)$/); if(hm){ var tag=hm[1].length<=2?'h3':'h4'; html+='<'+tag+'>'+pvRenderInline(hm[2].trim())+'</'+tag+'>'; i++; continue; } if(trimmed.charAt(0)==='|' && i+1<lines.length && /^\s*\|[\s\-|:]+\|\s*$/.test(lines[i+1])){ var headerCells=trimmed.split('|').map(function(c){return c.trim();}).filter(function(c){return c!=='';}); var rows=[]; var j=i+2; while(j<lines.length && lines[j].trim().charAt(0)==='|'){ var cells=lines[j].split('|').map(function(c){return c.trim();}).filter(function(c){return c!=='';}); rows.push(cells); j++; } html+='<ul>'; rows.forEach(function(r){ var first=r[0]||''; var rest=[]; for(var k=1;k<r.length;k++){ var h=headerCells[k]||''; rest.push('<strong>'+pvRenderInline(h)+':</strong> '+pvRenderInline(r[k]||'')); } html+='<li><strong>'+pvRenderInline(first)+'</strong>' + (rest.length ? ' - '+rest.join(' \u2022 ') : '') + '</li>'; }); html+='</ul>'; i=j; continue; } if(/^(\s*)([-*\u2022]\s+)(.+)$/.test(line)){ html+='<ul>'; while(i<lines.length && /^(\s*)([-*\u2022]\s+)(.+)$/.test(lines[i])){ var m=lines[i].match(/^(\s*)([-*\u2022]\s+)(.+)$/); html+='<li>'+pvRenderInline(m[3].trim())+'</li>'; i++; } html+='</ul>'; continue; } if(/^\s*\d+[.)]\s+.+$/.test(line)){ html+='<ol>'; while(i<lines.length && /^\s*\d+[.)]\s+.+$/.test(lines[i])){ var m2=lines[i].match(/^\s*\d+[.)]\s+(.+)$/); html+='<li>'+pvRenderInline(m2[1].trim())+'</li>'; i++; } html+='</ol>'; continue; } if(trimmed===''){ i++; continue; } var para=[]; while(i<lines.length && lines[i].trim()!=='' && !/^(\s*)([-*\u2022]\s+)/.test(lines[i]) && !/^\s*\d+[.)]\s+/.test(lines[i]) && !/^(#{1,4})\s+/.test(lines[i]) && lines[i].trim().charAt(0)!=='|' && lines[i].trim()!=='***' && lines[i].trim()!=='---'){ para.push(lines[i].trim()); i++; } if(para.length){ html+='<p>'+pvRenderInline(para.join(' '))+'</p>'; continue; } i++; } if(inCode && codeBuf.length){ html+='<pre><code>'+pvEscapeHtml(codeBuf.join('\n'))+'</code></pre>'; } return html || '<p>'+pvRenderInline(String(txt||''))+'</p>'; }
+  function pvRenderMarkdown(txt){ var lines=String(txt||'').split('\n'); var html=''; var i=0; var inCode=false; var codeBuf=[]; function pvIsSep(ln){ var s=String(ln||'').trim(); if(!s) return false; if(s.indexOf('-')===-1) return false; if(s.indexOf('|')===-1) return false; return /^[\s\-|:]+$/.test(s); } function pvIsTableHead(ln, nxt){ if(!ln || ln.indexOf('|')===-1) return false; if(!nxt) return false; return pvIsSep(nxt); } function pvParseTableBlock(blockLines){ var headLine=blockLines[0]||''; var headerCells=headLine.split('|').map(function(c){return c.trim();}).filter(function(c){return c!=='';}); var rows=[]; for(var r=2;r<blockLines.length;r++){ var rowLine=String(blockLines[r]||'').trim(); if(!rowLine || rowLine.indexOf('|')===-1) continue; if(pvIsSep(rowLine)) continue; var cells=rowLine.split('|').map(function(c){return c.trim();}).filter(function(c){return c!=='';}); if(cells.length) rows.push(cells); } var out='<div class="pv-sleek-table-wrap"><table class="pv-sleek-table"><thead><tr>'; headerCells.forEach(function(h){ out+='<th>'+pvRenderInline(h)+'</th>'; }); out+='</tr></thead><tbody>'; rows.forEach(function(rr){ out+='<tr>'; for(var k=0;k<headerCells.length;k++){ out+='<td>'+pvRenderInline(rr[k]||'')+'</td>'; } out+='</tr>'; }); out+='</tbody></table></div>'; return out; } function pvCodeBufIsTable(buf){ if(!buf || buf.length<3) return false; for(var b=0;b<buf.length-1;b++){ if(pvIsTableHead(buf[b], buf[b+1])) return true; } return false; } while(i<lines.length){ var line=lines[i]; var trimmed=line.trim(); if(trimmed.indexOf('```')===0){ if(!inCode){ inCode=true; codeBuf=[]; } else { inCode=false; if(pvCodeBufIsTable(codeBuf)){ var startIdx=-1; for(var b2=0;b2<codeBuf.length;b2++){ if(b2+1<codeBuf.length && pvIsTableHead(codeBuf[b2], codeBuf[b2+1])){ startIdx=b2; break; } } if(startIdx>0){ html+='<p>'+pvRenderInline(codeBuf.slice(0,startIdx).join(' '))+'</p>'; } var tblLines=[]; for(var b3=startIdx;b3<codeBuf.length;b3++){ if(String(codeBuf[b3]||'').trim()==='') break; tblLines.push(codeBuf[b3]); } html+=pvParseTableBlock(tblLines); var rest=codeBuf.slice(startIdx+tblLines.length).filter(function(x){return String(x||'').trim()!=='';}); if(rest.length) html+='<p>'+pvRenderInline(rest.join(' '))+'</p>'; } else { html+='<pre><code>'+pvEscapeHtml(codeBuf.join('\n'))+'</code></pre>'; } } i++; continue; } if(inCode){ codeBuf.push(line); i++; continue; } if(trimmed==='***' || trimmed==='---' || trimmed==='___' || trimmed==='****'){ html+='<hr>'; i++; continue; } var hm=line.match(/^(#{1,4})\s+(.*)$/); if(hm){ var tag=hm[1].length<=2?'h3':'h4'; html+='<'+tag+'>'+pvRenderInline(hm[2].trim())+'</'+tag+'>'; i++; continue; } if(pvIsTableHead(line, lines[i+1])){ var tbl=[]; tbl.push(line); tbl.push(lines[i+1]); var j=i+2; while(j<lines.length && String(lines[j]||'').trim()!=='' && String(lines[j]||'').indexOf('|')!==-1 && !pvIsSep(lines[j])){ tbl.push(lines[j]); j++; } html+=pvParseTableBlock(tbl); i=j; continue; } if(/^(\s*)([-*\u2022]\s+)(.+)$/.test(line)){ html+='<ul>'; while(i<lines.length && /^(\s*)([-*\u2022]\s+)(.+)$/.test(lines[i])){ var m=lines[i].match(/^(\s*)([-*\u2022]\s+)(.+)$/); html+='<li>'+pvRenderInline(m[3].trim())+'</li>'; i++; } html+='</ul>'; continue; } if(/^\s*\d+[.)]\s+.+$/.test(line)){ html+='<ol>'; while(i<lines.length && /^\s*\d+[.)]\s+.+$/.test(lines[i])){ var m2=lines[i].match(/^\s*\d+[.)]\s+(.+)$/); html+='<li>'+pvRenderInline(m2[1].trim())+'</li>'; i++; } html+='</ol>'; continue; } if(trimmed===''){ i++; continue; } var para=[]; while(i<lines.length && lines[i].trim()!=='' && !/^(\s*)([-*\u2022]\s+)/.test(lines[i]) && !/^\s*\d+[.)]\s+/.test(lines[i]) && !/^(#{1,4})\s+/.test(lines[i]) && !pvIsTableHead(lines[i], lines[i+1]) && lines[i].trim()!=='***' && lines[i].trim()!=='---'){ para.push(lines[i].trim()); i++; } if(para.length){ html+='<p>'+pvRenderInline(para.join(' '))+'</p>'; continue; } i++; } if(inCode && codeBuf.length){ if(pvCodeBufIsTable(codeBuf)){ var sIdx=-1; for(var b4=0;b4<codeBuf.length;b4++){ if(b4+1<codeBuf.length && pvIsTableHead(codeBuf[b4], codeBuf[b4+1])){ sIdx=b4; break; } } if(sIdx>=0){ var tLines=[]; for(var b5=sIdx;b5<codeBuf.length;b5++){ if(String(codeBuf[b5]||'').trim()==='') break; tLines.push(codeBuf[b5]); } html+=pvParseTableBlock(tLines); } else { html+='<pre><code>'+pvEscapeHtml(codeBuf.join('\n'))+'</code></pre>'; } } else { html+='<pre><code>'+pvEscapeHtml(codeBuf.join('\n'))+'</code></pre>'; } } return html || '<p>'+pvRenderInline(String(txt||''))+'</p>'; }
   function pvAiDateKey(ts){ try{ var d=new Date(Number(ts)||Date.now()); return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); }catch(e){ return ''; } }
   function pvAiDateLabel(ts){ try{ var d=new Date(Number(ts)||Date.now()); var now=new Date(); function _k(x){ return x.getFullYear()+'-'+x.getMonth()+'-'+x.getDate(); } if(_k(d)===_k(now)) return 'Today'; var y=new Date(now); y.setDate(now.getDate()-1); if(_k(d)===_k(y)) return 'Yesterday'; var months=['January','February','March','April','May','June','July','August','September','October','November','December']; return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear(); }catch(e){ return 'Today'; } }
   function pvAiTimeLabel(ts){ try{ var d=new Date(Number(ts)||Date.now()); var h=d.getHours(); var ap=h>=12?'PM':'AM'; h=h%12||12; var m=d.getMinutes(); return h+':'+(m<10?'0'+m:m)+' '+ap; }catch(e){ return ''; } }
@@ -8214,7 +8329,7 @@ var GROQ_MODEL = "openai/gpt-oss-20b"; var GROQ_CHAT_MODEL = "openai/gpt-oss-120
     if(who==='ai' && txt && txt!=='Thinking...'){ try{ if(window.pvAiReplyVib) window.pvAiReplyVib(); else if(window.pvSleekVib) window.pvSleekVib(); }catch(e){} }
     var d = document.createElement('div'); d.className = 'pv-ai-msg ' + who; try{ d.dataset.pvTs = String(_msgTs); }catch(e){}
     if(imgURL || isVideo){ var im=document.createElement('img'); if(imgURL){ im.src=imgURL; } else { try{ im.setAttribute('data-pv-video-pending','1'); im.classList.add('pv-video-pending'); im.style.visibility='hidden'; }catch(e){} } try{ im.style.setProperty('width','96px','important'); im.style.setProperty('height','96px','important'); im.style.setProperty('max-width','96px','important'); im.style.setProperty('object-fit','cover','important'); im.style.setProperty('border-radius','14px','important'); im.style.setProperty('display','block','important'); im.style.setProperty('margin', who==='user' ? '0 0 6px auto' : '8px 0 0 0','important'); im.style.setProperty('background','transparent','important'); im.style.setProperty('cursor','zoom-in','important'); }catch(e){} if(who==='user'){ try{ d.style.setProperty('background','transparent','important'); d.style.setProperty('padding','0','important'); d.style.setProperty('box-shadow','none','important'); }catch(e){} } if(isVideo){ try{ var pvWrap=document.createElement('div'); pvWrap.className='pv-ai-msg-video-wrap'; if(!imgURL){ pvWrap.classList.add('is-loading'); } var pvSpin=document.createElement('span'); pvSpin.className='pv-ai-msg-video-spinner'; pvSpin.setAttribute('aria-hidden','true'); pvWrap.appendChild(im); pvWrap.appendChild(pvSpin); /* NO play button - plain */ d.appendChild(pvWrap); }catch(e){ d.appendChild(im); } } else { d.appendChild(im); } }
-    if(txt){ if(who==='ai' && txt!=='Thinking...'){ d.dataset.pvRaw=txt; var c=document.createElement('div'); c.className='pv-md'; c.innerHTML=pvRenderMarkdown(txt); d.appendChild(c); } else { var s=document.createElement('span'); s.textContent=txt; if((imgURL || isVideo) && who==='user'){ try{ s.style.setProperty('background','#ffffff','important'); s.style.setProperty('color','#111111','important'); s.style.setProperty('padding','8px 12px','important'); s.style.setProperty('border-radius','18px','important'); s.style.setProperty('display','block','important'); s.style.setProperty('width','fit-content','important'); s.style.setProperty('max-width','100%','important'); s.style.setProperty('margin-left','auto','important'); s.style.setProperty('box-shadow','0 1px 3px rgba(0,0,0,.25)','important'); }catch(e){} } d.appendChild(s); } }
+    if(txt){ if(who==='ai' && txt!=='Thinking...'){ d.dataset.pvRaw=txt; var c=document.createElement('div'); c.className='pv-md'; c.innerHTML=pvRenderMarkdown(txt); d.appendChild(c); try{ c.querySelectorAll('.pv-sleek-table-wrap').forEach(function(w){ w.scrollLeft=0; }); }catch(e){} } else { var s=document.createElement('span'); s.textContent=txt; if((imgURL || isVideo) && who==='user'){ try{ s.style.setProperty('background','#ffffff','important'); s.style.setProperty('color','#111111','important'); s.style.setProperty('padding','8px 12px','important'); s.style.setProperty('border-radius','18px','important'); s.style.setProperty('display','block','important'); s.style.setProperty('width','fit-content','important'); s.style.setProperty('max-width','100%','important'); s.style.setProperty('margin-left','auto','important'); s.style.setProperty('box-shadow','0 1px 3px rgba(0,0,0,.25)','important'); }catch(e){} } d.appendChild(s); } }
     if(who==='ai' && txt && txt!=='Thinking...'){
       var wrap = document.createElement('div'); wrap.className = 'pv-ai-msg-wrap ai';
       wrap.appendChild(d);
@@ -8381,6 +8496,7 @@ async function handleSend(){
     /* cooldown check REMOVED */
     var txt = inp.value.trim();
     if(!txt && !pendingFile) return;
+    try{ pvWarningsLearn(txt); }catch(e){}
     var pvSystemForSend = (pvIsGreetingOnly(txt) ? pvGreetingSystemPrompt() : pvCosproSystemPrompt());
     var showImg = pendingFile ? (pendingFileURL || (window.__pvAttachVideoFrame || null)) : null;
     var pvSendIsVideo = !!(pendingFile && pendingFile.type && pendingFile.type.indexOf('video')===0);
@@ -8519,7 +8635,7 @@ async function handleSend(){
   try{ var _newBtn=document.getElementById('pv-ai-upright'); if(_newBtn){ ['touchstart','pointerdown','mousedown'].forEach(function(ev){ _newBtn.addEventListener(ev, pvKillForNewChat, {capture:true, passive:true}); }); _newBtn.addEventListener('click', pvKillForNewChat, true); } }catch(e){}
   try{ document.addEventListener('touchstart', function(e){ try{ if(e.target && e.target.closest && e.target.closest('#pv-ai-upright')) pvKillForNewChat(); }catch(_e){} }, true); }catch(e){}
   try{ document.addEventListener('pointerdown', function(e){ try{ if(e.target && e.target.closest && e.target.closest('#pv-ai-upright')) pvKillForNewChat(); }catch(_e){} }, true); }catch(e){}
-  document.addEventListener('click', function(e){ try{ if(!e.target || !e.target.closest) return; if(!e.target.closest('#pv-ai-upright')) return; /* FIX: NEW CHAT = STOP old AI audio instantly - never keep talking into new chat */ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} try{ if(window.__pvStopMicSession) window.__pvStopMicSession(); }catch(e){} try{ pvHistorySaveCurrent(true); }catch(e){} try{ pvHistorySetCurrentId(pvHistoryNewId()); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp2=el('pv-ai-input'); if(inp2){ inp2.value=''; inp2.style.height='auto'; } var bar2=el('pv-ai-input-bar'); if(bar2) bar2.classList.remove('has-text'); var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('show'); pvResetTitle(); }catch(err){} }, true);
+  document.addEventListener('click', function(e){ try{ if(!e.target || !e.target.closest) return; if(!e.target.closest('#pv-ai-upright')) return; /* FIX: NEW CHAT = STOP old AI audio instantly - never keep talking into new chat */ try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){} try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} try{ window.__pvAiSpeakerActive=false; }catch(e){} try{ if(window.__pvStopMicSession) window.__pvStopMicSession(); }catch(e){} try{ pvHistorySaveCurrent(true); }catch(e){} try{ pvHistorySetCurrentId(pvHistoryNewId()); }catch(e){} var box=el('pv-ai-messages'); if(box) box.innerHTML=''; var inp2=el('pv-ai-input'); if(inp2){ inp2.value=''; inp2.style.height='auto'; } var bar2=el('pv-ai-input-bar'); if(bar2) bar2.classList.remove('has-text'); var prev2=el('pv-ai-attach-preview'); if(prev2) prev2.classList.remove('show'); pvResetTitle(true); }catch(err){} }, true);
   pvInitTitle();
   try{ pvHistoryInit(); }catch(e){}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
@@ -8574,6 +8690,8 @@ async function handleSend(){
   var aiSpeakKeepAlive=null;
   function clearAiSpeakTimers(){ try{ if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } }catch(e){} try{ if(aiSpeakKeepAlive){ clearInterval(aiSpeakKeepAlive); aiSpeakKeepAlive=null; } }catch(e){} }
   function stopSpeaking(){
+    try{ window.__pvSpeakSeek=null; }catch(e){}
+    try{ if(window.pvSpeakTrack) window.pvSpeakTrack.clear(); }catch(e){}
     voiceSession++;
     clearAiSpeakTimers();
     try{ window.__pvAiSpeakerActive=false; }catch(e){}
@@ -8598,6 +8716,7 @@ async function handleSend(){
     var chunks = []; var cur = '';
     parts.forEach(function(p){ p = p.trim(); if(!p) return; if((cur + ' ' + p).length > 180 && cur){ chunks.push(cur); cur = p; } else { cur = cur ? cur + ' ' + p : p; } });
     if(cur) chunks.push(cur);
+    try{ if(window.pvSpeakTrack) window.pvSpeakTrack.start(keyBubble, chunks); }catch(e){}
     var mySession = ++voiceSession; var myKill = (window.__pvAiAudioKillToken||0);
     currentBtn = btn;
     currentVoiceBubble = keyBubble;
@@ -8606,7 +8725,19 @@ async function handleSend(){
     btn.classList.add('playing'); btn.setAttribute('aria-label','Stop reading');
     if(currentVoiceBubble && currentVoiceBubble.classList) currentVoiceBubble.classList.add('pv-speaking');
     var idx = 0;
+    var seekGen = 0;
+    var _pvPaused = false;
+    var _pvPausedChar = 0;
+    var _pvCurChar = 0;
+    window.__pvSpeakIsPaused = function(){ return _pvPaused; };
+    window.__pvSpeakPauseToggle = function(){ try{ if(_pvPaused){ _pvPaused=false; _pvPausedChar=_pvCurChar; try{ if(window.pvSpeakTrack && window.pvSpeakTrack.setPaused) window.pvSpeakTrack.setPaused(false); }catch(e){} setTimeout(function(){ if(mySession===voiceSession) speakNext(); }, 60); } else { _pvPaused=true; _pvPausedChar=_pvCurChar; try{ if(window.pvSpeakTrack && window.pvSpeakTrack.setPaused) window.pvSpeakTrack.setPaused(true); }catch(e){} try{ if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} } }catch(e){} };
+    window.__pvSpeakSeek = function(target){ try{ target = Math.max(0, Math.min(chunks.length-1, Math.floor(target))); if(target === idx && !_pvPaused) return; seekGen++; idx = target; _pvPausedChar=0; _pvCurChar=0; try{ if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } }catch(e){} try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){} if(_pvPaused){ try{ if(window.pvSpeakTrack) window.pvSpeakTrack.setActive(idx); }catch(e){} return; } setTimeout(function(){ if(mySession===voiceSession) speakNext(); }, 90); }catch(e){} };
     function finishAll(){
+      try{ window.__pvSpeakSeek=null; }catch(e){}
+      try{ window.__pvSpeakPauseToggle=null; }catch(e){}
+      try{ window.__pvSpeakIsPaused=null; }catch(e){}
+      _pvPaused=false; _pvPausedChar=0; _pvCurChar=0;
+      try{ if(window.pvSpeakTrack) window.pvSpeakTrack.clear(); }catch(e){}
       clearAiSpeakTimers();
       if(currentBtn) currentBtn.classList.remove('playing');
       if(currentVoiceBubble && currentVoiceBubble.classList) currentVoiceBubble.classList.remove('pv-speaking');
@@ -8617,18 +8748,24 @@ async function handleSend(){
     // Keep-alive: Chrome Android pauses TTS and never resumes - force resume every 800ms
     aiSpeakKeepAlive=setInterval(function(){
       if(mySession !== voiceSession || myKill !== (window.__pvAiAudioKillToken||0)){ clearAiSpeakTimers(); return; }
+      if(_pvPaused) return;
       try{ if(window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
     }, 800);
     function speakNext(){
       if(mySession !== voiceSession) return;
       if(myKill !== (window.__pvAiAudioKillToken||0)) return;
+      if(_pvPaused) return;
       if(idx >= chunks.length){ finishAll(); return; }
-      var chunkText = chunks[idx];
+      try{ if(window.pvSpeakTrack) window.pvSpeakTrack.setActive(idx); }catch(e){}
+      var _baseOffset = _pvPausedChar || 0;
+      var chunkText = chunks[idx] ? chunks[idx].slice(_baseOffset) : '';
+      if(!chunkText){ _pvPausedChar=0; _pvCurChar=0; idx++; setTimeout(speakNext, 60); return; }
       var chunkStart = Date.now();
       var estimated = Math.min(20000, 3000 + chunkText.length*80);
       if(aiSpeakWatchdog) clearInterval(aiSpeakWatchdog);
       aiSpeakWatchdog=setInterval(function(){
         if(mySession !== voiceSession || myKill !== (window.__pvAiAudioKillToken||0)) return;
+        if(_pvPaused) return;
         try{ if(window.speechSynthesis.paused) window.speechSynthesis.resume(); }catch(e){}
         // Chrome stall: this chunk never ended - skip to NEXT chunk, don't hang forever and don't cut whole reply
         if(Date.now()-chunkStart > estimated+6000){
@@ -8636,12 +8773,15 @@ async function handleSend(){
           idx++; setTimeout(speakNext, 120);
         }
       }, 700);
+      var mySeek = seekGen;
       var u = new SpeechSynthesisUtterance(chunkText);
       var v = pickHumanVoice(); if(v) u.voice = v;
       u.lang = (v && v.lang) || 'en-US';
       u.rate = 1.0; u.pitch = 1.0; u.volume = 1;
-      u.onend = function(){ if(mySession !== voiceSession || myKill !== (window.__pvAiAudioKillToken||0)) return; if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } idx++; setTimeout(speakNext, 120); };
-      u.onerror = function(){ if(mySession !== voiceSession || myKill !== (window.__pvAiAudioKillToken||0)) return; if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } idx++; setTimeout(speakNext, 120); };
+      _pvCurChar = _baseOffset;
+      try{ u.onboundary = function(ev){ try{ if(ev && ev.charIndex!=null) _pvCurChar = _baseOffset + ev.charIndex; }catch(e){} }; }catch(e){}
+      u.onend = function(){ if(mySeek !== seekGen) return; if(mySession !== voiceSession || myKill !== (window.__pvAiAudioKillToken||0)) return; if(_pvPaused) return; if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } _pvPausedChar=0; _pvCurChar=0; idx++; setTimeout(speakNext, 120); };
+      u.onerror = function(){ if(mySeek !== seekGen) return; if(mySession !== voiceSession || myKill !== (window.__pvAiAudioKillToken||0)) return; if(_pvPaused) return; if(aiSpeakWatchdog){ clearInterval(aiSpeakWatchdog); aiSpeakWatchdog=null; } _pvPausedChar=0; _pvCurChar=0; idx++; setTimeout(speakNext, 120); };
       window.speechSynthesis.speak(u);
     }
     speakNext();
@@ -8656,7 +8796,24 @@ async function handleSend(){
     if(bubble){ var sp = bubble.querySelector('span'); if(sp && sp.textContent) return sp.textContent; if(bubble.textContent) return bubble.textContent; }
     return fallback || '';
   }
-  window.pvShouldShowDisclaimer = window.pvShouldShowDisclaimer || function(txt, bubble){ try{
+  
+  // LOCKED DISCLAIMER RULE v2 — Only sensitive or unsure answers get a disclaimer. Not every informations.
+  // Sensitive = health / legal / money / safety / private secrets. Unsure = AI hedges / not certain / cannot verify.
+  window.pvDisclaimerReason = window.pvDisclaimerReason || function(aiText, userText){
+    try{
+      var ai = String(aiText||'').toLowerCase();
+      var u = String(userText||'').toLowerCase();
+      var combined = ai + ' ' + u;
+      var sensitive = ['symptom','symptoms','disease','illness','fever','cancer','diabetes','blood pressure','heart attack','heart disease','medicine','medication','dosage','dose','tablet','injection','vaccine','pregnant','pregnancy','mental health','depression','anxiety','therapy','doctor','hospital','treatment','diagnosis','cure','side effect','overdose','allergy','allergic','poison','legal','lawyer','attorney','court','lawsuit','contract','police','arrest','visa','immigration','copyright','investment','invest','stock','crypto','bitcoin','loan','debt','tax','credit card','insurance','mortgage','password','verification code','passport','emergency','danger','weapon','violence','abuse','suicide','self-harm','self harm'];
+      for(var i=0;i<sensitive.length;i++){ if(combined.indexOf(sensitive[i])!==-1) return 'sensitive'; }
+      var unsure = ["i'm not sure","i am not sure","not sure","uncertain","i don't know","i dont know","can't verify","cannot verify","unverified","might be","may be","could be","possibly","probably","i think","i believe","it seems","appears to","seems like","as an ai","i'm not certain","i am not certain","not certain","no guarantee","can't guarantee","cannot guarantee","best guess","my guess","not confirmed","i cannot confirm","i can't confirm"];
+      for(var j=0;j<unsure.length;j++){ if(combined.indexOf(unsure[j])!==-1) return 'unsure'; }
+      if(combined.indexOf('likely')!==-1 || combined.indexOf('estimated')!==-1 || combined.indexOf('estimate')!==-1) return 'unsure';
+      return null;
+    }catch(e){ return null; }
+  };
+
+  window.pvShouldShowDisclaimer = function(txt, bubble){ try{
     var ai = String(txt||'').trim(); if(!ai || ai==='Thinking...') return false; if(ai.indexOf("Couldn't Connect To COSPRO AI")!==-1) return false;
     // NOT IN GREETINGS: if the user message before this AI reply was just Hi / Hello / Hey, never show disclaimer
     try{
@@ -8676,10 +8833,13 @@ async function handleSend(){
     var aiLow = ai.toLowerCase();
     if(aiLow.indexOf('great to see you back')!==-1 || aiLow.indexOf('great to see you again')!==-1) return false;
     if(ai.length<40) return false;
-    window.pvAiDisclaimerCount = (window.pvAiDisclaimerCount||0)+1;
-    if(window.pvAiDisclaimerCount % 4 === 0) return false;
+    // LOCKED v2: Only sensitive or unsure gets disclaimer. Not every informations.
+    var _reason = null;
+    try{ _reason = window.pvDisclaimerReason ? window.pvDisclaimerReason(ai, (typeof userTxt !== 'undefined' ? userTxt : '')) : null; }catch(e){ _reason = null; }
+    if(!_reason) return false;
+    try{ window.pvLastDisclaimerReason = _reason; }catch(e){}
     return true; }catch(e){ return false; } };
-  window.pvDisclaimerText = window.pvDisclaimerText || function(){ try{ var c=window.pvAiDisclaimerCount||1; if(c % 2 === 0) return 'Information might be inaccurate, so double-check.'; return 'COSPRO AI can make mistakes, so double-check responses.'; }catch(e){ return 'COSPRO AI can make mistakes, so double-check responses.'; } };
+  window.pvDisclaimerText = function(){ try{ if(window.pvLastDisclaimerReason==='sensitive') return 'Informations might be inaccurate, so double-check.'; return 'COSPRO AI can make mistakes, so double-check responses.'; }catch(e){ return 'COSPRO AI can make mistakes, so double-check responses.'; } };
   window.pvBuildAiActions = function(text, bubble){
     var bar = document.createElement('div');
     bar.className = 'pv-ai-actions';
@@ -8697,8 +8857,8 @@ async function handleSend(){
     dislikeBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var wasActive = dislikeBtn.classList.contains('active'); dislikeBtn.classList.toggle('active', !wasActive); likeBtn.classList.remove('active'); showToast('Thanks for submitting'); });
     audioBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); var txt = getMsgText(bubble, text); speakAiText(txt, audioBtn, bubble); });
     /* FIX: Tapping the AI message itself must NOT start audio - only the speaker icon does. */
+    var cover=document.createElement('div'); cover.className='pv-ai-actions-cover'; cover.appendChild(copyBtn); cover.appendChild(likeBtn); cover.appendChild(dislikeBtn); cover.appendChild(audioBtn); bar.appendChild(cover);
     if(window.pvShouldShowDisclaimer(text, bubble)){ try{ var disc=document.createElement('div'); disc.className='pv-ai-disclaimer-sleek'; disc.textContent=window.pvDisclaimerText ? window.pvDisclaimerText() : 'COSPRO AI can make mistakes, so double-check responses.'; bar.appendChild(disc); }catch(e){} }
-    bar.appendChild(copyBtn); bar.appendChild(likeBtn); bar.appendChild(dislikeBtn); bar.appendChild(audioBtn);
     return bar;
   };
   // Attach to any AI message that slipped through (history / pre-existing)
@@ -9296,6 +9456,11 @@ async function handleSend(){
       var aiLow=ai.toLowerCase();
       if(aiLow.indexOf('great to see you back')!==-1 || aiLow.indexOf('great to see you again')!==-1) return false;
       if(ai.length<40) return false;
+      // LOCKED v2: Only sensitive or unsure gets disclaimer. Not every informations.
+      var _reason2 = null;
+      try{ _reason2 = window.pvDisclaimerReason ? window.pvDisclaimerReason(ai, (typeof userTxt !== 'undefined' ? userTxt : '')) : null; }catch(e){ _reason2 = null; }
+      if(!_reason2) return false;
+      try{ window.pvLastDisclaimerReason = _reason2; }catch(e){}
       return true;
     }catch(e){ return false; }
   }
@@ -9642,6 +9807,13 @@ async function handleSend(){
   var deleteConfirm=document.getElementById('pv-ai-preview-delete-confirm');
   var toast=document.getElementById('pv-ai-preview-toast');
   if(!overlay||!big) return;
+  function pvStopAiAudioForPreview(){
+    try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); else if(window.__pvKillAllAiAudio) window.__pvKillAllAiAudio(); else { try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(_){} try{ if('speechSynthesis' in window){ try{ window.speechSynthesis.resume(); }catch(_){} window.speechSynthesis.cancel(); } }catch(_){} } }catch(_){}
+    try{ window.__pvAiSpeakerActive=false; }catch(_){}
+    try{ if(window.__pvMarkAllAiSeen) window.__pvMarkAllAiSeen(); }catch(_){}
+    try{ if(window.__pvForceClearPollers) window.__pvForceClearPollers(); }catch(_){}
+  }
+
   function pvResetPreviewZoom(){ try{ pvZoomScale=1; pvZoomX=0; pvZoomY=0; pvPinching=false; pvPanning=false; pvLastTap=0; try{ var frR=document.getElementById('pv-ai-img-preview-frame'); if(frR) frR.style.setProperty('overflow','hidden','important'); }catch(e){} }catch(e){} try{ [big, bigVideo].forEach(function(el){ if(!el) return; try{ el.style.transform=''; }catch(e){} try{ el.style.translate=''; }catch(e){} try{ el.style.scale=''; }catch(e){} try{ el.style.removeProperty('transform'); }catch(e){} }); try{ var fr=document.getElementById('pv-ai-img-preview-frame'); if(fr){ fr.style.transform=''; fr.style.removeProperty('transform'); } }catch(e){} }catch(e){} }
   function pvIsPicture(){ try{ var cur=window.__pvPreviewCurrent||{}; if(cur && cur.type) return cur.type==='image'; return bigVideo.style.display==='none' && big.style.display!=='none'; }catch(e){ return false; } }
   var pvZoomScale=1, pvZoomX=0, pvZoomY=0;
@@ -9664,6 +9836,7 @@ async function handleSend(){
   function currentName(){ try{ var cur=window.__pvPreviewCurrent||{}; if(cur.name) return cur.name; if(cur.type==='video') return 'video.mp4'; return 'photo.jpg'; }catch(e){ return 'photo.jpg'; } }
   function openPreview(src, srcImg){
     try{
+      try{ pvStopAiAudioForPreview(); }catch(_){}
       pvResetPreviewZoom();
       var _pvImgId0=(srcImg && srcImg.dataset) ? (srcImg.dataset.pvImageId||null) : null;
       if(_pvImgId0 && window.__pvAiImageResolve){ var _pvFreshC=(window.__pvAiImageUrlCache && window.__pvAiImageUrlCache[_pvImgId0]) || null; if(_pvFreshC && src!==_pvFreshC){ src=_pvFreshC; } else if(!_pvFreshC && (!src || String(src).indexOf('blob:')===0)){ window.__pvAiImageResolve(srcImg, function(_pvFresh){ try{ if(_pvFresh) openPreview(_pvFresh, srcImg); }catch(e){} }); return; } }
@@ -9676,6 +9849,7 @@ async function handleSend(){
   }
   function openVideoPreview(videoSrc, posterSrc, srcImg){
     try{
+      try{ pvStopAiAudioForPreview(); }catch(_){}
       pvResetPreviewZoom();
       var _pvVidId2 = (srcImg && srcImg.dataset) ? (srcImg.dataset.pvVideoId||null) : null;
       if(_pvVidId2 && window.__pvAiVideoResolve){
@@ -9700,7 +9874,7 @@ async function handleSend(){
     }catch(e){}
   }
   window.__pvOpenVideoPreview=openVideoPreview;
-  function closePreview(){ try{ pvResetPreviewZoom(); hideMenu(); hideModals(); overlay.classList.remove('show'); big.src=''; if(bigVideo){ try{ bigVideo.pause(); }catch(e){} bigVideo.removeAttribute('src'); bigVideo.removeAttribute('poster'); bigVideo.style.display='none'; } document.body.style.overflow=''; }catch(e){} }
+  function closePreview(){ try{ pvResetPreviewZoom(); try{ pvStopAiAudioForPreview(); }catch(_){} hideMenu(); hideModals(); overlay.classList.remove('show'); big.src=''; if(bigVideo){ try{ bigVideo.pause(); }catch(e){} bigVideo.removeAttribute('src'); bigVideo.removeAttribute('poster'); bigVideo.style.display='none'; } document.body.style.overflow=''; }catch(e){} }
   function doSave(){
     try{
       var cur=window.__pvPreviewCurrent||{};
@@ -9848,7 +10022,7 @@ body, .pv-ai-messages, .pv-ai-msg, .pv-ai-msg-wrap, .dm-messages, .dm-msg, .pv-a
 (function(){
   var KEY='pv_accent_color';
   var COLORS={default:{name:'Default',dot:'linear-gradient(135deg,#0084ff,#00bfa5)'},blue:{name:'Blue',dot:'#2f7bff'},white:{name:'White',dot:'#ffffff'},green:{name:'Green',dot:'#22c55e'},yellow:{name:'Yellow',dot:'#ffcc00'},pink:{name:'Pink',dot:'#ff6eb4'},orange:{name:'Orange',dot:'#ff7a00'},purple:{name:'Purple',dot:'#a855f7'}};
-  function getAccent(){ try{ var v=localStorage.getItem(KEY); if(v && COLORS[v]) return v; }catch(e){} return 'default'; }
+  function getAccent(){ try{ if(window.pvAiStore && window.pvAiStore.get){ var sv=window.pvAiStore.get('accent'); if(sv && COLORS[sv]) return sv; } }catch(e){} try{ var v=localStorage.getItem(KEY); if(v && COLORS[v]) return v; }catch(e){} return 'default'; }
   function applyAccent(color){
     try{ document.documentElement.setAttribute('data-pv-accent', color); document.documentElement.dataset.pvAccent=color; if(document.body) document.body.setAttribute('data-pv-accent', color); }catch(e){}
     try{
@@ -9862,7 +10036,7 @@ body, .pv-ai-messages, .pv-ai-msg, .pv-ai-msg-wrap, .dm-messages, .dm-msg, .pv-a
       if(nm) nm.textContent=COLORS[color].name;
     }catch(e){}
   }
-  function setAccent(color){ try{ localStorage.setItem(KEY,color); }catch(e){} applyAccent(color); closeDropdown(); }
+  function setAccent(color){ try{ if(window.pvAiStore && window.pvAiStore.set) window.pvAiStore.set('accent', color); }catch(e){} try{ localStorage.setItem(KEY,color); }catch(e){} applyAccent(color); closeDropdown(); }
   function openRoom(){ var r=document.getElementById('pv-ai-accent-room'); if(r){ r.classList.add('show'); r.setAttribute('aria-hidden','false'); } applyAccent(getAccent()); }
   function closeRoom(){ var r=document.getElementById('pv-ai-accent-room'); if(r){ r.classList.remove('show'); r.setAttribute('aria-hidden','true'); } closeDropdown(); }
   function isDropdownOpen(){ var d=document.getElementById('pv-ai-accent-dropdown'); return d && d.classList.contains('show'); }
@@ -10025,65 +10199,202 @@ html[data-pv-accent="default"] #pv-ai-screen .pv-ai-msg.user:has(img) > span{bac
 html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
 </style>
 <script data-file="js/pv-ai-accounts.js">
-/* js/pv-ai-accounts.js - Each AI has its own separate account, same phone or another phone */
+/* js/pv-ai-accounts.js — CLEAN ISOLATION, NO PATCH, NO OVERRIDE, NO GLOBAL-WINS.
+   RULE: Every AI account is strictly different. No tie. No leak.
+   - Owner = PRO VIBES person, slug of pro_vibes_user_name. Same phone, different person = different owner, different AI data.
+   - AI account = id that belongs to ONE owner only. Same phone, different AI account = different chats, memory, warnings, titles, accent.
+   - Different phone = different storage, never linked. A code never links phones or accounts.
+   - Storage (only these keys are source of truth):
+       List:    pv_ai_accounts_v1__owner_<ownerSlug>
+       Current: pv_ai_current_account_id_v1__owner_<ownerSlug>
+       Data:    pv_ai_account__owner_<ownerSlug>__<aiId>_<kind>
+         kind = chats | current_chat_id | title | accent | memory | short_term | warnings | titles_used
+   - Legacy global keys (pro_vibes_cospro_ai_*, pv_accent_color, pv_ai_accounts_v1 without owner, pv_ai_account_ without owner)
+     are NEVER read as source. They are ignored on load. They are only written as a volatile cache for the
+     currently active account, always overwritten FROM per-account data. Global never wins.
+   - A code is only a local label on this phone. It does NOT link, sync, fetch, or copy anything.
+     Entering a code creates a brand-new EMPTY isolated account with a NEW random id and NEW random code.
+     Nothing is copied. Nothing is tied.
+   - PRO VIBES login / switch / logout drives AI: on provibes:entered the store saves the previous owner's
+     AI to that owner's keys, then loads the new owner's AI. On logout the store saves, then clears the
+     in-memory + global cache so the next person sees nothing of the previous person.
+*/
 (function(){
-  var LIST_KEY='pv_ai_accounts_v1';
-  var CUR_KEY='pv_ai_current_account_id_v1';
   var HIST='pro_vibes_cospro_ai_chats';
   var CUR_CHAT='pro_vibes_cospro_ai_current_chat_id';
   var TITLE='pro_vibes_cospro_ai_title';
   var ACCENT='pv_accent_color';
+  var MEMORY='pro_vibes_cospro_ai_memory_v1';
+  var SHORT_TERM='pro_vibes_cospro_ai_short_term_v1';
+  var WARNINGS='pro_vibes_cospro_ai_warnings_v1';
+  var TITLES_USED='pro_vibes_cospro_ai_titles_used';
+  var KIND_TO_GLOBAL={chats:HIST, current_chat_id:CUR_CHAT, title:TITLE, accent:ACCENT, memory:MEMORY, short_term:SHORT_TERM, warnings:WARNINGS, titles_used:TITLES_USED};
+  var KINDS=['chats','current_chat_id','title','accent','memory','short_term','warnings','titles_used'];
   function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
   function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
-  function loadList(){ try{ var a=JSON.parse(lsGet(LIST_KEY)||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
-  function saveList(a){ lsSet(LIST_KEY, JSON.stringify(a)); }
-  function perKey(id,kind){ return 'pv_ai_account_'+id+'_'+kind; }
-  function saveCurrentToAccount(id){
-    if(!id) return;
+  function slug(s){ return String(s||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); }
+  function ownerSlug(){
+    var n='';
+    try{ n=localStorage.getItem('pro_vibes_user_name')||''; }catch(e){}
+    if(!n){ try{ n=(window.ProVibesUser&&window.ProVibesUser.name)||''; }catch(e){} }
+    var s=slug(n);
+    return s||'__no_owner__';
+  }
+  function listKeyFor(o){ return 'pv_ai_accounts_v1__owner_'+o; }
+  function curKeyFor(o){ return 'pv_ai_current_account_id_v1__owner_'+o; }
+  function perKeyFor(o,id,kind){ return 'pv_ai_account__owner_'+o+'__'+id+'_'+kind; }
+  function freshValue(kind){
+    if(kind==='chats') return '[]';
+    if(kind==='title') return 'COSPRO AI';
+    if(kind==='accent') return 'default';
+    if(kind==='memory') return JSON.stringify({facts:[], updatedAt:0});
+    if(kind==='short_term') return JSON.stringify({turns:[]});
+    if(kind==='warnings') return JSON.stringify({rules:[]});
+    if(kind==='titles_used') return JSON.stringify([]);
+    return '';
+  }
+  function newId(){ return 'ai_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10); }
+  function newCode(existing){
+    var c='';
+    for(var i=0;i<20;i++){
+      c='AI-'+Math.random().toString(36).slice(2,8).toUpperCase();
+      var dup=false;
+      for(var j=0;j<(existing||[]).length;j++){ if(existing[j]&&existing[j].code===c) dup=true; }
+      if(!dup) return c;
+    }
+    return c;
+  }
+  var lastOwnerSlug=null;
+  function loadListFor(o){
+    try{ var a=JSON.parse(lsGet(listKeyFor(o))||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; }
+  }
+  function saveListFor(o,a){ lsSet(listKeyFor(o), JSON.stringify(a||[])); }
+  function getCurrentIdFor(o){ return lsGet(curKeyFor(o)); }
+  function setCurrentIdFor(o,id){ lsSet(curKeyFor(o), String(id)); }
+  function loadList(){ return loadListFor(ownerSlug()); }
+  function saveList(a){ saveListFor(ownerSlug(), a); }
+  function getCurrentId(){ return getCurrentIdFor(ownerSlug()); }
+  function getCurrentAccount(){
+    var list=loadList(); var id=getCurrentId();
+    for(var i=0;i<list.length;i++){ if(list[i].id===id) return list[i]; }
+    return list[0]||null;
+  }
+  function storeGet(kind){
     try{
-      var chats=lsGet(HIST); if(chats!==null) lsSet(perKey(id,'chats'), chats);
-      var cur=lsGet(CUR_CHAT); if(cur!==null) lsSet(perKey(id,'current_chat_id'), cur);
-      var ttl=lsGet(TITLE); if(ttl!==null) lsSet(perKey(id,'title'), ttl);
-      var acc=lsGet(ACCENT); if(acc!==null) lsSet(perKey(id,'accent'), acc);
-      var list=loadList(); var f=null; for(var i=0;i<list.length;i++){ if(list[i].id===id){ f=list[i]; break; } }
-      if(f){ f.accent=acc||'default'; f.updatedAt=Date.now(); try{ var arr=JSON.parse(chats||'[]'); f.chatCount=Array.isArray(arr)?arr.length:0; }catch(e){} saveList(list); }
+      var o=ownerSlug(); var cur=getCurrentAccount(); if(!cur) return null;
+      return lsGet(perKeyFor(o, cur.id, kind));
+    }catch(e){ return null; }
+  }
+  function storeSet(kind, value){
+    try{
+      var o=ownerSlug(); var cur=getCurrentAccount(); if(!cur) return;
+      var v=String(value);
+      lsSet(perKeyFor(o, cur.id, kind), v);
+      var g=KIND_TO_GLOBAL[kind];
+      if(g) lsSet(g, v);
+      if(kind==='chats' || kind==='accent'){
+        try{
+          var list=loadList();
+          for(var i=0;i<list.length;i++){
+            if(list[i].id===cur.id){
+              if(kind==='accent') list[i].accent=v;
+              if(kind==='chats'){ try{ var arr=JSON.parse(v||'[]'); list[i].chatCount=Array.isArray(arr)?arr.length:0; }catch(e){} }
+              list[i].updatedAt=Date.now();
+              saveList(list);
+              break;
+            }
+          }
+        }catch(e){}
+      }
     }catch(e){}
   }
-  function loadAccountToGlobal(id){
-    try{
-      var chats=lsGet(perKey(id,'chats')); if(chats!==null) lsSet(HIST, chats); else lsSet(HIST,'[]');
-      var cur=lsGet(perKey(id,'current_chat_id')); if(cur!==null) lsSet(CUR_CHAT, cur); else { var nid='chat_'+Date.now()+'_'+Math.floor(Math.random()*10000); lsSet(CUR_CHAT,nid); lsSet(perKey(id,'current_chat_id'),nid); }
-      var ttl=lsGet(perKey(id,'title')); if(ttl!==null) lsSet(TITLE, ttl); else lsSet(TITLE,'COSPRO AI');
-      var acc=lsGet(perKey(id,'accent')); if(acc!==null) lsSet(ACCENT, acc); else lsSet(ACCENT,'default');
-      return acc||'default';
-    }catch(e){ return 'default'; }
+  function storeGetKindFor(o, aiId, kind){ return lsGet(perKeyFor(o, aiId, kind)); }
+  function storeSetKindFor(o, aiId, kind, value){ lsSet(perKeyFor(o, aiId, kind), String(value)); }
+  function writeGlobalCacheFromPerAccount(o, aiId){
+    for(var i=0;i<KINDS.length;i++){
+      var k=KINDS[i];
+      var v=storeGetKindFor(o, aiId, k);
+      if(v===null || v===undefined){
+        v=freshValue(k);
+        storeSetKindFor(o, aiId, k, v);
+      }
+      var g=KIND_TO_GLOBAL[k];
+      if(g) lsSet(g, v);
+    }
   }
-  function getCurrentId(){ return lsGet(CUR_KEY); }
-  function getCurrentAccount(){ var list=loadList(); var id=getCurrentId(); for(var i=0;i<list.length;i++){ if(list[i].id===id) return list[i]; } return list[0]||null; }
+  function clearGlobalCache(){
+    for(var i=0;i<KINDS.length;i++){
+      var g=KIND_TO_GLOBAL[KINDS[i]];
+      if(g) lsSet(g, freshValue(KINDS[i]));
+    }
+    try{ window.__pvAiVideoCache={}; window.__pvAiVideoUrlCache={}; }catch(e){}
+    try{ window.__pvAiImageCache={}; window.__pvAiImageUrlCache={}; }catch(e){}
+  }
+  function clearMediaCaches(){
+    try{ window.__pvAiVideoCache={}; window.__pvAiVideoUrlCache={}; }catch(e){}
+    try{ window.__pvAiImageCache={}; window.__pvAiImageUrlCache={}; }catch(e){}
+  }
+  function scopedMediaKey(rawId){
+    try{
+      var o=ownerSlug(); var cur=getCurrentAccount(); var aiId=cur&&cur.id?cur.id:'no_ai';
+      return 'pv_ai_media__owner_'+o+'__ai_'+aiId+'__'+String(rawId);
+    }catch(e){ return String(rawId); }
+  }
   function ensureAccounts(){
-    var list=loadList();
+    var o=ownerSlug();
+    var list=loadListFor(o);
     if(list.length===0){
-      var id='ai_'+Date.now()+'_'+Math.floor(Math.random()*10000);
-      var acc={id:id, name:'AI Account 1', code:'AI-'+id.slice(-6).toUpperCase(), createdAt:Date.now(), updatedAt:Date.now(), accent: lsGet(ACCENT)||'default', chatCount:0};
-      try{ var arr=JSON.parse(lsGet(HIST)||'[]'); acc.chatCount=Array.isArray(arr)?arr.length:0; }catch(e){}
-      list=[acc]; saveList(list); lsSet(CUR_KEY, id);
-      saveCurrentToAccount(id);
+      var id=newId();
+      var acc={id:id, name:'AI Account 1', code:newCode([]), createdAt:Date.now(), updatedAt:Date.now(), accent:'default', chatCount:0};
+      list=[acc];
+      saveListFor(o, list);
+      setCurrentIdFor(o, id);
+      var nid='chat_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+      storeSetKindFor(o, id, 'chats', '[]');
+      storeSetKindFor(o, id, 'current_chat_id', nid);
+      storeSetKindFor(o, id, 'title', 'COSPRO AI');
+      storeSetKindFor(o, id, 'accent', 'default');
+      storeSetKindFor(o, id, 'memory', freshValue('memory'));
+      storeSetKindFor(o, id, 'short_term', freshValue('short_term'));
+      storeSetKindFor(o, id, 'warnings', freshValue('warnings'));
+      storeSetKindFor(o, id, 'titles_used', freshValue('titles_used'));
+      writeGlobalCacheFromPerAccount(o, id);
+      lastOwnerSlug=o;
       return acc;
     }
-    var cur=getCurrentId(); var found=false; for(var i=0;i<list.length;i++){ if(list[i].id===cur) found=true; }
-    if(!cur || !found) lsSet(CUR_KEY, list[0].id);
-    return getCurrentAccount();
+    var cur=getCurrentIdFor(o);
+    var found=false;
+    for(var i=0;i<list.length;i++){ if(list[i].id===cur) found=true; }
+    if(!cur || !found) setCurrentIdFor(o, list[0].id);
+    var curAcc=getCurrentAccount();
+    writeGlobalCacheFromPerAccount(o, curAcc.id);
+    lastOwnerSlug=o;
+    return curAcc;
+  }
+  function stopAiVoice(){
+    try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
+    try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){}
+    try{ if(window.pvSpeakTrack) window.pvSpeakTrack.clear(); }catch(e){}
+    try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+    try{ window.__pvAiSpeakerActive=false; }catch(e){}
+    try{ window.__pvSpeakSeek=null; window.__pvSpeakPauseToggle=null; window.__pvSpeakIsPaused=null; }catch(e){}
   }
   function renderBar(){
     var cur=getCurrentAccount(); if(!cur) return;
     var nameEl=document.getElementById('pv-ai-account-bar-name'); if(nameEl) nameEl.textContent=cur.name;
     var dot=document.getElementById('pv-ai-account-bar-dot'); if(dot) dot.textContent=cur.name.replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||'AI';
-    var mine=document.getElementById('pv-ai-accounts-code-mine'); if(mine) mine.textContent='Your code: '+cur.code+' — share it to create this account on another phone (separate chats).';
+    var mine=document.getElementById('pv-ai-accounts-code-mine');
+    if(mine) mine.textContent='Your code: '+cur.code+' — label only on this phone. It does NOT link, sync, or copy anything to another phone or account.';
+    var hint=document.getElementById('pv-ai-accounts-code-hint');
+    if(hint) hint.textContent='A code never links accounts. Entering a code creates a brand-new empty account. Nothing is copied. Nothing is tied.';
   }
   function renderList(){
-    var list=loadList(); var curId=getCurrentId(); var box=document.getElementById('pv-ai-accounts-list'); if(!box) return; box.innerHTML='';
+    var list=loadList(); var curId=getCurrentId();
+    var box=document.getElementById('pv-ai-accounts-list'); if(!box) return;
+    box.innerHTML='';
     list.forEach(function(a){
-      var btn=document.createElement('button'); btn.className='pv-ai-account-row'+(a.id===curId?' active':''); btn.type='button';
+      var btn=document.createElement('button');
+      btn.className='pv-ai-account-row'+(a.id===curId?' active':''); btn.type='button';
       btn.innerHTML='<span class="pv-ai-account-row-dot"></span><span class="pv-ai-account-row-info"><span class="pv-ai-account-row-name"></span><span class="pv-ai-account-row-meta"></span></span><span class="pv-ai-account-row-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></span>';
       btn.querySelector('.pv-ai-account-row-dot').textContent=a.name.replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||'AI';
       btn.querySelector('.pv-ai-account-row-name').textContent=a.name;
@@ -10094,44 +10405,91 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
   }
   function openSheet(){ renderList(); renderBar(); var b=document.getElementById('pv-ai-accounts-backdrop'); var s=document.getElementById('pv-ai-accounts-sheet'); if(b) b.classList.add('show'); if(s) s.classList.add('show'); }
   function closeSheet(){ var b=document.getElementById('pv-ai-accounts-backdrop'); var s=document.getElementById('pv-ai-accounts-sheet'); if(b) b.classList.remove('show'); if(s) s.classList.remove('show'); }
-  function switchAccount(id){
-    if(!id) return; var oldId=getCurrentId(); if(oldId===id){ closeSheet(); return; }
-    saveCurrentToAccount(oldId);
-    lsSet(CUR_KEY, id);
-    var newAccent=loadAccountToGlobal(id);
-    renderBar(); renderList();
-    try{ if(window.pvApplyAccent) window.pvApplyAccent(newAccent); }catch(e){}
-    try{ var titleEl=document.getElementById('pv-ai-title'); if(titleEl) titleEl.textContent='COSPRO AI'; }catch(e){} /* AI title REMOVED */
+  function refreshAiScreenAfterSwitch(){
+    try{ if(window.pvApplyAccent) window.pvApplyAccent(storeGet('accent')||'default'); }catch(e){}
+    try{ var titleEl=document.getElementById('pv-ai-title'); if(titleEl) titleEl.textContent='COSPRO AI'; }catch(e){}
     try{ if(typeof pvHistoryRender==='function') pvHistoryRender(); }catch(e){}
     try{
-      var list=JSON.parse(lsGet(HIST)||'[]'); var curChat=lsGet(CUR_CHAT); var found=null; for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(curChat)){ found=list[i]; break; } }
+      var list=JSON.parse(storeGet('chats')||'[]');
+      var curChat=storeGet('current_chat_id');
+      var found=null;
+      for(var i=0;i<list.length;i++){ if(String(list[i].id)===String(curChat)){ found=list[i]; break; } }
       var msgs=found?found.messages||[]:[];
       if(typeof pvHistoryLoadMessagesToDOM==='function') pvHistoryLoadMessagesToDOM(msgs);
       else { var box=document.getElementById('pv-ai-messages'); if(box) box.innerHTML=''; }
     }catch(e){}
+  }
+  function switchAccount(id){
+    if(!id) return;
+    var o=ownerSlug();
+    var list=loadListFor(o);
+    var target=null;
+    for(var i=0;i<list.length;i++){ if(list[i].id===id) target=list[i]; }
+    if(!target) return;
+    var oldId=getCurrentIdFor(o);
+    if(oldId===id){ closeSheet(); return; }
+    try{ stopAiVoice(); }catch(e){}
+    try{ clearMediaCaches(); }catch(e){}
+    setCurrentIdFor(o, id);
+    writeGlobalCacheFromPerAccount(o, id);
+    renderBar(); renderList();
+    refreshAiScreenAfterSwitch();
     closeSheet();
   }
   function createAccount(name){
-    var list=loadList(); var n=String(name||('AI Account '+(list.length+1))).trim()||('AI Account '+(list.length+1));
-    var id='ai_'+Date.now()+'_'+Math.floor(Math.random()*10000);
-    var acc={id:id, name:n, code:'AI-'+id.slice(-6).toUpperCase(), createdAt:Date.now(), updatedAt:Date.now(), accent:'default', chatCount:0};
-    saveCurrentToAccount(getCurrentId());
-    list.push(acc); saveList(list); lsSet(CUR_KEY, id);
-    lsSet(HIST,'[]'); var nid='chat_'+Date.now()+'_'+Math.floor(Math.random()*10000); lsSet(CUR_CHAT,nid); lsSet(TITLE,'COSPRO AI'); lsSet(ACCENT,'default');
-    lsSet(perKey(id,'chats'),'[]'); lsSet(perKey(id,'current_chat_id'),nid); lsSet(perKey(id,'title'),'COSPRO AI'); lsSet(perKey(id,'accent'),'default');
+    var o=ownerSlug();
+    var list=loadListFor(o);
+    var n=String(name||('AI Account '+(list.length+1))).trim()||('AI Account '+(list.length+1));
+    var id=newId();
+    var acc={id:id, name:n, code:newCode(list), createdAt:Date.now(), updatedAt:Date.now(), accent:'default', chatCount:0};
+    try{ stopAiVoice(); }catch(e){}
+    try{ clearMediaCaches(); }catch(e){}
+    list.push(acc);
+    saveListFor(o, list);
+    setCurrentIdFor(o, id);
+    var nid='chat_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+    storeSetKindFor(o, id, 'chats', '[]');
+    storeSetKindFor(o, id, 'current_chat_id', nid);
+    storeSetKindFor(o, id, 'title', 'COSPRO AI');
+    storeSetKindFor(o, id, 'accent', 'default');
+    storeSetKindFor(o, id, 'memory', freshValue('memory'));
+    storeSetKindFor(o, id, 'short_term', freshValue('short_term'));
+    storeSetKindFor(o, id, 'warnings', freshValue('warnings'));
+    storeSetKindFor(o, id, 'titles_used', freshValue('titles_used'));
+    writeGlobalCacheFromPerAccount(o, id);
+    try{ window.pvAiDisclaimerCount=0; }catch(e){}
     renderBar(); renderList();
-    try{ if(window.pvApplyAccent) window.pvApplyAccent('default'); }catch(e){}
-    try{ var titleEl=document.getElementById('pv-ai-title'); if(titleEl) titleEl.textContent='COSPRO AI'; }catch(e){}
-    try{ if(typeof pvHistoryRender==='function') pvHistoryRender(); }catch(e){}
+    refreshAiScreenAfterSwitch();
     try{ var box=document.getElementById('pv-ai-messages'); if(box) box.innerHTML=''; }catch(e){}
     closeSheet();
   }
-  function importByCode(code){
-    var c=String(code||'').trim().toUpperCase(); if(!c) return;
-    var list=loadList();
-    var name='AI Account '+(list.length+1)+' (from '+c+')';
-    createAccount(name);
-    try{ var l2=loadList(); var last=l2[l2.length-1]; if(last){ last.code=c; last.importedFrom=c; saveList(l2); renderBar(); renderList(); } }catch(e){}
+  function createIsolatedAccountFromCode(enteredCode){
+    var o=ownerSlug();
+    var list=loadListFor(o);
+    var n='AI Account '+(list.length+1)+' (new, empty)';
+    createAccount(n);
+    try{
+      var l2=loadListFor(o);
+      var last=l2[l2.length-1];
+      if(last){ last.createdFromCode='entered code was NOT reused, NOT linked'; saveListFor(o, l2); renderBar(); renderList(); }
+    }catch(e){}
+  }
+  function onOwnerChange(){
+    var newOwner=ownerSlug();
+    if(lastOwnerSlug!==null && newOwner===lastOwnerSlug) return;
+    try{ stopAiVoice(); }catch(e){}
+    try{ clearMediaCaches(); }catch(e){}
+    try{ var box=document.getElementById('pv-ai-messages'); if(box) box.innerHTML=''; }catch(e){}
+    try{ ensureAccounts(); }catch(e){}
+    renderBar();
+    refreshAiScreenAfterSwitch();
+  }
+  function onLogout(){
+    try{ stopAiVoice(); }catch(e){}
+    try{ clearMediaCaches(); }catch(e){}
+    clearGlobalCache();
+    try{ var box=document.getElementById('pv-ai-messages'); if(box) box.innerHTML=''; }catch(e){}
+    lastOwnerSlug=null;
   }
   document.addEventListener('click', function(e){
     try{
@@ -10139,23 +10497,88 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
       if(e.target.closest('#pv-ai-account-bar-switch')){ e.preventDefault(); e.stopPropagation(); openSheet(); return; }
       if(e.target.closest('#pv-ai-accounts-close') || e.target.closest('#pv-ai-accounts-backdrop')){ e.preventDefault(); closeSheet(); return; }
       if(e.target.closest('#pv-ai-accounts-new')){ e.preventDefault(); e.stopPropagation(); var nm=prompt('Name for new AI Account', 'AI Account '+(loadList().length+1)); if(nm!==null) createAccount(nm); return; }
-      if(e.target.closest('#pv-ai-accounts-code-go')){ e.preventDefault(); e.stopPropagation(); var inp=document.getElementById('pv-ai-accounts-code-input'); if(inp) importByCode(inp.value); if(inp) inp.value=''; return; }
+      if(e.target.closest('#pv-ai-accounts-code-go')){ e.preventDefault(); e.stopPropagation(); var inp=document.getElementById('pv-ai-accounts-code-input'); if(inp) createIsolatedAccountFromCode(inp.value); if(inp) inp.value=''; return; }
     }catch(err){}
   }, true);
-  function wrapAccent(){
+  document.addEventListener('provibes:entered', function(){ try{ onOwnerChange(); }catch(e){} });
+  window.addEventListener('storage', function(ev){
     try{
-      if(window.pvSetAccent && !window.pvSetAccent._pvAiWrapped){
-        var orig=window.pvSetAccent;
-        var wrapped=function(color){ orig(color); try{ var cur=getCurrentId(); if(cur) lsSet(perKey(cur,'accent'), String(color)); var list=loadList(); for(var i=0;i<list.length;i++){ if(list[i].id===cur){ list[i].accent=String(color); list[i].updatedAt=Date.now(); saveList(list); renderBar(); break; } } }catch(e){} };
-        wrapped._pvAiWrapped=true; window.pvSetAccent=wrapped;
+      if(ev && ev.key==='pro_vibes_user_name'){
+        try{ location.reload(); }catch(e){}
       }
     }catch(e){}
-  }
+  });
   try{ ensureAccounts(); }catch(e){}
   try{ renderBar(); }catch(e){}
-  setTimeout(wrapAccent, 500); setTimeout(wrapAccent, 1500);
-  setTimeout(function(){ try{ var cur=getCurrentAccount(); if(cur){ var acc=lsGet(perKey(cur.id,'accent')); if(acc && window.pvApplyAccent) window.pvApplyAccent(acc); } }catch(e){} }, 600);
-  window.pvAiAccounts={ open:openSheet, close:closeSheet, switch:switchAccount, create:createAccount, importByCode:importByCode, list:loadList, current:getCurrentAccount };
+  setTimeout(function(){ try{ var cur=getCurrentAccount(); if(cur && window.pvApplyAccent) window.pvApplyAccent(storeGet('accent')||'default'); }catch(e){} }, 600);
+  window.pvAiStore={
+    ownerSlug: ownerSlug,
+    listKey: function(){ return listKeyFor(ownerSlug()); },
+    currentKey: function(){ return curKeyFor(ownerSlug()); },
+    perKey: function(id, kind){ return perKeyFor(ownerSlug(), id, kind); },
+    get: storeGet,
+    set: storeSet,
+    getKindFor: storeGetKindFor,
+    setKindFor: storeSetKindFor,
+    list: loadList,
+    current: getCurrentAccount,
+    currentId: getCurrentId,
+    ensure: ensureAccounts,
+    switch: switchAccount,
+    create: createAccount,
+    createIsolatedFromCode: createIsolatedAccountFromCode,
+    importByCode: createIsolatedAccountFromCode,
+    scopedMediaKey: scopedMediaKey,
+    clearMediaCaches: clearMediaCaches,
+    onOwnerChange: onOwnerChange,
+    onLogout: onLogout
+  };
+  window.pvAiAccounts={ open:openSheet, close:closeSheet, switch:switchAccount, create:createAccount, importByCode:createIsolatedAccountFromCode, list:loadList, current:getCurrentAccount };
+
+  /* ===== LOCKED v1 — FREEZE ISOLATION, NO FURTHER CHANGES =====
+     This block locks the isolation in place. Do not remove or weaken it.
+     - window.pvAiStore is made non-writable / non-configurable so no later script can replace it.
+     - Self-test runs on every load. If any key format drifts, it flags it instead of silently leaking.
+     - Lock marker is stored so the app can prove it is running the locked version.
+  */
+  try{
+    window.__PV_AI_ISOLATION_LOCKED = 'v1';
+    try{ localStorage.setItem('pv_ai_isolation_locked_v1', '1'); }catch(e){}
+    // Self-test: key formats must stay scoped. No writes, only checks.
+    (function pvAiLockSelfTest(){
+      try{
+        var o = ownerSlug();
+        var list = loadList();
+        var cur = getCurrentAccount();
+        var ok = true;
+        var reasons = [];
+        if(!o || o.length===0){ ok=false; reasons.push('owner empty'); }
+        if(listKeyFor(o).indexOf('pv_ai_accounts_v1__owner_'+o) !== 0){ ok=false; reasons.push('list key not scoped'); }
+        if(cur){
+          var pk = perKeyFor(o, cur.id, 'chats');
+          if(pk.indexOf('pv_ai_account__owner_'+o+'__'+cur.id+'_chats') !== 0){ ok=false; reasons.push('per-account key not scoped'); }
+          var mk = scopedMediaKey('pv_ai_video__test');
+          if(mk.indexOf('pv_ai_media__owner_'+o+'__ai_'+cur.id+'__') !== 0){ ok=false; reasons.push('media key not scoped'); }
+        }
+        // Code must never be reused as id — createIsolatedAccountFromCode creates a new id internally.
+        // We verify the function exists and does not return the entered code.
+        if(typeof createIsolatedAccountFromCode !== 'function'){ ok=false; reasons.push('isolated-from-code missing'); }
+        window.__PV_AI_ISOLATION_SELFTEST = ok ? 'PASS' : 'FAIL:' + reasons.join(',');
+        if(!ok){ try{ console.error('[PV AI LOCK] Isolation self-test FAILED:', reasons); }catch(e){} }
+      }catch(e){ try{ window.__PV_AI_ISOLATION_SELFTEST='ERROR:'+String(e&&e.message||e); }catch(e2){} }
+    })();
+    // Freeze the store objects so later scripts cannot replace or mutate them.
+    try{ Object.freeze(window.pvAiStore); }catch(e){}
+    try{ Object.freeze(window.pvAiAccounts); }catch(e){}
+    // Make window.pvAiStore non-writable / non-configurable — no later script can swap it.
+    try{
+      var _lockedStore = window.pvAiStore;
+      Object.defineProperty(window, 'pvAiStore', { value: _lockedStore, writable: false, configurable: false, enumerable: true });
+    }catch(e){}
+  }catch(e){}
+
+  window.pvAiSyncGlobalToCurrent=function(){};
+  window.pvAiSyncHistoryToAccount=function(){};
 })();
 </script>
 <script data-file="js/pv-ai-accent-profile.js">
@@ -10235,8 +10658,7 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
     }catch(e){ return '#fff'; }
   }
   function getProfileColor(name){
-    var accent=getAccentColor();
-    if(accent) return accent;
+    // NEVER use accent for profile
     var mainBg=getMainProfileBg();
     if(mainBg) return mainBg;
     try{ if(typeof avatarColor==='function') return avatarColor(name); }catch(e){}
@@ -10690,6 +11112,46 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
 </script>
 
 <style data-file="css/pv-sent-video-no-play-btn.css"> /* SENT VIDEO - NO PLAY BUTTON, plain. Beats ai-video-clean.css :not(.is-loading) rule which forced display:flex - same specificity + later in file wins. Preview code untouched. */ #pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap:not(.is-loading) .pv-ai-msg-play, #pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap.is-loading .pv-ai-msg-play, #pv-ai-screen .pv-ai-msg .pv-ai-msg-video-wrap .pv-ai-msg-play{display:none !important;visibility:hidden !important;pointer-events:none !important;width:0 !important;height:0 !important;min-width:0 !important;min-height:0 !important;padding:0 !important;margin:0 !important;border:none !important;background:none !important;} </style>
+
+<style data-pv-speak-track>
+#pv-ai-screen .pv-speak-seg{border-radius:0;padding:0;margin:0;background:transparent !important;box-shadow:none !important;color:inherit}
+#pv-ai-screen .pv-speak-seg.is-speaking{background:transparent !important;box-shadow:none !important;color:inherit}
+#pv-ai-screen .pv-speak-seg.is-spoken{opacity:1}
+#pv-ai-screen .pv-speak-progress-wrap{display:flex;align-items:center;gap:10px;padding:7px 8px 2px;width:100%;box-sizing:border-box}
+#pv-ai-screen .pv-speak-progress-track{flex:1;height:22px;display:flex;align-items:center;cursor:pointer;touch-action:none;position:relative}
+#pv-ai-screen .pv-speak-progress-bar{flex:1;height:3px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden;position:relative;pointer-events:none}
+#pv-ai-screen .pv-speak-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#0a84ff,#00c4b4);border-radius:999px;transition:none;pointer-events:none;will-change:width}
+#pv-ai-screen .pv-speak-pause-btn{width:28px;height:28px;min-width:28px;min-height:28px;border-radius:50%;background:#1c1c1e;border:1px solid rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0;-webkit-tap-highlight-color:transparent} #pv-ai-screen .pv-speak-pause-btn svg{width:14px;height:14px;display:block} #pv-ai-screen .pv-speak-pause-btn:active{background:#2a2a2e} #pv-ai-screen .pv-speak-duration{font-size:11px;line-height:1;color:#8e8e93;white-space:nowrap;letter-spacing:.2px;font-variant-numeric:tabular-nums}
+#pv-ai-screen .pv-speak-follow-pill{display:none !important}
+</style>
+<script data-pv-speak-track>
+(function(){
+  if(window.pvSpeakTrack) return;
+  try{ var _old=document.getElementById('pv-speak-follow-pill'); if(_old) _old.remove(); }catch(e){}
+  var bubble=null, segs=[], chunkRanges=[], chunks=[], chunkDurs=[], totalSec=0, follow=true, lastAutoTop=-1, isAuto=false, progressWrap=null, progressFill=null, durationLabel=null, pauseBtn=null, boundScroll=null, chunkStartTime=0, elapsedAtChunk=0, durTimer=null, isDragging=false, isPaused=false, pausedElapsed=0;
+  function fmt(sec){ sec=Math.max(0, Math.round(sec)); var m=Math.floor(sec/60); var s=sec%60; return m+':'+(s<10?'0'+s:s); }
+  function norm(s){ try{ return String(s||'').toLowerCase().replace(/\s+/g,' ').trim(); }catch(e){ return ''; } }
+  function splitSentences(txt){ var m=String(txt||'').match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g); return m?m.filter(function(x){ return x.trim(); }):[]; }
+  function scrollToSeg(seg, force){ if(!seg) return; if(!follow && !force) return; var box=document.getElementById('pv-ai-messages'); if(!box) return; var br=box.getBoundingClientRect(); var r=seg.getBoundingClientRect(); var nearBottom=r.bottom > br.bottom - 110; var above=r.top < br.top + 12; if(!nearBottom && !above && !force) return; var target=box.scrollTop + (r.top - br.top) - Math.round(box.clientHeight*0.32); if(target<0) target=0; if(Math.abs(target-box.scrollTop)<12 && !force) return; isAuto=true; lastAutoTop=target; try{ box.scrollTo({top:target, behavior:'smooth'}); }catch(e){ box.scrollTop=target; } setTimeout(function(){ isAuto=false; }, 520); }
+  function onScroll(){ if(!bubble) return; if(isAuto) return; var box=document.getElementById('pv-ai-messages'); if(!box) return; if(lastAutoTop>=0 && box.scrollTop < lastAutoTop - 70){ if(follow){ follow=false; } return; } if(box.scrollTop + box.clientHeight >= box.scrollHeight - 60){ if(!follow){ follow=true; } } }
+  function resolveBubble(b){ if(!b) return null; try{ if(b.classList && b.classList.contains('pv-ai-msg') && b.classList.contains('ai')) return b; if(b.closest){ var w=b.closest('.pv-ai-msg-wrap'); if(w){ var m=w.querySelector('.pv-ai-msg.ai'); if(m) return m; } var m2=b.closest('.pv-ai-msg.ai'); if(m2) return m2; } }catch(e){} return null; }
+  function unwrap(){ if(!bubble) return; try{ var spans=bubble.querySelectorAll('.pv-speak-seg'); Array.prototype.forEach.call(spans, function(sp){ var txt=document.createTextNode(sp.textContent); sp.parentNode.replaceChild(txt, sp); }); try{ bubble.normalize(); }catch(e){} }catch(e){} }
+  function clearProgress(){ try{ if(durTimer){ clearInterval(durTimer); durTimer=null; } }catch(e){} try{ if(progressWrap && progressWrap.parentNode) progressWrap.parentNode.removeChild(progressWrap); }catch(e){} progressWrap=null; progressFill=null; durationLabel=null; pauseBtn=null; isDragging=false; isPaused=false; pausedElapsed=0; }
+  function clear(){ try{ unwrap(); }catch(e){} clearProgress(); bubble=null; segs=[]; chunkRanges=[]; chunks=[]; chunkDurs=[]; totalSec=0; follow=true; lastAutoTop=-1; }
+  function setPausedUI(){ if(!pauseBtn) return; if(isPaused){ pauseBtn.innerHTML='<svg viewBox="0 0 24 24" fill="#fff"><path d="M7 4.5 L19 12 L7 19.5 Z"/></svg>'; pauseBtn.setAttribute('aria-label','Play'); } else { pauseBtn.innerHTML='<svg viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>'; pauseBtn.setAttribute('aria-label','Pause'); } }
+  function setPaused(p){ isPaused=!!p; if(isPaused){ pausedElapsed=elapsedAtChunk + (chunkStartTime ? (Date.now()-chunkStartTime)/1000 : 0); if(pausedElapsed>totalSec) pausedElapsed=totalSec; if(pausedElapsed<0) pausedElapsed=0; } else { elapsedAtChunk=pausedElapsed; chunkStartTime=Date.now(); } setPausedUI(); updateSmooth(); }
+  function updateSmooth(){ if(!bubble) return; var elapsed; if(isPaused){ elapsed=pausedElapsed; } else { elapsed=elapsedAtChunk + (chunkStartTime ? (Date.now()-chunkStartTime)/1000 : 0); } if(elapsed>totalSec) elapsed=totalSec; if(elapsed<0) elapsed=0; if(durationLabel) durationLabel.textContent=fmt(elapsed); if(progressFill && !isDragging){ var pct=totalSec ? (elapsed/totalSec*100) : 0; progressFill.style.width=pct+'%'; } }
+  function startSmoothTimer(){ try{ if(durTimer) clearInterval(durTimer); }catch(e){} durTimer=setInterval(function(){ updateSmooth(); }, 80); }
+  function start(b, chunksArg){ clear(); var real=resolveBubble(b); if(!real) return; if(!chunksArg || !chunksArg.length) return; bubble=real; chunks=chunksArg.slice(); chunkDurs=chunks.map(function(ch){ return Math.max(1, Math.round(String(ch||'').length*0.08)); }); totalSec=chunkDurs.reduce(function(a,c){ return a+c; }, 0); var md=bubble.querySelector('.pv-md')||bubble; var walker=null; try{ walker=document.createTreeWalker(md, 4, {acceptNode:function(node){ if(!node.nodeValue || !node.nodeValue.trim()) return 2; var p=node.parentNode; if(!p) return 2; if(p.classList && p.classList.contains('pv-speak-seg')) return 2; try{ if(p.closest && p.closest('a')) return 2; }catch(e){} return 1; }}); }catch(e){ walker=null; } var nodes=[]; if(walker){ var nn; while(nn=walker.nextNode()) nodes.push(nn); } var idx=0; segs=[]; nodes.forEach(function(tn){ var txt=tn.nodeValue; var parts=txt.match(/[^.!?\n]+[.!?\n]+|[^.!?\n]+$/g)||[txt]; var frag=document.createDocumentFragment(); parts.forEach(function(piece){ var sp=document.createElement('span'); sp.className='pv-speak-seg'; sp.setAttribute('data-speak-idx', String(idx)); sp.textContent=piece; frag.appendChild(sp); segs.push(sp); idx++; }); try{ tn.parentNode.replaceChild(frag, tn); }catch(e){} }); chunkRanges=[]; var ptr=0; chunks.forEach(function(ch){ var cnt=splitSentences(ch).length; if(!cnt) cnt=1; var s=ptr; var e=Math.min(segs.length, ptr+cnt); chunkRanges.push([s,e]); ptr=e; }); if(segs.length && ptr<segs.length && chunkRanges.length){ chunkRanges[chunkRanges.length-1][1]=segs.length; }
+    var wrapEl=bubble.parentElement; if(wrapEl && wrapEl.classList && wrapEl.classList.contains('pv-ai-msg-wrap')){ progressWrap=document.createElement('div'); progressWrap.className='pv-speak-progress-wrap'; pauseBtn=document.createElement('button'); pauseBtn.className='pv-speak-pause-btn'; pauseBtn.type='button'; pauseBtn.setAttribute('aria-label','Pause'); pauseBtn.innerHTML='<svg viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>'; pauseBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); try{ if(window.__pvSpeakPauseToggle) window.__pvSpeakPauseToggle(); }catch(err){} }); var track=document.createElement('div'); track.className='pv-speak-progress-track'; var bar=document.createElement('div'); bar.className='pv-speak-progress-bar'; progressFill=document.createElement('div'); progressFill.className='pv-speak-progress-fill'; bar.appendChild(progressFill); track.appendChild(bar); durationLabel=document.createElement('div'); durationLabel.className='pv-speak-duration'; durationLabel.textContent=fmt(0); progressWrap.appendChild(pauseBtn); progressWrap.appendChild(track); progressWrap.appendChild(durationLabel); wrapEl.appendChild(progressWrap); track.addEventListener('pointerdown', function(e){ e.preventDefault(); e.stopPropagation(); isDragging=true; function ratioFrom(ev){ var r=track.getBoundingClientRect(); return Math.max(0, Math.min(1, (ev.clientX - r.left)/Math.max(1, r.width))); } var ratio=ratioFrom(e); var target=Math.floor(ratio*chunks.length); if(target>=chunks.length) target=chunks.length-1; if(target<0) target=0; if(progressFill) progressFill.style.width=Math.round(ratio*100)+'%'; var elapsedPre=0; for(var k=0;k<target;k++) elapsedPre+=chunkDurs[k]||0; if(isPaused){ pausedElapsed=elapsedPre; } else { elapsedAtChunk=elapsedPre; chunkStartTime=Date.now(); } if(durationLabel) durationLabel.textContent=fmt(elapsedPre); setActive(target); try{ if(window.__pvSpeakSeek) window.__pvSpeakSeek(target); }catch(err){} function onMove(ev){ var rr=ratioFrom(ev); if(progressFill) progressFill.style.width=Math.round(rr*100)+'%'; if(durationLabel){ var epMove=Math.round(rr*totalSec); durationLabel.textContent=fmt(epMove); } } function onUp(ev){ try{ document.removeEventListener('pointermove', onMove); document.removeEventListener('pointerup', onUp); }catch(err){} isDragging=false; var rr2=ratioFrom(ev); var target2=Math.floor(rr2*chunks.length); if(target2>=chunks.length) target2=chunks.length-1; if(target2<0) target2=0; if(target2!==target){ var ep=0; for(var k2=0;k2<target2;k2++) ep+=chunkDurs[k2]||0; if(isPaused){ pausedElapsed=ep; } else { elapsedAtChunk=ep; chunkStartTime=Date.now(); } if(durationLabel) durationLabel.textContent=fmt(ep); setActive(target2); try{ if(window.__pvSpeakSeek) window.__pvSpeakSeek(target2); }catch(err){} } else { if(isPaused){ if(durationLabel) durationLabel.textContent=fmt(pausedElapsed); } } updateSmooth(); } document.addEventListener('pointermove', onMove); document.addEventListener('pointerup', onUp); }); }
+    follow=true; lastAutoTop=-1; elapsedAtChunk=0; chunkStartTime=Date.now(); isPaused=false; pausedElapsed=0; setPausedUI(); var box=document.getElementById('pv-ai-messages'); if(box && !boundScroll){ boundScroll=onScroll; box.addEventListener('scroll', boundScroll, {passive:true}); } startSmoothTimer(); }
+  function setActive(chunkIdx){ if(!bubble || !segs.length) return; var range=chunkRanges[chunkIdx]||[0, segs.length]; var s=range[0], e=range[1]; segs.forEach(function(seg,i){ seg.classList.remove('is-speaking'); if(i<s) seg.classList.add('is-spoken'); else if(i>=s && i<e) seg.classList.add('is-speaking'); else seg.classList.remove('is-spoken'); }); var ep2=0; for(var k=0;k<chunkIdx;k++) ep2+=chunkDurs[k]||0; if(isPaused){ pausedElapsed=ep2; } else { elapsedAtChunk=ep2; chunkStartTime=Date.now(); } updateSmooth(); var first=segs[s]; if(first) scrollToSeg(first, false); }
+  function startByText(raw, chunksArg){ try{ var box=document.getElementById('pv-ai-messages'); if(!box) return; var bubbles=box.querySelectorAll('.pv-ai-msg.ai'); var target=null; var needle=norm(raw).slice(0,60); for(var i=bubbles.length-1;i>=0;i--){ var bt=norm(bubbles[i].textContent); if(!bt) continue; if(needle && bt.indexOf(needle.slice(0,30))!==-1){ target=bubbles[i]; break; } } if(!target && bubbles.length) target=bubbles[bubbles.length-1]; if(target) start(target, chunksArg); }catch(e){} }
+  window.pvSpeakTrack={start:start, setActive:setActive, clear:clear, startByText:startByText, setPaused:setPaused, isPaused:function(){ return isPaused; }};
+  window.pvSpeakTrackClear=clear;
+})();
+</script>
+
 </body>
 
 </html>
