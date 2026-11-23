@@ -3538,8 +3538,9 @@ draw();
 }catch(e){}
 }
 function pvAutoPauseIfRecording(reason){
-try{if(isRecording&&!isStopping){ discard('delete'); }}catch(e){}
+try{if(isRecording&&!isStopping&&!isPaused){ pvPauseRecording(reason); }}catch(e){}
 }
+  // ROOT FIX: was discard('delete') - any nav tap / hide instantly deleted the recording, so bar opened then closed. Pause keeps it and shows Resume bar.
 try{
 document.addEventListener('visibilitychange', function(){if(document.hidden)pvAutoPauseIfRecording('App was hidden - recording paused');else{}});
 window.addEventListener('pagehide', function(){pvAutoPauseIfRecording('App was closed - recording paused');});
@@ -7366,6 +7367,8 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   var silenceTimer=null, pollTimer=null, pollStart=0, speakTimeout=null, retryTimer=null, watcherTimer=null;
   var pausedForExternal=false;
   var stopAfterSend=false; // AI ONLY: after a voice send, mic must STOP and not restart unless user taps again
+  // ROOT FIX for open-close loop: one recog at a time. gen ignores stale onend/onerror from a dead recog, startingRecog stops double-start, watcherLastKill throttles kill-restart.
+  var recogGen=0, recogStartAt=0, startingRecog=false, watcherLastKill=0, manualSendBound=false;
   function setMicVisual(mode){
     var b=el('pv-ai-mic'); if(!b) return;
     if(mode==='listening'){ b.classList.add('pv-mic-active'); b.classList.remove('pv-mic-speaking'); }
@@ -7376,9 +7379,10 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   function isAiTalking(){
     try{ if(speakingMic) return true; }catch(e){}
     try{ if(window.__pvAiSpeakerActive) return true; }catch(e){}
-    try{ if('speechSynthesis' in window && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) return true; }catch(e){}
+    try{ if('speechSynthesis' in window && window.speechSynthesis.speaking) return true; }catch(e){}
     return false;
   }
+  // ROOT FIX: pending removed above. On Chrome pending stays true after cancel(), so isAiTalking() was always true and mic never stayed open.
   function clearSilence(){ try{ if(silenceTimer){ clearTimeout(silenceTimer); silenceTimer=null; } }catch(e){} }
   function clearPoll(){ try{ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }catch(e){} }
   function clearSpeakTimeout(){ try{ if(speakTimeout){ clearTimeout(speakTimeout); speakTimeout=null; } }catch(e){} }
@@ -7392,6 +7396,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     }, 1600);
   }
   function stopRecog(){
+    recogGen++; startingRecog=false;
     try{ if(recog){ recog.onend=null; recog.onresult=null; recog.onerror=null; try{ recog.stop(); }catch(e){} try{ recog.abort(); }catch(e){} } }catch(e){}
     recog=null; listening=false; clearSilence();
   }
@@ -7463,8 +7468,8 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   function startOneTurn(){
     clearRetry();
     if(!micOn || speakingMic || waitingForAi) return;
+    if(startingRecog) return;
     if(isAiTalking()){
-      /* AI is talking - mic stays OFF, retry when AI stops */
       setMicVisual('speaking'); pausedForExternal=true;
       retryTimer=setTimeout(function(){ if(micOn && !speakingMic && !waitingForAi) startOneTurn(); }, 500);
       return;
@@ -7473,11 +7478,14 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!SR){ showToast('Voice not supported on this device'); stopSession(); return; }
     heardText=''; heardInterim='';
+    startingRecog=true;
     listening=true; setMicVisual('listening'); resetSilence();
+    var myGen=++recogGen; recogStartAt=Date.now();
     try{
       recog=new SR();
       recog.lang='en-US'; recog.interimResults=true; recog.continuous=false; recog.maxAlternatives=1;
       recog.onresult=function(e){
+        if(myGen!==recogGen) return;
         if(isAiTalking()){ stopRecog(); setMicVisual('speaking'); return; }
         var interim='';
         for(var i=e.resultIndex;i<e.results.length;i++){
@@ -7488,22 +7496,33 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
         heardInterim=interim; resetSilence();
       };
       recog.onerror=function(ev){
+        if(myGen!==recogGen) return;
         var err=ev&&ev.error?ev.error:'';
         if(err==='not-allowed' || err==='service-not-allowed'){ showToast('Mic permission blocked - allow mic and try again'); stopSession(); return; }
+        // ROOT FIX: no-speech / aborted are normal, let onend restart once. Restarting here AND in onend = double start = open-close flicker.
+        if(err==='no-speech' || err==='aborted' || err==='') return;
         if(micOn && listening && !waitingForAi && !speakingMic){
-          setTimeout(function(){ if(micOn && listening) { try{ recog=null; }catch(e){} listening=false; startOneTurn(); } }, 300);
+          listening=false; startingRecog=false;
+          setTimeout(function(){ if(micOn && myGen===recogGen) startOneTurn(); }, 400);
         }
       };
       recog.onend=function(){
-        recog=null; listening=false; clearSilence();
+        if(myGen!==recogGen) return;
+        recog=null; listening=false; startingRecog=false; clearSilence();
         if(!micOn || speakingMic || waitingForAi) return;
         if(isAiTalking()){ setMicVisual('speaking'); retryTimer=setTimeout(function(){ if(micOn) startOneTurn(); }, 600); return; }
         var txt2=heardText.trim();
         if(txt2){ finishTurnAndSend(); }
-        else { setTimeout(function(){ if(micOn && !speakingMic && !waitingForAi) startOneTurn(); }, 250); }
+        else {
+          // ROOT FIX: if Chrome killed recog instantly (<250ms) wait longer, otherwise tight open-close loop.
+          var lived=Date.now()-recogStartAt;
+          var delay=lived<250 ? 600 : 250;
+          setTimeout(function(){ if(micOn && !speakingMic && !waitingForAi) startOneTurn(); }, delay);
+        }
       };
       recog.start();
-    }catch(e){ listening=false; }
+      setTimeout(function(){ startingRecog=false; }, 120);
+    }catch(e){ listening=false; startingRecog=false; }
   }
   function cleanForSpeech(s){
     s=String(s||'');
@@ -7613,6 +7632,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     stopAfterSend=false;
     micOn=false; window.__pvMicSessionActive=false;
     listening=false; waitingForAi=false; speakingMic=false;
+    recogGen++; startingRecog=false;
     clearSilence(); clearPoll(); clearRetry(); stopRecog(); stopSpeakingMic();
     heardText=''; heardInterim=''; setMicVisual('off');
     try{ var inp=el('pv-ai-input'); if(inp) inp.value=''; var bar=el('pv-ai-input-bar'); if(bar) bar.classList.remove('has-text'); }catch(e){}
@@ -7620,19 +7640,15 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
   function startSession(){
     var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!SR){ showToast('Voice not supported on this device'); return; }
-    // FIX: tapping mic STOPS AI talking instantly - never blocks with "Wait for AI to finish talking"
+    // ROOT FIX: removed silent unlock utterance. It made speechSynthesis.speaking=true for a moment, watcher killed recog, onend restarted, watcher killed again = open-close loop. Tap itself is the user gesture, TTS works without unlock.
     try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
     try{ if(window.pvStopAllChatAudio) window.pvStopAllChatAudio(); }catch(e){}
-    try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+    try{ if('speechSynthesis' in window){ try{ window.speechSynthesis.resume(); }catch(e){} try{ window.speechSynthesis.cancel(); }catch(e){} } }catch(e){}
     try{ window.__pvAiSpeakerActive=false; }catch(e){}
     try{ stopSpeakingMic(); }catch(e){}
     speakingMic=false; clearSpeakTimeout();
-    try{
-      if('speechSynthesis' in window){
-        try{ window.speechSynthesis.getVoices(); }catch(e){}
-        var unlock=new SpeechSynthesisUtterance(' '); unlock.volume=0; unlock.rate=1; window.speechSynthesis.speak(unlock);
-      }
-    }catch(e){}
+    // If pvStopAllChatAudio stopped us above (it calls __pvStopMicSession), micOn is still false here, so safe to start. Clear any stale gen.
+    recogGen++; startingRecog=false;
     stopAfterSend=false;
     micOn=true; window.__pvMicSessionActive=true;
     waitingForAi=false; speakingMic=false; heardText=''; heardInterim='';
@@ -7662,10 +7678,18 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
     if(watcherTimer) return;
     watcherTimer=setInterval(function(){
       if(!micOn) return;
-      if(listening && isAiTalking()){ stopRecog(); setMicVisual('speaking'); pausedForExternal=true; }
-    }, 300);
+      if(startingRecog) return;
+      if(listening && isAiTalking()){
+        // ROOT FIX: only kill if recog lived >600ms and we did not kill in last 800ms. Prevents kill-restart-kill flicker.
+        if(Date.now()-recogStartAt < 600) return;
+        if(Date.now()-watcherLastKill < 800) return;
+        watcherLastKill=Date.now();
+        stopRecog(); setMicVisual('speaking'); pausedForExternal=true;
+      }
+    }, 500);
   }
   function watchManualSend(){
+    if(manualSendBound) return; manualSendBound=true;
     var box=el('pv-ai-messages'); if(!box || !window.MutationObserver) return;
     var obs=new MutationObserver(function(muts){
       if(!micOn) return;
@@ -10843,7 +10867,8 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
   function stopAiAll(){
     try{ if(window.__pvStopMicSession) window.__pvStopMicSession(); }catch(e){}
     try{ if(window.pvStopAiSpeech) window.pvStopAiSpeech(); }catch(e){}
-    try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+    try{ window.__pvAiAudioKillToken=(window.__pvAiAudioKillToken||0)+1; }catch(e){}
+    try{ if('speechSynthesis' in window){ try{ window.speechSynthesis.resume(); }catch(e){} window.speechSynthesis.cancel(); } }catch(e){}
     try{ window.__pvAiSpeakerActive=false; }catch(e){}
     try{
       var scr=document.getElementById('pv-ai-screen');
@@ -10873,7 +10898,7 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
   // Tab hidden / app background / page hide = stop AI mic + audio at once
   try{ document.addEventListener('visibilitychange', function(){ if(document.hidden) stopAiAll(); }); }catch(e){}
   try{ window.addEventListener('pagehide', function(){ stopAiAll(); }); }catch(e){}
-  try{ window.addEventListener('blur', function(){ stopAiAll(); }); }catch(e){}
+  // ROOT FIX: NO blur listener here on purpose. Blur fires when keyboard opens/closes, when permission prompt shows, and when you tap the mic button itself. That blur was closing mic instantly after you opened it = open-close-open-close. Only real leave (hidden, pagehide, back) stops mic.
 })();
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script>
