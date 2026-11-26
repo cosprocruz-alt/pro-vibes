@@ -1662,11 +1662,15 @@ body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
 .pv-spotlight-feed{flex:1;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;background:#000}
 .pv-spotlight-feed::-webkit-scrollbar{display:none;width:0 !important;height:0 !important}
 .pv-spotlight-item{position:relative;width:100%;height:100%;min-height:100%;scroll-snap-align:start;scroll-snap-stop:always;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
-.pv-spotlight-thumb{width:100%;height:100%;object-fit:cover;display:block;background:#111}
-.pv-spotlight-item iframe{width:100%;height:100%;border:none;display:block;background:#000;object-fit:cover;position:absolute;inset:0;z-index:1}
-.pv-spotlight-center-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:68px;border-radius:50%;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2}
+.pv-spotlight-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#111;z-index:3}
+.pv-spotlight-item iframe{width:100%;height:100%;border:none;display:block;background:#000;object-fit:cover;position:absolute;inset:0;z-index:1;pointer-events:none}
+.pv-spotlight-yt-top-cover{position:absolute;inset:0;background:#000;display:none;z-index:2;pointer-events:none}
+.pv-spotlight-item.pv-is-paused .pv-spotlight-yt-top-cover{display:block}
+.pv-spotlight-item.pv-is-paused .pv-spotlight-thumb{display:block !important}
+.pv-spotlight-tap{position:absolute;inset:0;z-index:4;background:transparent;cursor:pointer}
+.pv-spotlight-center-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:68px;border-radius:50%;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5}
 .pv-spotlight-center-play svg{width:32px;height:32px;fill:#fff}
-.pv-spotlight-overlay{position:absolute;left:0;right:0;bottom:0;padding:14px 72px 16px 12px;background:linear-gradient(to top,rgba(0,0,0,.78) 0%,rgba(0,0,0,.45) 45%,transparent 100%);z-index:3;pointer-events:none}
+.pv-spotlight-overlay{position:absolute;left:0;right:0;bottom:0;padding:14px 72px 16px 12px;background:linear-gradient(to top,rgba(0,0,0,.78) 0%,rgba(0,0,0,.45) 45%,transparent 100%);z-index:6;pointer-events:none}
 .pv-spotlight-channel{display:flex;align-items:center;gap:8px;margin-bottom:6px;pointer-events:auto}
 .pv-spotlight-avatar{width:32px;height:32px;min-width:32px;border-radius:50%;background:#222;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;overflow:hidden;flex-shrink:0}.pv-spotlight-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
 .pv-spotlight-channel-name{font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
@@ -2181,7 +2185,7 @@ const esc=s=>String(s||'').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 const hide=el=>{if(el){el.classList.add('hidden');el.setAttribute('hidden', '');}};
 const show=el=>{if(el){el.classList.remove('hidden');el.removeAttribute('hidden');}};
 const getBase=()=>(typeof FIREBASE_URL!=='undefined'?FIREBASE_URL:(typeof DATABASE_URL!=='undefined'?DATABASE_URL:''));
-const pvScreenScroll={};const pvMainTabs=['home-screen','friends-screen','inbox-screen','profile-screen'];const showScreen=id=>{try{var _sp=document.getElementById('pv-spotlight-screen');if(_sp&&_sp.classList.contains('show')){_sp.classList.remove('show');try{_sp.querySelectorAll('iframe').forEach(function(f){try{f.src='about:blank';f.remove();}catch(e){}});}catch(e){}try{_sp.querySelectorAll('.pv-spotlight-item').forEach(function(it){var th=it.querySelector('.pv-spotlight-thumb');if(th)th.style.display='block';var pl=it.querySelector('.pv-spotlight-center-play');if(pl)pl.style.display='flex';});}catch(e){}}}catch(e){}try{var _pvNav=document.querySelector('.bottom-nav');if(_pvNav){if(id==='home-screen')_pvNav.classList.remove('pv-hide-plus');else _pvNav.classList.add('pv-hide-plus');}}catch(e){}try{var cur=document.querySelector('main section:not(.hidden), main > div#profile-screen:not(.hidden)');if(cur&&cur.id&&pvMainTabs.indexOf(cur.id)!==-1){pvScreenScroll[cur.id]=cur.scrollTop||window.scrollY||0;}}catch(e){}try{if(cur&&cur.id==='dm-screen'&&id!=='dm-screen'&&window.pvStopAllChatAudio)window.pvStopAllChatAudio();}catch(e){}$$('main section, main > div#profile-screen').forEach(hide);show($(id));try{var _el=$(id);if(pvMainTabs.indexOf(id)!==-1){if(_el)_el.scrollTop=pvScreenScroll[id]||0;try{window.scrollTo(0,pvScreenScroll[id]||0);}catch(e){}}else{if(_el)_el.scrollTop=0;window.scrollTo(0,0);}}catch(e){}};
+const pvScreenScroll={};const pvMainTabs=['home-screen','friends-screen','inbox-screen','profile-screen'];const showScreen=id=>{try{if(window.PVSpotlight) window.PVSpotlight.close();}catch(e){}try{var _pvNav=document.querySelector('.bottom-nav');if(_pvNav){if(id==='home-screen')_pvNav.classList.remove('pv-hide-plus');else _pvNav.classList.add('pv-hide-plus');}}catch(e){}try{var cur=document.querySelector('main section:not(.hidden), main > div#profile-screen:not(.hidden)');if(cur&&cur.id&&pvMainTabs.indexOf(cur.id)!==-1){pvScreenScroll[cur.id]=cur.scrollTop||window.scrollY||0;}}catch(e){}try{if(cur&&cur.id==='dm-screen'&&id!=='dm-screen'&&window.pvStopAllChatAudio)window.pvStopAllChatAudio();}catch(e){}$$('main section, main > div#profile-screen').forEach(hide);show($(id));try{var _el=$(id);if(pvMainTabs.indexOf(id)!==-1){if(_el)_el.scrollTop=pvScreenScroll[id]||0;try{window.scrollTo(0,pvScreenScroll[id]||0);}catch(e){}}else{if(_el)_el.scrollTop=0;window.scrollTo(0,0);}}catch(e){}};
 const clearNav=()=>$$('.bottom-nav button').forEach(b=>b.classList.remove('active'));
 const setNav=s=>{clearNav();const b=document.querySelector('.bottom-nav button[data-screen="'+s+'"]');if(b)b.classList.add('active');};
 const hideSheet=()=>hide($('inbox-status-sheet'));
@@ -14218,100 +14222,35 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
 </script>
 
 
-<script id="pv-spotlight-script">
-/* SPOTLIGHT - LOCKED - Behaves EXACTLY like Notification panel for bottom nav */
-(function(){
-  function openSpotlight(){
-    try{ var _nav=document.querySelector('.bottom-nav'); if(_nav) _nav.classList.add('pv-hide-plus'); }catch(e){}
-    try{
-      var s=document.getElementById('pv-spotlight-screen');
-      if(!s) return;
-      s.classList.remove('hidden'); s.removeAttribute('hidden');
-      s.classList.add('show');
-    }catch(e){}
-  }
-  function closeSpotlight(){
-    try{ var s=document.getElementById('pv-spotlight-screen'); if(s){ s.classList.remove('show'); try{ s.querySelectorAll('iframe').forEach(function(f){ try{ f.src='about:blank'; f.remove(); }catch(e){} }); }catch(e){} try{ s.querySelectorAll('.pv-spotlight-item').forEach(function(it){ var th=it.querySelector('.pv-spotlight-thumb'); if(th) th.style.display='block'; var pl=it.querySelector('.pv-spotlight-center-play'); if(pl) pl.style.display='flex'; }); }catch(e){} } }catch(e){}
-    try{
-      var _nav2=document.querySelector('.bottom-nav');
-      if(_nav2){
-        var _home=document.getElementById('home-screen');
-        var _isHome=_home && !_home.classList.contains('hidden') && !_home.hasAttribute('hidden');
-        if(_isHome) _nav2.classList.remove('pv-hide-plus'); else _nav2.classList.add('pv-hide-plus');
-      }
-    }catch(e){}
-  }
-  function bind(){
-    try{
-      var btn=document.querySelector('.pv-home-reels-btn');
-      if(btn && !btn.dataset.pvSpotlightBound){
-        btn.dataset.pvSpotlightBound='1';
-        btn.style.cursor='pointer';
-        btn.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} var _p=document.getElementById('pv-spotlight-screen'); if(_p && _p.classList.contains('show')) closeSpotlight(); else openSpotlight(); });
-      }
-    }catch(e){}
-    try{
-      var back=document.getElementById('pv-spotlight-back-btn');
-      if(back && !back.dataset.pvSpotlightBound){
-        back.dataset.pvSpotlightBound='1';
-        back.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} closeSpotlight(); });
-      }
-    }catch(e){}
-  }
-  window.pvOpenSpotlight=openSpotlight;
-  window.pvCloseSpotlight=closeSpotlight;
-  try{ if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); } }catch(e){ bind(); }
-  try{ setTimeout(bind, 500); setTimeout(bind, 1500); }catch(e){}
-})();
-</script>
 
-<script id="pv-spotlight-shorts">
-/* SPOTLIGHT SHORTS - LOCKED - YouTube millions, public for everybody, quota-safe, 6h REPLACE, never break Home */
+
+<script id="pv-spotlight-clean">
+/* SPOTLIGHT - ONE MODULE, ONE OWNER - No patches, no wrappers, no overriding.
+   How it works, like Facebook / Instagram Reels:
+   - Picture first: thumbnail shows instantly, video fades in after it is ready. Never black empty.
+   - Preload next 2: while you watch one, next 2 are already loaded behind their pictures. Swipe = instant play.
+   - Never wipe: feed is only appended to, never cleared. Re-enter shows pictures instantly.
+   - Close = pause, not delete: iframes stay, so re-enter is instant.
+   - Loading banner only when there is truly no picture yet.
+   - No YouTube UI: tap layer blocks YouTube, top cover hides YouTube top title when paused, bottom caption is PRO VIBES only, share never sends a YouTube link.
+*/
 (function(){
-  try{
-    try{ if(typeof getBase==='function') window.__pvOuterGetBase = getBase; }catch(e){}
-    var SIX_HOURS = 6*60*60*1000;
-    var CACHE_KEY = 'pv_spotlight_cache_v1';
-    var LIKES_KEY = 'pv_spotlight_likes_v1';
-    var COMMENTS_KEY = 'pv_spotlight_comments_v1';
-    var CATS = [
-      {id:'10', name:'Music'},
-      {id:'23', name:'Comedy'},
-      {id:'17', name:'Sports'},
-      {id:'24', name:'Entertainment'},
-      {id:'22', name:'People'},
-      {id:'27', name:'Education'},
-      {id:'26', name:'How to'},
-      {id:'20', name:'Gaming'},
-      {id:'25', name:'News'},
-      {id:'28', name:'Tech'}
-    ];
-    function pvSpotGetBase(){ try{ if(typeof window!=='undefined' && window.__pvOuterGetBase) return window.__pvOuterGetBase(); }catch(e){} try{ if(typeof FIREBASE_URL!=='undefined' && FIREBASE_URL) return FIREBASE_URL; }catch(e){} try{ if(typeof DATABASE_URL!=='undefined' && DATABASE_URL) return DATABASE_URL; }catch(e){} try{ if(typeof BASE!=='undefined' && BASE) return BASE; }catch(e){} return 'https://prochat2026-default-rtdb.firebaseio.com'; }
-    function getKeys(){
-      try{ if(typeof YOUTUBE_API_KEYS!=='undefined' && Array.isArray(YOUTUBE_API_KEYS) && YOUTUBE_API_KEYS.length) return YOUTUBE_API_KEYS; }catch(e){}
-      try{ if(window.YOUTUBE_API_KEYS && Array.isArray(window.YOUTUBE_API_KEYS)) return window.YOUTUBE_API_KEYS; }catch(e){}
-      try{ if(typeof PV_YOUTUBE_API_KEY!=='undefined' && PV_YOUTUBE_API_KEY) return [PV_YOUTUBE_API_KEY]; }catch(e){}
-      return [];
-    }
-    function showErr(msg){
-      try{ var el = document.getElementById('pv-spotlight-err'); if(el) el.textContent = msg||''; }catch(e){}
-    }
-    function fmtCount(n){
-      try{
-        n = parseInt(n||'0',10)||0;
-        if(n>=1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'')+'M';
-        if(n>=1000) return (n/1000).toFixed(1).replace(/\.0$/,'')+'K';
-        return String(n);
-      }catch(e){ return '0'; }
-    }
-    function readCache(){
-      try{ var raw = localStorage.getItem(CACHE_KEY); if(!raw) return null; var o = JSON.parse(raw); if(o && Array.isArray(o.videos)) return o; }catch(e){}
-      return null;
-    }
-    function saveCache(obj){
-      try{ localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); }catch(e){}
-    }
-    function getLikes(){
+  var SIX_HOURS = 6*60*60*1000;
+  var CACHE_KEY = 'pv_spotlight_cache_v1';
+  var LIKES_KEY = 'pv_spotlight_likes_v1';
+  var COMMENTS_KEY = 'pv_spotlight_comments_v1';
+  var CATS = [{id:'10',name:'Music'},{id:'23',name:'Comedy'},{id:'17',name:'Sports'},{id:'24',name:'Entertainment'},{id:'22',name:'People'},{id:'27',name:'Education'},{id:'26',name:'How to'},{id:'20',name:'Gaming'},{id:'25',name:'News'},{id:'28',name:'Tech'}];
+  function pvSpotGetBase(){ try{ if(typeof window!=='undefined' && window.__pvOuterGetBase) return window.__pvOuterGetBase(); }catch(e){} try{ if(typeof FIREBASE_URL!=='undefined' && FIREBASE_URL) return FIREBASE_URL; }catch(e){} try{ if(typeof DATABASE_URL!=='undefined' && DATABASE_URL) return DATABASE_URL; }catch(e){} try{ if(typeof BASE!=='undefined' && BASE) return BASE; }catch(e){} return 'https://prochat2026-default-rtdb.firebaseio.com'; }
+  function getKeys(){ try{ if(typeof YOUTUBE_API_KEYS!=='undefined' && Array.isArray(YOUTUBE_API_KEYS) && YOUTUBE_API_KEYS.length) return YOUTUBE_API_KEYS; }catch(e){} try{ if(window.YOUTUBE_API_KEYS && Array.isArray(window.YOUTUBE_API_KEYS)) return window.YOUTUBE_API_KEYS; }catch(e){} try{ if(typeof PV_YOUTUBE_API_KEY!=='undefined' && PV_YOUTUBE_API_KEY) return [PV_YOUTUBE_API_KEY]; }catch(e){} return []; }
+  function showErr(msg){ try{ var el=document.getElementById('pv-spotlight-err'); if(el) el.textContent=msg||''; }catch(e){} }
+  function fmtCount(n){ try{ n=parseInt(n||'0',10)||0; if(n>=1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'')+'M'; if(n>=1000) return (n/1000).toFixed(1).replace(/\.0$/,'')+'K'; return String(n); }catch(e){ return '0'; } }
+  function readCache(){ try{ var raw=localStorage.getItem(CACHE_KEY); if(!raw) return null; var o=JSON.parse(raw); if(o && Array.isArray(o.videos)) return o; }catch(e){} return null; }
+  function saveCache(obj){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); }catch(e){} }
+  function getMe(){ try{ return localStorage.getItem('pro_vibes_user_name') || (window.ProVibesUser && window.ProVibesUser.name) || 'You'; }catch(e){ return 'You'; } }
+  function showLoading(show){ try{ var el=document.getElementById('pv-spotlight-loading'); if(el){ if(show) el.removeAttribute('hidden'); else el.setAttribute('hidden',''); } }catch(e){} }
+  function showEmpty(show){ try{ var el=document.getElementById('pv-spotlight-empty'); if(el){ if(show) el.removeAttribute('hidden'); else el.setAttribute('hidden',''); } }catch(e){} }
+
+function getLikes(){
       try{ var a = JSON.parse(localStorage.getItem(LIKES_KEY)||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; }
     }
     function toggleLike(id){
@@ -14343,7 +14282,8 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
     function showEmpty(show){
       try{ var el = document.getElementById('pv-spotlight-empty'); if(el){ if(show) el.removeAttribute('hidden'); else el.setAttribute('hidden',''); } }catch(e){}
     }
-    function fetchWithTimeout(url, opts, ms){
+    
+function fetchWithTimeout(url, opts, ms){
       return new Promise(function(resolve, reject){
         try{
           var done = false;
@@ -14448,53 +14388,13 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
             }
             if(r.res && r.res.nextPageToken) cur.nextTokens[r.cid]=r.res.nextPageToken; else delete cur.nextTokens[r.cid];
           });
-          if(added>0){ cur.updatedAt = Date.now(); saveCache(cur); saveFirebase(cur); renderFeed(cur.videos); }
+          if(added>0){ cur.updatedAt = Date.now(); saveCache(cur); saveFirebase(cur); render(cur.videos); }
           return added;
         }).catch(function(){ return 0; });
       }catch(e){ return Promise.resolve(0); }
     }
-    var observer = null;
-    function setupObserver(){
-      try{
-        if(observer) observer.disconnect();
-        observer = new IntersectionObserver(function(entries){
-          entries.forEach(function(en){
-            try{
-              var item = en.target;
-              var vid = item.dataset.videoId;
-              if(en.isIntersecting && document.getElementById('pv-spotlight-screen') && document.getElementById('pv-spotlight-screen').classList.contains('show')){
-                // Load iframe for visible, pause others
-                var ifr = item.querySelector('iframe');
-                if(!ifr){
-                  var thumb = item.querySelector('.pv-spotlight-thumb');
-                  var play = item.querySelector('.pv-spotlight-center-play');
-                  var f = document.createElement('iframe');
-                  f.src = 'https://www.youtube.com/embed/' + vid + '?autoplay=1&mute=0&loop=1&playlist=' + vid + '&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&autohide=1';
-                  f.allow = 'autoplay; encrypted-media; picture-in-picture';
-                  f.setAttribute('allowfullscreen','');
-                  if(thumb) thumb.style.display='none';
-                  if(play) play.style.display='none';
-                  item.insertBefore(f, item.querySelector('.pv-spotlight-overlay'));
-                }
-                // Pause others: remove their iframes
-                document.querySelectorAll('.pv-spotlight-item').forEach(function(other){
-                  if(other!==item){
-                    var of = other.querySelector('iframe');
-                    if(of){
-                      of.remove();
-                      var ot = other.querySelector('.pv-spotlight-thumb'); if(ot) ot.style.display='block';
-                      var op = other.querySelector('.pv-spotlight-center-play'); if(op) op.style.display='flex';
-                    }
-                  }
-                });
-              }
-            }catch(e){}
-          });
-        }, {root: document.getElementById('pv-spotlight-feed'), threshold: 0.6});
-        document.querySelectorAll('.pv-spotlight-item').forEach(function(el){ observer.observe(el); });
-      }catch(e){}
-    }
-    var _pvChanAvatarCache={}; try{ _pvChanAvatarCache=JSON.parse(localStorage.getItem('pv_spotlight_chan_avatars_v1')||'{}')||{}; }catch(e){ _pvChanAvatarCache={}; }
+    
+var _pvChanAvatarCache={}; try{ _pvChanAvatarCache=JSON.parse(localStorage.getItem('pv_spotlight_chan_avatars_v1')||'{}')||{}; }catch(e){ _pvChanAvatarCache={}; }
     function fetchChannelAvatars(videos){
       try{
         if(!videos || !videos.length) return;
@@ -14523,30 +14423,57 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
         }
       }catch(e){}
     }
-    function renderFeed(videos){
-      try{
-        var feed = document.getElementById('pv-spotlight-feed'); if(!feed) return;
-        feed.innerHTML = '';
-        if(!videos || !videos.length){ showEmpty(true); return; }
-        showEmpty(false);
-        try{ fetchChannelAvatars(videos); }catch(e){}
-        videos.forEach(function(v){
-          try{
-            var _t = String(v.title||'').toLowerCase();
-            if(_t.indexOf('movie')!==-1 || _t.indexOf('film')!==-1 || _t.indexOf('nollywood')!==-1 || _t.indexOf('hollywood')!==-1 || _t.indexOf('bollywood')!==-1 || _t.indexOf('cinema')!==-1 || _t.indexOf('trailer')!==-1 || _t.indexOf('full episode')!==-1) return; // no movies/films
-            var item = document.createElement('div');
+    
+
+  /* ---------- ONE ITEM - bottom caption only, top YouTube title covered ---------- */
+  function buildItem(v, idx){
+    try{
+      var vidx = idx;
+      var _t = String(v.title||'').toLowerCase();
+      if(_t.indexOf('movie')!==-1 || _t.indexOf('film')!==-1 || _t.indexOf('nollywood')!==-1 || _t.indexOf('hollywood')!==-1 || _t.indexOf('bollywood')!==-1 || _t.indexOf('cinema')!==-1 || _t.indexOf('trailer')!==-1 || _t.indexOf('full episode')!==-1) return null;
+
+var item = document.createElement('div');
             item.className = 'pv-spotlight-item';
             item.dataset.videoId = v.videoId;
             var thumb = document.createElement('img');
             thumb.className = 'pv-spotlight-thumb';
             thumb.src = v.thumb || '';
             thumb.alt = v.title||'';
-            thumb.loading = 'lazy';
+            // PICTURE FIRST like Instagram: first 5 load EAGER, not lazy, so picture is there instantly
+            thumb.loading = (vidx<5 ? 'eager' : 'lazy');
+            thumb.decoding = 'async';
+            try{ if(vidx<5) thumb.setAttribute('fetchpriority','high'); }catch(_){}
             item.appendChild(thumb);
             var play = document.createElement('div');
             play.className = 'pv-spotlight-center-play';
             play.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
             item.appendChild(play);
+            // TOP-ONLY FIX: black strip that hides ONLY the YouTube top title/channel row when paused. Bottom app caption is NOT touched.
+            var topCover = document.createElement('div');
+            topCover.className = 'pv-spotlight-yt-top-cover';
+            item.appendChild(topCover);
+            // Tap layer: taps never reach YouTube, so YouTube never pops its own top caption. We pause/play via API instead.
+            var tap = document.createElement('div');
+            tap.className = 'pv-spotlight-tap';
+            tap.addEventListener('click', function(e){
+              try{
+                var ifr = item.querySelector('iframe'); if(!ifr) return;
+                if(item.classList.contains('pv-is-paused')){
+                  // PLAY: hide full cover + thumb FIRST, then play - so no YouTube UI ever shows
+                  item.classList.remove('pv-is-paused');
+                  if(thumb) thumb.style.display='none';
+                  if(play) play.style.display='none';
+                  try{ ifr.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}','*'); }catch(_){}
+                } else {
+                  // PAUSE: show full cover + thumb FIRST, then pause - YouTube overlay (top title, Watch Later, suggested videos, logo, Watch on YouTube) is hidden under cover before it can appear
+                  item.classList.add('pv-is-paused');
+                  if(thumb) thumb.style.display='block';
+                  if(play) play.style.display='flex';
+                  try{ ifr.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*'); }catch(_){}
+                }
+              }catch(_){}
+            });
+            item.appendChild(tap);
             var overlay = document.createElement('div');
             overlay.className = 'pv-spotlight-overlay';
             var ch = document.createElement('div');
@@ -14567,7 +14494,8 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
             vw.textContent = fmtCount(v.viewCount) + ' views';
             overlay.appendChild(ch); overlay.appendChild(tt); overlay.appendChild(vw);
             item.appendChild(overlay);
-            var acts = document.createElement('div');
+
+var acts = document.createElement('div');
             acts.className = 'pv-spotlight-actions';
             var liked = isLiked(v.videoId);
             var likeBtn = document.createElement('button');
@@ -14611,211 +14539,325 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
             shareBtn.addEventListener('click', function(e){
               try{
                 e.stopPropagation();
-                var url = 'https://www.youtube.com/shorts/' + v.videoId;
-                if(navigator.share){ navigator.share({title: v.title, url: url}).catch(function(){}); }
-                else if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(url).catch(function(){}); }
+                // NO YouTube link - share only PRO VIBES text, so nobody is taken to YouTube
+                var shareText = 'Check this on PRO VIBES - ' + (v.title||'');
+                if(navigator.share){ navigator.share({title: 'PRO VIBES', text: shareText}).catch(function(){}); }
+                else if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(shareText).catch(function(){}); }
               }catch(_){}
             });
             acts.appendChild(likeBtn); acts.appendChild(commentBtn); acts.appendChild(shareBtn);
             item.appendChild(acts);
-            feed.appendChild(item);
-          }catch(e){}
-        });
-        setupObserver();
-        // Infinite scroll - when near bottom, load more via nextPageToken
-        try{
-          feed.onscroll = function(){
-            try{
-              if(feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 800){
-                if(!window._pvSpotMoreLoading){
-                  window._pvSpotMoreLoading = true;
-                  fetchYouTubeMore().then(function(){ window._pvSpotMoreLoading=false; }).catch(function(){ window._pvSpotMoreLoading=false; });
-                }
-              }
-            }catch(e){}
-          };
-        }catch(e){}
-      }catch(e){}
-    }
-    function loadSpotlight(force){
-      try{
-        if(window._pvSpotLoading && !force) return;
-        window._pvSpotLoading = true;
-        showEmpty(false);
-        showErr('');
-        // Videos are public for everyone - any user sees the same videos, so show what we already have instantly
-        var cached = readCache();
-        var shown = false;
-        if(cached && cached.videos && cached.videos.length){
-          renderFeed(cached.videos);
-          shown = true;
-          showLoading(false);
-          if(!force && (Date.now() - (cached.updatedAt||0) < SIX_HOURS)){
-            window._pvSpotLoading = false;
-            return;
-          }
-          // Cache expired: keep showing it, refresh in background below
-        } else {
-          showLoading(true);
-        }
-        // SAFETY: Loading must NEVER hang forever. After 15s, force stop and show retry.
-        try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){}
-        window._pvSpotSafetyTimer = setTimeout(function(){
-          try{
-            if(window._pvSpotLoading){
-              try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} window._pvSpotLoading = false;
-              showLoading(false);
-              var feed = document.getElementById('pv-spotlight-feed');
-              if(!feed || !feed.children.length){ showEmpty(true); showErr('Loading took too long - check internet / key, tap retry'); }
-            }
-          }catch(e){}
-        }, 15000);
-        // 2. Try Firebase public bucket first
-        fetchFirebase().then(function(fb){
-          try{
-            if(!force && fb && fb.videos && fb.videos.length && (Date.now() - (fb.updatedAt||0) < SIX_HOURS)){
-              saveCache(fb);
-              renderFeed(fb.videos);
-              showLoading(false);
-              try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} window._pvSpotLoading = false;
-              return;
-            }
-            // If Firebase has videos and nothing shown yet, show them instantly, then refresh from YouTube in background
-            if(fb && fb.videos && fb.videos.length && !shown){
-              renderFeed(fb.videos);
-              shown = true;
-              showLoading(false);
-            }
-            // 3. Firebase expired / missing - fetch fresh from YouTube, show first videos instantly like Instagram / Facebook Reels
-            // Videos are public for everyone - any phone shows same public feed, never empty if we have anything
-            var progressive = [];
-            fetchYouTubeFresh(function(newVids){
-              try{
-                if(shown) return; // already showing Firebase / cache, wait for full fresh list to replace
-                progressive = progressive.concat(newVids);
-                var seenP = {}; var dedupP = [];
-                progressive.forEach(function(v){ if(!seenP[v.videoId]){ seenP[v.videoId]=1; dedupP.push(v); } });
-                if(dedupP.length){ renderFeed(dedupP); shown = true; showLoading(false); showEmpty(false); }
-              }catch(e){}
-            }).then(function(fresh){
-              try{
-                if(fresh && fresh.videos && fresh.videos.length){
-                  saveCache(fresh);
-                  saveFirebase(fresh);
-                  renderFeed(fresh.videos);
-                  showErr('');
-                } else if(!shown){
-                  if(fb && fb.videos && fb.videos.length){
-                    renderFeed(fb.videos);
-                  } else if(cached && cached.videos && cached.videos.length){
-                    renderFeed(cached.videos);
-                  } else {
-                    showEmpty(true); showErr('No Shorts from YouTube - tap retry');
-                  }
-                }
-              }catch(e){
-                if(!shown){ showEmpty(true); showErr('No Shorts from YouTube - tap retry'); }
-              }
-              showLoading(false);
-              try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} window._pvSpotLoading = false;
-            }).catch(function(err){
-              try{
-                if(!shown){
-                  if(fb && fb.videos && fb.videos.length) renderFeed(fb.videos);
-                  else if(cached && cached.videos && cached.videos.length) renderFeed(cached.videos);
-                  else { showEmpty(true); showErr('No Shorts from YouTube - tap retry'); }
-                }
-              }catch(e){ if(!shown) showEmpty(true); }
-              showLoading(false);
-              try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} window._pvSpotLoading = false;
-            });
-          }catch(e){
-            if(!shown) showEmpty(true);
-            showLoading(false);
-            try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} window._pvSpotLoading = false;
-          }
-        }).catch(function(){
-          try{
-            if(!shown){
-              if(cached && cached.videos && cached.videos.length) renderFeed(cached.videos);
-              else { showEmpty(true); }
-            }
-          }catch(e){ if(!shown) showEmpty(true); }
-          showLoading(false);
-          try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} window._pvSpotLoading = false;
-        });
-      }catch(e){
-                  showEmpty(true); showErr('No Shorts from YouTube - tap retry');
-        try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} window._pvSpotLoading = false;
-      }
-    }
 
-    window.pvSpotlightLoad = loadSpotlight;
-    window.pvSpotlightRender = renderFeed;
-    // Hook openSpotlight to load - wrap original, never break Home
+      return item;
+    }catch(e){ return null; }
+  }
+
+  /* ---------- RENDER - append only, never wipe ---------- */
+  function render(videos){
     try{
-      var _origOpen = window.pvOpenSpotlight;
-      window.pvOpenSpotlight = function(){
-        try{ if(typeof _origOpen==='function') _origOpen(); }catch(e){}
-        try{ loadSpotlight(); }catch(e){}
-      };
-    }catch(e){}
-    // Also hook play button directly if original not yet bound
-    try{
-      var btns = document.querySelectorAll('.pv-home-reels-btn, [data-pv-spotlight-open]');
-      btns.forEach(function(b){ b.addEventListener('click', function(){ try{ setTimeout(function(){ loadSpotlight(); }, 120); }catch(e){} }); });
-    }catch(e){}
-    // Retry button in empty state
-    try{
-      var retryBtn = document.getElementById('pv-spotlight-retry');
-      if(retryBtn){
-        retryBtn.addEventListener('click', function(){ try{ window._pvSpotLoading=false; loadSpotlight(true); }catch(e){} });
-      }
-    }catch(e){}
-    // Tap loading itself to retry
-    try{
-      var loadDiv = document.getElementById('pv-spotlight-loading');
-      if(loadDiv){
-        loadDiv.style.cursor = 'pointer';
-        loadDiv.addEventListener('click', function(){ try{ window._pvSpotLoading=false; try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} loadSpotlight(true); }catch(e){} });
-      }
-    }catch(e){}
-    // MutationObserver: if Spotlight panel gets .show, load - this fixes Y??? where pvOpenSpotlight wrapper never runs because original open is inside another closure
-    try{
-      var spotEl = document.getElementById('pv-spotlight-screen');
-      if(spotEl && typeof MutationObserver!=='undefined'){
-        var mo = new MutationObserver(function(muts){
+      var feed=document.getElementById('pv-spotlight-feed'); if(!feed) return;
+      if(!videos || !videos.length){ if(!feed.children.length) showEmpty(true); return; }
+      showEmpty(false);
+      try{ fetchChannelAvatars(videos); }catch(e){}
+      var existing={};
+      try{ Array.prototype.forEach.call(feed.children, function(ch){ if(ch.dataset && ch.dataset.videoId) existing[ch.dataset.videoId]=ch; }); }catch(e){}
+      videos.forEach(function(v, vidx){
+        try{
+          if(existing[v.videoId]) return;
+          var it=buildItem(v, vidx);
+          if(it) feed.appendChild(it);
+        }catch(e){}
+      });
+      // Preload pictures for first 10 so swipe is instant
+      try{ Array.prototype.forEach.call(feed.children, function(ch, ci){ if(ci<10){ var _im=ch.querySelector('.pv-spotlight-thumb'); if(_im && _im.src){ var _pre=new Image(); _pre.src=_im.src; } } }); }catch(e){}
+      setupObserver();
+      try{
+        feed.onscroll=function(){
           try{
-            muts.forEach(function(m){
-              if(m.type==='attributes' && m.attributeName==='class'){
-                if(spotEl.classList.contains('show')){ try{ loadSpotlight(); }catch(e){} }
+            if(feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 800){
+              if(!window._pvSpotMoreLoading){
+                window._pvSpotMoreLoading=true;
+                fetchYouTubeMore().then(function(){ window._pvSpotMoreLoading=false; }).catch(function(){ window._pvSpotMoreLoading=false; });
+              }
+            }
+          }catch(e){}
+        };
+      }catch(e){}
+    }catch(e){}
+  }
+
+  /* ---------- PLAYER - picture first, preload next 2 ---------- */
+  function makeIframe(it, autoplay){
+    try{
+      var vid=it.dataset.videoId; if(!vid) return null;
+      var f=document.createElement('iframe');
+      f.src='https://www.youtube.com/embed/' + vid + '?autoplay=' + (autoplay?1:0) + '&mute=0&loop=1&playlist=' + vid + '&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&autohide=1&enablejsapi=1';
+      f.allow='autoplay; encrypted-media; picture-in-picture';
+      f.setAttribute('allowfullscreen','');
+      try{ f.addEventListener('load', function(){ try{ if(it.dataset.pvCurrent==='1' && !it.classList.contains('pv-is-paused')){ setTimeout(function(){ var _th=it.querySelector('.pv-spotlight-thumb'); if(_th) _th.style.display='none'; }, 500); } }catch(_){} }); }catch(_){}
+      it.insertBefore(f, it.querySelector('.pv-spotlight-overlay'));
+      return f;
+    }catch(e){ return null; }
+  }
+  function playItem(it){
+    try{
+      it.dataset.pvCurrent='1';
+      var ifr=it.querySelector('iframe');
+      if(!ifr) ifr=makeIframe(it, 1);
+      try{ it.classList.remove('pv-is-paused'); }catch(_){}
+      var pl=it.querySelector('.pv-spotlight-center-play'); if(pl) pl.style.display='none';
+      if(ifr){ try{ ifr.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}','*'); }catch(_){} }
+      setTimeout(function(){ try{ if(it.dataset.pvCurrent==='1' && !it.classList.contains('pv-is-paused')){ var _th=it.querySelector('.pv-spotlight-thumb'); if(_th) _th.style.display='none'; } }catch(_){} }, 700);
+      try{ var _nx=it.nextElementSibling; for(var _k=0; _k<3 && _nx; _k++){ var _nim=_nx.querySelector('.pv-spotlight-thumb'); if(_nim && _nim.src){ var _pr=new Image(); _pr.src=_nim.src; } _nx=_nx.nextElementSibling; } }catch(_){}
+    }catch(e){}
+  }
+  function pauseItem(it){
+    try{
+      it.dataset.pvCurrent='0';
+      var ifr=it.querySelector('iframe');
+      if(ifr){ try{ ifr.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*'); }catch(_){} }
+      try{ it.classList.add('pv-is-paused'); }catch(_){}
+      var th=it.querySelector('.pv-spotlight-thumb'); if(th) th.style.display='block';
+      var pl=it.querySelector('.pv-spotlight-center-play'); if(pl) pl.style.display='flex';
+    }catch(e){}
+  }
+  function pauseAll(){
+    try{
+      document.querySelectorAll('.pv-spotlight-item').forEach(function(it){ pauseItem(it); });
+    }catch(e){}
+  }
+
+  /* ---------- OBSERVER - single, window of 3 ---------- */
+  var observer=null;
+  function setupObserver(){
+    try{
+      if(observer) observer.disconnect();
+      observer=new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          try{
+            if(!en.isIntersecting) return;
+            var scr=document.getElementById('pv-spotlight-screen');
+            if(!scr || !scr.classList.contains('show')) return;
+            var item=en.target;
+            var all=Array.prototype.slice.call(document.querySelectorAll('.pv-spotlight-item'));
+            var idx=all.indexOf(item);
+            if(idx===-1) return;
+            playItem(item);
+            for(var k=1;k<=2;k++){
+              var nx=all[idx+k];
+              if(nx && !nx.querySelector('iframe')){
+                var f2=makeIframe(nx, 0);
+                if(f2) f2.dataset.pvWasPreloaded='1';
+                try{ nx.classList.add('pv-is-paused'); }catch(_){}
+                var nth=nx.querySelector('.pv-spotlight-thumb'); if(nth) nth.style.display='block';
+                var npl=nx.querySelector('.pv-spotlight-center-play'); if(npl) npl.style.display='flex';
+                nx.dataset.pvCurrent='0';
+              }
+            }
+            all.forEach(function(other, oi){
+              if(oi===idx) return;
+              var dist=Math.abs(oi-idx);
+              var of=other.querySelector('iframe');
+              if(dist>2){
+                if(of){ try{ of.remove(); }catch(_){} }
+                other.dataset.pvCurrent='0';
+                try{ other.classList.remove('pv-is-paused'); }catch(_){}
+                var ot=other.querySelector('.pv-spotlight-thumb'); if(ot) ot.style.display='block';
+                var op=other.querySelector('.pv-spotlight-center-play'); if(op) op.style.display='flex';
+              } else if(dist>=1 && dist<=2){
+                if(of) pauseItem(other);
               }
             });
           }catch(e){}
         });
-        mo.observe(spotEl, {attributes:true, attributeFilter:['class']});
+      }, {root: document.getElementById('pv-spotlight-feed'), threshold: 0.6});
+      document.querySelectorAll('.pv-spotlight-item').forEach(function(el){ observer.observe(el); });
+    }catch(e){}
+  }
+
+  /* ---------- LOAD - picture first, loading only if truly no picture ---------- */
+  var _loading=false;
+  function load(force){
+    try{
+      if(_loading && !force) return;
+      _loading=true;
+      showEmpty(false);
+      showErr('');
+      var feed=document.getElementById('pv-spotlight-feed');
+      var hasFeed=!!(feed && feed.children.length);
+      if(hasFeed && !force){
+        showLoading(false); showEmpty(false);
+        try{ setupObserver(); }catch(e){}
+        try{ var _c0=readCache(); if(_c0 && _c0.videos && _c0.videos.length && (Date.now()-(_c0.updatedAt||0) < SIX_HOURS)){ _loading=false; return; } }catch(e){}
+      }
+      var cached=readCache();
+      var shown=hasFeed;
+      if(cached && cached.videos && cached.videos.length){
+        render(cached.videos);
+        shown=true;
+        showLoading(false);
+        if(!force && (Date.now()-(cached.updatedAt||0) < SIX_HOURS)){ _loading=false; return; }
+      } else if(!hasFeed){
+        showLoading(true);
+      }
+      try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){}
+      window._pvSpotSafetyTimer=setTimeout(function(){
+        try{
+          if(_loading){
+            _loading=false; showLoading(false);
+            var f2=document.getElementById('pv-spotlight-feed');
+            if(!f2 || !f2.children.length){ showEmpty(true); showErr('Loading took too long - check internet, tap retry'); }
+          }
+        }catch(e){}
+      }, 15000);
+      fetchFirebase().then(function(fb){
+        try{
+          if(!force && fb && fb.videos && fb.videos.length && (Date.now()-(fb.updatedAt||0) < SIX_HOURS)){
+            saveCache(fb); render(fb.videos); showLoading(false);
+            try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false; return;
+          }
+          if(fb && fb.videos && fb.videos.length && !shown){
+            render(fb.videos); shown=true; showLoading(false);
+          }
+          var progressive=[];
+          fetchYouTubeFresh(function(newVids){
+            try{
+              if(shown) return;
+              progressive=progressive.concat(newVids);
+              var seenP={}; var dedupP=[];
+              progressive.forEach(function(v){ if(!seenP[v.videoId]){ seenP[v.videoId]=1; dedupP.push(v); } });
+              if(dedupP.length){ render(dedupP); shown=true; showLoading(false); showEmpty(false); }
+            }catch(e){}
+          }).then(function(fresh){
+            try{
+              if(fresh && fresh.videos && fresh.videos.length){
+                saveCache(fresh); saveFirebase(fresh); render(fresh.videos); showErr('');
+              } else if(!shown){
+                if(fb && fb.videos && fb.videos.length) render(fb.videos);
+                else if(cached && cached.videos && cached.videos.length) render(cached.videos);
+                else { showEmpty(true); showErr('No Shorts - tap retry'); }
+              }
+            }catch(e){ if(!shown){ showEmpty(true); } }
+            showLoading(false);
+            try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false;
+          }).catch(function(){
+            try{
+              if(!shown){
+                if(fb && fb.videos && fb.videos.length) render(fb.videos);
+                else if(cached && cached.videos && cached.videos.length) render(cached.videos);
+                else { showEmpty(true); showErr('No Shorts - tap retry'); }
+              }
+            }catch(e){ if(!shown) showEmpty(true); }
+            showLoading(false);
+            try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false;
+          });
+        }catch(e){ if(!shown) showEmpty(true); showLoading(false); _loading=false; }
+      }).catch(function(){
+        try{
+          if(!shown){
+            if(cached && cached.videos && cached.videos.length) render(cached.videos);
+            else showEmpty(true);
+          }
+        }catch(e){ if(!shown) showEmpty(true); }
+        showLoading(false); _loading=false;
+      });
+    }catch(e){ showEmpty(true); _loading=false; }
+  }
+
+  /* ---------- OPEN / CLOSE - single definitions, no wrapping ---------- */
+  function open(){
+    try{ var _nav=document.querySelector('.bottom-nav'); if(_nav) _nav.classList.add('pv-hide-plus'); }catch(e){}
+    try{
+      var s=document.getElementById('pv-spotlight-screen');
+      if(!s) return;
+      s.classList.remove('hidden'); s.removeAttribute('hidden'); s.classList.add('show');
+    }catch(e){}
+    try{ load(); }catch(e){}
+  }
+  function close(){
+    try{ pauseAll(); }catch(e){}
+    try{
+      var s=document.getElementById('pv-spotlight-screen');
+      if(s) s.classList.remove('show');
+    }catch(e){}
+    try{
+      var _nav2=document.querySelector('.bottom-nav');
+      if(_nav2){
+        var _home=document.getElementById('home-screen');
+        var _isHome=_home && !_home.classList.contains('hidden') && !_home.hasAttribute('hidden');
+        if(_isHome) _nav2.classList.remove('pv-hide-plus'); else _nav2.classList.add('pv-hide-plus');
       }
     }catch(e){}
-    // If Spotlight already open on load (e.g. direct), load now
-    try{ if(document.getElementById('pv-spotlight-screen') && document.getElementById('pv-spotlight-screen').classList.contains('show')){ setTimeout(function(){ loadSpotlight(); }, 300); } }catch(e){}
-    // Pause on close - remove iframes so audio stops
-    try{
-      var _origClose = window.pvCloseSpotlight;
-      window.pvCloseSpotlight = function(){
-        try{
-          document.querySelectorAll('.pv-spotlight-item iframe').forEach(function(f){ try{ f.remove(); }catch(_){} });
-          document.querySelectorAll('.pv-spotlight-item').forEach(function(it){
-            try{ var th = it.querySelector('.pv-spotlight-thumb'); if(th) th.style.display='block'; var pl = it.querySelector('.pv-spotlight-center-play'); if(pl) pl.style.display='flex'; }catch(_){}
-          });
-        }catch(e){}
-        try{ if(typeof _origClose==='function') _origClose(); }catch(e){}
-      };
-    }catch(e){}
-  }catch(e){
-    // Never break Home
   }
+  function bind(){
+    try{
+      var btn=document.querySelector('.pv-home-reels-btn');
+      if(btn && !btn.dataset.pvSpotlightBound){
+        btn.dataset.pvSpotlightBound='1';
+        btn.style.cursor='pointer';
+        btn.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} var _p=document.getElementById('pv-spotlight-screen'); if(_p && _p.classList.contains('show')) close(); else open(); });
+      }
+    }catch(e){}
+    try{
+      var back=document.getElementById('pv-spotlight-back-btn');
+      if(back && !back.dataset.pvSpotlightBound){
+        back.dataset.pvSpotlightBound='1';
+        back.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} close(); });
+      }
+    }catch(e){}
+    try{
+      var retry=document.getElementById('pv-spotlight-retry');
+      if(retry && !retry.dataset.pvSpotlightBound){
+        retry.dataset.pvSpotlightBound='1';
+        retry.addEventListener('click', function(){ try{ _loading=false; load(true); }catch(e){} });
+      }
+    }catch(e){}
+    try{
+      var loadDiv=document.getElementById('pv-spotlight-loading');
+      if(loadDiv && !loadDiv.dataset.pvSpotlightBound){
+        loadDiv.dataset.pvSpotlightBound='1';
+        loadDiv.style.cursor='pointer';
+        loadDiv.addEventListener('click', function(){ try{ _loading=false; load(true); }catch(e){} });
+      }
+    }catch(e){}
+  }
+
+  /* ---------- EXPOSE ONCE ---------- */
+  window.PVSpotlight={open:open, close:close, load:load, pauseAll:pauseAll, render:render};
+  window.pvOpenSpotlight=open;
+  window.pvCloseSpotlight=close;
+  window.pvSpotlightLoad=load;
+  window.pvSpotlightRender=render;
+  try{ if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); } }catch(e){ bind(); }
+  try{ setTimeout(bind, 500); setTimeout(bind, 1500); }catch(e){}
+  /* If Spotlight becomes visible, load - single observer, no duplicate hooks */
+  try{
+    var _spotEl=document.getElementById('pv-spotlight-screen');
+    if(_spotEl && window.MutationObserver){
+      var _obs=new MutationObserver(function(){
+        try{ if(_spotEl.classList.contains('show')) load(); }catch(e){}
+      });
+      _obs.observe(_spotEl, {attributes:true, attributeFilter:['class']});
+    }
+  }catch(e){}
+  try{
+    var _feedEl=document.getElementById('pv-spotlight-feed');
+    if(_feedEl){
+      _feedEl.addEventListener('scroll', function(){
+        try{
+          if(_feedEl.scrollTop + _feedEl.clientHeight >= _feedEl.scrollHeight - 800){
+            if(!window._pvSpotMoreLoading){
+              window._pvSpotMoreLoading=true;
+              fetchYouTubeMore().then(function(){ window._pvSpotMoreLoading=false; }).catch(function(){ window._pvSpotMoreLoading=false; });
+            }
+          }
+        }catch(e){}
+      }, {passive:true});
+    }
+  }catch(e){}
 })();
 </script>
+
 </body>
 
 </html>
