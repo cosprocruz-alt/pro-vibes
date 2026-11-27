@@ -1644,37 +1644,36 @@ html[data-pv-accent="white"] .dm-msg{color:#000 !important}
 </style>
 <style id="pv-spotlight-style">
 /* SPOTLIGHT - SLEEK - caption down only, pause/play centre only, NO YouTube UI, NO prev/next */
-#pv-spotlight-screen{position:fixed;top:0;left:0;right:0;bottom:58px;z-index:601;background:#000;border-radius:0;padding:calc(12px + env(safe-area-inset-top)) 0 0;transform:translateX(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);max-height:none;height:auto;display:flex;flex-direction:column;box-shadow:none;will-change:transform}
+#pv-spotlight-screen{position:fixed;top:0;left:0;right:0;bottom:58px;z-index:601;background:#000;border-radius:0;padding:0;transform:translateX(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);max-height:none;height:auto;display:flex;flex-direction:column;box-shadow:none;will-change:transform}
 #pv-spotlight-screen::after{content:"";position:absolute;left:0;right:0;top:100%;height:58px;background:#000;display:block;pointer-events:none}
 #pv-spotlight-screen.show{transform:translateX(0)}
 #pv-spotlight-screen.hidden,[hidden]#pv-spotlight-screen{display:none !important}
 body:has(#pv-spotlight-screen.show) .bottom-nav{z-index:602;animation:none;transform:none}
 body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
-.pv-spotlight-top{display:flex;align-items:center;gap:2px;padding:2px 12px 10px 4px;background:#000;flex:0 0 auto}
+.pv-spotlight-top{position:absolute;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:2px;padding:calc(12px + env(safe-area-inset-top)) 12px 10px 4px;background:transparent;pointer-events:none}.pv-spotlight-top button{pointer-events:auto}.pv-spotlight-title{text-shadow:0 2px 10px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.9)}#pv-spotlight-search-btn,#pv-spotlight-back-btn{text-shadow:0 2px 8px rgba(0,0,0,.9)}
 .pv-spotlight-top-spacer{flex:1}
 #pv-spotlight-search-btn{background:none;color:#fff;border:none;width:42px;height:42px;min-width:42px;display:flex;align-items:center;justify-content:center;padding:4px;border-radius:50%;-webkit-tap-highlight-color:transparent;cursor:pointer}
 #pv-spotlight-search-btn:active{background:#1a1a1a}
 #pv-spotlight-search-btn svg{width:28px;height:28px;display:block}
 #pv-spotlight-search-btn.active{background:#1a1a1a}
-/* SPOTLIGHT SEARCH - SLEEK - one slim floating pill, never covers video, auto-hides after search. No chips. Cancel ✕ INSIDE bar right. Search = blue-green pill. */
-.pv-spotlight-searchbar{display:none;position:absolute;top:calc(56px + env(safe-area-inset-top));left:12px;right:12px;z-index:60;background:transparent;padding:0;box-sizing:border-box;overflow:hidden}
-.pv-spotlight-searchbar.show{display:block}
-.pv-spotlight-search-row{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;min-width:0}
-.pv-spotlight-search-wrap{flex:1 1 0;display:flex;align-items:center;gap:8px;background:rgba(20,20,20,.94);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:0 8px 0 14px;height:44px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.5);min-width:0;overflow:hidden}
-.pv-spotlight-search-wrap:focus-within{border-color:rgba(255,255,255,.3)}
-.pv-spotlight-search-wrap svg{width:20px;height:20px;flex-shrink:0;color:#aaa}
-.pv-spotlight-search-wrap input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:15px;min-width:0}
-.pv-spotlight-search-wrap input::placeholder{color:#888}
-#pv-spotlight-search-clear{display:none !important}
+/* SPOTLIGHT SEARCH - SEPARATE SCREEN, never inside video feed, never covers video. Spotlight stays clean full video. */
+.pv-spotlight-searchbar{display:none}
+.pv-spotlight-search-status{display:none !important}
+#pv-spotlight-search-screen{position:fixed;top:0;left:0;right:0;bottom:0;z-index:620;background:#000;display:flex;flex-direction:column;padding:calc(14px + env(safe-area-inset-top)) 0 calc(20px + env(safe-area-inset-bottom));transform:translateX(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);box-sizing:border-box}
+#pv-spotlight-search-screen.show{transform:translateX(0)}
+.pv-spotlight-search-screen-top{display:flex;align-items:center;gap:8px;padding:2px 12px 0}
+#pv-spotlight-search-back-btn{background:none;color:#fff;border:none;width:36px;height:44px;min-width:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+#pv-spotlight-search-back-btn svg{width:26px;height:26px;display:block}
+.pv-spotlight-search-screen-row{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.pv-spotlight-search-screen-wrap{flex:1 1 0;display:flex;align-items:center;gap:8px;background:#141414;border:1px solid #222;border-radius:999px;padding:0 8px 0 14px;height:44px;box-sizing:border-box;min-width:0;overflow:hidden}
+.pv-spotlight-search-screen-wrap svg{width:20px;height:20px;flex-shrink:0;color:#aaa}
+.pv-spotlight-search-screen-wrap input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:15px;min-width:0}
+.pv-spotlight-search-screen-wrap input::placeholder{color:#888}
 #pv-spotlight-search-cancel{background:#333;color:#fff;border:none;border-radius:50%;width:24px;height:24px;min-width:24px;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;cursor:pointer;flex-shrink:0;padding:0}
-#pv-spotlight-search-go{background:linear-gradient(90deg,#0084ff,#00bfa5);color:#fff;border:none;border-radius:999px;height:44px;padding:0 16px;font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.4);flex-shrink:0;display:flex;align-items:center;justify-content:center}
-#pv-spotlight-search-go:active{opacity:.85}
-.pv-spotlight-search-chips{display:none !important}
-.pv-spotlight-chip{display:none !important}
-.pv-spotlight-search-status{display:none;position:absolute;top:calc(56px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);align-items:center;gap:8px;padding:7px 12px;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.14);border-radius:999px;color:#aaa;font-size:12px;z-index:60;white-space:nowrap;max-width:92%;box-sizing:border-box;backdrop-filter:blur(6px)}
-.pv-spotlight-search-status.show{display:flex}
-.pv-spotlight-search-status b{color:#fff;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pv-spotlight-search-status button{background:none;border:none;color:#00bfa5;font-size:12px;font-weight:800;cursor:pointer;padding:0;margin-left:2px;flex-shrink:0}
+#pv-spotlight-search-go{background:linear-gradient(90deg,#0084ff,#00bfa5);color:#fff;border:none;border-radius:999px;height:44px;padding:0 16px;font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.pv-spotlight-search-hint{padding:18px 16px 0;color:#888;font-size:14px;line-height:1.5}
+#pv-spotlight-clear-search-btn{display:none;background:none;border:none;color:#fff;font-size:13px;font-weight:800;cursor:pointer;padding:8px;text-shadow:0 2px 8px rgba(0,0,0,.95);white-space:nowrap}
+#pv-spotlight-clear-search-btn.show{display:block}
 #pv-spotlight-back-btn{background:none;color:#fff;border:none;width:36px;height:42px;min-width:36px;display:flex;align-items:center;justify-content:center;padding:4px 0 4px 4px;border-radius:50%;-webkit-tap-highlight-color:transparent;cursor:pointer}
 #pv-spotlight-back-btn:active{background:#1a1a1a}
 #pv-spotlight-back-btn svg{width:26px;height:26px;display:block}
@@ -1687,12 +1686,12 @@ body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
 .pv-spotlight-feed::-webkit-scrollbar{display:none;width:0 !important;height:0 !important}
 .pv-spotlight-item{position:relative;width:100%;height:100%;min-height:100%;scroll-snap-align:start;scroll-snap-stop:always;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;isolation:isolate;contain:layout paint}
 .pv-spotlight-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#000;z-index:4}
-.pv-spotlight-item iframe{width:100%;height:100%;border:none;display:block;background:#000;position:absolute;inset:0;z-index:1;pointer-events:none;transform:scale(1.22);transform-origin:center center}
+.pv-spotlight-item iframe{width:100%;height:100%;border:none;display:block;background:#000;position:absolute;inset:0;z-index:1;pointer-events:none;transform:scale(1.35);transform-origin:center center}
 /* MASKS - ALWAYS ON - hide YouTube top title/channel + bottom bar / Watch Later / YouTube logo / views, even while playing */
-.pv-spotlight-yt-mask-top{position:absolute;top:0;left:0;right:0;height:96px;background:linear-gradient(to bottom,rgba(0,0,0,1) 0%,rgba(0,0,0,.95) 55%,rgba(0,0,0,0) 100%);z-index:2;pointer-events:none;display:block}
-.pv-spotlight-yt-mask-bottom{position:absolute;left:0;right:0;bottom:0;height:148px;background:linear-gradient(to top,rgba(0,0,0,1) 0%,rgba(0,0,0,.95) 55%,rgba(0,0,0,0) 100%);z-index:2;pointer-events:none;display:block}
+.pv-spotlight-yt-mask-top{display:none !important;background:transparent !important;height:0 !important}
+.pv-spotlight-yt-mask-bottom{display:none !important;background:transparent !important;height:0 !important}
 /* FULL COVER - ONLY WHEN PAUSED - hides YouTube pause overlay incl. prev/next, suggested, Watch on YouTube */
-.pv-spotlight-yt-top-cover{position:absolute;inset:0;background:#000;display:none;z-index:3;pointer-events:none}
+.pv-spotlight-yt-top-cover{display:none !important;background:transparent !important}
 .pv-spotlight-item.pv-is-paused .pv-spotlight-yt-top-cover{display:block}
 .pv-spotlight-item.pv-is-paused .pv-spotlight-thumb{display:block !important}
 .pv-spotlight-tap{position:absolute;inset:0;z-index:5;background:transparent;cursor:pointer}
@@ -1703,7 +1702,7 @@ body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
 .pv-spotlight-center-play.is-playing .pv-icon-play{display:none}
 .pv-spotlight-center-play.is-playing .pv-icon-pause{display:block}
 /* BOTTOM OVERLAY - CAPTION ONLY - no channel, no avatar, no views, no YouTube logo */
-.pv-spotlight-overlay{position:absolute;left:0;right:0;bottom:0;padding:12px 72px 18px 12px;background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.45) 55%,transparent 100%);z-index:7;pointer-events:none}
+.pv-spotlight-overlay{position:absolute;left:0;right:0;bottom:0;padding:12px 72px 20px 12px;background:transparent !important;z-index:7;pointer-events:none}.pv-spotlight-overlay .pv-spotlight-title-text,.pv-spotlight-overlay .pv-spotlight-channel-name,.pv-spotlight-overlay .pv-spotlight-views{text-shadow:0 2px 8px rgba(0,0,0,.95),0 1px 3px rgba(0,0,0,.95),0 0 2px rgba(0,0,0,.9)}
 .pv-spotlight-channel{display:flex;align-items:center;gap:8px;margin-bottom:6px;pointer-events:auto}
 .pv-spotlight-avatar{width:32px;height:32px;min-width:32px;border-radius:50%;background:#222;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;overflow:hidden;flex-shrink:0}.pv-spotlight-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
 .pv-spotlight-channel-name{font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
@@ -1907,10 +1906,14 @@ setTimeout(function(){
 <div id="pv-home-feed" aria-live="polite"></div>
 </section>
 <section id="pv-spotlight-screen" role="dialog" aria-label="Spotlight">
-  <div class="pv-spotlight-top"><button id="pv-spotlight-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-spotlight-title">Spotlight</div><div class="pv-spotlight-top-spacer"></div><button id="pv-spotlight-search-btn" type="button" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button></div>
-  <div id="pv-spotlight-searchbar" class="pv-spotlight-searchbar" hidden><div class="pv-spotlight-search-row"><div class="pv-spotlight-search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg><input id="pv-spotlight-search-input" type="text" placeholder="Search Spotlight..." autocomplete="off" enterkeyhint="search"><button id="pv-spotlight-search-cancel" type="button" aria-label="Cancel">✕</button></div><button id="pv-spotlight-search-go" type="button">Search</button></div></div>
-  <div id="pv-spotlight-search-status" class="pv-spotlight-search-status"><span>Results for&nbsp;<b id="pv-spotlight-search-status-text"></b></span><button id="pv-spotlight-search-status-clear" type="button">Clear ✕</button></div>
+  <div class="pv-spotlight-top"><button id="pv-spotlight-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-spotlight-title" id="pv-spotlight-title">Spotlight</div><div class="pv-spotlight-top-spacer"></div><button id="pv-spotlight-clear-search-btn" type="button">Clear ✕</button><button id="pv-spotlight-search-btn" type="button" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button></div>
   <div class="pv-spotlight-blank"><div id="pv-spotlight-feed" class="pv-spotlight-feed"></div><div id="pv-spotlight-empty" class="pv-spotlight-empty" hidden><h3>No Shorts yet</h3><p>Tap retry to load fresh Shorts.</p><button id="pv-spotlight-retry" type="button" style="background:#22c55e;color:#fff;border:none;border-radius:999px;padding:12px 22px;font-size:15px;font-weight:800;cursor:pointer">Tap to retry</button><p id="pv-spotlight-err" style="font-size:12px;color:#888;margin-top:8px"></p></div><div id="pv-spotlight-loading" class="pv-spotlight-loading" hidden><div class="pv-spotlight-spinner"></div><span>Loading Videos please wait...</span></div></div>
+</section>
+
+<section id="pv-spotlight-search-screen" role="dialog" aria-label="Search Spotlight">
+  <div class="pv-spotlight-search-screen-top"><button id="pv-spotlight-search-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-spotlight-search-screen-row"><div class="pv-spotlight-search-screen-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg><input id="pv-spotlight-search-input" type="text" placeholder="Search Spotlight..." autocomplete="off" enterkeyhint="search"><button id="pv-spotlight-search-cancel" type="button" aria-label="Cancel">✕</button></div><button id="pv-spotlight-search-go" type="button">Search</button></div></div>
+  <div class="pv-spotlight-search-hint">Search Spotlight videos. Results will open in Spotlight — tap Back to go back to your videos.</div>
+  <div id="pv-spotlight-search-status" class="pv-spotlight-search-status" hidden><span>Results for&nbsp;<b id="pv-spotlight-search-status-text"></b></span><button id="pv-spotlight-search-status-clear" type="button">Clear ✕</button></div>
 </section>
 
 <section id="pv-home-post-screen" class="hidden" hidden>
@@ -14480,10 +14483,9 @@ var _pvChanAvatarCache={}; try{ _pvChanAvatarCache=JSON.parse(localStorage.getIt
   }
   function pvSpotShowSearchStatus(q){
     try{
-      var st=document.getElementById('pv-spotlight-search-status'); var tx=document.getElementById('pv-spotlight-search-status-text');
-      if(!st) return;
-      if(q){ if(tx) tx.textContent='"'+q+'"'; st.classList.add('show'); st.removeAttribute('hidden'); }
-      else { st.classList.remove('show'); st.setAttribute('hidden',''); }
+      var title=document.getElementById('pv-spotlight-title'); var clr=document.getElementById('pv-spotlight-clear-search-btn');
+      if(q){ if(title) title.textContent='Results: '+q; if(clr) clr.classList.add('show'); }
+      else { if(title) title.textContent='Spotlight'; if(clr) clr.classList.remove('show'); }
     }catch(e){}
   }
   function pvSpotSearchYouTube(q, pageToken, keyIdx){
@@ -14539,6 +14541,7 @@ var _pvChanAvatarCache={}; try{ _pvChanAvatarCache=JSON.parse(localStorage.getIt
     try{ var feed=document.getElementById('pv-spotlight-feed'); if(feed && !feed.children.length){ var c2=readCache(); if(c2 && c2.videos) _pvSpotTrendingBeforeSearch=c2.videos.slice(); } }catch(e){}
     // If feed has trending items, keep them as backup from DOM cache if needed
     pvSpotShowSearchStatus(q);
+    pvSpotCloseSearchBar();
     pvSpotClearFeed();
     showEmpty(false); showErr(''); showLoading(true);
     _pvSpotSearchLoading=true;
@@ -14591,25 +14594,26 @@ var _pvChanAvatarCache={}; try{ _pvChanAvatarCache=JSON.parse(localStorage.getIt
   }
   function pvSpotOpenSearchBar(){
     try{
-      var bar=document.getElementById('pv-spotlight-searchbar'); var btn=document.getElementById('pv-spotlight-search-btn');
-      if(!bar) return;
-      bar.classList.add('show'); bar.removeAttribute('hidden'); if(btn) btn.classList.add('active');
+      var scr=document.getElementById('pv-spotlight-search-screen'); var btn=document.getElementById('pv-spotlight-search-btn');
+      if(!scr) return;
+      scr.classList.add('show'); if(btn) btn.classList.add('active');
       try{ pauseAll(); }catch(e){}
-      setTimeout(function(){ try{ var inp=document.getElementById('pv-spotlight-search-input'); if(inp) inp.focus(); }catch(e){} }, 80);
-      try{ var feed=document.getElementById('pv-spotlight-feed'); if(feed && !feed.dataset.pvSpotSearchTapBound){ feed.dataset.pvSpotSearchTapBound='1'; feed.addEventListener('click', function(e){ try{ var b=document.getElementById('pv-spotlight-searchbar'); if(b && b.classList.contains('show') && (!e.target.closest || !e.target.closest('#pv-spotlight-searchbar'))) pvSpotCloseSearchBar(); }catch(_){} }); } }catch(e){}
+      setTimeout(function(){ try{ var inp=document.getElementById('pv-spotlight-search-input'); if(inp) inp.focus(); }catch(e){} }, 120);
     }catch(e){}
   }
   function pvSpotCloseSearchBar(){
     try{
-      var bar=document.getElementById('pv-spotlight-searchbar'); var btn=document.getElementById('pv-spotlight-search-btn');
-      if(bar){ bar.classList.remove('show'); bar.setAttribute('hidden',''); }
+      var scr=document.getElementById('pv-spotlight-search-screen'); var btn=document.getElementById('pv-spotlight-search-btn');
+      if(scr) scr.classList.remove('show');
       if(btn) btn.classList.remove('active');
-      // If we were searching, keep results + status. Only hide keyboard. If bar closed without search, resume.
+      try{ if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); }catch(e){}
       if(!_pvSpotIsSearching){
         try{ var f=document.getElementById('pv-spotlight-feed'); if(f && f.children.length){ setupObserver(); } }catch(e){}
       }
     }catch(e){}
   }
+  try{ var _ssBack=document.getElementById('pv-spotlight-search-back-btn'); if(_ssBack && !_ssBack.dataset.pvBound){ _ssBack.dataset.pvBound='1'; _ssBack.addEventListener('click', function(e){ try{ e.preventDefault(); }catch(_){} pvSpotCloseSearchBar(); }); } }catch(e){}
+  try{ var _ssClear=document.getElementById('pv-spotlight-clear-search-btn'); if(_ssClear && !_ssClear.dataset.pvBound){ _ssClear.dataset.pvBound='1'; _ssClear.addEventListener('click', function(e){ try{ e.preventDefault(); }catch(_){} pvSpotClearSearch(); }); } }catch(e){}
   window.PVSpotlightSearch={doSearch:pvSpotDoSearch, clear:pvSpotClearSearch, openBar:pvSpotOpenSearchBar, closeBar:pvSpotCloseSearchBar};
 
   /* ---------- ONE ITEM - bottom caption only, top YouTube title covered ---------- */
