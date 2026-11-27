@@ -1643,7 +1643,7 @@ html[data-pv-accent="white"] .dm-msg{color:#000 !important}
 }
 </style>
 <style id="pv-spotlight-style">
-/* SPOTLIGHT - LOCKED - Behaves EXACTLY like Notification panel */
+/* SPOTLIGHT - SLEEK - caption down only, pause/play centre only, NO YouTube UI, NO prev/next */
 #pv-spotlight-screen{position:fixed;top:0;left:0;right:0;bottom:58px;z-index:601;background:#000;border-radius:0;padding:calc(12px + env(safe-area-inset-top)) 0 0;transform:translateX(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);max-height:none;height:auto;display:flex;flex-direction:column;box-shadow:none;will-change:transform}
 #pv-spotlight-screen::after{content:"";position:absolute;left:0;right:0;top:100%;height:58px;background:#000;display:block;pointer-events:none}
 #pv-spotlight-screen.show{transform:translateX(0)}
@@ -1651,41 +1651,64 @@ html[data-pv-accent="white"] .dm-msg{color:#000 !important}
 body:has(#pv-spotlight-screen.show) .bottom-nav{z-index:602;animation:none;transform:none}
 body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
 .pv-spotlight-top{display:flex;align-items:center;gap:2px;padding:2px 12px 10px 4px;background:#000;flex:0 0 auto}
-#pv-spotlight-back-btn{background:none;color:#fff;border:none;width:36px;height:42px;min-width:36px;display:flex;align-items:center;justify-content:center;padding:4px 0 4px 4px;border-radius:50%;-webkit-tap-highlight-color:transparent;cursor:pointer}
-#pv-spotlight-back-btn:active{background:#1a1a1a}
-#pv-spotlight-back-btn svg{width:26px;height:26px;display:block}
-.pv-spotlight-title{margin:0 0 0 -2px;font-size:26px;font-weight:800;line-height:1;color:#fff;letter-spacing:.2px;font-family:inherit;flex:1}
+.pv-spotlight-top-spacer{flex:1}
 #pv-spotlight-search-btn{background:none;color:#fff;border:none;width:42px;height:42px;min-width:42px;display:flex;align-items:center;justify-content:center;padding:4px;border-radius:50%;-webkit-tap-highlight-color:transparent;cursor:pointer}
 #pv-spotlight-search-btn:active{background:#1a1a1a}
 #pv-spotlight-search-btn svg{width:28px;height:28px;display:block}
-.pv-spotlight-search-bar{display:flex;align-items:center;gap:8px;padding:0 12px 10px;background:#000;flex:0 0 auto}
-.pv-spotlight-search-bar[hidden]{display:none !important}
-#pv-spotlight-search-close{background:#1a1a1a;color:#fff;border:none;width:36px;height:36px;min-width:36px;border-radius:50%;font-size:16px;line-height:1;cursor:pointer}
-#pv-spotlight-search-input{flex:1;min-width:0;background:#1a1a1a;color:#fff;border:none;border-radius:999px;padding:10px 14px;font-size:15px;outline:none}
-#pv-spotlight-search-input::placeholder{color:#888}
-#pv-spotlight-search-go{background:#22c55e;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap}
+#pv-spotlight-search-btn.active{background:#1a1a1a}
+/* SPOTLIGHT SEARCH - SLEEK - one slim floating pill, never covers video, auto-hides after search. No chips. Cancel ✕ INSIDE bar right. Search = blue-green pill. */
+.pv-spotlight-searchbar{display:none;position:absolute;top:calc(56px + env(safe-area-inset-top));left:12px;right:12px;z-index:60;background:transparent;padding:0;box-sizing:border-box;overflow:hidden}
+.pv-spotlight-searchbar.show{display:block}
+.pv-spotlight-search-row{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;min-width:0}
+.pv-spotlight-search-wrap{flex:1 1 0;display:flex;align-items:center;gap:8px;background:rgba(20,20,20,.94);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:0 8px 0 14px;height:44px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.5);min-width:0;overflow:hidden}
+.pv-spotlight-search-wrap:focus-within{border-color:rgba(255,255,255,.3)}
+.pv-spotlight-search-wrap svg{width:20px;height:20px;flex-shrink:0;color:#aaa}
+.pv-spotlight-search-wrap input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:15px;min-width:0}
+.pv-spotlight-search-wrap input::placeholder{color:#888}
+#pv-spotlight-search-clear{display:none !important}
+#pv-spotlight-search-cancel{background:#333;color:#fff;border:none;border-radius:50%;width:24px;height:24px;min-width:24px;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;cursor:pointer;flex-shrink:0;padding:0}
+#pv-spotlight-search-go{background:linear-gradient(90deg,#0084ff,#00bfa5);color:#fff;border:none;border-radius:999px;height:44px;padding:0 16px;font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.4);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+#pv-spotlight-search-go:active{opacity:.85}
+.pv-spotlight-search-chips{display:none !important}
+.pv-spotlight-chip{display:none !important}
+.pv-spotlight-search-status{display:none;position:absolute;top:calc(56px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);align-items:center;gap:8px;padding:7px 12px;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.14);border-radius:999px;color:#aaa;font-size:12px;z-index:60;white-space:nowrap;max-width:92%;box-sizing:border-box;backdrop-filter:blur(6px)}
+.pv-spotlight-search-status.show{display:flex}
+.pv-spotlight-search-status b{color:#fff;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-spotlight-search-status button{background:none;border:none;color:#00bfa5;font-size:12px;font-weight:800;cursor:pointer;padding:0;margin-left:2px;flex-shrink:0}
+#pv-spotlight-back-btn{background:none;color:#fff;border:none;width:36px;height:42px;min-width:36px;display:flex;align-items:center;justify-content:center;padding:4px 0 4px 4px;border-radius:50%;-webkit-tap-highlight-color:transparent;cursor:pointer}
+#pv-spotlight-back-btn:active{background:#1a1a1a}
+#pv-spotlight-back-btn svg{width:26px;height:26px;display:block}
+.pv-spotlight-title{margin:0 0 0 -2px;font-size:26px;font-weight:800;line-height:1;color:#fff;letter-spacing:.2px;font-family:inherit}
 .pv-spotlight-blank{flex:1;background:#000;min-height:0}
 .pv-home-reels-btn{cursor:pointer !important}
-/* SPOTLIGHT SHORTS FEED - LOCKED - YouTube millions, swipe like Reels, quota-safe */
+/* SPOTLIGHT SHORTS FEED - SLEEK - YouTube UI fully masked, one video at a time, no bleed */
 .pv-spotlight-blank{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;background:#000}
 .pv-spotlight-feed{flex:1;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;background:#000}
 .pv-spotlight-feed::-webkit-scrollbar{display:none;width:0 !important;height:0 !important}
-.pv-spotlight-item{position:relative;width:100%;height:100%;min-height:100%;scroll-snap-align:start;scroll-snap-stop:always;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
-.pv-spotlight-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;background:#000;z-index:3}
-.pv-spotlight-item iframe{width:100%;height:100%;border:none;display:block;background:#000;object-fit:contain;position:absolute;inset:0;z-index:1;pointer-events:none !important;touch-action:none}
-.pv-spotlight-yt-top-cover{position:absolute;left:0;right:0;top:0;height:74px;background:#000;display:block;z-index:2;pointer-events:none}
-.pv-spotlight-yt-bottom-cover{position:absolute;right:0;bottom:0;width:140px;height:46px;background:#000;display:block;z-index:2;pointer-events:none}
+.pv-spotlight-item{position:relative;width:100%;height:100%;min-height:100%;scroll-snap-align:start;scroll-snap-stop:always;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;isolation:isolate;contain:layout paint}
+.pv-spotlight-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#000;z-index:4}
+.pv-spotlight-item iframe{width:100%;height:100%;border:none;display:block;background:#000;position:absolute;inset:0;z-index:1;pointer-events:none;transform:scale(1.22);transform-origin:center center}
+/* MASKS - ALWAYS ON - hide YouTube top title/channel + bottom bar / Watch Later / YouTube logo / views, even while playing */
+.pv-spotlight-yt-mask-top{position:absolute;top:0;left:0;right:0;height:96px;background:linear-gradient(to bottom,rgba(0,0,0,1) 0%,rgba(0,0,0,.95) 55%,rgba(0,0,0,0) 100%);z-index:2;pointer-events:none;display:block}
+.pv-spotlight-yt-mask-bottom{position:absolute;left:0;right:0;bottom:0;height:148px;background:linear-gradient(to top,rgba(0,0,0,1) 0%,rgba(0,0,0,.95) 55%,rgba(0,0,0,0) 100%);z-index:2;pointer-events:none;display:block}
+/* FULL COVER - ONLY WHEN PAUSED - hides YouTube pause overlay incl. prev/next, suggested, Watch on YouTube */
+.pv-spotlight-yt-top-cover{position:absolute;inset:0;background:#000;display:none;z-index:3;pointer-events:none}
 .pv-spotlight-item.pv-is-paused .pv-spotlight-yt-top-cover{display:block}
 .pv-spotlight-item.pv-is-paused .pv-spotlight-thumb{display:block !important}
-.pv-spotlight-tap{position:absolute;inset:0;z-index:4;background:rgba(0,0,0,0.01);cursor:pointer;pointer-events:auto;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.pv-spotlight-center-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:68px;border-radius:50%;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5}
-.pv-spotlight-center-play svg{width:32px;height:32px;fill:#fff}
-.pv-spotlight-overlay{position:absolute;left:0;right:0;bottom:0;padding:14px 72px 16px 12px;background:linear-gradient(to top,rgba(0,0,0,.78) 0%,rgba(0,0,0,.45) 45%,transparent 100%);z-index:6;pointer-events:none}
+.pv-spotlight-tap{position:absolute;inset:0;z-index:5;background:transparent;cursor:pointer}
+/* CENTER - ONLY pause/play, NEVER prev/next */
+.pv-spotlight-center-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:6}
+.pv-spotlight-center-play svg{width:34px;height:34px;fill:#fff;display:block}
+.pv-spotlight-center-play .pv-icon-pause{display:none}
+.pv-spotlight-center-play.is-playing .pv-icon-play{display:none}
+.pv-spotlight-center-play.is-playing .pv-icon-pause{display:block}
+/* BOTTOM OVERLAY - CAPTION ONLY - no channel, no avatar, no views, no YouTube logo */
+.pv-spotlight-overlay{position:absolute;left:0;right:0;bottom:0;padding:12px 72px 18px 12px;background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.45) 55%,transparent 100%);z-index:7;pointer-events:none}
 .pv-spotlight-channel{display:flex;align-items:center;gap:8px;margin-bottom:6px;pointer-events:auto}
 .pv-spotlight-avatar{width:32px;height:32px;min-width:32px;border-radius:50%;background:#222;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;overflow:hidden;flex-shrink:0}.pv-spotlight-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
 .pv-spotlight-channel-name{font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
-.pv-spotlight-title-text{font-size:14px;font-weight:400;line-height:1.35;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .pv-spotlight-views{font-size:12px;font-weight:400;color:#bbb;margin-top:4px}
+.pv-spotlight-title-text{font-size:15px;font-weight:400;line-height:1.35;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .pv-spotlight-actions{position:absolute;right:14px;bottom:90px;display:flex;flex-direction:column;gap:20px;z-index:10;pointer-events:auto;align-items:center}
 .pv-spotlight-action{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;color:#fff;cursor:pointer;padding:6px;min-width:48px;min-height:48px;touch-action:manipulation;pointer-events:auto;-webkit-tap-highlight-color:transparent}
 .pv-spotlight-action-circle{width:44px;height:44px;border-radius:0;background:none;display:flex;align-items:center;justify-content:center;border:none}
@@ -1884,7 +1907,9 @@ setTimeout(function(){
 <div id="pv-home-feed" aria-live="polite"></div>
 </section>
 <section id="pv-spotlight-screen" role="dialog" aria-label="Spotlight">
-  <div class="pv-spotlight-top"><button id="pv-spotlight-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-spotlight-title">Spotlight</div><button id="pv-spotlight-search-btn" type="button" aria-label="Search YouTube videos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button></div><div class="pv-spotlight-search-bar" id="pv-spotlight-search-bar" hidden><button id="pv-spotlight-search-close" type="button" aria-label="Close search">✕</button><input id="pv-spotlight-search-input" type="search" placeholder="Search YouTube videos..." autocomplete="off" enterkeyhint="search"/><button id="pv-spotlight-search-go" type="button">Search</button></div>
+  <div class="pv-spotlight-top"><button id="pv-spotlight-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-spotlight-title">Spotlight</div><div class="pv-spotlight-top-spacer"></div><button id="pv-spotlight-search-btn" type="button" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button></div>
+  <div id="pv-spotlight-searchbar" class="pv-spotlight-searchbar" hidden><div class="pv-spotlight-search-row"><div class="pv-spotlight-search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg><input id="pv-spotlight-search-input" type="text" placeholder="Search Spotlight..." autocomplete="off" enterkeyhint="search"><button id="pv-spotlight-search-cancel" type="button" aria-label="Cancel">✕</button></div><button id="pv-spotlight-search-go" type="button">Search</button></div></div>
+  <div id="pv-spotlight-search-status" class="pv-spotlight-search-status"><span>Results for&nbsp;<b id="pv-spotlight-search-status-text"></b></span><button id="pv-spotlight-search-status-clear" type="button">Clear ✕</button></div>
   <div class="pv-spotlight-blank"><div id="pv-spotlight-feed" class="pv-spotlight-feed"></div><div id="pv-spotlight-empty" class="pv-spotlight-empty" hidden><h3>No Shorts yet</h3><p>Tap retry to load fresh Shorts.</p><button id="pv-spotlight-retry" type="button" style="background:#22c55e;color:#fff;border:none;border-radius:999px;padding:12px 22px;font-size:15px;font-weight:800;cursor:pointer">Tap to retry</button><p id="pv-spotlight-err" style="font-size:12px;color:#888;margin-top:8px"></p></div><div id="pv-spotlight-loading" class="pv-spotlight-loading" hidden><div class="pv-spotlight-spinner"></div><span>Loading Videos please wait...</span></div></div>
 </section>
 
@@ -5959,94 +5984,6 @@ if(!atBottom)window._pvJustOpened=false;
       hs.addEventListener('touchcancel', endFn, {passive:true});
     }catch(e){}
   }
-  /* ---------- SPOTLIGHT SEARCH - searches YouTube, same feed style ---------- */
-  var _pvSpotSearching=false;
-  var _pvSpotSearchQuery='';
-  function showSpotSearch(){
-    try{
-      var bar=document.getElementById('pv-spotlight-search-bar'); if(bar) bar.hidden=false;
-      var inp=document.getElementById('pv-spotlight-search-input'); if(inp){ setTimeout(function(){ try{ inp.focus(); }catch(_){} }, 20); }
-      try{ pauseAll(); }catch(_){}
-      try{ pauseOutsideSpotlight(); }catch(_){}
-    }catch(e){}
-  }
-  function hideSpotSearch(restore){
-    try{
-      var bar=document.getElementById('pv-spotlight-search-bar'); if(bar) bar.hidden=true;
-      var inp=document.getElementById('pv-spotlight-search-input'); if(inp) inp.value='';
-      _pvSpotSearching=false; _pvSpotSearchQuery='';
-      if(restore){
-        // Back to normal feed - clear search results, reload normal Spotlight
-        try{ var feed=document.getElementById('pv-spotlight-feed'); if(feed) feed.innerHTML=''; }catch(_){}
-        try{ _loading=false; load(true); }catch(_){}
-      }
-    }catch(e){}
-  }
-  function searchYouTube(query, keyIdx){
-    var keys=getKeys();
-    if(!keys.length) return Promise.resolve([]);
-    var ki=keyIdx||0;
-    var key=keys[ki % keys.length];
-    var url='https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=50&regionCode=NG&q='+encodeURIComponent(query)+'&key='+encodeURIComponent(key);
-    return fetchWithTimeout(url, {}, 5000).then(function(r){
-      if(!r.ok){
-        if(r.status===403 && ki < keys.length-1) return searchYouTube(query, ki+1);
-        return null;
-      }
-      return r.json();
-    }).catch(function(){ return null; }).then(function(data){
-      if(!data || !Array.isArray(data.items) || !data.items.length) return [];
-      var ids=[];
-      data.items.forEach(function(it){ try{ var vid=it.id && it.id.videoId; if(vid && ids.indexOf(vid)===-1) ids.push(vid); }catch(_){} });
-      if(!ids.length) return [];
-      // Get full details (views, embeddable, status) so search results look exactly like normal feed
-      var url2='https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics,status&id='+ids.join(',')+'&key='+encodeURIComponent(key);
-      return fetchWithTimeout(url2, {}, 5000).then(function(r2){ if(!r2.ok) return null; return r2.json(); }).catch(function(){ return null; }).then(function(d2){
-        if(!d2 || !Array.isArray(d2.items)) return [];
-        var vids=[];
-        d2.items.forEach(function(it){
-          try{
-            var vid=it.id; if(!vid) return;
-            var sn=it.snippet||{}; var st=it.statistics||{}; var stt=it.status||{};
-            if(stt.embeddable===false) return;
-            if(stt.privacyStatus && stt.privacyStatus!=='public') return;
-            var title=String(sn.title||'').trim(); if(!title) return;
-            var low=title.toLowerCase();
-            if(low.indexOf('movie')!==-1 || low.indexOf('film')!==-1 || low.indexOf('nollywood')!==-1 || low.indexOf('hollywood')!==-1 || low.indexOf('bollywood')!==-1 || low.indexOf('cinema')!==-1 || low.indexOf('trailer')!==-1 || low.indexOf('full episode')!==-1) return;
-            var thumb=(sn.thumbnails && (sn.thumbnails.maxres || sn.thumbnails.high || sn.thumbnails.medium || sn.thumbnails.default) && (sn.thumbnails.maxres || sn.thumbnails.high || sn.thumbnails.medium || sn.thumbnails.default).url) || '';
-            vids.push({videoId:vid,title:title,channel:sn.channelTitle||'',channelId:sn.channelId||'',channelAvatar:'',thumb:thumb,publishedAt:sn.publishedAt||'',viewCount:st.viewCount||'0',likeCount:st.likeCount||'0',commentCount:st.commentCount||'0',categoryId:''});
-          }catch(_){}
-        });
-        return vids;
-      });
-    });
-  }
-  function doSpotSearch(){
-    try{
-      var inp=document.getElementById('pv-spotlight-search-input'); if(!inp) return;
-      var q=String(inp.value||'').trim(); if(!q) return;
-      _pvSpotSearching=true; _pvSpotSearchQuery=q;
-      try{ pauseAll(); }catch(_){}
-      try{ showLoading(true); }catch(_){}
-      try{ showEmpty(false); }catch(_){}
-      searchYouTube(q, 0).then(function(vids){
-        try{
-          showLoading(false);
-          if(!vids || !vids.length){
-            try{ var feed=document.getElementById('pv-spotlight-feed'); if(feed) feed.innerHTML=''; }catch(_){}
-            showEmpty(true); showErr('No videos for "' + q + '" - try another word');
-            return;
-          }
-          // Clear normal feed, show search results in same Spotlight swipe feed
-          try{ var f=document.getElementById('pv-spotlight-feed'); if(f) f.innerHTML=''; }catch(_){}
-          showErr('');
-          render(vids);
-          try{ var f2=document.getElementById('pv-spotlight-feed'); if(f2) f2.scrollTop=0; }catch(_){}
-        }catch(_){}
-      }).catch(function(){ try{ showLoading(false); showErr('Search failed - check internet, try again'); }catch(_){} });
-    }catch(e){}
-  }
-
   function bind(){
     els(); if(!btn || !input) return;
     if(btn.dataset.pvSearchBound) return; btn.dataset.pvSearchBound = '1';
@@ -14385,7 +14322,7 @@ function fetchWithTimeout(url, opts, ms){
       return new Promise(function(resolve, reject){
         try{
           var done = false;
-          var timer = setTimeout(function(){ if(!done){ done=true; reject(new Error('timeout')); } }, ms||5000);
+          var timer = setTimeout(function(){ if(!done){ done=true; reject(new Error('timeout')); } }, ms||12000);
           fetch(url, opts||{}).then(function(r){ if(!done){ done=true; clearTimeout(timer); resolve(r); } }).catch(function(e){ if(!done){ done=true; clearTimeout(timer); reject(e); } });
         }catch(e){ reject(e); }
       });
@@ -14523,6 +14460,158 @@ var _pvChanAvatarCache={}; try{ _pvChanAvatarCache=JSON.parse(localStorage.getIt
     }
     
 
+
+  /* ---------- SPOTLIGHT SEARCH - real YouTube search, same keys as trending ---------- */
+  var _pvSpotSearchQuery = '';
+  var _pvSpotSearchToken = null;
+  var _pvSpotIsSearching = false;
+  var _pvSpotSearchLoading = false;
+  var _pvSpotTrendingBeforeSearch = null;
+
+  function pvSpotClearFeed(){
+    try{
+      try{ pauseAll(); }catch(e){}
+      var feed=document.getElementById('pv-spotlight-feed'); if(!feed) return;
+      // Remove iframes first so videos stop
+      try{ Array.prototype.forEach.call(feed.querySelectorAll('iframe'), function(f){ try{ f.remove(); }catch(_){} }); }catch(e){}
+      feed.innerHTML='';
+      try{ feed.scrollTop=0; }catch(e){}
+    }catch(e){}
+  }
+  function pvSpotShowSearchStatus(q){
+    try{
+      var st=document.getElementById('pv-spotlight-search-status'); var tx=document.getElementById('pv-spotlight-search-status-text');
+      if(!st) return;
+      if(q){ if(tx) tx.textContent='"'+q+'"'; st.classList.add('show'); st.removeAttribute('hidden'); }
+      else { st.classList.remove('show'); st.setAttribute('hidden',''); }
+    }catch(e){}
+  }
+  function pvSpotSearchYouTube(q, pageToken, keyIdx){
+    var keys=getKeys();
+    if(!keys.length) return Promise.resolve({videos:[], nextPageToken:null});
+    var key=keys[(keyIdx||0)%keys.length];
+    var url='https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoDuration=short&order=relevance&safeSearch=moderate&maxResults=50&regionCode=NG&q='+encodeURIComponent(q)+'&key='+encodeURIComponent(key)+(pageToken?'&pageToken='+encodeURIComponent(pageToken):'');
+    return fetchWithTimeout(url, {}, 12000).then(function(r){
+      if(!r.ok){
+        if(r.status===403 && (keyIdx||0) < keys.length-1) return pvSpotSearchYouTube(q, pageToken, (keyIdx||0)+1);
+        if(r.status===403){
+          // Retry once with US region
+          var url2=url.replace('regionCode=NG','regionCode=US');
+          return fetch(url2).then(function(r2){ return r2.json(); }).catch(function(){ return null; });
+        }
+        return null;
+      }
+      return r.json();
+    }).catch(function(){ return null; }).then(function(data){
+      if(!data || !Array.isArray(data.items) || !data.items.length) return {videos:[], nextPageToken:(data&&data.nextPageToken)||null};
+      var ids=[];
+      data.items.forEach(function(it){ try{ var vid=(it.id&&it.id.videoId)||''; if(vid && ids.indexOf(vid)===-1) ids.push(vid); }catch(e){} });
+      if(!ids.length) return {videos:[], nextPageToken:data.nextPageToken||null};
+      // Get stats + status so results have views/likes like trending and are playable
+      var detailUrl='https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,status&maxResults=50&id='+encodeURIComponent(ids.join(','))+'&key='+encodeURIComponent(key);
+      return fetchWithTimeout(detailUrl, {}, 12000).then(function(r2){ if(!r2.ok) return null; return r2.json(); }).catch(function(){ return null; }).then(function(d2){
+        var vids=[];
+        var items=(d2 && Array.isArray(d2.items) && d2.items.length) ? d2.items : data.items;
+        items.forEach(function(it){
+          try{
+            var vid=it.id; if(typeof vid==='object') vid=vid.videoId; if(!vid) return;
+            var sn=it.snippet||{}; var st=it.statistics||{}; var stt=it.status||{};
+            if(stt.embeddable===false) return;
+            if(stt.privacyStatus && stt.privacyStatus!=='public') return;
+            var title=String(sn.title||'').trim(); if(!title) return;
+            var low=title.toLowerCase();
+            if(low.indexOf('movie')!==-1 || low.indexOf('film')!==-1 || low.indexOf('nollywood')!==-1 || low.indexOf('hollywood')!==-1 || low.indexOf('bollywood')!==-1 || low.indexOf('cinema')!==-1 || low.indexOf('trailer')!==-1 || low.indexOf('full episode')!==-1) return;
+            var thumb=(sn.thumbnails && (sn.thumbnails.maxres || sn.thumbnails.high || sn.thumbnails.medium || sn.thumbnails.default) && (sn.thumbnails.maxres || sn.thumbnails.high || sn.thumbnails.medium || sn.thumbnails.default).url) || '';
+            vids.push({videoId:vid, title:title, channel:sn.channelTitle||'', channelId:sn.channelId||'', channelAvatar:'', thumb:thumb, publishedAt:sn.publishedAt||'', viewCount:st.viewCount||'0', likeCount:st.likeCount||'0', commentCount:st.commentCount||'0', categoryId:''});
+          }catch(e){}
+        });
+        return {videos:vids, nextPageToken:(data&&data.nextPageToken)||null};
+      });
+    });
+  }
+  function pvSpotDoSearch(q){
+    q=String(q||'').trim();
+    if(!q){ pvSpotClearSearch(); return; }
+    try{ pauseAll(); }catch(e){}
+    _pvSpotIsSearching=true; _pvSpotSearchQuery=q; _pvSpotSearchToken=null;
+    // Save trending so Clear goes back instantly
+    try{ if(!_pvSpotTrendingBeforeSearch){ var c=readCache(); if(c && c.videos && c.videos.length) _pvSpotTrendingBeforeSearch=c.videos.slice(); } }catch(e){}
+    try{ var feed=document.getElementById('pv-spotlight-feed'); if(feed && !feed.children.length){ var c2=readCache(); if(c2 && c2.videos) _pvSpotTrendingBeforeSearch=c2.videos.slice(); } }catch(e){}
+    // If feed has trending items, keep them as backup from DOM cache if needed
+    pvSpotShowSearchStatus(q);
+    pvSpotClearFeed();
+    showEmpty(false); showErr(''); showLoading(true);
+    _pvSpotSearchLoading=true;
+    pvSpotSearchYouTube(q, null, 0).then(function(res){
+      _pvSpotSearchLoading=false; showLoading(false);
+      if(!_pvSpotIsSearching) return;
+      _pvSpotSearchToken=(res&&res.nextPageToken)||null;
+      if(res && res.videos && res.videos.length){
+        render(res.videos);
+        // Jump to top + play first
+        try{ var f=document.getElementById('pv-spotlight-feed'); if(f) f.scrollTop=0; }catch(e){}
+        showEmpty(false);
+      } else {
+        showEmpty(true); showErr('No results for "'+q+'" - try another word');
+        // Show empty title as no-results
+        try{ var eEl=document.getElementById('pv-spotlight-empty'); if(eEl){ var h=eEl.querySelector('h3'); if(h) h.textContent='No results'; var p=eEl.querySelector('p'); if(p) p.textContent='Try another search - e.g. Afrobeats, Comedy, Football'; } }catch(e){}
+      }
+    }).catch(function(){ _pvSpotSearchLoading=false; showLoading(false); if(_pvSpotIsSearching){ showEmpty(true); showErr('Search failed - check internet, try again'); } });
+  }
+  function pvSpotFetchSearchMore(){
+    if(!_pvSpotIsSearching || _pvSpotSearchLoading || !_pvSpotSearchToken) return Promise.resolve(0);
+    _pvSpotSearchLoading=true;
+    return pvSpotSearchYouTube(_pvSpotSearchQuery, _pvSpotSearchToken, 0).then(function(res){
+      _pvSpotSearchLoading=false;
+      if(!res || !res.videos || !res.videos.length){ _pvSpotSearchToken=null; return 0; }
+      _pvSpotSearchToken=res.nextPageToken||null;
+      render(res.videos);
+      return res.videos.length;
+    }).catch(function(){ _pvSpotSearchLoading=false; return 0; });
+  }
+  function pvSpotClearSearch(){
+    _pvSpotIsSearching=false; _pvSpotSearchQuery=''; _pvSpotSearchToken=null;
+    pvSpotShowSearchStatus('');
+    try{ var inp=document.getElementById('pv-spotlight-search-input'); if(inp) inp.value=''; }catch(e){}
+    try{ var clr=document.getElementById('pv-spotlight-search-clear'); if(clr) clr.classList.remove('show'); }catch(e){}
+    pvSpotClearFeed();
+    showEmpty(false); showErr('');
+    // Restore trending instantly from backup / cache
+    var restored=null;
+    try{ if(_pvSpotTrendingBeforeSearch && _pvSpotTrendingBeforeSearch.length) restored=_pvSpotTrendingBeforeSearch; else { var c=readCache(); if(c && c.videos) restored=c.videos; } }catch(e){}
+    if(restored && restored.length){
+      render(restored);
+      try{ var f=document.getElementById('pv-spotlight-feed'); if(f) f.scrollTop=0; }catch(e){}
+      // Reset empty title
+      try{ var eEl=document.getElementById('pv-spotlight-empty'); if(eEl){ var h=eEl.querySelector('h3'); if(h) h.textContent='No Shorts yet'; var p=eEl.querySelector('p'); if(p) p.textContent='Tap retry to load fresh Shorts.'; } }catch(e){}
+    } else {
+      try{ _loading=false; load(true); }catch(e){}
+    }
+    _pvSpotTrendingBeforeSearch=null;
+  }
+  function pvSpotOpenSearchBar(){
+    try{
+      var bar=document.getElementById('pv-spotlight-searchbar'); var btn=document.getElementById('pv-spotlight-search-btn');
+      if(!bar) return;
+      bar.classList.add('show'); bar.removeAttribute('hidden'); if(btn) btn.classList.add('active');
+      try{ pauseAll(); }catch(e){}
+      setTimeout(function(){ try{ var inp=document.getElementById('pv-spotlight-search-input'); if(inp) inp.focus(); }catch(e){} }, 80);
+      try{ var feed=document.getElementById('pv-spotlight-feed'); if(feed && !feed.dataset.pvSpotSearchTapBound){ feed.dataset.pvSpotSearchTapBound='1'; feed.addEventListener('click', function(e){ try{ var b=document.getElementById('pv-spotlight-searchbar'); if(b && b.classList.contains('show') && (!e.target.closest || !e.target.closest('#pv-spotlight-searchbar'))) pvSpotCloseSearchBar(); }catch(_){} }); } }catch(e){}
+    }catch(e){}
+  }
+  function pvSpotCloseSearchBar(){
+    try{
+      var bar=document.getElementById('pv-spotlight-searchbar'); var btn=document.getElementById('pv-spotlight-search-btn');
+      if(bar){ bar.classList.remove('show'); bar.setAttribute('hidden',''); }
+      if(btn) btn.classList.remove('active');
+      // If we were searching, keep results + status. Only hide keyboard. If bar closed without search, resume.
+      if(!_pvSpotIsSearching){
+        try{ var f=document.getElementById('pv-spotlight-feed'); if(f && f.children.length){ setupObserver(); } }catch(e){}
+      }
+    }catch(e){}
+  }
+  window.PVSpotlightSearch={doSearch:pvSpotDoSearch, clear:pvSpotClearSearch, openBar:pvSpotOpenSearchBar, closeBar:pvSpotCloseSearchBar};
+
   /* ---------- ONE ITEM - bottom caption only, top YouTube title covered ---------- */
   function buildItem(v, idx){
     try{
@@ -14544,43 +14633,43 @@ var item = document.createElement('div');
             item.appendChild(thumb);
             var play = document.createElement('div');
             play.className = 'pv-spotlight-center-play';
-            play.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+            // SLEEK: ONLY ONE centre icon - play OR pause. NO prev / next ever.
+            play.innerHTML = '<svg class="pv-icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="pv-icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
             item.appendChild(play);
-            // TOP-ONLY FIX: black strip that hides ONLY the YouTube top title/channel row when paused. Bottom app caption is NOT touched.
+            // SLEEK MASKS: ALWAYS ON - top mask hides YouTube top title/channel, bottom mask hides YouTube bottom bar / Watch Later / logo / views
+            var topMask = document.createElement('div');
+            topMask.className = 'pv-spotlight-yt-mask-top';
+            item.appendChild(topMask);
+            var bottomMask = document.createElement('div');
+            bottomMask.className = 'pv-spotlight-yt-mask-bottom';
+            item.appendChild(bottomMask);
+            // FULL COVER: ONLY WHEN PAUSED - hides YouTube pause overlay incl. prev/next, suggested videos, Watch on YouTube
             var topCover = document.createElement('div');
             topCover.className = 'pv-spotlight-yt-top-cover';
             item.appendChild(topCover);
-            // Bottom-right cover - ALWAYS on, hides YouTube logo. Does NOT touch bottom caption (left) or actions (right, higher).
-            var bottomCover = document.createElement('div');
-            bottomCover.className = 'pv-spotlight-yt-bottom-cover';
-            item.appendChild(bottomCover);
-            // Tap layer: taps never reach YouTube, so YouTube never pops its own top caption. We pause/play via API instead.
+            // Tap layer: taps never reach YouTube, so YouTube never pops its own UI. We pause/play via API instead.
             var tap = document.createElement('div');
             tap.className = 'pv-spotlight-tap';
-            var _tapBusy=false;
-            function _onTap(e){
+            tap.addEventListener('click', function(e){
               try{
-                try{ if(e) { e.preventDefault(); e.stopPropagation(); } }catch(_){}
-                if(_tapBusy) return; _tapBusy=true; setTimeout(function(){ _tapBusy=false; }, 120);
                 var ifr = item.querySelector('iframe'); if(!ifr) return;
                 if(item.classList.contains('pv-is-paused')){
-                  // PLAY: hide cover + thumb FIRST, then play. Show NOTHING when playing - no icon, no YouTube UI.
+                  // PLAY: hide full cover + thumb FIRST, show pause icon briefly, then play - so no YouTube UI ever shows
                   item.classList.remove('pv-is-paused');
                   if(thumb) thumb.style.display='none';
-                  if(play) play.style.display='none';
+                  if(play){ play.classList.add('is-playing'); play.style.display='flex'; clearTimeout(play._pvHide); play._pvHide=setTimeout(function(){ try{ if(!item.classList.contains('pv-is-paused')) play.style.display='none'; }catch(_){} }, 450); }
                   try{ ifr.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}','*'); }catch(_){}
                 } else {
-                  // PAUSE: show cover + thumb FIRST, then pause. Show ONLY our single play icon - no YouTube next/prev, no top title, no logo.
+                  // PAUSE: show full cover + thumb + play icon FIRST, then pause - YouTube overlay (top title, prev/next, Watch Later, suggested, logo) is hidden under cover before it can appear
                   item.classList.add('pv-is-paused');
                   if(thumb) thumb.style.display='block';
-                  if(play) play.style.display='flex';
+                  if(play){ clearTimeout(play._pvHide); play.classList.remove('is-playing'); play.style.display='flex'; }
                   try{ ifr.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*'); }catch(_){}
                 }
               }catch(_){}
-            }
-            tap.addEventListener('click', _onTap);
-            tap.addEventListener('touchstart', _onTap, {passive:false});
+            });
             item.appendChild(tap);
+            // BOTTOM OVERLAY: channel + caption + views - LEFT AS IS. Only YouTube stuff is masked.
             var overlay = document.createElement('div');
             overlay.className = 'pv-spotlight-overlay';
             var ch = document.createElement('div');
@@ -14637,7 +14726,7 @@ var acts = document.createElement('div');
                 inp.addEventListener('keydown', function(ev){ if(ev.key==='Enter'){ ev.preventDefault(); send.click(); } });
                 box.appendChild(inp); box.appendChild(send);
                 item.appendChild(box);
-                setTimeout(function(){ try{ inp.focus(); }catch(_){} }, 20);
+                setTimeout(function(){ try{ inp.focus(); }catch(_){} }, 50);
               }catch(_){}
             });
             var shareBtn = document.createElement('button');
@@ -14684,7 +14773,8 @@ var acts = document.createElement('div');
             if(feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 800){
               if(!window._pvSpotMoreLoading){
                 window._pvSpotMoreLoading=true;
-                fetchYouTubeMore().then(function(){ window._pvSpotMoreLoading=false; }).catch(function(){ window._pvSpotMoreLoading=false; });
+                if(_pvSpotIsSearching){ pvSpotFetchSearchMore().then(function(){ window._pvSpotMoreLoading=false; }).catch(function(){ window._pvSpotMoreLoading=false; }); }
+                else { fetchYouTubeMore().then(function(){ window._pvSpotMoreLoading=false; }).catch(function(){ window._pvSpotMoreLoading=false; }); }
               }
             }
           }catch(e){}
@@ -14701,7 +14791,7 @@ var acts = document.createElement('div');
       f.src='https://www.youtube.com/embed/' + vid + '?autoplay=' + (autoplay?1:0) + '&mute=0&loop=1&playlist=' + vid + '&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&showinfo=0&autohide=1&enablejsapi=1';
       f.allow='autoplay; encrypted-media; picture-in-picture';
       f.setAttribute('allowfullscreen','');
-      try{ f.addEventListener('load', function(){ try{ if(it.dataset.pvCurrent==='1' && !it.classList.contains('pv-is-paused')){ setTimeout(function(){ var _th=it.querySelector('.pv-spotlight-thumb'); if(_th) _th.style.display='none'; }, 250); } }catch(_){} }); }catch(_){}
+      try{ f.addEventListener('load', function(){ try{ if(it.dataset.pvCurrent==='1' && !it.classList.contains('pv-is-paused')){ setTimeout(function(){ var _th=it.querySelector('.pv-spotlight-thumb'); if(_th) _th.style.display='none'; }, 500); } }catch(_){} }); }catch(_){}
       it.insertBefore(f, it.querySelector('.pv-spotlight-overlay'));
       return f;
     }catch(e){ return null; }
@@ -14712,78 +14802,25 @@ var acts = document.createElement('div');
       var ifr=it.querySelector('iframe');
       if(!ifr) ifr=makeIframe(it, 1);
       try{ it.classList.remove('pv-is-paused'); }catch(_){}
-      var pl=it.querySelector('.pv-spotlight-center-play'); if(pl) pl.style.display='none';
+      var pl=it.querySelector('.pv-spotlight-center-play'); if(pl){ pl.classList.add('is-playing'); pl.style.display='flex'; clearTimeout(pl._pvHide); pl._pvHide=setTimeout(function(){ try{ if(!it.classList.contains('pv-is-paused')) pl.style.display='none'; }catch(_){} }, 450); }
       if(ifr){ try{ ifr.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}','*'); }catch(_){} }
-      setTimeout(function(){ try{ if(it.dataset.pvCurrent==='1' && !it.classList.contains('pv-is-paused')){ var _th=it.querySelector('.pv-spotlight-thumb'); if(_th) _th.style.display='none'; } }catch(_){} }, 250);
+      setTimeout(function(){ try{ if(it.dataset.pvCurrent==='1' && !it.classList.contains('pv-is-paused')){ var _th=it.querySelector('.pv-spotlight-thumb'); if(_th) _th.style.display='none'; } }catch(_){} }, 700);
       try{ var _nx=it.nextElementSibling; for(var _k=0; _k<3 && _nx; _k++){ var _nim=_nx.querySelector('.pv-spotlight-thumb'); if(_nim && _nim.src){ var _pr=new Image(); _pr.src=_nim.src; } _nx=_nx.nextElementSibling; } }catch(_){}
     }catch(e){}
   }
   function pauseItem(it){
     try{
       it.dataset.pvCurrent='0';
-      // COVER FIRST, then pause - so YouTube pause UI never flashes
-      try{ it.classList.add('pv-is-paused'); }catch(_){}
-      var th=it.querySelector('.pv-spotlight-thumb'); if(th) th.style.display='block';
-      var pl=it.querySelector('.pv-spotlight-center-play'); if(pl) pl.style.display='flex';
       var ifr=it.querySelector('iframe');
       if(ifr){ try{ ifr.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*'); }catch(_){} }
+      try{ it.classList.add('pv-is-paused'); }catch(_){}
+      var th=it.querySelector('.pv-spotlight-thumb'); if(th) th.style.display='block';
+      var pl=it.querySelector('.pv-spotlight-center-play'); if(pl){ clearTimeout(pl._pvHide); pl.classList.remove('is-playing'); pl.style.display='flex'; }
     }catch(e){}
   }
   function pauseAll(){
     try{
       document.querySelectorAll('.pv-spotlight-item').forEach(function(it){ pauseItem(it); });
-    }catch(e){}
-  }
-  /* ---------- HOME MUST STOP WHEN SPOTLIGHT OPENS - no two videos play together ---------- */
-  function pauseOutsideSpotlight(){
-    try{
-      // 1) All HTML5 <video> NOT inside Spotlight - Home feed, post viewer, story viewer, etc.
-      document.querySelectorAll('video').forEach(function(v){
-        try{
-          if(v.closest && v.closest('#pv-spotlight-screen')) return;
-          if(!v.paused) v.pause();
-        }catch(_){}
-      });
-      // 2) All <audio> NOT inside Spotlight
-      document.querySelectorAll('audio').forEach(function(a){
-        try{
-          if(a.closest && a.closest('#pv-spotlight-screen')) return;
-          if(!a.paused) a.pause();
-        }catch(_){}
-      });
-      // 3) Any YouTube iframe NOT inside Spotlight (Home embeds, etc.) - pause via API
-      document.querySelectorAll('iframe').forEach(function(f){
-        try{
-          if(f.closest && f.closest('#pv-spotlight-screen')) return;
-          if(f.src && f.src.indexOf('youtube.com')!==-1){
-            try{ f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*'); }catch(_){}
-          }
-        }catch(_){}
-      });
-    }catch(e){}
-  }
-  // NO polling, NO interval - low phone friendly. One 'play' listener catches Home the moment it tries to play.
-  var _outsidePlayHandler=null;
-  function startOutsideGuard(){
-    try{
-      window.PVSpotlightOpen=true;
-      if(_outsidePlayHandler) return;
-      _outsidePlayHandler=function(e){
-        try{
-          var _s=document.getElementById('pv-spotlight-screen');
-          if(!_s || !_s.classList.contains('show')) return;
-          var tg=e && e.target; if(!tg) return;
-          if(tg.closest && tg.closest('#pv-spotlight-screen')) return;
-          if(tg.tagName==='VIDEO' || tg.tagName==='AUDIO'){ try{ tg.pause(); }catch(_){} }
-        }catch(_){}
-      };
-      document.addEventListener('play', _outsidePlayHandler, true);
-    }catch(e){}
-  }
-  function stopOutsideGuard(){
-    try{
-      window.PVSpotlightOpen=false;
-      if(_outsidePlayHandler){ try{ document.removeEventListener('play', _outsidePlayHandler, true); }catch(_){} _outsidePlayHandler=null; }
     }catch(e){}
   }
 
@@ -14839,6 +14876,7 @@ var acts = document.createElement('div');
   var _loading=false;
   function load(force){
     try{
+      if(_pvSpotIsSearching && !force) return;
       if(_loading && !force) return;
       _loading=true;
       showEmpty(false);
@@ -14869,7 +14907,7 @@ var acts = document.createElement('div');
             if(!f2 || !f2.children.length){ showEmpty(true); showErr('Loading took too long - check internet, tap retry'); }
           }
         }catch(e){}
-      }, 6000);
+      }, 15000);
       fetchFirebase().then(function(fb){
         try{
           if(!force && fb && fb.videos && fb.videos.length && (Date.now()-(fb.updatedAt||0) < SIX_HOURS)){
@@ -14926,22 +14964,16 @@ var acts = document.createElement('div');
 
   /* ---------- OPEN / CLOSE - single definitions, no wrapping ---------- */
   function open(){
-    // Home must stop BEFORE Spotlight starts - no two audios together
-    try{ pauseOutsideSpotlight(); }catch(e){}
     try{ var _nav=document.querySelector('.bottom-nav'); if(_nav) _nav.classList.add('pv-hide-plus'); }catch(e){}
     try{
       var s=document.getElementById('pv-spotlight-screen');
       if(!s) return;
       s.classList.remove('hidden'); s.removeAttribute('hidden'); s.classList.add('show');
     }catch(e){}
-    try{ startOutsideGuard(); }catch(e){}
     try{ load(); }catch(e){}
-    // No extra timer - Home already paused before open, play listener catches any resume
   }
   function close(){
     try{ pauseAll(); }catch(e){}
-    try{ stopOutsideGuard(); }catch(e){}
-    try{ pauseOutsideSpotlight(); }catch(e){}
     try{
       var s=document.getElementById('pv-spotlight-screen');
       if(s) s.classList.remove('show');
@@ -14968,43 +15000,67 @@ var acts = document.createElement('div');
       var back=document.getElementById('pv-spotlight-back-btn');
       if(back && !back.dataset.pvSpotlightBound){
         back.dataset.pvSpotlightBound='1';
-        back.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} close(); });
+        back.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
+          // Back first closes search bar / clears search, then closes Spotlight
+          try{
+            var _bar=document.getElementById('pv-spotlight-searchbar');
+            if(_bar && _bar.classList.contains('show')){ pvSpotCloseSearchBar(); return; }
+            if(_pvSpotIsSearching){ pvSpotClearSearch(); pvSpotCloseSearchBar(); return; }
+          }catch(_){}
+          close();
+        });
       }
     }catch(e){}
     try{
-      var sbtn=document.getElementById('pv-spotlight-search-btn');
-      if(sbtn && !sbtn.dataset.pvSpotlightBound){
-        sbtn.dataset.pvSpotlightBound='1';
-        sbtn.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} showSpotSearch(); });
+      var sBtn=document.getElementById('pv-spotlight-search-btn');
+      if(sBtn && !sBtn.dataset.pvSpotlightSearchBound){
+        sBtn.dataset.pvSpotlightSearchBound='1';
+        sBtn.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
+          try{
+            var _bar2=document.getElementById('pv-spotlight-searchbar');
+            if(_bar2 && _bar2.classList.contains('show')) pvSpotCloseSearchBar();
+            else pvSpotOpenSearchBar();
+          }catch(_){}
+        });
       }
     }catch(e){}
     try{
-      var sclose=document.getElementById('pv-spotlight-search-close');
-      if(sclose && !sclose.dataset.pvSpotlightBound){
-        sclose.dataset.pvSpotlightBound='1';
-        sclose.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} hideSpotSearch(true); });
+      var sInput=document.getElementById('pv-spotlight-search-input');
+      var sGo=document.getElementById('pv-spotlight-search-go');
+      var sCancel=document.getElementById('pv-spotlight-search-cancel');
+      var sClear=document.getElementById('pv-spotlight-search-clear');
+      var sStatusClear=document.getElementById('pv-spotlight-search-status-clear');
+      if(sInput && !sInput.dataset.pvSpotlightSearchBound){
+        sInput.dataset.pvSpotlightSearchBound='1';
+        sInput.addEventListener('input', function(){ try{ var c=document.getElementById('pv-spotlight-search-clear'); if(c){ if(String(sInput.value||'').trim()) c.classList.add('show'); else c.classList.remove('show'); } }catch(_){} });
+        sInput.addEventListener('keydown', function(ev){ if(ev.key==='Enter'){ ev.preventDefault(); pvSpotDoSearch(sInput.value); pvSpotCloseSearchBar(); } if(ev.key==='Escape'){ ev.preventDefault(); pvSpotCloseSearchBar(); } });
       }
-    }catch(e){}
-    try{
-      var sgo=document.getElementById('pv-spotlight-search-go');
-      if(sgo && !sgo.dataset.pvSpotlightBound){
-        sgo.dataset.pvSpotlightBound='1';
-        sgo.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} doSpotSearch(); });
+      if(sGo && !sGo.dataset.pvSpotlightSearchBound){
+        sGo.dataset.pvSpotlightSearchBound='1';
+        sGo.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} var _inp=document.getElementById('pv-spotlight-search-input'); pvSpotDoSearch(_inp?_inp.value:''); pvSpotCloseSearchBar(); });
       }
-    }catch(e){}
-    try{
-      var sinp=document.getElementById('pv-spotlight-search-input');
-      if(sinp && !sinp.dataset.pvSpotlightBound){
-        sinp.dataset.pvSpotlightBound='1';
-        sinp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ try{ e.preventDefault(); }catch(_){} doSpotSearch(); } });
-        sinp.addEventListener('search', function(){ if(!String(sinp.value||'').trim()) hideSpotSearch(true); });
+      if(sCancel && !sCancel.dataset.pvSpotlightSearchBound){
+        sCancel.dataset.pvSpotlightSearchBound='1';
+        sCancel.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} var inp=document.getElementById('pv-spotlight-search-input'); if(inp && inp.value){ inp.value=''; try{ inp.focus(); }catch(_){} return; } if(_pvSpotIsSearching) pvSpotClearSearch(); pvSpotCloseSearchBar(); });
       }
+      if(sClear && !sClear.dataset.pvSpotlightSearchBound){
+        sClear.dataset.pvSpotlightSearchBound='1';
+        sClear.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} var _inp2=document.getElementById('pv-spotlight-search-input'); if(_inp2){ _inp2.value=''; _inp2.focus(); } sClear.classList.remove('show'); if(_pvSpotIsSearching) pvSpotClearSearch(); });
+      }
+      if(sStatusClear && !sStatusClear.dataset.pvSpotlightSearchBound){
+        sStatusClear.dataset.pvSpotlightSearchBound='1';
+        sStatusClear.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} pvSpotClearSearch(); });
+      }
+      document.querySelectorAll('.pv-spotlight-chip').forEach(function(chip){
+        if(chip.dataset.pvSpotlightChipBound) return; chip.dataset.pvSpotlightChipBound='1';
+        chip.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){} var q=chip.getAttribute('data-q')||chip.textContent||''; var _inp3=document.getElementById('pv-spotlight-search-input'); if(_inp3) _inp3.value=q; pvSpotDoSearch(q); pvSpotCloseSearchBar(); });
+      });
     }catch(e){}
     try{
       var retry=document.getElementById('pv-spotlight-retry');
       if(retry && !retry.dataset.pvSpotlightBound){
         retry.dataset.pvSpotlightBound='1';
-        retry.addEventListener('click', function(){ try{ _loading=false; load(true); }catch(e){} });
+        retry.addEventListener('click', function(){ try{ if(_pvSpotIsSearching && _pvSpotSearchQuery){ pvSpotDoSearch(_pvSpotSearchQuery); } else { _loading=false; load(true); } }catch(e){} });
       }
     }catch(e){}
     try{
@@ -15024,13 +15080,13 @@ var acts = document.createElement('div');
   window.pvSpotlightLoad=load;
   window.pvSpotlightRender=render;
   try{ if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); } }catch(e){ bind(); }
-  try{ setTimeout(bind, 200); }catch(e){}
+  try{ setTimeout(bind, 500); setTimeout(bind, 1500); }catch(e){}
   /* If Spotlight becomes visible, load - single observer, no duplicate hooks */
   try{
     var _spotEl=document.getElementById('pv-spotlight-screen');
     if(_spotEl && window.MutationObserver){
       var _obs=new MutationObserver(function(){
-        try{ if(_spotEl.classList.contains('show')){ try{ pauseOutsideSpotlight(); startOutsideGuard(); }catch(e){} load(); } else { try{ stopOutsideGuard(); }catch(e){} } }catch(e){}
+        try{ if(_spotEl.classList.contains('show')) load(); }catch(e){}
       });
       _obs.observe(_spotEl, {attributes:true, attributeFilter:['class']});
     }
@@ -15043,7 +15099,8 @@ var acts = document.createElement('div');
           if(_feedEl.scrollTop + _feedEl.clientHeight >= _feedEl.scrollHeight - 800){
             if(!window._pvSpotMoreLoading){
               window._pvSpotMoreLoading=true;
-              fetchYouTubeMore().then(function(){ window._pvSpotMoreLoading=false; }).catch(function(){ window._pvSpotMoreLoading=false; });
+              if(_pvSpotIsSearching){ pvSpotFetchSearchMore().then(function(){ window._pvSpotMoreLoading=false; }).catch(function(){ window._pvSpotMoreLoading=false; }); }
+              else { fetchYouTubeMore().then(function(){ window._pvSpotMoreLoading=false; }).catch(function(){ window._pvSpotMoreLoading=false; }); }
             }
           }
         }catch(e){}
