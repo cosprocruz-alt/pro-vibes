@@ -8,15 +8,233 @@
   LOCKED FINAL v2 — DISCLAIMER RULE ALSO LOCKED
   Disclaimer: Only sensitive or unsure answers show disclaimer. Not every informations.
   Text: 'Informations might be inaccurate' (with S) for sensitive, 'COSPRO AI can make mistakes' for unsure.
-  ACCOUNT RULE - WETIN COSPRO MEAN:
-  - Each person get e own separate account. Example: Ada get e own, Kosi get e own.
-  - Same person = same account, whether na same phone or another phone. Same Ada dey answer Kosi with same phone or another phone, still na Ada account.
-  - Different person = different account, nothing mixes up, account stays separate.
-  - Same with AI account: each person get e own separate AI account, no mixing.
+  LOCKED FINAL v1 — DO NOT EDIT — AI ISOLATION FROZEN
+  Rule frozen: Every AI account is strictly different. No tie. No leak.
+  - Owner = PRO VIBES person. AI account = id owned by that owner only.
+  - Storage is owner + AI-account scoped only. Global is never source.
+  - A code never links, syncs, or copies anything.
+  - This file is the locked copy. Do not edit isolation logic in any other copy.
+  - If a future change touches AI storage, it must keep this lock passing or it is a bug.
 -->
 
 <html lang="en">
 <head>
+<script id="pv-home-wipe-delete-not-hide">
+(function(){
+  try{
+    var BASE='https://prochat2026-default-rtdb.firebaseio.com';
+    function slug(s){ try{ return String(s||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); }catch(e){ return ''; } }
+    function postId(u, ownerSlug){ try{ var key=ownerSlug+'|'+String(u||'').slice(0,500)+'|'+String(u||'').length+'|'+String(u||'').slice(-100); var h=5381; for(var i=0;i<key.length;i++){ h=((h*33)+key.charCodeAt(i))>>>0; } return ownerSlug+'_'+h.toString(36); }catch(e){ return ''; } }
+    function readJ(k, fb){ try{ var v=localStorage.getItem(k); if(v==null) return fb; var p=JSON.parse(v); return (p==null?fb:p); }catch(e){ return fb; } }
+    function uniq(a){ var o=[], seen={}; for(var i=0;i<a.length;i++){ var v=a[i]; if(v==null||v==='') continue; var k=String(v); if(seen[k]) continue; seen[k]=1; o.push(v); } return o; }
+    var slugsMap={};
+    function addSlug(sl){ if(sl) slugsMap[sl]=1; }
+    try{
+      var me=localStorage.getItem('pro_vibes_user_name')||'';
+      if(me) addSlug(slug(me));
+      var known=readJ('pro_vibes_known_users', []);
+      if(Array.isArray(known)) known.forEach(function(n){ addSlug(slug(n)); });
+      var accs=readJ('pro_vibes_accounts_list', []);
+      if(Array.isArray(accs)) accs.forEach(function(n){ addSlug(slug(n)); });
+      for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i)||''; var pref=['pro_vibes_user_posts__','pv_home_text_posts__','pv_home_text_cloud__','pv_firebase_posts__','pv_post_metas__','pro_vibes_avatar__for_','pv_deleted_posts__']; for(var p=0;p<pref.length;p++){ if(k.indexOf(pref[p])===0){ var sl2=k.slice(pref[p].length); if(sl2) addSlug(sl2); break; } } }
+    }catch(e){}
+    var slugs=Object.keys(slugsMap);
+    var localDone=false;
+    try{ localDone=localStorage.getItem('pv_home_wipe_local_v1_done')==='1'; }catch(e){}
+    var pending=null;
+    try{ pending=readJ('pv_home_wipe_pending_v1', null); }catch(e){}
+    var wipedUrls=[], wipedPostIds=[], wipedMediaIds=[];
+    if(!localDone){
+      slugs.forEach(function(sl){
+        var lists=['pro_vibes_user_posts__'+sl,'pv_home_text_posts__'+sl,'pv_home_text_cloud__'+sl,'pv_firebase_posts__'+sl];
+        lists.forEach(function(lk){
+          var arr=readJ(lk, []);
+          if(Array.isArray(arr)) arr.forEach(function(it){
+            var u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:''));
+            if(u) wipedUrls.push(u);
+          });
+        });
+        var metas=readJ('pv_post_metas__'+sl, {});
+        if(metas&&typeof metas==='object'){
+          Object.keys(metas).forEach(function(mk){
+            var m=metas[mk]; if(!m) return;
+            if(mk) wipedPostIds.push(mk);
+            if(m.localPointer) wipedUrls.push(m.localPointer);
+            if(m.cloudUrl) wipedUrls.push(m.cloudUrl);
+            if(m.mediaId){ wipedMediaIds.push(m.mediaId); wipedUrls.push('idb://'+m.mediaId); }
+            if(m.localPointer){ var pid1=postId(m.localPointer, sl); if(pid1) wipedPostIds.push(pid1); }
+            if(m.cloudUrl){ var pid2=postId(m.cloudUrl, sl); if(pid2) wipedPostIds.push(pid2); }
+          });
+        }
+      });
+      slugs.forEach(function(sl){ wipedUrls.forEach(function(u){ var pid=postId(u, sl); if(pid) wipedPostIds.push(pid); }); });
+      try{ for(var si=0;si<localStorage.length;si++){ var sk=localStorage.key(si)||''; if(sk.indexOf('pv_post_stats__')===0){ wipedPostIds.push(sk.slice('pv_post_stats__'.length)); } } }catch(e){}
+      wipedUrls.forEach(function(u){ if(String(u).indexOf('idb://')===0){ var mid=String(u).slice(6); if(mid) wipedMediaIds.push(mid); } });
+      wipedUrls=uniq(wipedUrls); wipedPostIds=uniq(wipedPostIds); wipedMediaIds=uniq(wipedMediaIds);
+      try{
+        slugs.forEach(function(sl){
+          var existingDel=readJ('pv_deleted_posts__'+sl, []);
+          if(!Array.isArray(existingDel)) existingDel=[];
+          var merged=uniq(existingDel.concat(wipedUrls));
+          if(wipedUrls.length||existingDel.length){ try{ localStorage.setItem('pv_deleted_posts__'+sl, JSON.stringify(merged)); }catch(e){} }
+          ['pro_vibes_user_posts__'+sl,'pv_home_text_posts__'+sl,'pv_home_text_cloud__'+sl,'pv_firebase_posts__'+sl,'pv_post_metas__'+sl,'pv_posts_at__'+sl].forEach(function(lk){ try{ localStorage.removeItem(lk); }catch(e){} });
+          try{
+            var mp=readJ('pv_profile_post_dates__'+sl, null);
+            if(mp&&typeof mp==='object'){
+              var changed=false;
+              Object.keys(mp).forEach(function(pk){
+                var entry=mp[pk]; var eu=entry&&entry.u?entry.u:'';
+                if((eu&&wipedUrls.indexOf(eu)!==-1)||wipedPostIds.indexOf(pk)!==-1){ delete mp[pk]; changed=true; }
+              });
+              if(changed){ var remaining=Object.keys(mp).length; if(remaining===0){ try{ localStorage.removeItem('pv_profile_post_dates__'+sl); }catch(e){} } else { try{ localStorage.setItem('pv_profile_post_dates__'+sl, JSON.stringify(mp)); }catch(e){} } }
+            }
+          }catch(e){}
+        });
+        try{
+          var toDelStats=[];
+          for(var di=0;di<localStorage.length;di++){ var dk=localStorage.key(di)||''; if(dk.indexOf('pv_post_stats__')===0) toDelStats.push(dk); }
+          toDelStats.forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
+        }catch(e){}
+      }catch(e){}
+      try{
+        pending={slugs:slugs, urls:wipedUrls, postIds:wipedPostIds, mediaIds:wipedMediaIds, at:Date.now()};
+        localStorage.setItem('pv_home_wipe_pending_v1', JSON.stringify(pending));
+        localStorage.setItem('pv_home_wipe_local_v1_done','1');
+      }catch(e){}
+      try{
+        if(wipedMediaIds.length){
+          var req=indexedDB.open('pv-media-db',1);
+          req.onsuccess=function(){
+            try{
+              var db=req.result; var tx=db.transaction(['media'],'readwrite'); var store=tx.objectStore('media');
+              wipedMediaIds.forEach(function(mid){ try{ store.delete(mid); }catch(e){} });
+              try{
+                var kr=store.getAllKeys();
+                kr.onsuccess=function(){ try{ var keys=kr.result||[]; keys.forEach(function(k){ if(String(k).indexOf('pvmedia_')===0){ try{ store.delete(k); }catch(e){} } }); }catch(e){} };
+              }catch(e){}
+            }catch(e){}
+          };
+        }
+      }catch(e){}
+    } else {
+      if(!pending) return;
+      wipedUrls=pending.urls||[]; wipedPostIds=pending.postIds||[]; wipedMediaIds=pending.mediaIds||[]; slugs=pending.slugs||slugs;
+    }
+    function fetchJSON(url){ return fetch(url,{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }); }
+    function fbDelete(url){ return fetch(url,{method:'DELETE'}).catch(function(){}); }
+    function fbPut(url, data){ return fetch(url,{method:'PUT', body:JSON.stringify(data)}).catch(function(){}); }
+    function isWipedUrl(u){ return wipedUrls.indexOf(u)!==-1; }
+    function isWipedPostId(pid){ return wipedPostIds.indexOf(pid)!==-1; }
+    function filterPostsDoc(d){
+      if(!d) return null;
+      var arr=null, meta=null;
+      if(Array.isArray(d)){ arr=d; }
+      else if(d&&Array.isArray(d.posts)){ arr=d.posts; meta=d; }
+      else return d;
+      var filtered=arr.filter(function(it){ var u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); return !(u&&isWipedUrl(u)); });
+      if(meta) return {owner:meta.owner, slug:meta.slug, posts:filtered, updatedAt:Date.now()};
+      return filtered;
+    }
+    function syncSlugFromFirebase(sl){
+      return Promise.all([fetchJSON(BASE+'/pro_vibes/posts/'+sl+'.json'),fetchJSON(BASE+'/pro_vibes/home_text_posts/'+sl+'.json'),fetchJSON(BASE+'/pro_vibes/post_metas/'+sl+'.json'),fetchJSON(BASE+'/pro_vibes/deleted_posts/'+sl+'.json')]).then(function(res){
+        var postsDoc=res[0], htDoc=res[1], metasDoc=res[2], delDoc=res[3]; var jobs=[];
+        if(postsDoc){
+          var filteredPosts=filterPostsDoc(postsDoc);
+          var filteredArr=Array.isArray(filteredPosts)?filteredPosts:(filteredPosts&&Array.isArray(filteredPosts.posts)?filteredPosts.posts:[]);
+          var origLen=Array.isArray(postsDoc)?postsDoc.length:(postsDoc&&Array.isArray(postsDoc.posts)?postsDoc.posts.length:0);
+          if(filteredArr.length!==origLen){ if(filteredArr.length===0) jobs.push(fbDelete(BASE+'/pro_vibes/posts/'+sl+'.json')); else jobs.push(fbPut(BASE+'/pro_vibes/posts/'+sl+'.json', filteredPosts)); }
+        }
+        if(htDoc){
+          var filteredHt=filterPostsDoc(htDoc);
+          var filteredHtArr=Array.isArray(filteredHt)?filteredHt:(filteredHt&&Array.isArray(filteredHt.posts)?filteredHt.posts:[]);
+          var origHtLen=Array.isArray(htDoc)?htDoc.length:(htDoc&&Array.isArray(htDoc.posts)?htDoc.posts.length:0);
+          if(filteredHtArr.length!==origHtLen){ if(filteredHtArr.length===0) jobs.push(fbDelete(BASE+'/pro_vibes/home_text_posts/'+sl+'.json')); else jobs.push(fbPut(BASE+'/pro_vibes/home_text_posts/'+sl+'.json', filteredHt)); }
+        }
+        if(metasDoc&&typeof metasDoc==='object'&&!Array.isArray(metasDoc)){
+          var newMetas={}, changedM=false;
+          Object.keys(metasDoc).forEach(function(mk){
+            var m=metasDoc[mk]; if(!m){ changedM=true; return; }
+            var isWiped=isWipedPostId(mk)||(m.localPointer&&isWipedUrl(m.localPointer))||(m.cloudUrl&&isWipedUrl(m.cloudUrl))||(m.mediaId&&wipedMediaIds.indexOf(m.mediaId)!==-1);
+            if(!isWiped&&m.localPointer){ var pidL=postId(m.localPointer, sl); if(pidL&&isWipedPostId(pidL)) isWiped=true; }
+            if(!isWiped&&m.cloudUrl){ var pidC=postId(m.cloudUrl, sl); if(pidC&&isWipedPostId(pidC)) isWiped=true; }
+            if(isWiped) changedM=true; else newMetas[mk]=m;
+          });
+          if(changedM){ if(Object.keys(newMetas).length===0) jobs.push(fbDelete(BASE+'/pro_vibes/post_metas/'+sl+'.json')); else jobs.push(fbPut(BASE+'/pro_vibes/post_metas/'+sl+'.json', newMetas)); }
+        }
+        if(delDoc){
+          var delArr=null, delMeta=null;
+          if(Array.isArray(delDoc)){ delArr=delDoc; } else if(delDoc&&Array.isArray(delDoc.posts)){ delArr=delDoc.posts; delMeta=delDoc; }
+          if(delArr){
+            var filteredDel=delArr.filter(function(u){ return !isWipedUrl(u); });
+            if(filteredDel.length!==delArr.length){
+              if(filteredDel.length===0) jobs.push(fbDelete(BASE+'/pro_vibes/deleted_posts/'+sl+'.json'));
+              else { if(delMeta) jobs.push(fbPut(BASE+'/pro_vibes/deleted_posts/'+sl+'.json', {owner:delMeta.owner, slug:delMeta.slug, posts:filteredDel, updatedAt:Date.now()})); else jobs.push(fbPut(BASE+'/pro_vibes/deleted_posts/'+sl+'.json', filteredDel)); }
+            }
+          }
+        }
+        return Promise.all(jobs);
+      }).catch(function(){});
+    }
+    function syncPostStats(){ var jobs=(wipedPostIds||[]).map(function(pid){ if(!pid) return Promise.resolve(); return fbDelete(BASE+'/pro_vibes/post_stats/'+encodeURIComponent(pid)+'.json'); }); return Promise.all(jobs); }
+    function discoverAndSync(){
+      return Promise.all([fetchJSON(BASE+'/pro_vibes/posts.json'),fetchJSON(BASE+'/pro_vibes/home_text_posts.json'),fetchJSON(BASE+'/pro_vibes/post_metas.json'),fetchJSON(BASE+'/pro_vibes/post_stats.json')]).then(function(res){
+        var postsIdx=res[0]||{}, htIdx=res[1]||{}, metasIdx=res[2]||{}, statsIdx=res[3]||{};
+        var extraSlugs=[];
+        [postsIdx, htIdx, metasIdx].forEach(function(idx){ if(idx&&typeof idx==='object') Object.keys(idx).forEach(function(k){ if(slugs.indexOf(k)===-1&&extraSlugs.indexOf(k)===-1) extraSlugs.push(k); }); });
+        extraSlugs.forEach(function(esl){
+          try{
+            var pd=postsIdx[esl]; var arr=Array.isArray(pd)?pd:(pd&&Array.isArray(pd.posts)?pd.posts:[]);
+            arr.forEach(function(it){ var u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(u&&wipedUrls.indexOf(u)===-1) wipedUrls.push(u); });
+            var hd=htIdx[esl]; var harr=Array.isArray(hd)?hd:(hd&&Array.isArray(hd.posts)?hd.posts:[]);
+            harr.forEach(function(it){ var u2=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(u2&&wipedUrls.indexOf(u2)===-1) wipedUrls.push(u2); });
+            var md=metasIdx[esl];
+            if(md&&typeof md==='object') Object.keys(md).forEach(function(mk){ wipedPostIds.push(mk); var mm=md[mk]; if(mm&&mm.mediaId) wipedMediaIds.push(mm.mediaId); if(mm&&mm.localPointer) wipedUrls.push(mm.localPointer); if(mm&&mm.cloudUrl) wipedUrls.push(mm.cloudUrl); });
+          }catch(e){}
+        });
+        var extraStatIds=[];
+        if(statsIdx&&typeof statsIdx==='object') Object.keys(statsIdx).forEach(function(pid){ var belongs=false; slugs.concat(extraSlugs).forEach(function(slw){ if(String(pid).indexOf(slw+'_')===0) belongs=true; }); if(belongs&&wipedPostIds.indexOf(pid)===-1) extraStatIds.push(pid); });
+        var allSlugs=uniq(slugs.concat(extraSlugs));
+        try{ var newPending={slugs:allSlugs, urls:uniq(wipedUrls), postIds:uniq(wipedPostIds.concat(extraStatIds)), mediaIds:uniq(wipedMediaIds), at:Date.now()}; localStorage.setItem('pv_home_wipe_pending_v1', JSON.stringify(newPending)); wipedPostIds=newPending.postIds; }catch(e){}
+        var slugJobs=allSlugs.map(function(sl){ return syncSlugFromFirebase(sl); });
+        var statJobs=extraStatIds.map(function(pid){ return fbDelete(BASE+'/pro_vibes/post_stats/'+encodeURIComponent(pid)+'.json'); });
+        return Promise.all(slugJobs.concat([syncPostStats()]).concat(statJobs));
+      }).catch(function(){});
+    }
+    try{
+      if(typeof navigator!=='undefined'&&!navigator.onLine){ return; }
+      discoverAndSync().then(function(){
+        var verifySlugs=[];
+        try{ var pend2=readJ('pv_home_wipe_pending_v1', null); if(pend2&&Array.isArray(pend2.slugs)) verifySlugs=pend2.slugs; }catch(e){}
+        if(!verifySlugs.length) verifySlugs=slugs;
+        var checks=verifySlugs.map(function(sl){
+          return Promise.all([fetchJSON(BASE+'/pro_vibes/posts/'+sl+'.json'),fetchJSON(BASE+'/pro_vibes/home_text_posts/'+sl+'.json'),fetchJSON(BASE+'/pro_vibes/post_metas/'+sl+'.json')]).then(function(r){
+            var still=false;
+            [r[0], r[1]].forEach(function(doc){ if(!doc) return; var arr=Array.isArray(doc)?doc:(doc&&Array.isArray(doc.posts)?doc.posts:[]); arr.forEach(function(it){ var u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(u&&wipedUrls.indexOf(u)!==-1) still=true; }); });
+            if(r[2]&&typeof r[2]==='object') Object.keys(r[2]).forEach(function(mk){ if(wipedPostIds.indexOf(mk)!==-1) still=true; });
+            return still;
+          }).catch(function(){ return true; });
+        });
+        return Promise.all(checks).then(function(results){
+          var anyStill=false; results.forEach(function(v){ if(v) anyStill=true; });
+          if(!anyStill){
+            try{
+              verifySlugs.forEach(function(sl){
+                try{
+                  var del=readJ('pv_deleted_posts__'+sl, []);
+                  if(Array.isArray(del)){ var filteredDel=del.filter(function(u){ return wipedUrls.indexOf(u)===-1; }); if(filteredDel.length===0) localStorage.removeItem('pv_deleted_posts__'+sl); else localStorage.setItem('pv_deleted_posts__'+sl, JSON.stringify(filteredDel)); }
+                }catch(e){}
+              });
+              localStorage.removeItem('pv_home_wipe_pending_v1');
+              localStorage.setItem('pv_home_wipe_cloud_v1_done','1');
+            }catch(e){}
+          }
+        });
+      }).catch(function(){});
+    }catch(e){}
+  }catch(e){}
+})();
+</script>
+
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9965951177671636"
      crossorigin="anonymous"></script>
 <style>
@@ -3628,13 +3846,13 @@ try{
   var _pidC=''; try{ _pidC=pvPostIdFor(cloudAv, o); }catch(e){}
   if(_pidC && cloudAt) _mapC[_pidC]={u:cloudAv, ts:cloudAt};
   try{ localStorage.setItem('pv_profile_post_dates__'+slug, JSON.stringify(_mapC)); }catch(e){}
-}catch(e){}try{var _pk2='pro_vibes_user_posts__'+slug;var _pa2=[];try{_pa2=JSON.parse(localStorage.getItem(_pk2)||'[]');if(!Array.isArray(_pa2))_pa2=[];}catch(e){_pa2=[];}var _n2=[];_pa2.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:'');if(u)_n2.push(u);});var _delSync=[];try{_delSync=JSON.parse(localStorage.getItem('pv_deleted_posts__'+slug)||'[]');}catch(e){}if(_n2.indexOf(cloudAv)===-1&&_delSync.indexOf(cloudAv)===-1){_n2.push(cloudAv);try{localStorage.setItem(_pk2, JSON.stringify(_n2));}catch(e){}try{localStorage.setItem('pv_posts_at__'+slug, String(Date.now()));}catch(e){}}}catch(e){}try{pvRefreshAllAvatars();}catch(e){}try{if(typeof pvRenderProfileGrid==='function')pvRenderProfileGrid(o, 'profile-posts-grid');}catch(e){}try{if(typeof pvRenderProfileGrid==='function')pvRenderProfileGrid(o, 'profile-back-posts-grid');}catch(e){}try{if(typeof pvRefreshCounts==='function')pvRefreshCounts(o);}catch(e){}return;}if(cloudAt>localAt+1000){try{localStorage.setItem(pvAvatarKeyFor(o),cloudAv);}catch(e){}try{localStorage.setItem(pvAvatarAtKey(o),String(cloudAt));}catch(e){}try{localStorage.setItem('pv_avatar_post__'+slug, cloudAv);}catch(e){}
+}catch(e){}try{var _pk2='pro_vibes_user_posts__'+slug;var _pa2=[];try{_pa2=JSON.parse(localStorage.getItem(_pk2)||'[]');if(!Array.isArray(_pa2))_pa2=[];}catch(e){_pa2=[];}var _n2=[];_pa2.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:'');if(u)_n2.push(u);});var _delSync=[];try{_delSync=JSON.parse(localStorage.getItem('pv_deleted_posts__'+slug)||'[]');}catch(e){}if(_n2.indexOf(cloudAv)===-1&&_delSync.indexOf(cloudAv)===-1){/* DELETED: avatar sync must not create a post */try{localStorage.setItem(_pk2, JSON.stringify(_n2));}catch(e){}try{localStorage.setItem('pv_posts_at__'+slug, String(Date.now()));}catch(e){}}}catch(e){}try{pvRefreshAllAvatars();}catch(e){}try{if(typeof pvRenderProfileGrid==='function')pvRenderProfileGrid(o, 'profile-posts-grid');}catch(e){}try{if(typeof pvRenderProfileGrid==='function')pvRenderProfileGrid(o, 'profile-back-posts-grid');}catch(e){}try{if(typeof pvRefreshCounts==='function')pvRefreshCounts(o);}catch(e){}return;}if(cloudAt>localAt+1000){try{localStorage.setItem(pvAvatarKeyFor(o),cloudAv);}catch(e){}try{localStorage.setItem(pvAvatarAtKey(o),String(cloudAt));}catch(e){}try{localStorage.setItem('pv_avatar_post__'+slug, cloudAv);}catch(e){}
 try{
   var _mapC={}; try{ _mapC=JSON.parse(localStorage.getItem('pv_profile_post_dates__'+slug)||'{}'); }catch(e){ _mapC={}; }
   var _pidC=''; try{ _pidC=pvPostIdFor(cloudAv, o); }catch(e){}
   if(_pidC && cloudAt) _mapC[_pidC]={u:cloudAv, ts:cloudAt};
   try{ localStorage.setItem('pv_profile_post_dates__'+slug, JSON.stringify(_mapC)); }catch(e){}
-}catch(e){}try{var _pk3='pro_vibes_user_posts__'+slug;var _pa3=[];try{_pa3=JSON.parse(localStorage.getItem(_pk3)||'[]');if(!Array.isArray(_pa3))_pa3=[];}catch(e){_pa3=[];}var _n3=[];_pa3.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:'');if(u)_n3.push(u);});var _delSync3=[];try{_delSync3=JSON.parse(localStorage.getItem('pv_deleted_posts__'+slug)||'[]');}catch(e){}if(_n3.indexOf(cloudAv)===-1&&_delSync3.indexOf(cloudAv)===-1){_n3.push(cloudAv);try{localStorage.setItem(_pk3, JSON.stringify(_n3));}catch(e){}try{localStorage.setItem('pv_posts_at__'+slug, String(Date.now()));}catch(e){}}}catch(e){}try{pvRefreshAllAvatars();}catch(e){}try{if(typeof pvRenderProfileGrid==='function')pvRenderProfileGrid(o, 'profile-posts-grid');}catch(e){}try{if(typeof pvRenderProfileGrid==='function')pvRenderProfileGrid(o, 'profile-back-posts-grid');}catch(e){}try{if(typeof pvRefreshCounts==='function')pvRefreshCounts(o);}catch(e){}return;}if(isMe&&localAt>cloudAt+1000){try{pvSaveAvatarToFirebase(o,local,localAt);}catch(e){}}}catch(e){}});}catch(e){}}
+}catch(e){}try{var _pk3='pro_vibes_user_posts__'+slug;var _pa3=[];try{_pa3=JSON.parse(localStorage.getItem(_pk3)||'[]');if(!Array.isArray(_pa3))_pa3=[];}catch(e){_pa3=[];}var _n3=[];_pa3.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:'');if(u)_n3.push(u);});var _delSync3=[];try{_delSync3=JSON.parse(localStorage.getItem('pv_deleted_posts__'+slug)||'[]');}catch(e){}if(_n3.indexOf(cloudAv)===-1&&_delSync3.indexOf(cloudAv)===-1){/* DELETED: avatar sync must not create a post */try{localStorage.setItem(_pk3, JSON.stringify(_n3));}catch(e){}try{localStorage.setItem('pv_posts_at__'+slug, String(Date.now()));}catch(e){}}}catch(e){}try{pvRefreshAllAvatars();}catch(e){}try{if(typeof pvRenderProfileGrid==='function')pvRenderProfileGrid(o, 'profile-posts-grid');}catch(e){}try{if(typeof pvRenderProfileGrid==='function')pvRenderProfileGrid(o, 'profile-back-posts-grid');}catch(e){}try{if(typeof pvRefreshCounts==='function')pvRefreshCounts(o);}catch(e){}return;}if(isMe&&localAt>cloudAt+1000){try{pvSaveAvatarToFirebase(o,local,localAt);}catch(e){}}}catch(e){}});}catch(e){}}
 function pvSyncAllVisibleAvatars(){try{if(window._pvAvatarSyncAllAt&&Date.now()-window._pvAvatarSyncAllAt<5000)return;window._pvAvatarSyncAllAt=Date.now();var owners={};var add=function(n){var s=String(n||'').trim();if(!s)return;if(s.toLowerCase()==='all users')return;owners[s.toLowerCase()]=s;};try{var me2='';try{me2=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}add(me2);}catch(e){}try{document.querySelectorAll('[data-pv-owner]').forEach(function(el){try{add(el.dataset.pvOwner);}catch(e){}});}catch(e){}try{var els=document.querySelectorAll('.inbox-avatar-inner,.dm-chat-avatar,.pv-avatar,.dm-head-avatar,.dm-big-avatar,.profile-avatar,.profile-back-avatar,.sheet-avatar-inner,.ep-avatar');for(var i=0;i<els.length;i++){try{add(pvOwnerForAvatarEl(els[i]));}catch(e){}}}catch(e){}try{var bn=document.getElementById('profile-back-name');if(bn)add(bn.textContent);}catch(e){}try{var pn=document.getElementById('profile-name');if(pn)add(pn.textContent);}catch(e){}Object.keys(owners).forEach(function(k){try{pvSyncAvatarFromFirebase(owners[k]);}catch(e){}});}catch(e){}}
 window.PVSaveAvatarToFirebase=pvSaveAvatarToFirebase;window.PVFetchAvatarFromFirebase=pvFetchAvatarFromFirebase;window.PVSyncAvatar=pvSyncAvatarFromFirebase;window.PVSyncAllAvatars=pvSyncAllVisibleAvatars;
 function pvSetAvatarEl(el, owner){try{if(!el)return;if(owner&&el.dataset&&el.dataset.pvOwner!==owner)el.dataset.pvOwner=owner;var url=owner?pvAvatarFor(owner):'';if(url){var want='url('+url+')';if(el.style.backgroundImage!==want){el.style.backgroundImage=want;el.style.backgroundSize='cover';el.style.backgroundPosition='center';}el.style.backgroundColor='#171717';if(el.dataset)el.dataset.pvHadPhoto='1';if(el.textContent!=='')el.textContent='';}else{if(el.style.backgroundImage!=='')el.style.backgroundImage='';if(el.dataset)delete el.dataset.pvHadPhoto;var letTxt=avatarText(owner||'C');if(el.textContent!==letTxt)el.textContent=letTxt;try{var wantBg=avatarColor(owner||'C');if(el.style.background!==wantBg)el.style.background=wantBg;}catch(e){}}}catch(e){}}
@@ -3703,13 +3921,13 @@ function pvRefreshAllAvatars(){try{if(window.__pvRefreshing)return;window.__pvRe
 function pvSyncNavProfileLabel(){try{var me='';try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}var label=document.getElementById('pv-nav-profile-label');if(!label)return;var hasPhoto='';try{hasPhoto=typeof pvAvatarFor==='function'?pvAvatarFor(me):'';}catch(e){}if(!hasPhoto){try{var ni=document.getElementById('nav-profile-img');if(ni&&ni.src&&ni.src.indexOf('data:')===0)hasPhoto=ni.src;}catch(e){}}label.textContent=hasPhoto?'You':'Profile';}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){try{pvSyncNavProfileLabel();}catch(e){}setTimeout(function(){try{pvSyncNavProfileLabel();}catch(e){}},800);});else{try{pvSyncNavProfileLabel();}catch(e){}setTimeout(function(){try{pvSyncNavProfileLabel();}catch(e){}},800);}
 var pvAvatarObserver=null;function pvStartAvatarObserver(){try{if(pvAvatarObserver)return;if(!window.MutationObserver)return;pvAvatarObserver=new MutationObserver(function(){try{pvRefreshAllAvatars();}catch(e){}});pvAvatarObserver.observe(document.body, {childList:true, subtree:true});}catch(e){}}
-function pvApplyAvatarPublicly(dataUrl, owner){try{var o=String(owner||'').trim();if(!o){try{o=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}}if(!o||!dataUrl)return;/* KEEP OLD AVATAR IN GRID - never remove old profile pic when changing to new one */try{var _oldAv='';try{_oldAv=localStorage.getItem('pro_vibes_avatar__for_'+pvSlug(o))||'';}catch(e){}if(_oldAv&&String(_oldAv)!==String(dataUrl)){var _pkOld='pro_vibes_user_posts__'+pvSlug(o);var _paOld=[];try{_paOld=JSON.parse(localStorage.getItem(_pkOld)||'[]');if(!Array.isArray(_paOld))_paOld=[];}catch(e){_paOld=[];}var _normOld=[];_paOld.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:''));if(u)_normOld.push(u);});var _oldPost='';try{_oldPost=localStorage.getItem('pv_avatar_post__'+pvSlug(o))||'';}catch(e){}if(_oldPost&&_normOld.indexOf(_oldPost)===-1)_normOld.push(_oldPost);if(_normOld.indexOf(_oldAv)===-1)_normOld.push(_oldAv);try{localStorage.setItem(_pkOld, JSON.stringify(_normOld));}catch(e){}}}catch(e){}var _at=Date.now();try{localStorage.setItem(pvAvatarKeyFor(o), dataUrl);}catch(e){}
+function pvApplyAvatarPublicly(dataUrl, owner){try{var o=String(owner||'').trim();if(!o){try{o=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}}if(!o||!dataUrl)return;/* KEEP OLD AVATAR IN GRID - never remove old profile pic when changing to new one */try{var _oldAv='';try{_oldAv=localStorage.getItem('pro_vibes_avatar__for_'+pvSlug(o))||'';}catch(e){}if(_oldAv&&String(_oldAv)!==String(dataUrl)){var _pkOld='pro_vibes_user_posts__'+pvSlug(o);var _paOld=[];try{_paOld=JSON.parse(localStorage.getItem(_pkOld)||'[]');if(!Array.isArray(_paOld))_paOld=[];}catch(e){_paOld=[];}var _normOld=[];_paOld.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:''));if(u)_normOld.push(u);});var _oldPost='';try{_oldPost=localStorage.getItem('pv_avatar_post__'+pvSlug(o))||'';}catch(e){}/* DELETED: old avatar is not kept as a post *//* DELETED: old avatar is not kept as a post */try{localStorage.setItem(_pkOld, JSON.stringify(_normOld));}catch(e){}}}catch(e){}var _at=Date.now();try{localStorage.setItem(pvAvatarKeyFor(o), dataUrl);}catch(e){}
 try{
   var _slugA=pvSlug(o); var _mapA={}; try{ _mapA=JSON.parse(localStorage.getItem('pv_profile_post_dates__'+_slugA)||'{}'); }catch(e){ _mapA={}; }
   var _pidA=''; try{ _pidA=pvPostIdFor(dataUrl, o); }catch(e){}
   if(_pidA) _mapA[_pidA]={u:dataUrl, ts:_at};
   try{ localStorage.setItem('pv_profile_post_dates__'+_slugA, JSON.stringify(_mapA)); }catch(e){}
-}catch(e){}try{localStorage.setItem('pv_avatar_at__'+pvSlug(o), String(_at));}catch(e){}try{localStorage.setItem('pv_avatar_post__'+pvSlug(o), dataUrl);}catch(e){}try{var _justCrop=window._pvCropAvatarJustPushed&&Date.now()-window._pvCropAvatarJustPushed<2000;if(!_justCrop){var _pk='pro_vibes_user_posts__'+pvSlug(o);var _pa=[];try{_pa=JSON.parse(localStorage.getItem(_pk)||'[]');if(!Array.isArray(_pa))_pa=[];}catch(e){_pa=[];}var _norm=[];_pa.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:'');if(u)_norm.push(u);});var _avPostHere='';try{_avPostHere=localStorage.getItem('pv_avatar_post__'+pvSlug(o))||'';}catch(e){}if(_norm.indexOf(dataUrl)===-1&&!(_avPostHere&&_norm.indexOf(_avPostHere)!==-1)){_norm.push(dataUrl);try{localStorage.setItem(_pk, JSON.stringify(_norm));}catch(e){}try{localStorage.setItem('pv_posts_at__'+pvSlug(o), String(Date.now()));}catch(e){}}}}catch(e){}try{if(typeof pvSaveAvatarToFirebase==='function')pvSaveAvatarToFirebase(o, dataUrl, _at);}catch(e){}pvRefreshAllAvatars();try{pvStartAvatarObserver();}catch(e){}try{if(typeof pvRenderProfileGrid==='function')pvRenderProfileGrid(o, 'profile-posts-grid');}catch(e){}try{if(typeof pvRefreshCounts==='function')pvRefreshCounts(o);}catch(e){}}catch(e){}}
+}catch(e){}try{localStorage.setItem('pv_avatar_at__'+pvSlug(o), String(_at));}catch(e){}try{localStorage.setItem('pv_avatar_post__'+pvSlug(o), dataUrl);}catch(e){}try{var _justCrop=window._pvCropAvatarJustPushed&&Date.now()-window._pvCropAvatarJustPushed<2000;if(!_justCrop){var _pk='pro_vibes_user_posts__'+pvSlug(o);var _pa=[];try{_pa=JSON.parse(localStorage.getItem(_pk)||'[]');if(!Array.isArray(_pa))_pa=[];}catch(e){_pa=[];}var _norm=[];_pa.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:'');if(u)_norm.push(u);});var _avPostHere='';try{_avPostHere=localStorage.getItem('pv_avatar_post__'+pvSlug(o))||'';}catch(e){}if(_norm.indexOf(dataUrl)===-1&&!(_avPostHere&&_norm.indexOf(_avPostHere)!==-1)){/* DELETED: avatar change is not a post */;try{localStorage.setItem(_pk, JSON.stringify(_norm));}catch(e){}try{localStorage.setItem('pv_posts_at__'+pvSlug(o), String(Date.now()));}catch(e){}}}}catch(e){}try{if(typeof pvSaveAvatarToFirebase==='function')pvSaveAvatarToFirebase(o, dataUrl, _at);}catch(e){}pvRefreshAllAvatars();try{pvStartAvatarObserver();}catch(e){}try{if(typeof pvRenderProfileGrid==='function')pvRenderProfileGrid(o, 'profile-posts-grid');}catch(e){}try{if(typeof pvRefreshCounts==='function')pvRefreshCounts(o);}catch(e){}}catch(e){}}
 function pvGetProfilePosts(owner){
   try{
     var s=pvSlug(owner);
@@ -3733,7 +3951,7 @@ function pvGetProfilePosts(owner){
         try{ avHidden=localStorage.getItem('pv_avatar_post_hidden__'+s)||''; }catch(e){}
         if((avHidden && String(avHidden)===String(av)) || _delList.indexOf(av)!==-1){
         } else if(!(avPost && out.indexOf(avPost)!==-1)){
-          out.push(av);
+          /* DELETED: avatar is not a post */
           try{ localStorage.setItem('pro_vibes_user_posts__'+s, JSON.stringify(out)); }catch(e){}
         }
       }
@@ -3744,14 +3962,7 @@ function pvGetProfilePosts(owner){
   }catch(e){ return []; }
 }
 function pvPostIdFor(imgUrl, owner){ try{ var s=String(owner||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); var u=String(imgUrl||''); var key=s+'|'+u.slice(0,500)+'|'+u.length+'|'+u.slice(-100); var h=5381; for(var i=0;i<key.length;i++){ h=((h*33)+key.charCodeAt(i))>>>0; } return s+'_'+h.toString(36); }catch(e){ return 'post_'+Date.now(); } }
-function pvSavePostsToFirebase(owner){ try{ var o=String(owner||'').trim(); if(!o) return; var base=(typeof getBase==='function'?getBase():''); if(!base) return; var slug=String(o).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); if(!slug) return; var posts=[]; try{ var _raw=JSON.parse(localStorage.getItem('pro_vibes_user_posts__'+slug)||'[]'); if(Array.isArray(_raw)){ var _del=[]; try{_del=JSON.parse(localStorage.getItem('pv_deleted_posts__'+slug)||'[]'); if(!Array.isArray(_del))_del=[];}catch(e){_del=[];} _raw.forEach(function(it){ var _u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(_u&&_del.indexOf(_u)===-1){ try{ if(typeof pvIsTextPost==='function' && pvIsTextPost(_u, o)) return; }catch(e){} posts.push(_u); } }); } }catch(e){} try{ if(!posts.length){ var _av=''; try{ _av=localStorage.getItem('pro_vibes_avatar__for_'+slug)||''; }catch(e){} if(!_av && typeof pvAvatarFor==='function'){ try{ _av=pvAvatarFor(o)||''; }catch(e){} } if(_av) posts=[_av]; } }catch(e){}
-  // LIKE MESSAGES: do not PUT blind. GET cloud, MERGE, then PUT. If offline, queue to outbox and flush on online.
-  var _queue=function(){ try{ var qk='pv_post_outbox__'+slug; var q=[]; try{ q=JSON.parse(localStorage.getItem(qk)||'[]'); if(!Array.isArray(q)) q=[]; }catch(e){ q=[]; } var sig=JSON.stringify(posts); if(!q.some(function(it){ return it&&JSON.stringify(it.posts)===sig; })){ q.push({sig:sig, posts:posts, metas:null, at:Date.now()}); try{ localStorage.setItem(qk, JSON.stringify(q)); }catch(e){} } }catch(e){} };
-  if(!navigator.onLine){ _queue(); return; }
-  fetch(base+'/pro_vibes/posts/'+slug+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(d){ var cloud=[]; if(d&&Array.isArray(d.posts)) cloud=d.posts; else if(d&&Array.isArray(d)) cloud=d; var merged=cloud.slice(); posts.forEach(function(u){ if(u&&merged.indexOf(u)===-1) merged.push(u); }); var _del2=[]; try{ _del2=JSON.parse(localStorage.getItem('pv_deleted_posts__'+slug)||'[]'); }catch(e){} merged=merged.filter(function(u){ return _del2.indexOf(u)===-1; }); fetch(base+'/pro_vibes/posts/'+slug+'.json',{method:'PUT', body:JSON.stringify({owner:o, slug:slug, posts:merged, updatedAt:Date.now()})}).catch(function(){ _queue(); }); }).catch(function(){ _queue(); });
-}catch(e){} }
-function pvFlushPostOutbox(){ try{ var me=''; try{ me=localStorage.getItem('pro_vibes_user_name')||''; }catch(e){} if(!me||!navigator.onLine) return; var base=''; try{ base=(typeof getBase==='function'?getBase(): ''); }catch(e){} if(!base) return; var slug=String(me).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); var qk='pv_post_outbox__'+slug; var q=[]; try{ q=JSON.parse(localStorage.getItem(qk)||'[]'); if(!Array.isArray(q)) q=[]; }catch(e){ q=[]; } if(!q.length) return; var item=q[0]; try{ localStorage.setItem(qk, JSON.stringify(q.slice(1))); }catch(e){} fetch(base+'/pro_vibes/posts/'+slug+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(d){ var cloud=[]; if(d&&Array.isArray(d.posts)) cloud=d.posts; else if(d&&Array.isArray(d)) cloud=d; var merged=cloud.slice(); (item.posts||[]).forEach(function(u){ if(u&&merged.indexOf(u)===-1) merged.push(u); }); return fetch(base+'/pro_vibes/posts/'+slug+'.json',{method:'PUT', body:JSON.stringify({owner:me, slug:slug, posts:merged, updatedAt:Date.now()})}); }).then(function(){ try{ if(item.metas) fetch(base+'/pro_vibes/post_metas/'+slug+'.json',{method:'PUT', body:JSON.stringify(item.metas)}).catch(function(){}); }catch(e){} setTimeout(function(){ try{ pvFlushPostOutbox(); }catch(e){} }, 500); }).catch(function(){ try{ var qq=JSON.parse(localStorage.getItem(qk)||'[]'); qq.push(item); localStorage.setItem(qk, JSON.stringify(qq)); }catch(e){} }); }catch(e){} }
-try{ if(!window._pvPostOutboxBound){ window._pvPostOutboxBound=true; window.addEventListener('online', function(){ try{ pvFlushPostOutbox(); }catch(e){} }); setInterval(function(){ try{ pvFlushPostOutbox(); }catch(e){} }, 15000); } }catch(e){}
+function pvSavePostsToFirebase(owner){ try{ var o=String(owner||'').trim(); if(!o) return; var base=(typeof getBase==='function'?getBase():''); if(!base||!navigator.onLine) return; var slug=String(o).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); if(!slug) return; var posts=[]; /* Text posts never upload to cloud profile posts. */ try{ var _raw=JSON.parse(localStorage.getItem('pro_vibes_user_posts__'+slug)||'[]'); if(Array.isArray(_raw)){ var _del=[]; try{_del=JSON.parse(localStorage.getItem('pv_deleted_posts__'+slug)||'[]'); if(!Array.isArray(_del))_del=[];}catch(e){_del=[];} _raw.forEach(function(it){ var _u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(_u&&_del.indexOf(_u)===-1){ try{ if(typeof pvIsTextPost==='function' && pvIsTextPost(_u, o)) return; }catch(e){} posts.push(_u); } }); } }catch(e){} try{ if(!posts.length){ var _av=''; try{ _av=localStorage.getItem('pro_vibes_avatar__for_'+slug)||''; }catch(e){} if(!_av && typeof pvAvatarFor==='function'){ try{ _av=pvAvatarFor(o)||''; }catch(e){} } /* DELETED: empty posts stay empty, avatar is not a post */ } }catch(e){} var payload={owner:o, slug:slug, posts:posts, updatedAt:Date.now()}; try{ fetch(base+'/pro_vibes/posts/'+slug+'.json',{method:'PUT', body:JSON.stringify(payload)}).catch(function(){}); }catch(e){} }catch(e){} }
 function pvPushNotifToFirebase(owner, item){ try{ var o=String(owner||'').trim(); if(!o||!item) return; var base=(typeof getBase==='function'?getBase():''); if(!base||!navigator.onLine) return; var slug=String(o).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); var id=String(item.id||('n'+Date.now()+Math.random())); try{ fetch(base+'/pro_vibes/notifications/'+slug+'/'+encodeURIComponent(id)+'.json',{method:'PUT', body:JSON.stringify(item)}).catch(function(){}); }catch(e){} }catch(e){} }
 function pvFetchNotifsFromFirebase(cb){ try{ var me=''; try{ me=localStorage.getItem('pro_vibes_user_name')||''; }catch(e){} if(!me){ if(cb) cb(); return; } var base=(typeof getBase==='function'?getBase():''); if(!base||!navigator.onLine){ if(cb) cb(); return; } var slug=String(me).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); fetch(base+'/pro_vibes/notifications/'+slug+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(d){ try{ if(!d||typeof d!=='object') { if(cb) cb(); return; } var key='pv_story_notifications__u_'+slug; var all=[]; try{ all=JSON.parse(localStorage.getItem(key)||'[]'); if(!Array.isArray(all)) all=[]; }catch(e){ all=[]; } var seen={}; all.forEach(function(n){ seen[String(n.id||'')]=1; }); var added=false; Object.keys(d).forEach(function(k){ var it=d[k]; if(!it||!it.id) return; if(seen[String(it.id)]) return; seen[String(it.id)]=1; all.unshift(it); added=true; }); if(added){ all.sort(function(a,b){ return (Number(b.ts||0)-Number(a.ts||0)); }); try{ localStorage.setItem(key, JSON.stringify(all.slice(0,60))); }catch(e){} } }catch(e){} if(cb) cb(); }).catch(function(){ if(cb) cb(); }); }catch(e){ if(cb) cb(); } }
 function pvFetchPostsFromFirebase(owner, cb){
@@ -3772,7 +3983,7 @@ function pvFetchPostsFromFirebase(owner, cb){
             if(_avM && posts.indexOf(_avM)===-1){
               var _avPostM='';
               try{ _avPostM=localStorage.getItem('pv_avatar_post__'+slug)||''; }catch(e){}
-              if(!(_avPostM && posts.indexOf(_avPostM)!==-1)){ posts.push(_avM); }
+              if(!(_avPostM && posts.indexOf(_avPostM)!==-1)){ /* DELETED: avatar is not a post */ }
             }
           }catch(e){}
           try{
@@ -3796,7 +4007,7 @@ function pvFetchPostsFromFirebase(owner, cb){
         } else {
           try{
             var _avF=localStorage.getItem('pro_vibes_avatar__for_'+slug)||'';
-            if(_avF) posts=[_avF];
+            /* DELETED: empty stays empty */
           }catch(e){}
         }
         if(cb) cb(posts);
@@ -4437,7 +4648,7 @@ var pvGalleryInput=document.getElementById('pv-gallery-file');if(pvGalleryInput)
 var pvCropFrame=document.getElementById('crop-frame');if(pvCropFrame){var pvDragging=false, pvLastX=0, pvLastY=0;pvCropFrame.addEventListener('pointerdown', function(e){pvDragging=true;pvLastX=e.clientX;pvLastY=e.clientY;pvCropFrame.setPointerCapture&&pvCropFrame.setPointerCapture(e.pointerId);});pvCropFrame.addEventListener('pointermove', function(e){if(!pvDragging)return;pvCropX+=(e.clientX-pvLastX);pvCropY+=(e.clientY-pvLastY);pvLastX=e.clientX;pvLastY=e.clientY;pvLayoutCrop();});var pvEndDrag=function(){pvDragging=false;};pvCropFrame.addEventListener('pointerup', pvEndDrag);pvCropFrame.addEventListener('pointercancel', pvEndDrag);}
 var pvCropZoomInput=document.getElementById('crop-zoom');if(pvCropZoomInput)pvCropZoomInput.addEventListener('input', function(){pvCropZoom=parseFloat(this.value)||1;pvLayoutCrop();});
 var pvCropBackBtn=document.getElementById('crop-back-btn');if(pvCropBackBtn)pvCropBackBtn.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();pvCropDataUrl='';pvCropImg=null;var inp=document.getElementById('pv-gallery-file');if(inp)inp.value='';pvHideCropScreen();});
-var pvCropSelectBtn=document.getElementById('crop-select-btn');if(pvCropSelectBtn)pvCropSelectBtn.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();try{if(!pvCropImg)return;var F=300;var scale=pvCropBaseScale*pvCropZoom;var canvas=document.createElement('canvas');canvas.width=512;canvas.height=512;var ctx=canvas.getContext('2d');ctx.save();var k=512/F;var w=pvCropImg.naturalWidth*scale*k;var h=pvCropImg.naturalHeight*scale*k;var left=(512-w)/2+pvCropX*k;var top=(512-h)/2+pvCropY*k;ctx.drawImage(pvCropImg, left, top, w, h);ctx.restore();var out=canvas.toDataURL('image/jpeg', 0.92);var owner='';try{owner=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(err){}try{var _rc=document.createElement('canvas');_rc.width=640;_rc.height=800;var _rctx=_rc.getContext('2d');var _iw=pvCropImg.naturalWidth, _ih=pvCropImg.naturalHeight;var _sc=Math.min(640/_iw, 800/_ih);var _dw=_iw*_sc, _dh=_ih*_sc;try{_rctx.fillStyle='#000';_rctx.fillRect(0,0,640,800);}catch(e){}_rctx.drawImage(pvCropImg, (640-_dw)/2, (800-_dh)/2, _dw, _dh);var _rectOut=_rc.toDataURL('image/jpeg', 0.92);var _rs=String(owner||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');var _rp=[];try{_rp=JSON.parse(localStorage.getItem('pro_vibes_user_posts__'+_rs)||'[]');if(!Array.isArray(_rp))_rp=[];}catch(e){_rp=[];}var _rn=[];_rp.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:'');if(u)_rn.push(u);});if(_rn.indexOf(_rectOut)===-1)_rn.push(_rectOut);try{localStorage.setItem('pro_vibes_user_posts__'+_rs, JSON.stringify(_rn));}catch(e){}try{localStorage.setItem('pv_posts_at__'+_rs, String(Date.now()));}catch(e){}try{localStorage.setItem('pv_avatar_post__'+_rs, _rectOut);}catch(e){}try{pvRenderProfileGrid(owner, 'profile-posts-grid');}catch(e){}}catch(e){}try{window._pvCropAvatarJustPushed=Date.now();}catch(e){}pvApplyAvatarPublicly(out, owner);try{localStorage.setItem('pv_avatar_post__'+_rs, _rectOut);}catch(e){}pvCropDataUrl='';pvCropImg=null;var inp2=document.getElementById('pv-gallery-file');if(inp2)inp2 .value='';pvHideCropScreen();}catch(err){pvHideCropScreen();}});
+var pvCropSelectBtn=document.getElementById('crop-select-btn');if(pvCropSelectBtn)pvCropSelectBtn.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();try{if(!pvCropImg)return;var F=300;var scale=pvCropBaseScale*pvCropZoom;var canvas=document.createElement('canvas');canvas.width=512;canvas.height=512;var ctx=canvas.getContext('2d');ctx.save();var k=512/F;var w=pvCropImg.naturalWidth*scale*k;var h=pvCropImg.naturalHeight*scale*k;var left=(512-w)/2+pvCropX*k;var top=(512-h)/2+pvCropY*k;ctx.drawImage(pvCropImg, left, top, w, h);ctx.restore();var out=canvas.toDataURL('image/jpeg', 0.92);var owner='';try{owner=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(err){}try{var _rc=document.createElement('canvas');_rc.width=640;_rc.height=800;var _rctx=_rc.getContext('2d');var _iw=pvCropImg.naturalWidth, _ih=pvCropImg.naturalHeight;var _sc=Math.min(640/_iw, 800/_ih);var _dw=_iw*_sc, _dh=_ih*_sc;try{_rctx.fillStyle='#000';_rctx.fillRect(0,0,640,800);}catch(e){}_rctx.drawImage(pvCropImg, (640-_dw)/2, (800-_dh)/2, _dw, _dh);var _rectOut=_rc.toDataURL('image/jpeg', 0.92);var _rs=String(owner||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');var _rp=[];try{_rp=JSON.parse(localStorage.getItem('pro_vibes_user_posts__'+_rs)||'[]');if(!Array.isArray(_rp))_rp=[];}catch(e){_rp=[];}var _rn=[];_rp.forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:'');if(u)_rn.push(u);});if(_rn.indexOf(_rectOut)===-1)/* DELETED: cropped avatar is not a post */;try{localStorage.setItem('pro_vibes_user_posts__'+_rs, JSON.stringify(_rn));}catch(e){}try{localStorage.setItem('pv_posts_at__'+_rs, String(Date.now()));}catch(e){}try{localStorage.setItem('pv_avatar_post__'+_rs, _rectOut);}catch(e){}try{pvRenderProfileGrid(owner, 'profile-posts-grid');}catch(e){}}catch(e){}try{window._pvCropAvatarJustPushed=Date.now();}catch(e){}pvApplyAvatarPublicly(out, owner);try{localStorage.setItem('pv_avatar_post__'+_rs, _rectOut);}catch(e){}pvCropDataUrl='';pvCropImg=null;var inp2=document.getElementById('pv-gallery-file');if(inp2)inp2 .value='';pvHideCropScreen();}catch(err){pvHideCropScreen();}});
 window.addEventListener('resize', function(){try{if(pvCropImg)pvLayoutCrop();}catch(e){}});
 if(backBtn)backBtn.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();closeBack();});var pvBackBtn=document.getElementById('pv-back');if(pvBackBtn)pvBackBtn.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();closeProfileViews();});
 function syncViewersToggle(){var me='';try{me=localStorage.getItem('pro_vibes_user_name')||(window.ProVibesUser&&window.ProVibesUser.name)||'';}catch(e){}var on=isViewerHistoryOn(me);var tg=document.getElementById('viewers-toggle');if(tg){if(on)tg.classList.add('on');else tg.classList.remove('on');tg.setAttribute('aria-checked', on?'true':'false');}return on;}
@@ -4460,7 +4671,7 @@ function openEditProfile(){try{pvRepairCopiedPrivateData();var nm='';try{nm=loca
 try{pvRepairCopiedPrivateData();}catch(e){}function closeEditProfile(){try{document.body.style.overflow='';}catch(e){}try{if(typeof showScreen==='function'){showScreen('profile-screen');}else{document.querySelectorAll('main section, main > div#profile-screen').forEach(function(s){if(s.id==='profile-screen'){s.classList.remove('hidden');s.removeAttribute('hidden');}else{s.classList.add('hidden');s.setAttribute('hidden', '');}});}}catch(e){}var nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';try{if(typeof setNav==='function')setNav('profile-screen');}catch(e){}try{if(typeof setProfile==='function')setProfile();}catch(e){}}
 var editBtn=document.getElementById('profile-edit-btn');if(editBtn)editBtn.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();openEditProfile();});
 var epClose=document.getElementById('ep-close');if(epClose)epClose.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();closeEditProfile();});
-var epDone=document.getElementById('ep-done');if(epDone)epDone.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();var nm=String((document.getElementById('ep-name')||{}).value||'').trim();var oldNm='';try{oldNm=localStorage.getItem('pro_vibes_user_name')||'';}catch(e){}var un=String((document.getElementById('ep-username')||{}).value||'').trim();var bio=String((document.getElementById('ep-bio')||{}).value||'').trim();var gender=String((document.getElementById('ep-gender-value')||{}).textContent||'').trim();if(gender==='What’s your gender?'){try{var _os=String(oldNm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');gender=localStorage.getItem('pro_vibes_gender__u_'+_os)||'Prefer not to say';}catch(e){gender='Prefer not to say';}}if(nm&&oldNm&&nm.toLowerCase()!==oldNm.toLowerCase()){if(isNameLocked()){var ud=new Date(getNameUnlockDate());alert('You changed your name recently. You can change it again on '+ud.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})+'.');return;}migrateName(oldNm, nm);try{var _ns=String(nm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');localStorage.setItem('pro_vibes_name_changed_at__u_'+_ns, String(Date.now()));}catch(e){}}try{ensureDeviceId();}catch(e){}try{if(nm)localStorage.setItem('pro_vibes_user_name', nm);}catch(e){}var _slug2=String(nm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');try{localStorage.setItem('pro_vibes_username__u_'+_slug2, un);}catch(e){}try{localStorage.setItem('pro_vibes_bio__'+_slug2, bio);}catch(e){}try{localStorage.setItem('pro_vibes_gender__u_'+_slug2, gender);}catch(e){}try{localStorage.setItem('pro_vibes_links__u_'+_slug2, JSON.stringify(epTempLinks||[]));}catch(e){}if(epTempAvatar){try{var _slugAv2=String(nm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');var _posts2=[];try{_posts2=JSON.parse(localStorage.getItem('pro_vibes_user_posts__'+_slugAv2)||'[]');if(!Array.isArray(_posts2))_posts2=[];}catch(e){_posts2=[];}var _norm2=[];_posts2 .forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:'');if(u)_norm2 .push(u);});if(_norm2 .indexOf(epTempAvatar)===-1)_norm2 .push(epTempAvatar);try{localStorage.setItem('pro_vibes_user_posts__'+_slugAv2, JSON.stringify(_norm2));}catch(e){}try{localStorage.setItem('pv_avatar_post__'+_slugAv2, epTempAvatar);}catch(e){}try{localStorage.setItem('pv_posts_at__'+_slugAv2, String(Date.now()));}catch(e){}}catch(e){}try{}catch(e){}try{var _k='pro_vibes_avatar__for_'+String(nm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');localStorage.setItem(_k, epTempAvatar);var _at2=Date.now();try{localStorage.setItem('pv_avatar_at__'+String(nm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, ''), String(_at2));}catch(e){}try{if(typeof pvSaveAvatarToFirebase==='function')pvSaveAvatarToFirebase(nm, epTempAvatar, _at2);}catch(e){}}catch(e){}try{if(typeof pvRefreshAllAvatars==='function')pvRefreshAllAvatars();}catch(e){}try{pvRenderProfileGrid(nm, 'profile-posts-grid');}catch(e){}}try{if(window.ProVibesUser&&nm)window.ProVibesUser.name=nm;}catch(e){}closeEditProfile();});
+var epDone=document.getElementById('ep-done');if(epDone)epDone.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();var nm=String((document.getElementById('ep-name')||{}).value||'').trim();var oldNm='';try{oldNm=localStorage.getItem('pro_vibes_user_name')||'';}catch(e){}var un=String((document.getElementById('ep-username')||{}).value||'').trim();var bio=String((document.getElementById('ep-bio')||{}).value||'').trim();var gender=String((document.getElementById('ep-gender-value')||{}).textContent||'').trim();if(gender==='What’s your gender?'){try{var _os=String(oldNm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');gender=localStorage.getItem('pro_vibes_gender__u_'+_os)||'Prefer not to say';}catch(e){gender='Prefer not to say';}}if(nm&&oldNm&&nm.toLowerCase()!==oldNm.toLowerCase()){if(isNameLocked()){var ud=new Date(getNameUnlockDate());alert('You changed your name recently. You can change it again on '+ud.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})+'.');return;}migrateName(oldNm, nm);try{var _ns=String(nm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');localStorage.setItem('pro_vibes_name_changed_at__u_'+_ns, String(Date.now()));}catch(e){}}try{ensureDeviceId();}catch(e){}try{if(nm)localStorage.setItem('pro_vibes_user_name', nm);}catch(e){}var _slug2=String(nm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');try{localStorage.setItem('pro_vibes_username__u_'+_slug2, un);}catch(e){}try{localStorage.setItem('pro_vibes_bio__'+_slug2, bio);}catch(e){}try{localStorage.setItem('pro_vibes_gender__u_'+_slug2, gender);}catch(e){}try{localStorage.setItem('pro_vibes_links__u_'+_slug2, JSON.stringify(epTempLinks||[]));}catch(e){}if(epTempAvatar){try{var _slugAv2=String(nm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');var _posts2=[];try{_posts2=JSON.parse(localStorage.getItem('pro_vibes_user_posts__'+_slugAv2)||'[]');if(!Array.isArray(_posts2))_posts2=[];}catch(e){_posts2=[];}var _norm2=[];_posts2 .forEach(function(it){var u=typeof it==='string'?it:(it&&it.image?it.image:'');if(u)_norm2 .push(u);});if(_norm2 .indexOf(epTempAvatar)===-1)/* DELETED: avatar is not a post */;try{localStorage.setItem('pro_vibes_user_posts__'+_slugAv2, JSON.stringify(_norm2));}catch(e){}try{localStorage.setItem('pv_avatar_post__'+_slugAv2, epTempAvatar);}catch(e){}try{localStorage.setItem('pv_posts_at__'+_slugAv2, String(Date.now()));}catch(e){}}catch(e){}try{}catch(e){}try{var _k='pro_vibes_avatar__for_'+String(nm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');localStorage.setItem(_k, epTempAvatar);var _at2=Date.now();try{localStorage.setItem('pv_avatar_at__'+String(nm||'').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, ''), String(_at2));}catch(e){}try{if(typeof pvSaveAvatarToFirebase==='function')pvSaveAvatarToFirebase(nm, epTempAvatar, _at2);}catch(e){}}catch(e){}try{if(typeof pvRefreshAllAvatars==='function')pvRefreshAllAvatars();}catch(e){}try{pvRenderProfileGrid(nm, 'profile-posts-grid');}catch(e){}}try{if(window.ProVibesUser&&nm)window.ProVibesUser.name=nm;}catch(e){}closeEditProfile();});
 var epPic=document.getElementById('ep-edit-picture');if(epPic)epPic.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();var f=document.getElementById('ep-file');if(f)f.click();});
 var epFile=document.getElementById('ep-file');if(epFile)epFile.addEventListener('change', function(){var file=this.files&&this.files[0];if(!file)return;var r=new FileReader();r.onload=function(ev){epTempAvatar=ev.target.result;var img=document.getElementById('ep-avatar-img');var letEl=document.getElementById('ep-avatar-letter');if(img){img.src=epTempAvatar;img.style.display='block';}if(letEl)letEl.style.display='none';};r.readAsDataURL(file);});
 var epLinksRow=document.getElementById('ep-links-row');if(epLinksRow)epLinksRow.addEventListener('click', function(e){e.preventDefault();e.stopPropagation();var cur=epTempLinks.join(', ');var v=prompt('Links (separate with comma)', cur);if(v!==null){var arr=String(v||'').split(',').map(function(s){return s.trim();}).filter(function(s){return!!s;});epTempLinks=arr;var c=document.getElementById('ep-links-count');if(c)c.textContent=String(arr.length);}});
@@ -8551,7 +8762,7 @@ try{ window.pvAddStoryView=pvAddStoryView; }catch(e){}
 </style>
 <script data-file="js/groq.js">
 // js/groq.js
-  // AI persistence goes through pvAiStore per person account. Same person = same account on any phone. Different person = different account, no mixing.
+  // AI persistence goes through pvAiStore (owner + AI-account scoped). No global key is ever source. LOCKED v1 — do not change.
   function pvAiStoreGet(kind, legacyKey){
     try{ if(window.pvAiStore && window.pvAiStore.get){ var v=window.pvAiStore.get(kind); if(v!==null && v!==undefined) return v; } }catch(e){}
     try{ return localStorage.getItem(legacyKey); }catch(e){ return null; }
@@ -11205,10 +11416,11 @@ html[data-pv-accent="default"] .pv-ai-msg.ai a{color:#4da3ff !important}
   };
   window.pvAiAccounts={ open:openSheet, close:closeSheet, switch:switchAccount, create:createAccount, importByCode:createIsolatedAccountFromCode, list:loadList, current:getCurrentAccount };
 
-  /* ===== ACCOUNT RULE - EACH PERSON SEPARATE, SAME PERSON SAME ACCOUNT ON ANY PHONE =====
+  /* ===== LOCKED v1 — FREEZE ISOLATION, NO FURTHER CHANGES =====
+     This block locks the isolation in place. Do not remove or weaken it.
      - window.pvAiStore is made non-writable / non-configurable so no later script can replace it.
-     - Self-test runs on every load. If any key format drifts, it flags it instead of silently mixing accounts.
-     - Same person = same account on same phone or another phone. Different person = different account, no mixing.
+     - Self-test runs on every load. If any key format drifts, it flags it instead of silently leaking.
+     - Lock marker is stored so the app can prove it is running the locked version.
   */
   try{
     window.__PV_AI_ISOLATION_LOCKED = 'v1';
@@ -13141,32 +13353,13 @@ try{
       }catch(e){ state.posting = false; updatePostBtn(); setProgress(null); toast('Could not post — try again'); }
     }).catch(function(){ state.posting = false; updatePostBtn(); setProgress(null); toast('Could not post — try again'); });
     function finishSave(posts, metas, firebasePosts, entries){
-      // POSTS LIKE MESSAGES: messages use POST - append one, never overwrite whole room. Posts used PUT whole list - if local snapshot missed one post, that post was wiped. Now we do GET cloud first, MERGE local + cloud, then PUT merged. And if offline or PUT fails, we queue to outbox like messages do, and flush when back online.
       try{
         var base = getBase();
-        var _del0=[]; try{ _del0=JSON.parse(localStorage.getItem('pv_deleted_posts__'+s)||'[]'); if(!Array.isArray(_del0)) _del0=[]; }catch(e){ _del0=[]; }
-        var _queuePost=function(){
-          try{ var qk='pv_post_outbox__'+s; var q=[]; try{ q=JSON.parse(localStorage.getItem(qk)||'[]'); if(!Array.isArray(q)) q=[]; }catch(e){ q=[]; } var _sig=JSON.stringify(firebasePosts)+'|'+JSON.stringify(metas); var _exists=q.some(function(it){ return it&&it.sig===_sig; }); if(!_exists){ q.push({sig:_sig, posts:firebasePosts, metas:metas, at:Date.now()}); try{ localStorage.setItem(qk, JSON.stringify(q)); }catch(e){} } }catch(e){}
-        };
-        if(!base){ _queuePost(); }
-        else if(!navigator.onLine){ _queuePost(); }
-        else{
-          Promise.all([
-            fetch(base+'/pro_vibes/posts/'+s+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }),
-            fetch(base+'/pro_vibes/post_metas/'+s+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }),
-            fetch(base+'/pro_vibes/home_text_posts/'+s+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; })
-          ]).then(function(res){
-            var cloudPosts=[]; if(res[0]&&Array.isArray(res[0].posts)) cloudPosts=res[0].posts; else if(res[0]&&Array.isArray(res[0])) cloudPosts=res[0];
-            var cloudMetas=(res[1]&&typeof res[1]==='object')?res[1]:{};
-            var cloudText=[]; if(res[2]&&Array.isArray(res[2].posts)) cloudText=res[2].posts; else if(res[2]&&Array.isArray(res[2])) cloudText=res[2];
-            var mergedPosts=cloudPosts.slice(); firebasePosts.forEach(function(u){ if(u&&_del0.indexOf(u)===-1&&mergedPosts.indexOf(u)===-1) mergedPosts.push(u); });
-            var mergedMetas={}; Object.keys(cloudMetas).forEach(function(k){ mergedMetas[k]=cloudMetas[k]; }); Object.keys(metas||{}).forEach(function(k){ if(!mergedMetas[k]) mergedMetas[k]=metas[k]; });
-            var _htc=[]; try{ _htc=JSON.parse(localStorage.getItem('pv_home_text_cloud__'+s)||'[]'); if(!Array.isArray(_htc)) _htc=[]; }catch(e){ _htc=[]; }
-            var mergedText=cloudText.slice(); _htc.forEach(function(u){ if(u&&_del0.indexOf(u)===-1&&mergedText.indexOf(u)===-1) mergedText.push(u); });
-            fetch(base+'/pro_vibes/posts/'+s+'.json',{method:'PUT', body:JSON.stringify({owner:me, slug:s, posts:mergedPosts, updatedAt:Date.now()})}).catch(function(){ _queuePost(); });
-            fetch(base+'/pro_vibes/post_metas/'+s+'.json',{method:'PUT', body:JSON.stringify(mergedMetas)}).catch(function(){ _queuePost(); });
-            if(mergedText.length) fetch(base+'/pro_vibes/home_text_posts/'+s+'.json',{method:'PUT', body:JSON.stringify({owner:me, slug:s, posts:mergedText, updatedAt:Date.now()})}).catch(function(){ _queuePost(); });
-          }).catch(function(){ _queuePost(); });
+        if(base && navigator.onLine){
+          var payload = {owner:me, slug:s, posts:firebasePosts, updatedAt:Date.now()};
+          fetch(base + '/pro_vibes/posts/' + s + '.json', {method:'PUT', body:JSON.stringify(payload)}).catch(function(){});
+          fetch(base + '/pro_vibes/post_metas/' + s + '.json', {method:'PUT', body:JSON.stringify(metas)}).catch(function(){});
+          try{ var _htc=[]; try{ _htc=JSON.parse(localStorage.getItem('pv_home_text_cloud__' + s) || '[]'); if(!Array.isArray(_htc)) _htc=[]; }catch(e){ _htc=[]; } if(_htc.length) fetch(base + '/pro_vibes/home_text_posts/' + s + '.json', {method:'PUT', body:JSON.stringify({owner:me, slug:s, posts:_htc, updatedAt:Date.now()})}).catch(function(){}); }catch(e){}
         }
       }catch(e){}
       try{
@@ -13901,10 +14094,6 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
       if(!u) return; u=String(u); var s=slug(owner); if(!s) return;
       var del=readJSON('pv_deleted_posts__'+s, []); if(del.indexOf(u)!==-1) return;
       var meta=getMeta(u, owner);
-      // DELETED NEVER COMES BACK: check all 3 forms - localPointer, cloudUrl, idb://mediaId
-      try{ if(meta){ if(meta.localPointer&&del.indexOf(String(meta.localPointer))!==-1) return; if(meta.cloudUrl&&del.indexOf(String(meta.cloudUrl))!==-1) return; if(meta.mediaId&&(del.indexOf(String(meta.mediaId))!==-1||del.indexOf('idb://'+String(meta.mediaId))!==-1)) return; } }catch(e){}
-      // SHOW OWN POSTS EVEN IF STILL LOCAL: idb:// only lives on this phone, so for OTHER people we skip it if no cloudUrl, but for ME we must show it via IndexedDB, or I will see empty Home.
-      try{ if(u.indexOf('idb://')===0){ var _isMe2=String(owner||'').trim().toLowerCase()===String(getMe()||'').trim().toLowerCase(); if(!_isMe2){ var _cu2=(meta&&meta.cloudUrl)?String(meta.cloudUrl):''; if(!_cu2||_cu2.indexOf('idb://')===0) return; } } }catch(e){}
       var mid=(meta&&meta.mediaId)?String(meta.mediaId):'';
       var dkey=mid?(s+'|mid:'+mid):(s+'|u:'+u);
       if(seen[dkey]) return;
@@ -13945,9 +14134,9 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
       if(av){
         var hid=''; try{ hid=localStorage.getItem('pv_avatar_post_hidden__'+s)||''; }catch(e){}
         var del2=readJSON('pv_deleted_posts__'+s, []);
-        if(!(hid&&String(hid)===String(av))&&del2.indexOf(av)===-1) push(owner, av, 'profile');
+        /* DELETED: avatar is not a Home post */
         var ap=''; try{ ap=localStorage.getItem('pv_avatar_post__'+s)||''; }catch(e){}
-        if(ap&&ap!==av&&del2.indexOf(ap)===-1) push(owner, ap, 'profile');
+        /* DELETED: avatar-post is not a Home post */
       }
     }
     list.sort(function(a,b){ if(b.ts!==a.ts) return b.ts-a.ts; return b.seq-a.seq; });
@@ -14332,21 +14521,18 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
   var _pvHomeFirstSyncDone=false;
   function fetchFromCloud(){
     if(fetching) return; fetching=true;
-    // FIXED for others: discover owners from 3 places, not only /prochat/users.json.
-    // If a person posted but never registered in users.json, their posts were missed and Home stayed empty/few.
-    Promise.all([fetchJSON(BASE+'/prochat/users.json'), fetchJSON(BASE+'/pro_vibes/posts.json'), fetchJSON(BASE+'/pro_vibes/home_text_posts.json')]).then(function(res){
-      var users=res[0], allPosts=res[1], allText=res[2];
+    fetchJSON(BASE+'/prochat/users.json').then(function(users){
       var names=[];
       try{ if(users&&typeof users==='object'){ Object.keys(users).forEach(function(k){ var v=users[k]||{}; var nm=String(v.name||v.user||'').trim(); if(nm) names.push(nm); }); } }catch(e){}
-      try{ if(allPosts&&typeof allPosts==='object'){ Object.keys(allPosts).forEach(function(k){ var v=allPosts[k]||{}; var nm=String(v.owner||v.name||'').trim(); if(nm) names.push(nm); else { var disp=String(k||'').replace(/_/g,' ').replace(/\b\w/g,function(c){ return c.toUpperCase(); }); if(disp) names.push(disp); } }); } }catch(e){}
-      try{ if(allText&&typeof allText==='object'){ Object.keys(allText).forEach(function(k){ var v=allText[k]||{}; var nm=String(v.owner||v.name||'').trim(); if(nm) names.push(nm); }); } }catch(e){}
       var all=owners(); names.forEach(function(n){ if(all.indexOf(n)===-1) all.push(n); });
       if(getMe()&&all.indexOf(getMe())===-1) all.push(getMe());
+      /* LOAD ONCE - LOCKED - All owners load together, NOT one by one */
       return Promise.all(all.map(function(owner){ return syncOwner(owner); }));
     }).then(function(){ fetching=false; _pvHomeFirstSyncDone=true; queueRender(); }).catch(function(){ fetching=false; _pvHomeFirstSyncDone=true; queueRender(); });
   }
   function syncOwner(owner){
     var s=slug(owner); if(!s) return Promise.resolve();
+    // FAST FOR NEW PHONES: fetch all 5 in PARALLEL, not one-by-one. 1 round-trip instead of 5.
     return Promise.all([
       fetchJSON(BASE+'/pro_vibes/deleted_posts/'+s+'.json'),
       fetchJSON(BASE+'/pro_vibes/post_metas/'+s+'.json'),
@@ -14355,42 +14541,35 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
       fetchJSON(BASE+'/pro_vibes/avatars/'+s+'.json')
     ]).then(function(results){
       var delDoc=results[0], metas=results[1], d=results[2], ht=results[3], avd=results[4];
-      // 1) DELETED: union cloud + local, never forget. Purge from every local list by any form.
-      var localDel=readJSON('pv_deleted_posts__'+s, []);
-      var cloudDel=[]; if(delDoc&&Array.isArray(delDoc.posts)) cloudDel=delDoc.posts; else if(delDoc&&Array.isArray(delDoc)) cloudDel=delDoc;
-      cloudDel.forEach(function(u){ if(u&&localDel.indexOf(u)===-1) localDel.push(u); });
-      try{ localStorage.setItem('pv_deleted_posts__'+s, JSON.stringify(localDel)); }catch(e){}
-      function isDelVal(v){ try{ return !!(v&&localDel.indexOf(String(v))!==-1); }catch(e){ return false; } }
-      function metaIsDel(mm){ try{ if(!mm) return false; if(isDelVal(mm.localPointer)) return true; if(isDelVal(mm.cloudUrl)) return true; if(mm.mediaId&&(isDelVal(mm.mediaId)||isDelVal('idb://'+String(mm.mediaId)))) return true; return false; }catch(e){ return false; } }
       try{
-        ['pro_vibes_user_posts__'+s,'pv_home_text_posts__'+s,'pv_home_text_cloud__'+s,'pv_firebase_posts__'+s].forEach(function(lk){
-          try{ var la=readJSON(lk, []); if(!Array.isArray(la)) return; var curM=readJSON('pv_post_metas__'+s, {}); var fl=la.filter(function(it){ var uu=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(!uu) return true; if(isDelVal(uu)) return false; var mm2=null; try{ for(var k2 in curM){ var cand=curM[k2]; if(cand&&(cand.localPointer===uu||cand.cloudUrl===uu)) { mm2=cand; break; } } }catch(e){} if(mm2&&metaIsDel(mm2)) return false; return true; }); if(fl.length!==la.length){ try{ localStorage.setItem(lk, JSON.stringify(fl)); }catch(e){} } }catch(e){}
-        });
-        var mmAll=readJSON('pv_post_metas__'+s, {}); if(mmAll&&typeof mmAll==='object'){ var mCh=false; for(var mk2 in mmAll){ if(metaIsDel(mmAll[mk2])){ delete mmAll[mk2]; mCh=true; } } if(mCh){ try{ localStorage.setItem('pv_post_metas__'+s, JSON.stringify(mmAll)); }catch(e){} } }
+        var cloudDel=[]; if(delDoc&&Array.isArray(delDoc.posts)) cloudDel=delDoc.posts; else if(delDoc&&Array.isArray(delDoc)) cloudDel=delDoc;
+        if(cloudDel.length){
+          var localDel=readJSON('pv_deleted_posts__'+s, []); var delChanged=false;
+          cloudDel.forEach(function(u){ if(u&&localDel.indexOf(u)===-1){ localDel.push(u); delChanged=true; } });
+          if(delChanged){ try{ localStorage.setItem('pv_deleted_posts__'+s, JSON.stringify(localDel)); }catch(e){} }
+          try{ ['pro_vibes_user_posts__'+s,'pv_home_text_posts__'+s,'pv_home_text_cloud__'+s].forEach(function(lk){ try{ var la=readJSON(lk, []); if(!Array.isArray(la)) return; var fl=la.filter(function(it){ var uu=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); return !(uu&&localDel.indexOf(uu)!==-1); }); if(fl.length!==la.length){ try{ localStorage.setItem(lk, JSON.stringify(fl)); }catch(e){} } }catch(e){} }); }catch(e){}
+          try{ var mm2=readJSON('pv_post_metas__'+s, {}); if(mm2&&typeof mm2==='object'){ var mCh=false; for(var mk2 in mm2){ var m2v=mm2[mk2]; if(m2v&&(localDel.indexOf(m2v.localPointer)!==-1||localDel.indexOf(m2v.cloudUrl)!==-1)){ delete mm2[mk2]; mCh=true; } } if(mCh){ try{ localStorage.setItem('pv_post_metas__'+s, JSON.stringify(mm2)); }catch(e){} } } }catch(e){}
+        }
       }catch(e){}
-      // 2) MERGE cloud metas, skip deleted. NEVER wipe local metas.
       try{
         if(metas&&typeof metas==='object'){
           var cur=readJSON('pv_post_metas__'+s, {}); var changed=false;
-          Object.keys(metas).forEach(function(k){ var mm=metas[k]||{}; if(metaIsDel(mm)) return; if(cur[k]) return; cur[k]=mm; changed=true; });
+          var delM=readJSON('pv_deleted_posts__'+s, []);
+          Object.keys(metas).forEach(function(k){ if(cur[k]) return; var mm=metas[k]||{}; if(mm&&(delM.indexOf(mm.localPointer)!==-1||delM.indexOf(mm.cloudUrl)!==-1)) return; cur[k]=metas[k]; changed=true; });
           if(changed){ try{ localStorage.setItem('pv_post_metas__'+s, JSON.stringify(cur)); }catch(e){} }
         }
       }catch(e){}
-      // 3) MERGE cloud posts into local, skip deleted. NEVER overwrite local with empty cloud. Local stays, cloud adds.
       try{
         var cloudPosts=[]; if(d&&Array.isArray(d.posts)) cloudPosts=d.posts; else if(d&&Array.isArray(d)) cloudPosts=d;
         if(cloudPosts.length){
           var del=readJSON('pv_deleted_posts__'+s, []);
           var local=readJSON('pro_vibes_user_posts__'+s, []); var changed2=false;
           var txtLocal=readJSON('pv_home_text_posts__'+s, []); var txtChanged=false;
-          var curM2=readJSON('pv_post_metas__'+s, {});
-          function findM(v){ try{ for(var kk in curM2){ var c2=curM2[kk]; if(c2&&(c2.localPointer===v||c2.cloudUrl===v||c2.mediaId===String(v).replace('idb://',''))) return c2; } }catch(e){} return null; }
-          cloudPosts.forEach(function(u){ if(!u) return; if(isDelVal(u)) return; var mmf=findM(u); if(mmf&&metaIsDel(mmf)) return; if(isText(u, owner)){ if(txtLocal.indexOf(u)===-1){ txtLocal.push(u); txtChanged=true; } } else if(local.indexOf(u)===-1){ local.push(u); changed2=true; } });
+          cloudPosts.forEach(function(u){ if(!u||del.indexOf(u)===-1) return; if(isText(u, owner)){ if(txtLocal.indexOf(u)===-1){ txtLocal.push(u); txtChanged=true; } } else if(local.indexOf(u)===-1){ local.push(u); changed2=true; } });
           if(changed2){ try{ localStorage.setItem('pro_vibes_user_posts__'+s, JSON.stringify(local)); }catch(e){} }
           if(txtChanged){ try{ localStorage.setItem('pv_home_text_posts__'+s, JSON.stringify(txtLocal)); }catch(e){} }
         }
       }catch(e){}
-      // 4) MERGE cloud text posts.
       try{
         var arr=[]; if(ht&&Array.isArray(ht.posts)) arr=ht.posts; else if(ht&&Array.isArray(ht)) arr=ht;
         if(arr.length){
@@ -14403,28 +14582,11 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
           if(ch2){ try{ localStorage.setItem('pv_home_text_cloud__'+s, JSON.stringify(cloud2)); }catch(e){} }
         }
       }catch(e){}
-      // 5) OLD POSTS: if this phone has posts with cloudUrl that cloud does not have yet, back-upload them so other phone sees old + new. Deleted never back-uploads.
-      try{
-        var localPosts2=readJSON('pro_vibes_user_posts__'+s, []);
-        var cloudPosts2=[]; if(d&&Array.isArray(d.posts)) cloudPosts2=d.posts; else if(d&&Array.isArray(d)) cloudPosts2=d;
-        var toUpload=[]; var curM3=readJSON('pv_post_metas__'+s, {});
-        localPosts2.forEach(function(it){ var uu=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(!uu) return; if(isDelVal(uu)) return; var mm3=null; try{ for(var kk3 in curM3){ var c3=curM3[kk3]; if(c3&&(c3.localPointer===uu||c3.cloudUrl===uu||c3.mediaId===String(uu).replace('idb://',''))) { mm3=c3; break; } } }catch(e){} if(mm3&&metaIsDel(mm3)) return; var cu=''; if(mm3&&mm3.cloudUrl) cu=String(mm3.cloudUrl); else if(String(uu).indexOf('idb://')!==0) cu=String(uu); if(!cu||cu.indexOf('idb://')===0) return; if(cloudPosts2.indexOf(cu)===-1&&toUpload.indexOf(cu)===-1) toUpload.push(cu); });
-        if(toUpload.length&&navigator.onLine){
-          var mergedPosts=cloudPosts2.slice(); toUpload.forEach(function(u){ if(mergedPosts.indexOf(u)===-1) mergedPosts.push(u); });
-          // Filter deleted one last time before PUT
-          mergedPosts=mergedPosts.filter(function(u){ return !isDelVal(u); });
-          try{ fetch(BASE+'/pro_vibes/posts/'+s+'.json',{method:'PUT', body:JSON.stringify({owner:owner, slug:s, posts:mergedPosts, updatedAt:Date.now()})}).catch(function(){}); }catch(e){}
-          try{ fetch(BASE+'/pro_vibes/post_metas/'+s+'.json',{method:'PUT', body:JSON.stringify(curM3)}).catch(function(){}); }catch(e){}
-        }
-      }catch(e){}
-      // 6) Avatar, only if not deleted.
       try{
         if(avd&&avd.avatar){
-          if(!isDelVal(avd.avatar)){
-            var prevAt=parseInt(localStorage.getItem('pv_avatar_at__'+s)||'0',10)||0;
-            if(Number(avd.at||0)>=prevAt){
-              try{ localStorage.setItem('pro_vibes_avatar__for_'+s, String(avd.avatar)); localStorage.setItem('pv_avatar_at__'+s, String(Number(avd.at||Date.now()))); }catch(e){}
-            }
+          var prevAt=parseInt(localStorage.getItem('pv_avatar_at__'+s)||'0',10)||0;
+          if(Number(avd.at||0)>=prevAt){
+            try{ localStorage.setItem('pro_vibes_avatar__for_'+s, String(avd.avatar)); localStorage.setItem('pv_avatar_at__'+s, String(Number(avd.at||Date.now()))); }catch(e){}
           }
         }
       }catch(e){}
@@ -14455,18 +14617,6 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
   window.pvRenderHomeFeed=queueRender;
   window.pvOpenHomePost=openPost;
   window.pvCloseHomePost=closePost;
-  // AUTO-REFRESH LIKE MESSAGES: before, Home only fetched once on load + when you re-open Home, so you MUST refresh to see new posts. Messages use realtime + poll, so they show by themselves. Now Home polls every 4 seconds while Home is visible, plus on visibility / focus / online, so new posts appear without manual refresh.
-  try{
-    if(!window._pvHomeAutoRefreshBound){
-      window._pvHomeAutoRefreshBound=true;
-      setInterval(function(){ try{ if(homeVisible() && !detailVisible() && navigator.onLine) fetchFromCloud(); }catch(e){} }, 4000);
-      document.addEventListener('visibilitychange', function(){ try{ if(!document.hidden && homeVisible() && navigator.onLine) fetchFromCloud(); }catch(e){} });
-      window.addEventListener('focus', function(){ try{ if(homeVisible() && navigator.onLine) fetchFromCloud(); }catch(e){} });
-      window.addEventListener('online', function(){ try{ if(homeVisible()) fetchFromCloud(); }catch(e){} });
-      // When someone posts, Home on other phones gets it via the poll above. Also flush post outbox here.
-      setInterval(function(){ try{ if(typeof pvFlushPostOutbox==='function') pvFlushPostOutbox(); }catch(e){} }, 10000);
-    }
-  }catch(e){}
   try{ bind(); }catch(e){}
   try{ queueRender(); }catch(e){}
   try{ fetchFromCloud(); }catch(e){}
