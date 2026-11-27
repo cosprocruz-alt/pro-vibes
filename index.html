@@ -3744,7 +3744,14 @@ function pvGetProfilePosts(owner){
   }catch(e){ return []; }
 }
 function pvPostIdFor(imgUrl, owner){ try{ var s=String(owner||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); var u=String(imgUrl||''); var key=s+'|'+u.slice(0,500)+'|'+u.length+'|'+u.slice(-100); var h=5381; for(var i=0;i<key.length;i++){ h=((h*33)+key.charCodeAt(i))>>>0; } return s+'_'+h.toString(36); }catch(e){ return 'post_'+Date.now(); } }
-function pvSavePostsToFirebase(owner){ try{ var o=String(owner||'').trim(); if(!o) return; var base=(typeof getBase==='function'?getBase():''); if(!base||!navigator.onLine) return; var slug=String(o).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); if(!slug) return; var posts=[]; /* Text posts never upload to cloud profile posts. */ try{ var _raw=JSON.parse(localStorage.getItem('pro_vibes_user_posts__'+slug)||'[]'); if(Array.isArray(_raw)){ var _del=[]; try{_del=JSON.parse(localStorage.getItem('pv_deleted_posts__'+slug)||'[]'); if(!Array.isArray(_del))_del=[];}catch(e){_del=[];} _raw.forEach(function(it){ var _u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(_u&&_del.indexOf(_u)===-1){ try{ if(typeof pvIsTextPost==='function' && pvIsTextPost(_u, o)) return; }catch(e){} posts.push(_u); } }); } }catch(e){} try{ if(!posts.length){ var _av=''; try{ _av=localStorage.getItem('pro_vibes_avatar__for_'+slug)||''; }catch(e){} if(!_av && typeof pvAvatarFor==='function'){ try{ _av=pvAvatarFor(o)||''; }catch(e){} } if(_av) posts=[_av]; } }catch(e){} var payload={owner:o, slug:slug, posts:posts, updatedAt:Date.now()}; try{ fetch(base+'/pro_vibes/posts/'+slug+'.json',{method:'PUT', body:JSON.stringify(payload)}).catch(function(){}); }catch(e){} }catch(e){} }
+function pvSavePostsToFirebase(owner){ try{ var o=String(owner||'').trim(); if(!o) return; var base=(typeof getBase==='function'?getBase():''); if(!base) return; var slug=String(o).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); if(!slug) return; var posts=[]; try{ var _raw=JSON.parse(localStorage.getItem('pro_vibes_user_posts__'+slug)||'[]'); if(Array.isArray(_raw)){ var _del=[]; try{_del=JSON.parse(localStorage.getItem('pv_deleted_posts__'+slug)||'[]'); if(!Array.isArray(_del))_del=[];}catch(e){_del=[];} _raw.forEach(function(it){ var _u=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(_u&&_del.indexOf(_u)===-1){ try{ if(typeof pvIsTextPost==='function' && pvIsTextPost(_u, o)) return; }catch(e){} posts.push(_u); } }); } }catch(e){} try{ if(!posts.length){ var _av=''; try{ _av=localStorage.getItem('pro_vibes_avatar__for_'+slug)||''; }catch(e){} if(!_av && typeof pvAvatarFor==='function'){ try{ _av=pvAvatarFor(o)||''; }catch(e){} } if(_av) posts=[_av]; } }catch(e){}
+  // LIKE MESSAGES: do not PUT blind. GET cloud, MERGE, then PUT. If offline, queue to outbox and flush on online.
+  var _queue=function(){ try{ var qk='pv_post_outbox__'+slug; var q=[]; try{ q=JSON.parse(localStorage.getItem(qk)||'[]'); if(!Array.isArray(q)) q=[]; }catch(e){ q=[]; } var sig=JSON.stringify(posts); if(!q.some(function(it){ return it&&JSON.stringify(it.posts)===sig; })){ q.push({sig:sig, posts:posts, metas:null, at:Date.now()}); try{ localStorage.setItem(qk, JSON.stringify(q)); }catch(e){} } }catch(e){} };
+  if(!navigator.onLine){ _queue(); return; }
+  fetch(base+'/pro_vibes/posts/'+slug+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(d){ var cloud=[]; if(d&&Array.isArray(d.posts)) cloud=d.posts; else if(d&&Array.isArray(d)) cloud=d; var merged=cloud.slice(); posts.forEach(function(u){ if(u&&merged.indexOf(u)===-1) merged.push(u); }); var _del2=[]; try{ _del2=JSON.parse(localStorage.getItem('pv_deleted_posts__'+slug)||'[]'); }catch(e){} merged=merged.filter(function(u){ return _del2.indexOf(u)===-1; }); fetch(base+'/pro_vibes/posts/'+slug+'.json',{method:'PUT', body:JSON.stringify({owner:o, slug:slug, posts:merged, updatedAt:Date.now()})}).catch(function(){ _queue(); }); }).catch(function(){ _queue(); });
+}catch(e){} }
+function pvFlushPostOutbox(){ try{ var me=''; try{ me=localStorage.getItem('pro_vibes_user_name')||''; }catch(e){} if(!me||!navigator.onLine) return; var base=''; try{ base=(typeof getBase==='function'?getBase(): ''); }catch(e){} if(!base) return; var slug=String(me).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); var qk='pv_post_outbox__'+slug; var q=[]; try{ q=JSON.parse(localStorage.getItem(qk)||'[]'); if(!Array.isArray(q)) q=[]; }catch(e){ q=[]; } if(!q.length) return; var item=q[0]; try{ localStorage.setItem(qk, JSON.stringify(q.slice(1))); }catch(e){} fetch(base+'/pro_vibes/posts/'+slug+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }).then(function(d){ var cloud=[]; if(d&&Array.isArray(d.posts)) cloud=d.posts; else if(d&&Array.isArray(d)) cloud=d; var merged=cloud.slice(); (item.posts||[]).forEach(function(u){ if(u&&merged.indexOf(u)===-1) merged.push(u); }); return fetch(base+'/pro_vibes/posts/'+slug+'.json',{method:'PUT', body:JSON.stringify({owner:me, slug:slug, posts:merged, updatedAt:Date.now()})}); }).then(function(){ try{ if(item.metas) fetch(base+'/pro_vibes/post_metas/'+slug+'.json',{method:'PUT', body:JSON.stringify(item.metas)}).catch(function(){}); }catch(e){} setTimeout(function(){ try{ pvFlushPostOutbox(); }catch(e){} }, 500); }).catch(function(){ try{ var qq=JSON.parse(localStorage.getItem(qk)||'[]'); qq.push(item); localStorage.setItem(qk, JSON.stringify(qq)); }catch(e){} }); }catch(e){} }
+try{ if(!window._pvPostOutboxBound){ window._pvPostOutboxBound=true; window.addEventListener('online', function(){ try{ pvFlushPostOutbox(); }catch(e){} }); setInterval(function(){ try{ pvFlushPostOutbox(); }catch(e){} }, 15000); } }catch(e){}
 function pvPushNotifToFirebase(owner, item){ try{ var o=String(owner||'').trim(); if(!o||!item) return; var base=(typeof getBase==='function'?getBase():''); if(!base||!navigator.onLine) return; var slug=String(o).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); var id=String(item.id||('n'+Date.now()+Math.random())); try{ fetch(base+'/pro_vibes/notifications/'+slug+'/'+encodeURIComponent(id)+'.json',{method:'PUT', body:JSON.stringify(item)}).catch(function(){}); }catch(e){} }catch(e){} }
 function pvFetchNotifsFromFirebase(cb){ try{ var me=''; try{ me=localStorage.getItem('pro_vibes_user_name')||''; }catch(e){} if(!me){ if(cb) cb(); return; } var base=(typeof getBase==='function'?getBase():''); if(!base||!navigator.onLine){ if(cb) cb(); return; } var slug=String(me).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); fetch(base+'/pro_vibes/notifications/'+slug+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(d){ try{ if(!d||typeof d!=='object') { if(cb) cb(); return; } var key='pv_story_notifications__u_'+slug; var all=[]; try{ all=JSON.parse(localStorage.getItem(key)||'[]'); if(!Array.isArray(all)) all=[]; }catch(e){ all=[]; } var seen={}; all.forEach(function(n){ seen[String(n.id||'')]=1; }); var added=false; Object.keys(d).forEach(function(k){ var it=d[k]; if(!it||!it.id) return; if(seen[String(it.id)]) return; seen[String(it.id)]=1; all.unshift(it); added=true; }); if(added){ all.sort(function(a,b){ return (Number(b.ts||0)-Number(a.ts||0)); }); try{ localStorage.setItem(key, JSON.stringify(all.slice(0,60))); }catch(e){} } }catch(e){} if(cb) cb(); }).catch(function(){ if(cb) cb(); }); }catch(e){ if(cb) cb(); } }
 function pvFetchPostsFromFirebase(owner, cb){
@@ -13134,13 +13141,32 @@ try{
       }catch(e){ state.posting = false; updatePostBtn(); setProgress(null); toast('Could not post — try again'); }
     }).catch(function(){ state.posting = false; updatePostBtn(); setProgress(null); toast('Could not post — try again'); });
     function finishSave(posts, metas, firebasePosts, entries){
+      // POSTS LIKE MESSAGES: messages use POST - append one, never overwrite whole room. Posts used PUT whole list - if local snapshot missed one post, that post was wiped. Now we do GET cloud first, MERGE local + cloud, then PUT merged. And if offline or PUT fails, we queue to outbox like messages do, and flush when back online.
       try{
         var base = getBase();
-        if(base && navigator.onLine){
-          var payload = {owner:me, slug:s, posts:firebasePosts, updatedAt:Date.now()};
-          fetch(base + '/pro_vibes/posts/' + s + '.json', {method:'PUT', body:JSON.stringify(payload)}).catch(function(){});
-          fetch(base + '/pro_vibes/post_metas/' + s + '.json', {method:'PUT', body:JSON.stringify(metas)}).catch(function(){});
-          try{ var _htc=[]; try{ _htc=JSON.parse(localStorage.getItem('pv_home_text_cloud__' + s) || '[]'); if(!Array.isArray(_htc)) _htc=[]; }catch(e){ _htc=[]; } if(_htc.length) fetch(base + '/pro_vibes/home_text_posts/' + s + '.json', {method:'PUT', body:JSON.stringify({owner:me, slug:s, posts:_htc, updatedAt:Date.now()})}).catch(function(){}); }catch(e){}
+        var _del0=[]; try{ _del0=JSON.parse(localStorage.getItem('pv_deleted_posts__'+s)||'[]'); if(!Array.isArray(_del0)) _del0=[]; }catch(e){ _del0=[]; }
+        var _queuePost=function(){
+          try{ var qk='pv_post_outbox__'+s; var q=[]; try{ q=JSON.parse(localStorage.getItem(qk)||'[]'); if(!Array.isArray(q)) q=[]; }catch(e){ q=[]; } var _sig=JSON.stringify(firebasePosts)+'|'+JSON.stringify(metas); var _exists=q.some(function(it){ return it&&it.sig===_sig; }); if(!_exists){ q.push({sig:_sig, posts:firebasePosts, metas:metas, at:Date.now()}); try{ localStorage.setItem(qk, JSON.stringify(q)); }catch(e){} } }catch(e){}
+        };
+        if(!base){ _queuePost(); }
+        else if(!navigator.onLine){ _queuePost(); }
+        else{
+          Promise.all([
+            fetch(base+'/pro_vibes/posts/'+s+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }),
+            fetch(base+'/pro_vibes/post_metas/'+s+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }),
+            fetch(base+'/pro_vibes/home_text_posts/'+s+'.json',{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; })
+          ]).then(function(res){
+            var cloudPosts=[]; if(res[0]&&Array.isArray(res[0].posts)) cloudPosts=res[0].posts; else if(res[0]&&Array.isArray(res[0])) cloudPosts=res[0];
+            var cloudMetas=(res[1]&&typeof res[1]==='object')?res[1]:{};
+            var cloudText=[]; if(res[2]&&Array.isArray(res[2].posts)) cloudText=res[2].posts; else if(res[2]&&Array.isArray(res[2])) cloudText=res[2];
+            var mergedPosts=cloudPosts.slice(); firebasePosts.forEach(function(u){ if(u&&_del0.indexOf(u)===-1&&mergedPosts.indexOf(u)===-1) mergedPosts.push(u); });
+            var mergedMetas={}; Object.keys(cloudMetas).forEach(function(k){ mergedMetas[k]=cloudMetas[k]; }); Object.keys(metas||{}).forEach(function(k){ if(!mergedMetas[k]) mergedMetas[k]=metas[k]; });
+            var _htc=[]; try{ _htc=JSON.parse(localStorage.getItem('pv_home_text_cloud__'+s)||'[]'); if(!Array.isArray(_htc)) _htc=[]; }catch(e){ _htc=[]; }
+            var mergedText=cloudText.slice(); _htc.forEach(function(u){ if(u&&_del0.indexOf(u)===-1&&mergedText.indexOf(u)===-1) mergedText.push(u); });
+            fetch(base+'/pro_vibes/posts/'+s+'.json',{method:'PUT', body:JSON.stringify({owner:me, slug:s, posts:mergedPosts, updatedAt:Date.now()})}).catch(function(){ _queuePost(); });
+            fetch(base+'/pro_vibes/post_metas/'+s+'.json',{method:'PUT', body:JSON.stringify(mergedMetas)}).catch(function(){ _queuePost(); });
+            if(mergedText.length) fetch(base+'/pro_vibes/home_text_posts/'+s+'.json',{method:'PUT', body:JSON.stringify({owner:me, slug:s, posts:mergedText, updatedAt:Date.now()})}).catch(function(){ _queuePost(); });
+          }).catch(function(){ _queuePost(); });
         }
       }catch(e){}
       try{
@@ -13875,11 +13901,10 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
       if(!u) return; u=String(u); var s=slug(owner); if(!s) return;
       var del=readJSON('pv_deleted_posts__'+s, []); if(del.indexOf(u)!==-1) return;
       var meta=getMeta(u, owner);
-      // DELETED NEVER COMES BACK: tombstone has 3 forms - localPointer, cloudUrl, idb://mediaId.
-      // If ANY form is deleted, skip this post even if this one string is not in the list.
+      // DELETED NEVER COMES BACK: check all 3 forms - localPointer, cloudUrl, idb://mediaId
       try{ if(meta){ if(meta.localPointer&&del.indexOf(String(meta.localPointer))!==-1) return; if(meta.cloudUrl&&del.indexOf(String(meta.cloudUrl))!==-1) return; if(meta.mediaId&&(del.indexOf(String(meta.mediaId))!==-1||del.indexOf('idb://'+String(meta.mediaId))!==-1)) return; } }catch(e){}
-      // CLOUD ONLY: Home never shows a pure local-only post. If it is idb:// and its meta has no cloudUrl, it never reached cloud, so other phones can never see it. Skip it here, syncOwner will back-upload it if it has a cloudUrl.
-      try{ if(u.indexOf('idb://')===0){ var _cu=(meta&&meta.cloudUrl)?String(meta.cloudUrl):''; if(!_cu||_cu.indexOf('idb://')===0){ return; } } }catch(e){}
+      // SHOW OWN POSTS EVEN IF STILL LOCAL: idb:// only lives on this phone, so for OTHER people we skip it if no cloudUrl, but for ME we must show it via IndexedDB, or I will see empty Home.
+      try{ if(u.indexOf('idb://')===0){ var _isMe2=String(owner||'').trim().toLowerCase()===String(getMe()||'').trim().toLowerCase(); if(!_isMe2){ var _cu2=(meta&&meta.cloudUrl)?String(meta.cloudUrl):''; if(!_cu2||_cu2.indexOf('idb://')===0) return; } } }catch(e){}
       var mid=(meta&&meta.mediaId)?String(meta.mediaId):'';
       var dkey=mid?(s+'|mid:'+mid):(s+'|u:'+u);
       if(seen[dkey]) return;
@@ -14330,73 +14355,72 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
       fetchJSON(BASE+'/pro_vibes/avatars/'+s+'.json')
     ]).then(function(results){
       var delDoc=results[0], metas=results[1], d=results[2], ht=results[3], avd=results[4];
-      // If cloud did not answer at all, keep local, do not wipe. Cloud only when cloud actually answered.
-      var cloudAnswered=(delDoc!==null||metas!==null||d!==null||ht!==null||avd!==null);
-      if(!cloudAnswered) return;
-      // 1) DELETED: union cloud + local tombstones, never shrink, never forget.
+      // 1) DELETED: union cloud + local, never forget. Purge from every local list by any form.
       var localDel=readJSON('pv_deleted_posts__'+s, []);
       var cloudDel=[]; if(delDoc&&Array.isArray(delDoc.posts)) cloudDel=delDoc.posts; else if(delDoc&&Array.isArray(delDoc)) cloudDel=delDoc;
       cloudDel.forEach(function(u){ if(u&&localDel.indexOf(u)===-1) localDel.push(u); });
       try{ localStorage.setItem('pv_deleted_posts__'+s, JSON.stringify(localDel)); }catch(e){}
-      function isDeletedVal(v){ try{ if(!v) return false; return localDel.indexOf(String(v))!==-1; }catch(e){ return false; } }
-      function metaIsDeleted(mm){ try{ if(!mm) return false; if(isDeletedVal(mm.localPointer)) return true; if(isDeletedVal(mm.cloudUrl)) return true; if(mm.mediaId&&(isDeletedVal(mm.mediaId)||isDeletedVal('idb://'+String(mm.mediaId)))) return true; return false; }catch(e){ return false; } }
-      function valIsDeleted(v, mm){ if(isDeletedVal(v)) return true; if(mm&&metaIsDeleted(mm)) return true; return false; }
-      // 2) PURGE deleted from EVERY local list, including firebase mirror and metas. Deleted never comes back via another list.
+      function isDelVal(v){ try{ return !!(v&&localDel.indexOf(String(v))!==-1); }catch(e){ return false; } }
+      function metaIsDel(mm){ try{ if(!mm) return false; if(isDelVal(mm.localPointer)) return true; if(isDelVal(mm.cloudUrl)) return true; if(mm.mediaId&&(isDelVal(mm.mediaId)||isDelVal('idb://'+String(mm.mediaId)))) return true; return false; }catch(e){ return false; } }
       try{
         ['pro_vibes_user_posts__'+s,'pv_home_text_posts__'+s,'pv_home_text_cloud__'+s,'pv_firebase_posts__'+s].forEach(function(lk){
-          try{ var la=readJSON(lk, []); if(!Array.isArray(la)) return; var curMetas=readJSON('pv_post_metas__'+s, {}); var fl=la.filter(function(it){ var uu=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(!uu) return true; if(isDeletedVal(uu)) return false; var mm2=null; try{ for(var k2 in curMetas){ var cand=curMetas[k2]; if(cand&&(cand.localPointer===uu||cand.cloudUrl===uu)) { mm2=cand; break; } } }catch(e){} if(mm2&&metaIsDeleted(mm2)) return false; return true; }); if(fl.length!==la.length){ try{ localStorage.setItem(lk, JSON.stringify(fl)); }catch(e){} } }catch(e){}
+          try{ var la=readJSON(lk, []); if(!Array.isArray(la)) return; var curM=readJSON('pv_post_metas__'+s, {}); var fl=la.filter(function(it){ var uu=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(!uu) return true; if(isDelVal(uu)) return false; var mm2=null; try{ for(var k2 in curM){ var cand=curM[k2]; if(cand&&(cand.localPointer===uu||cand.cloudUrl===uu)) { mm2=cand; break; } } }catch(e){} if(mm2&&metaIsDel(mm2)) return false; return true; }); if(fl.length!==la.length){ try{ localStorage.setItem(lk, JSON.stringify(fl)); }catch(e){} } }catch(e){}
         });
+        var mmAll=readJSON('pv_post_metas__'+s, {}); if(mmAll&&typeof mmAll==='object'){ var mCh=false; for(var mk2 in mmAll){ if(metaIsDel(mmAll[mk2])){ delete mmAll[mk2]; mCh=true; } } if(mCh){ try{ localStorage.setItem('pv_post_metas__'+s, JSON.stringify(mmAll)); }catch(e){} } }
       }catch(e){}
-      try{
-        var mmAll=readJSON('pv_post_metas__'+s, {}); if(mmAll&&typeof mmAll==='object'){ var mCh=false; for(var mk2 in mmAll){ if(metaIsDeleted(mmAll[mk2])){ delete mmAll[mk2]; mCh=true; } } if(mCh){ try{ localStorage.setItem('pv_post_metas__'+s, JSON.stringify(mmAll)); }catch(e){} } }
-      }catch(e){}
-      // 3) MERGE cloud metas, skip deleted by any form.
+      // 2) MERGE cloud metas, skip deleted. NEVER wipe local metas.
       try{
         if(metas&&typeof metas==='object'){
           var cur=readJSON('pv_post_metas__'+s, {}); var changed=false;
-          Object.keys(metas).forEach(function(k){ var mm=metas[k]||{}; if(metaIsDeleted(mm)) return; if(cur[k]) return; cur[k]=mm; changed=true; });
+          Object.keys(metas).forEach(function(k){ var mm=metas[k]||{}; if(metaIsDel(mm)) return; if(cur[k]) return; cur[k]=mm; changed=true; });
           if(changed){ try{ localStorage.setItem('pv_post_metas__'+s, JSON.stringify(cur)); }catch(e){} }
         }
       }catch(e){}
-      // 4) CLOUD IS TRUTH: build authoritative cloud lists, filtered by deleted.
-      var cloudPosts=[]; if(d&&Array.isArray(d.posts)) cloudPosts=d.posts; else if(d&&Array.isArray(d)) cloudPosts=d;
-      var cloudText=[]; if(ht&&Array.isArray(ht.posts)) cloudText=ht.posts; else if(ht&&Array.isArray(ht)) cloudText=ht;
-      var curMetas2=readJSON('pv_post_metas__'+s, {});
-      function findMetaForVal(v){ try{ for(var kk in curMetas2){ var c2=curMetas2[kk]; if(c2&&(c2.localPointer===v||c2.cloudUrl===v||c2.mediaId===String(v).replace('idb://',''))) return c2; } }catch(e){} return null; }
-      var cloudPostsClean=[]; cloudPosts.forEach(function(u){ if(!u) return; if(valIsDeleted(u, findMetaForVal(u))) return; if(cloudPostsClean.indexOf(u)===-1) cloudPostsClean.push(u); });
-      var cloudTextClean=[]; cloudText.forEach(function(u){ if(!u) return; if(valIsDeleted(u, findMetaForVal(u))) return; if(cloudTextClean.indexOf(u)===-1) cloudTextClean.push(u); });
-      // 5) OLD POSTS: if first phone has a post that never reached cloud, back-upload its cloudUrl so other phone can see it. Deleted never back-uploads.
-      var needUploadPosts=false; var needUploadText=false;
+      // 3) MERGE cloud posts into local, skip deleted. NEVER overwrite local with empty cloud. Local stays, cloud adds.
       try{
-        var localPosts=readJSON('pro_vibes_user_posts__'+s, []);
-        localPosts.forEach(function(it){ var uu=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(!uu) return; if(valIsDeleted(uu, findMetaForVal(uu))) return; var mm3=findMetaForVal(uu); var cu=''; if(mm3&&mm3.cloudUrl) cu=String(mm3.cloudUrl); else if(String(uu).indexOf('idb://')!==0) cu=String(uu); if(!cu||cu.indexOf('idb://')===0) return; if(cloudPostsClean.indexOf(cu)===-1){ cloudPostsClean.push(cu); needUploadPosts=true; } });
-      }catch(e){}
-      try{
-        var localTxt=readJSON('pv_home_text_posts__'+s, []);
-        localTxt.forEach(function(it){ var uu=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(!uu) return; if(valIsDeleted(uu, findMetaForVal(uu))) return; var mm4=findMetaForVal(uu); var cu2=''; if(mm4&&mm4.cloudUrl) cu2=String(mm4.cloudUrl); else if(String(uu).indexOf('idb://')!==0) cu2=String(uu); if(!cu2||cu2.indexOf('idb://')!==0) return; if(cloudTextClean.indexOf(cu2)===-1){ cloudTextClean.push(cu2); needUploadText=true; } });
-        // Text posts also live in metas: if meta is text and has cloudUrl, make sure it is in cloud text list.
-        try{ for(var mk3 in curMetas2){ var mmt=curMetas2[mk3]; if(!mmt||mmt.type!=='text') continue; if(metaIsDeleted(mmt)) continue; var cut=mmt.cloudUrl?String(mmt.cloudUrl):''; if(cut&&cut.indexOf('idb://')!==0&&cloudTextClean.indexOf(cut)===-1){ cloudTextClean.push(cut); needUploadText=true; } } }catch(e){}
-      }catch(e){}
-      // 6) OVERWRITE local with cloud truth, so Home = cloud, not local. No local-only leftovers, no deleted resurrected.
-      try{
-        if(d!==null){ try{ localStorage.setItem('pro_vibes_user_posts__'+s, JSON.stringify(cloudPostsClean)); }catch(e){} }
-        if(ht!==null){ try{ localStorage.setItem('pv_home_text_posts__'+s, JSON.stringify(cloudTextClean)); }catch(e){} try{ localStorage.setItem('pv_home_text_cloud__'+s, JSON.stringify(cloudTextClean)); }catch(e){} }
-        // Keep firebase mirror in sync with cloud truth, so next post does not re-upload a deleted post.
-        try{ if(d!==null) localStorage.setItem('pv_firebase_posts__'+s, JSON.stringify(cloudPostsClean)); }catch(e){}
-      }catch(e){}
-      // 7) If we back-uploaded old posts, PUT the new cloud truth back to Firebase, so other phone sees old + new.
-      try{
-        if((needUploadPosts||needUploadText) && navigator.onLine){
-          if(needUploadPosts){ try{ fetch(BASE+'/pro_vibes/posts/'+s+'.json',{method:'PUT', body:JSON.stringify({owner:owner, slug:s, posts:cloudPostsClean, updatedAt:Date.now()})}).catch(function(){}); }catch(e){} }
-          if(needUploadText){ try{ fetch(BASE+'/pro_vibes/home_text_posts/'+s+'.json',{method:'PUT', body:JSON.stringify({owner:owner, slug:s, posts:cloudTextClean, updatedAt:Date.now()})}).catch(function(){}); }catch(e){} }
-          // Also push metas, so other phone gets caption / type / cloudUrl for old posts.
-          try{ var metasToPush=readJSON('pv_post_metas__'+s, {}); fetch(BASE+'/pro_vibes/post_metas/'+s+'.json',{method:'PUT', body:JSON.stringify(metasToPush)}).catch(function(){}); }catch(e){}
+        var cloudPosts=[]; if(d&&Array.isArray(d.posts)) cloudPosts=d.posts; else if(d&&Array.isArray(d)) cloudPosts=d;
+        if(cloudPosts.length){
+          var del=readJSON('pv_deleted_posts__'+s, []);
+          var local=readJSON('pro_vibes_user_posts__'+s, []); var changed2=false;
+          var txtLocal=readJSON('pv_home_text_posts__'+s, []); var txtChanged=false;
+          var curM2=readJSON('pv_post_metas__'+s, {});
+          function findM(v){ try{ for(var kk in curM2){ var c2=curM2[kk]; if(c2&&(c2.localPointer===v||c2.cloudUrl===v||c2.mediaId===String(v).replace('idb://',''))) return c2; } }catch(e){} return null; }
+          cloudPosts.forEach(function(u){ if(!u) return; if(isDelVal(u)) return; var mmf=findM(u); if(mmf&&metaIsDel(mmf)) return; if(isText(u, owner)){ if(txtLocal.indexOf(u)===-1){ txtLocal.push(u); txtChanged=true; } } else if(local.indexOf(u)===-1){ local.push(u); changed2=true; } });
+          if(changed2){ try{ localStorage.setItem('pro_vibes_user_posts__'+s, JSON.stringify(local)); }catch(e){} }
+          if(txtChanged){ try{ localStorage.setItem('pv_home_text_posts__'+s, JSON.stringify(txtLocal)); }catch(e){} }
         }
       }catch(e){}
-      // 8) Avatar: only if not deleted.
+      // 4) MERGE cloud text posts.
+      try{
+        var arr=[]; if(ht&&Array.isArray(ht.posts)) arr=ht.posts; else if(ht&&Array.isArray(ht)) arr=ht;
+        if(arr.length){
+          var del2=readJSON('pv_deleted_posts__'+s, []);
+          var cur2=readJSON('pv_home_text_posts__'+s, []); var ch=false;
+          arr.forEach(function(u){ if(u&&del2.indexOf(u)===-1&&cur2.indexOf(u)===-1){ cur2.push(u); ch=true; } });
+          if(ch){ try{ localStorage.setItem('pv_home_text_posts__'+s, JSON.stringify(cur2)); }catch(e){} }
+          var cloud2=readJSON('pv_home_text_cloud__'+s, []); var ch2=false;
+          arr.forEach(function(u){ if(u&&del2.indexOf(u)===-1&&String(u).indexOf('idb://')!==0&&cloud2.indexOf(u)===-1){ cloud2.push(u); ch2=true; } });
+          if(ch2){ try{ localStorage.setItem('pv_home_text_cloud__'+s, JSON.stringify(cloud2)); }catch(e){} }
+        }
+      }catch(e){}
+      // 5) OLD POSTS: if this phone has posts with cloudUrl that cloud does not have yet, back-upload them so other phone sees old + new. Deleted never back-uploads.
+      try{
+        var localPosts2=readJSON('pro_vibes_user_posts__'+s, []);
+        var cloudPosts2=[]; if(d&&Array.isArray(d.posts)) cloudPosts2=d.posts; else if(d&&Array.isArray(d)) cloudPosts2=d;
+        var toUpload=[]; var curM3=readJSON('pv_post_metas__'+s, {});
+        localPosts2.forEach(function(it){ var uu=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); if(!uu) return; if(isDelVal(uu)) return; var mm3=null; try{ for(var kk3 in curM3){ var c3=curM3[kk3]; if(c3&&(c3.localPointer===uu||c3.cloudUrl===uu||c3.mediaId===String(uu).replace('idb://',''))) { mm3=c3; break; } } }catch(e){} if(mm3&&metaIsDel(mm3)) return; var cu=''; if(mm3&&mm3.cloudUrl) cu=String(mm3.cloudUrl); else if(String(uu).indexOf('idb://')!==0) cu=String(uu); if(!cu||cu.indexOf('idb://')===0) return; if(cloudPosts2.indexOf(cu)===-1&&toUpload.indexOf(cu)===-1) toUpload.push(cu); });
+        if(toUpload.length&&navigator.onLine){
+          var mergedPosts=cloudPosts2.slice(); toUpload.forEach(function(u){ if(mergedPosts.indexOf(u)===-1) mergedPosts.push(u); });
+          // Filter deleted one last time before PUT
+          mergedPosts=mergedPosts.filter(function(u){ return !isDelVal(u); });
+          try{ fetch(BASE+'/pro_vibes/posts/'+s+'.json',{method:'PUT', body:JSON.stringify({owner:owner, slug:s, posts:mergedPosts, updatedAt:Date.now()})}).catch(function(){}); }catch(e){}
+          try{ fetch(BASE+'/pro_vibes/post_metas/'+s+'.json',{method:'PUT', body:JSON.stringify(curM3)}).catch(function(){}); }catch(e){}
+        }
+      }catch(e){}
+      // 6) Avatar, only if not deleted.
       try{
         if(avd&&avd.avatar){
-          if(!isDeletedVal(avd.avatar)){
+          if(!isDelVal(avd.avatar)){
             var prevAt=parseInt(localStorage.getItem('pv_avatar_at__'+s)||'0',10)||0;
             if(Number(avd.at||0)>=prevAt){
               try{ localStorage.setItem('pro_vibes_avatar__for_'+s, String(avd.avatar)); localStorage.setItem('pv_avatar_at__'+s, String(Number(avd.at||Date.now()))); }catch(e){}
@@ -14431,6 +14455,18 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
   window.pvRenderHomeFeed=queueRender;
   window.pvOpenHomePost=openPost;
   window.pvCloseHomePost=closePost;
+  // AUTO-REFRESH LIKE MESSAGES: before, Home only fetched once on load + when you re-open Home, so you MUST refresh to see new posts. Messages use realtime + poll, so they show by themselves. Now Home polls every 4 seconds while Home is visible, plus on visibility / focus / online, so new posts appear without manual refresh.
+  try{
+    if(!window._pvHomeAutoRefreshBound){
+      window._pvHomeAutoRefreshBound=true;
+      setInterval(function(){ try{ if(homeVisible() && !detailVisible() && navigator.onLine) fetchFromCloud(); }catch(e){} }, 4000);
+      document.addEventListener('visibilitychange', function(){ try{ if(!document.hidden && homeVisible() && navigator.onLine) fetchFromCloud(); }catch(e){} });
+      window.addEventListener('focus', function(){ try{ if(homeVisible() && navigator.onLine) fetchFromCloud(); }catch(e){} });
+      window.addEventListener('online', function(){ try{ if(homeVisible()) fetchFromCloud(); }catch(e){} });
+      // When someone posts, Home on other phones gets it via the poll above. Also flush post outbox here.
+      setInterval(function(){ try{ if(typeof pvFlushPostOutbox==='function') pvFlushPostOutbox(); }catch(e){} }, 10000);
+    }
+  }catch(e){}
   try{ bind(); }catch(e){}
   try{ queueRender(); }catch(e){}
   try{ fetchFromCloud(); }catch(e){}
