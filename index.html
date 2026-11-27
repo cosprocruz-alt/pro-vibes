@@ -1650,9 +1650,9 @@ html[data-pv-accent="white"] .dm-msg{color:#000 !important}
 #pv-spotlight-screen.hidden,[hidden]#pv-spotlight-screen{display:none !important}
 body:has(#pv-spotlight-screen.show) .bottom-nav{z-index:602;animation:none;transform:none}
 body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
-.pv-spotlight-top{position:absolute;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:2px;padding:calc(12px + env(safe-area-inset-top)) 12px 10px 4px;background:transparent;pointer-events:none}.pv-spotlight-top button{pointer-events:auto}.pv-spotlight-title{text-shadow:0 2px 10px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.9)}#pv-spotlight-search-btn,#pv-spotlight-back-btn{text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.pv-spotlight-top{position:absolute;top:0;left:0;right:0;z-index:60 !important;display:flex;align-items:center;gap:2px;padding:calc(12px + env(safe-area-inset-top)) 12px 10px 4px;background:transparent !important;background-image:none !important;box-shadow:none !important;border:none !important;pointer-events:none}.pv-spotlight-top button{pointer-events:auto !important;position:relative;z-index:61}.pv-spotlight-title{text-shadow:0 2px 10px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.9)}#pv-spotlight-search-btn,#pv-spotlight-back-btn{text-shadow:0 2px 8px rgba(0,0,0,.9)}
 .pv-spotlight-top-spacer{flex:1}
-#pv-spotlight-search-btn{background:none;color:#fff;border:none;width:42px;height:42px;min-width:42px;display:flex;align-items:center;justify-content:center;padding:4px;border-radius:50%;-webkit-tap-highlight-color:transparent;cursor:pointer}
+#pv-spotlight-search-btn{background:none !important;color:#fff;border:none;width:44px;height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;padding:4px;border-radius:50%;-webkit-tap-highlight-color:transparent;cursor:pointer;pointer-events:auto !important;position:relative;z-index:61}
 #pv-spotlight-search-btn:active{background:#1a1a1a}
 #pv-spotlight-search-btn svg{width:28px;height:28px;display:block}
 #pv-spotlight-search-btn.active{background:#1a1a1a}
@@ -1660,7 +1660,7 @@ body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
 .pv-spotlight-searchbar{display:none}
 .pv-spotlight-search-status{display:none !important}
 #pv-spotlight-search-screen{position:fixed;top:0;left:0;right:0;bottom:0;z-index:620;background:#000;display:flex;flex-direction:column;padding:calc(14px + env(safe-area-inset-top)) 0 calc(20px + env(safe-area-inset-bottom));transform:translateX(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);box-sizing:border-box}
-#pv-spotlight-search-screen.show{transform:translateX(0)}
+#pv-spotlight-search-screen.show{transform:translateX(0) !important;visibility:visible !important;pointer-events:auto !important}
 .pv-spotlight-search-screen-top{display:flex;align-items:center;gap:8px;padding:2px 12px 0}
 #pv-spotlight-search-back-btn{background:none;color:#fff;border:none;width:36px;height:44px;min-width:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 #pv-spotlight-search-back-btn svg{width:26px;height:26px;display:block}
@@ -1690,10 +1690,9 @@ body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
 /* MASKS - ALWAYS ON - hide YouTube top title/channel + bottom bar / Watch Later / YouTube logo / views, even while playing */
 .pv-spotlight-yt-mask-top{display:none !important;background:transparent !important;height:0 !important}
 .pv-spotlight-yt-mask-bottom{display:none !important;background:transparent !important;height:0 !important}
-/* FULL COVER - ONLY WHEN PAUSED - hides YouTube pause overlay incl. prev/next, suggested, Watch on YouTube */
-.pv-spotlight-yt-top-cover{display:none !important;position:absolute;inset:0;width:100%;height:100%;background:#000 !important;z-index:3;pointer-events:none}
-.pv-spotlight-item.pv-is-paused .pv-spotlight-yt-top-cover{display:block !important}
-/* PAUSED = hide YouTube iframe itself, so its prev/next can never show. Thumb (same frame) stays on top, our own pause/play stays on top. Nothing else changes. */
+/* NO COVER - user said no cover. Header is transparent, no black bar, no black paused layer. */
+/* Prev/next still gone: when paused, YouTube iframe itself is hidden, thumb (same video frame) stays on top, our own pause/play stays on top. */
+.pv-spotlight-yt-top-cover{display:none !important;background:transparent !important;pointer-events:none !important}
 .pv-spotlight-item.pv-is-paused iframe{visibility:hidden !important;opacity:0 !important}
 .pv-spotlight-item.pv-is-paused .pv-spotlight-thumb{display:block !important;visibility:visible !important;opacity:1 !important}
 .pv-spotlight-item.pv-is-paused .pv-spotlight-thumb{display:block !important}
@@ -1720,7 +1719,13 @@ body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
 .pv-spotlight-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 18px;color:#fff;gap:8px}
 .pv-spotlight-empty h3{margin:0;font-size:20px;font-weight:800}
 .pv-spotlight-empty p{margin:0;color:#aaa;font-size:14px}
-.pv-spotlight-loading{position:absolute;left:0;right:0;top:56px;display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;color:#fff;font-size:14px;font-weight:700;background:rgba(0,0,0,.6);z-index:5}
+.pv-spotlight-loading{display:none !important}
+.pv-spotlight-skeleton{position:relative;width:100%;height:100%;min-height:100%;background:#111;overflow:hidden;flex-shrink:0;scroll-snap-align:start}
+.pv-spotlight-skeleton::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,.02) 40%,rgba(255,255,255,.06) 100%);animation:pvSpotShimmer 1.4s infinite}
+@keyframes pvSpotShimmer{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
+.pv-spotlight-skeleton .pv-skel-circle{position:absolute;left:14px;top:16px;width:36px;height:36px;border-radius:50%;background:#222}
+.pv-spotlight-skeleton .pv-skel-line{position:absolute;left:58px;top:22px;width:120px;height:12px;border-radius:6px;background:#222}
+.pv-spotlight-skeleton .pv-skel-line2{position:absolute;left:58px;top:40px;width:80px;height:10px;border-radius:5px;background:#1c1c1c}
 .pv-spotlight-spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:pvSpotSpin .8s linear infinite}
 @keyframes pvSpotSpin{to{transform:rotate(360deg)}}
 .pv-spotlight-comment-box{position:absolute;left:12px;right:66px;bottom:78px;z-index:5;display:flex;gap:8px;background:rgba(0,0,0,.75);border:1px solid #333;border-radius:20px;padding:6px 6px 6px 12px;align-items:center}
@@ -1910,7 +1915,7 @@ setTimeout(function(){
 </section>
 <section id="pv-spotlight-screen" role="dialog" aria-label="Spotlight">
   <div class="pv-spotlight-top"><button id="pv-spotlight-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-spotlight-title" id="pv-spotlight-title">Spotlight</div><button id="pv-spotlight-clear-search-btn" type="button" aria-label="Cancel search">✕</button><div class="pv-spotlight-top-spacer"></div><button id="pv-spotlight-search-btn" type="button" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button></div>
-  <div class="pv-spotlight-blank"><div id="pv-spotlight-feed" class="pv-spotlight-feed"></div><div id="pv-spotlight-empty" class="pv-spotlight-empty" hidden><h3>No Shorts yet</h3><p>Tap retry to load fresh Shorts.</p><button id="pv-spotlight-retry" type="button" style="background:#22c55e;color:#fff;border:none;border-radius:999px;padding:12px 22px;font-size:15px;font-weight:800;cursor:pointer">Tap to retry</button><p id="pv-spotlight-err" style="font-size:12px;color:#888;margin-top:8px"></p></div><div id="pv-spotlight-loading" class="pv-spotlight-loading" hidden><div class="pv-spotlight-spinner"></div><span>Loading Videos please wait...</span></div></div>
+  <div class="pv-spotlight-blank"><div id="pv-spotlight-feed" class="pv-spotlight-feed"></div><div id="pv-spotlight-empty" class="pv-spotlight-empty" hidden><h3>No Shorts yet</h3><p>Tap retry to load fresh Shorts.</p><button id="pv-spotlight-retry" type="button" style="background:#22c55e;color:#fff;border:none;border-radius:999px;padding:12px 22px;font-size:15px;font-weight:800;cursor:pointer">Tap to retry</button><p id="pv-spotlight-err" style="font-size:12px;color:#888;margin-top:8px"></p></div><div id="pv-spotlight-loading" class="pv-spotlight-loading" hidden style="display:none !important"></div></div>
 </section>
 
 <section id="pv-spotlight-search-screen" role="dialog" aria-label="Search Spotlight">
@@ -13884,7 +13889,7 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
     }
     return head;
   }
-  function buildCard(item){
+  function buildCard(item, idx){ var _idx=(typeof idx==='number'?idx:999); var _eager=_idx<12; // FIRST 12 posts: load instantly, all at once - no one-by-one for new users
     var card=document.createElement('article'); card.className='pv-home-card';
     card.dataset.pvKey=postId(item.u, item.owner); card._pvItem=item; card._pvKind=item.kind;
     var head=pvBuildPostHead(item);
@@ -13901,12 +13906,12 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
         var _inner=document.createElement('div'); _inner.className='pv-home-text-card-inner'; _inner.textContent=_txtCard;
         _tc.appendChild(_inner); media.appendChild(_tc);
       } else {
-        var img=document.createElement('img'); img.alt=''; img.loading='lazy'; img.decoding='async'; img.dataset.pvSrc=url; img.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; try{ if(!window.__pvHomeImgObserver){ window.__pvHomeImgObserver=new IntersectionObserver(function(entries){ entries.forEach(function(en){ try{ if(!en.isIntersecting) return; var im=en.target; window.__pvHomeImgObserver.unobserve(im); var u=im.dataset.pvSrc||''; if(!u) return; if(u.indexOf('idb://')===0){ resolveIdb(u, function(r){ if(r) im.src=r; }); } else { im.src=u; } }catch(e){} }); }, {rootMargin:'400px 0px', threshold:0}); } window.__pvHomeImgObserver.observe(img); }catch(e){ try{ if(url.indexOf('idb://')===0){ resolveIdb(url, function(r){ if(r) img.src=r; }); } else { img.src=url; } }catch(e2){} } media.appendChild(img);
+        var img=document.createElement('img'); img.alt=''; img.loading=_eager?'eager':'lazy'; img.decoding='async'; img.dataset.pvSrc=url; img.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; if(_eager){ try{ if(url.indexOf('idb://')===0){ resolveIdb(url, function(r){ if(r) img.src=r; }); } else { img.src=url; } }catch(e){} } try{ if(!window.__pvHomeImgObserver){ window.__pvHomeImgObserver=new IntersectionObserver(function(entries){ entries.forEach(function(en){ try{ if(!en.isIntersecting) return; var im=en.target; window.__pvHomeImgObserver.unobserve(im); var u=im.dataset.pvSrc||''; if(!u) return; if(u.indexOf('idb://')===0){ resolveIdb(u, function(r){ if(r) im.src=r; }); } else { im.src=u; } }catch(e){} }); }, {rootMargin:'1500px 0px', threshold:0}); } window.__pvHomeImgObserver.observe(img); }catch(e){ try{ if(url.indexOf('idb://')===0){ resolveIdb(url, function(r){ if(r) img.src=r; }); } else { img.src=url; } }catch(e2){} } media.appendChild(img);
       }
     } else if(item.kind==='video'){
       // NEW - OLD REMOVED: Old feed video had fullscreen icon + tap to play/pause. Removed.
       // New like Instagram: autoplay muted when scrolling into view, pause when out. No fullscreen icon. Sleek volume button bottom-right for mute/unmute. Tap anywhere on video opens the video.
-      var vid=document.createElement('video'); vid.muted=true; vid.playsInline=true; vid.preload='none'; vid.controls=false; vid.disablePictureInPicture=true; vid.loop=true; vid.setAttribute('muted','');
+      var vid=document.createElement('video'); vid.muted=true; vid.playsInline=true; vid.preload=(_idx<2?'auto':'metadata'); vid.controls=false; vid.disablePictureInPicture=true; vid.loop=true; vid.setAttribute('muted','');
       vid.dataset.pvSrc=url; vid.dataset.pvLoaded='';
       vid.addEventListener('error', function(){ try{ var _m2=item.meta||getMeta(item.u, item.owner); var _fb=_m2&&_m2.cloudUrl?String(_m2.cloudUrl):''; if(_fb && _fb.indexOf('idb://')!==0 && _fb.indexOf('data:video')!==0 && vid.src!==_fb){ vid.dataset.pvLoaded='1'; vid.src=_fb; } }catch(_e){} });
       media.appendChild(vid);
@@ -13914,7 +13919,7 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
       vid.addEventListener('play', function(){ try{ play.style.display='none'; }catch(_e){} });
       vid.addEventListener('pause', function(){ try{ play.style.display='flex'; }catch(_e){} });
       // SMOOTH AUTOPLAY - still autoplay, no lag: only the video you are looking at loads + plays. Off-screen videos download nothing. One video at a time.
-      try{ if(!window.__pvHomeVideoObserver){ window.__pvHomeVideoObserver=new IntersectionObserver(function(entries){ entries.forEach(function(en){ try{ var v=en.target; try{ v._pvLastRatio=en.intersectionRatio; }catch(e){} if(en.isIntersecting){ try{ if(window.__pvLoadHomeVideo) window.__pvLoadHomeVideo(v); }catch(e2){} if(en.intersectionRatio>=0.6){ try{ if(v._pvPlayTimer) clearTimeout(v._pvPlayTimer); }catch(e){} v._pvPlayTimer=setTimeout(function(){ try{ if(v._pvLastRatio!==undefined && v._pvLastRatio<0.6) return; if(v.paused){ try{ var cur=window.__pvHomeActiveVideo; if(cur && cur!==v && !cur.paused) cur.pause(); }catch(e3){} v.muted=true; window.__pvHomeActiveVideo=v; var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); } else { window.__pvHomeActiveVideo=v; } }catch(e){} }, 200); } else { try{ if(v._pvPlayTimer) clearTimeout(v._pvPlayTimer); }catch(e){} if(!v.paused) v.pause(); if(window.__pvHomeActiveVideo===v) window.__pvHomeActiveVideo=null; } } else { if(!v.paused) v.pause(); if(window.__pvHomeActiveVideo===v) window.__pvHomeActiveVideo=null; } }catch(_e){} }); }, {rootMargin:'300px 0px', threshold:[0.6]}); if(!window.__pvHomeVideoVisBound){ window.__pvHomeVideoVisBound=true; document.addEventListener('visibilitychange', function(){ if(document.hidden){ try{ var cur2=window.__pvHomeActiveVideo; if(cur2 && !cur2.paused) cur2.pause(); window.__pvHomeActiveVideo=null; }catch(e){} } }); } } if(!window.__pvLoadHomeVideo){ window.__pvLoadHomeVideo=function(v){ try{ if(!v || !v.dataset || v.dataset.pvLoaded) return; v.dataset.pvLoaded='1'; var u=v.dataset.pvSrc||''; if(!u) return; if(u.indexOf('idb://')===0){ resolveIdb(u, function(r){ if(r) v.src=r; }); } else { v.src=u; } }catch(e){} }; } window.__pvHomeVideoObserver.observe(vid); }catch(_e){}
+      try{ if(!window.__pvHomeVideoObserver){ window.__pvHomeVideoObserver=new IntersectionObserver(function(entries){ entries.forEach(function(en){ try{ var v=en.target; try{ v._pvLastRatio=en.intersectionRatio; }catch(e){} if(en.isIntersecting){ try{ if(window.__pvLoadHomeVideo) window.__pvLoadHomeVideo(v); }catch(e2){} if(en.intersectionRatio>=0.6){ try{ if(v._pvPlayTimer) clearTimeout(v._pvPlayTimer); }catch(e){} v._pvPlayTimer=setTimeout(function(){ try{ if(v._pvLastRatio!==undefined && v._pvLastRatio<0.6) return; if(v.paused){ try{ var cur=window.__pvHomeActiveVideo; if(cur && cur!==v && !cur.paused) cur.pause(); }catch(e3){} v.muted=true; window.__pvHomeActiveVideo=v; var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); } else { window.__pvHomeActiveVideo=v; } }catch(e){} }, 200); } else { try{ if(v._pvPlayTimer) clearTimeout(v._pvPlayTimer); }catch(e){} if(!v.paused) v.pause(); if(window.__pvHomeActiveVideo===v) window.__pvHomeActiveVideo=null; } } else { if(!v.paused) v.pause(); if(window.__pvHomeActiveVideo===v) window.__pvHomeActiveVideo=null; } }catch(_e){} }); }, {rootMargin:'1200px 0px', threshold:[0.6]}); if(!window.__pvHomeVideoVisBound){ window.__pvHomeVideoVisBound=true; document.addEventListener('visibilitychange', function(){ if(document.hidden){ try{ var cur2=window.__pvHomeActiveVideo; if(cur2 && !cur2.paused) cur2.pause(); window.__pvHomeActiveVideo=null; }catch(e){} } }); } } if(!window.__pvLoadHomeVideo){ window.__pvLoadHomeVideo=function(v){ try{ if(!v || !v.dataset || v.dataset.pvLoaded) return; v.dataset.pvLoaded='1'; var u=v.dataset.pvSrc||''; if(!u) return; if(u.indexOf('idb://')===0){ resolveIdb(u, function(r){ if(r) v.src=r; }); } else { v.src=u; } }catch(e){} }; } if(_idx<2){ try{ if(window.__pvLoadHomeVideo) window.__pvLoadHomeVideo(vid); else { var _vu=url; if(_vu.indexOf('idb://')===0){ resolveIdb(_vu, function(r){ if(r) vid.src=r; }); } else { vid.src=_vu; } } }catch(e){} } window.__pvHomeVideoObserver.observe(vid); }catch(_e){}
       // Tap anywhere on video opens the video (full screen detail)
       vid.addEventListener('click', function(ev){ try{ ev.preventDefault(); ev.stopPropagation(); }catch(_e){} try{ openPost(item); }catch(_e){} });
       play.addEventListener('click', function(ev){ try{ ev.preventDefault(); ev.stopPropagation(); }catch(_e){} try{ openPost(item); }catch(_e){} });
@@ -13926,7 +13931,7 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
       media.appendChild(volBtn);
       var _vidBadge=document.createElement('div'); _vidBadge.className='pv-home-video-badge'; _vidBadge.setAttribute('aria-label','Video'); _vidBadge.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.8" y="2.8" width="18.4" height="18.4" rx="5.5"/><path d="M10.2 8.3 L15.8 12 L10.2 15.7 Z" stroke-width="1.9"/></svg>'; media.appendChild(_vidBadge);
     } else {
-      var img=document.createElement('img'); img.alt=''; img.loading='lazy'; img.decoding='async'; img.dataset.pvSrc=url; img.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; try{ if(!window.__pvHomeImgObserver){ window.__pvHomeImgObserver=new IntersectionObserver(function(entries){ entries.forEach(function(en){ try{ if(!en.isIntersecting) return; var im=en.target; window.__pvHomeImgObserver.unobserve(im); var u=im.dataset.pvSrc||''; if(!u) return; if(u.indexOf('idb://')===0){ resolveIdb(u, function(r){ if(r) im.src=r; }); } else { im.src=u; } }catch(e){} }); }, {rootMargin:'400px 0px', threshold:0}); } window.__pvHomeImgObserver.observe(img); }catch(e){ try{ if(url.indexOf('idb://')===0){ resolveIdb(url, function(r){ if(r) img.src=r; }); } else { img.src=url; } }catch(e2){} } media.appendChild(img);
+      var img=document.createElement('img'); img.alt=''; img.loading=_eager?'eager':'lazy'; img.decoding='async'; img.dataset.pvSrc=url; img.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; if(_eager){ try{ if(url.indexOf('idb://')===0){ resolveIdb(url, function(r){ if(r) img.src=r; }); } else { img.src=url; } }catch(e){} } try{ if(!window.__pvHomeImgObserver){ window.__pvHomeImgObserver=new IntersectionObserver(function(entries){ entries.forEach(function(en){ try{ if(!en.isIntersecting) return; var im=en.target; window.__pvHomeImgObserver.unobserve(im); var u=im.dataset.pvSrc||''; if(!u) return; if(u.indexOf('idb://')===0){ resolveIdb(u, function(r){ if(r) im.src=r; }); } else { im.src=u; } }catch(e){} }); }, {rootMargin:'1500px 0px', threshold:0}); } window.__pvHomeImgObserver.observe(img); }catch(e){ try{ if(url.indexOf('idb://')===0){ resolveIdb(url, function(r){ if(r) img.src=r; }); } else { img.src=url; } }catch(e2){} } media.appendChild(img);
     }
     try{ var _vb=document.createElement('div'); _vb.className='pv-home-views-badge'+(item.kind==='video'?' pv-video':''); _vb.setAttribute('aria-label','Views'); _vb.innerHTML='<svg viewBox="0 0 24 24"><path d="M2 12 C5 5.5 9 3.5 12 3.5 C15 3.5 19 5.5 22 12 C19 18.5 15 20.5 12 20.5 C9 20.5 5 18.5 2 12 Z"/><circle cx="12" cy="12" r="2.8"/></svg><span class="pv-home-views-badge-count">0</span>'; try{ var _vbc=_vb.querySelector('.pv-home-views-badge-count'); if(_vbc){ _vbc.textContent=String(getViewsCount(postId(item.u, item.owner))); try{ fetchViews(postId(item.u, item.owner), _vbc); }catch(e){} } }catch(e){} media.appendChild(_vb); }catch(e){}
     card.appendChild(media);
@@ -13982,11 +13987,27 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
     });
     if(!items.length){
       Object.keys(existing).forEach(function(k){ var c=existing[k]; if(c.parentNode) c.parentNode.removeChild(c); });
+      // FIX: New phone - don't lie "No posts yet" before cloud even finishes. Show Loading until first sync done.
+      if(!_pvHomeFirstSyncDone || fetching){
+        var _ld=feed.querySelector('.pv-home-empty');
+        if(!_ld){
+          _ld=document.createElement('div'); _ld.className='pv-home-empty';
+          var _b=document.createElement('b'); _b.textContent='Loading posts...'; _ld.appendChild(_b);
+          var _sp=document.createElement('div'); _sp.textContent='Bringing posts from everyone - just a moment.'; _ld.appendChild(_sp);
+          feed.appendChild(_ld);
+        } else {
+          try{ var _bb=_ld.querySelector('b'); if(_bb) _bb.textContent='Loading posts...'; var _pp=_ld.querySelector('div'); if(_pp) _pp.textContent='Bringing posts from everyone - just a moment.'; }catch(e){}
+        }
+        return;
+      }
       if(!feed.querySelector('.pv-home-empty')){
         var empty=document.createElement('div'); empty.className='pv-home-empty';
         var b=document.createElement('b'); b.textContent='No posts yet'; empty.appendChild(b);
         var sp=document.createElement('div'); sp.textContent='Profile pics, posts, videos and text posts from you and others will appear here once they sync.'; empty.appendChild(sp);
         feed.appendChild(empty);
+      } else {
+        // After sync done and truly empty, make sure text is "No posts yet" not "Loading..."
+        try{ var _e2=feed.querySelector('.pv-home-empty'); var _b2=_e2.querySelector('b'); if(_b2) _b2.textContent='No posts yet'; }catch(e){}
       }
       return;
     }
@@ -14021,7 +14042,7 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
           }
         }catch(e){}
       } else {
-        card=buildCard(item);
+        card=buildCard(item, items.indexOf(item));
       }
       feed.appendChild(card);
     });
@@ -14157,6 +14178,7 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
   }
   function fetchJSON(url){ return fetch(url,{cache:'no-store'}).then(function(r){ return r.json(); }).catch(function(){ return null; }); }
   var fetching=false;
+  var _pvHomeFirstSyncDone=false;
   function fetchFromCloud(){
     if(fetching) return; fetching=true;
     fetchJSON(BASE+'/prochat/users.json').then(function(users){
@@ -14166,24 +14188,29 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
       if(getMe()&&all.indexOf(getMe())===-1) all.push(getMe());
       /* LOAD ONCE - LOCKED - All owners load together, NOT one by one */
       return Promise.all(all.map(function(owner){ return syncOwner(owner); }));
-    }).then(function(){ fetching=false; queueRender(); }).catch(function(){ fetching=false; queueRender(); });
+    }).then(function(){ fetching=false; _pvHomeFirstSyncDone=true; queueRender(); }).catch(function(){ fetching=false; _pvHomeFirstSyncDone=true; queueRender(); });
   }
   function syncOwner(owner){
     var s=slug(owner); if(!s) return Promise.resolve();
-    return fetchJSON(BASE+'/pro_vibes/deleted_posts/'+s+'.json').then(function(delDoc){
+    // FAST FOR NEW PHONES: fetch all 5 in PARALLEL, not one-by-one. 1 round-trip instead of 5.
+    return Promise.all([
+      fetchJSON(BASE+'/pro_vibes/deleted_posts/'+s+'.json'),
+      fetchJSON(BASE+'/pro_vibes/post_metas/'+s+'.json'),
+      fetchJSON(BASE+'/pro_vibes/posts/'+s+'.json'),
+      fetchJSON(BASE+'/pro_vibes/home_text_posts/'+s+'.json'),
+      fetchJSON(BASE+'/pro_vibes/avatars/'+s+'.json')
+    ]).then(function(results){
+      var delDoc=results[0], metas=results[1], d=results[2], ht=results[3], avd=results[4];
       try{
         var cloudDel=[]; if(delDoc&&Array.isArray(delDoc.posts)) cloudDel=delDoc.posts; else if(delDoc&&Array.isArray(delDoc)) cloudDel=delDoc;
         if(cloudDel.length){
           var localDel=readJSON('pv_deleted_posts__'+s, []); var delChanged=false;
           cloudDel.forEach(function(u){ if(u&&localDel.indexOf(u)===-1){ localDel.push(u); delChanged=true; } });
           if(delChanged){ try{ localStorage.setItem('pv_deleted_posts__'+s, JSON.stringify(localDel)); }catch(e){} }
-          /* Prune local lists so a post deleted for everyone never shows again, even if it was cached before */
           try{ ['pro_vibes_user_posts__'+s,'pv_home_text_posts__'+s,'pv_home_text_cloud__'+s].forEach(function(lk){ try{ var la=readJSON(lk, []); if(!Array.isArray(la)) return; var fl=la.filter(function(it){ var uu=typeof it==='string'?it:(it&&it.image?it.image:(it&&it.url?it.url:'')); return !(uu&&localDel.indexOf(uu)!==-1); }); if(fl.length!==la.length){ try{ localStorage.setItem(lk, JSON.stringify(fl)); }catch(e){} } }catch(e){} }); }catch(e){}
           try{ var mm2=readJSON('pv_post_metas__'+s, {}); if(mm2&&typeof mm2==='object'){ var mCh=false; for(var mk2 in mm2){ var m2v=mm2[mk2]; if(m2v&&(localDel.indexOf(m2v.localPointer)!==-1||localDel.indexOf(m2v.cloudUrl)!==-1)){ delete mm2[mk2]; mCh=true; } } if(mCh){ try{ localStorage.setItem('pv_post_metas__'+s, JSON.stringify(mm2)); }catch(e){} } } }catch(e){}
         }
       }catch(e){}
-      return fetchJSON(BASE+'/pro_vibes/post_metas/'+s+'.json');
-    }).then(function(metas){
       try{
         if(metas&&typeof metas==='object'){
           var cur=readJSON('pv_post_metas__'+s, {}); var changed=false;
@@ -14192,21 +14219,17 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
           if(changed){ try{ localStorage.setItem('pv_post_metas__'+s, JSON.stringify(cur)); }catch(e){} }
         }
       }catch(e){}
-      return fetchJSON(BASE+'/pro_vibes/posts/'+s+'.json');
-    }).then(function(d){
       try{
         var cloudPosts=[]; if(d&&Array.isArray(d.posts)) cloudPosts=d.posts; else if(d&&Array.isArray(d)) cloudPosts=d;
         if(cloudPosts.length){
           var del=readJSON('pv_deleted_posts__'+s, []);
           var local=readJSON('pro_vibes_user_posts__'+s, []); var changed2=false;
           var txtLocal=readJSON('pv_home_text_posts__'+s, []); var txtChanged=false;
-          cloudPosts.forEach(function(u){ if(!u||del.indexOf(u)!==-1) return; if(isText(u, owner)){ if(txtLocal.indexOf(u)===-1){ txtLocal.push(u); txtChanged=true; } } else if(local.indexOf(u)===-1){ local.push(u); changed2=true; } });
+          cloudPosts.forEach(function(u){ if(!u||del.indexOf(u)===-1) return; if(isText(u, owner)){ if(txtLocal.indexOf(u)===-1){ txtLocal.push(u); txtChanged=true; } } else if(local.indexOf(u)===-1){ local.push(u); changed2=true; } });
           if(changed2){ try{ localStorage.setItem('pro_vibes_user_posts__'+s, JSON.stringify(local)); }catch(e){} }
           if(txtChanged){ try{ localStorage.setItem('pv_home_text_posts__'+s, JSON.stringify(txtLocal)); }catch(e){} }
         }
       }catch(e){}
-      return fetchJSON(BASE+'/pro_vibes/home_text_posts/'+s+'.json');
-    }).then(function(ht){
       try{
         var arr=[]; if(ht&&Array.isArray(ht.posts)) arr=ht.posts; else if(ht&&Array.isArray(ht)) arr=ht;
         if(arr.length){
@@ -14219,8 +14242,6 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
           if(ch2){ try{ localStorage.setItem('pv_home_text_cloud__'+s, JSON.stringify(cloud2)); }catch(e){} }
         }
       }catch(e){}
-      return fetchJSON(BASE+'/pro_vibes/avatars/'+s+'.json');
-    }).then(function(avd){
       try{
         if(avd&&avd.avatar){
           var prevAt=parseInt(localStorage.getItem('pv_avatar_at__'+s)||'0',10)||0;
@@ -14281,12 +14302,25 @@ body.pv-home-post-open .bottom-nav{transform:translateY(110%);pointer-events:non
   var LIKES_KEY = 'pv_spotlight_likes_v1';
   var COMMENTS_KEY = 'pv_spotlight_comments_v1';
   var CATS = [{id:'10',name:'Music'},{id:'23',name:'Comedy'},{id:'17',name:'Sports'},{id:'24',name:'Entertainment'},{id:'22',name:'People'},{id:'27',name:'Education'},{id:'26',name:'How to'},{id:'20',name:'Gaming'},{id:'25',name:'News'},{id:'28',name:'Tech'}];
+  /* NO MOVIES / FILMS IN SPOTLIGHT - one helper, used everywhere: trending + search + render + cache. */
+  function pvSpotParseDuration(iso){ try{ var m=String(iso||'').match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/); if(!m) return 0; return (parseInt(m[1]||'0',10)*3600)+(parseInt(m[2]||'0',10)*60)+parseInt(m[3]||'0',10); }catch(e){ return 0; } }
+  function pvSpotIsMovie(title, channel, desc, categoryId, durationIso){
+    try{
+      if(String(categoryId||'')==='1') return true; // YouTube category 1 = Film & Animation = movies
+      var secs=pvSpotParseDuration(durationIso||'');
+      if(secs>180) return true; // Over 3 mins = not a Short, it's a movie / episode / long video
+      var all=String(title||'').toLowerCase()+' | '+String(channel||'').toLowerCase()+' | '+String(desc||'').toLowerCase();
+      var words=['movie','movies','film','films','filmmaking','nollywood','hollywood','bollywood','kollywood','tollywood','cinema','trailer','teaser','episode','season','series','web series','drama','telenovela','teleserye','soap opera','documentary','full episode','full video','full movie','watch full','part 1','part 2','part 3','part 4','netflix','prime video','disney','hulu','recap','ending explained','movie recap','yoruba movie','hausa film','igbo movie','k-drama','kdrama','korean drama'];
+      for(var i=0;i<words.length;i++){ if(all.indexOf(words[i])!==-1) return true; }
+      return false;
+    }catch(e){ return false; }
+  }
   function pvSpotGetBase(){ try{ if(typeof window!=='undefined' && window.__pvOuterGetBase) return window.__pvOuterGetBase(); }catch(e){} try{ if(typeof FIREBASE_URL!=='undefined' && FIREBASE_URL) return FIREBASE_URL; }catch(e){} try{ if(typeof DATABASE_URL!=='undefined' && DATABASE_URL) return DATABASE_URL; }catch(e){} try{ if(typeof BASE!=='undefined' && BASE) return BASE; }catch(e){} return 'https://prochat2026-default-rtdb.firebaseio.com'; }
   function getKeys(){ try{ if(typeof YOUTUBE_API_KEYS!=='undefined' && Array.isArray(YOUTUBE_API_KEYS) && YOUTUBE_API_KEYS.length) return YOUTUBE_API_KEYS; }catch(e){} try{ if(window.YOUTUBE_API_KEYS && Array.isArray(window.YOUTUBE_API_KEYS)) return window.YOUTUBE_API_KEYS; }catch(e){} try{ if(typeof PV_YOUTUBE_API_KEY!=='undefined' && PV_YOUTUBE_API_KEY) return [PV_YOUTUBE_API_KEY]; }catch(e){} return []; }
   function showErr(msg){ try{ var el=document.getElementById('pv-spotlight-err'); if(el) el.textContent=msg||''; }catch(e){} }
   function fmtCount(n){ try{ n=parseInt(n||'0',10)||0; if(n>=1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'')+'M'; if(n>=1000) return (n/1000).toFixed(1).replace(/\.0$/,'')+'K'; return String(n); }catch(e){ return '0'; } }
   function readCache(){ try{ var raw=localStorage.getItem(CACHE_KEY); if(!raw) return null; var o=JSON.parse(raw); if(o && Array.isArray(o.videos)) return o; }catch(e){} return null; }
-  function saveCache(obj){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); }catch(e){} }
+  function saveCache(obj){ try{ if(obj && Array.isArray(obj.videos)) obj.videos=obj.videos.filter(function(v){ try{ return !pvSpotIsMovie(v.title||'', v.channel||'', v.description||'', v.categoryId||'', v.duration||''); }catch(e){ return true; } }); localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); }catch(e){} }
   function getMe(){ try{ return localStorage.getItem('pro_vibes_user_name') || (window.ProVibesUser && window.ProVibesUser.name) || 'You'; }catch(e){ return 'You'; } }
   function showLoading(show){ try{ var el=document.getElementById('pv-spotlight-loading'); if(el){ if(show) el.removeAttribute('hidden'); else el.setAttribute('hidden',''); } }catch(e){} }
   function showEmpty(show){ try{ var el=document.getElementById('pv-spotlight-empty'); if(el){ if(show) el.removeAttribute('hidden'); else el.setAttribute('hidden',''); } }catch(e){} }
@@ -14375,8 +14409,7 @@ function fetchWithTimeout(url, opts, ms){
             if(stt.embeddable===false) return; // skip videos that cannot play in app - they show only YouTube logo screen
             if(stt.privacyStatus && stt.privacyStatus!=='public') return;
             var title = String(sn.title||'').trim(); if(!title) return;
-            var low = title.toLowerCase();
-            if(low.indexOf('movie')!==-1 || low.indexOf('film')!==-1 || low.indexOf('nollywood')!==-1 || low.indexOf('hollywood')!==-1 || low.indexOf('bollywood')!==-1 || low.indexOf('cinema')!==-1 || low.indexOf('trailer')!==-1 || low.indexOf('full episode')!==-1) return; // no movies/films
+            if(pvSpotIsMovie(title, sn.channelTitle||'', sn.description||'', catId, cd.duration||'')) return; // NO movies/films - title + channel + description + duration + category
             var thumb = (sn.thumbnails && (sn.thumbnails.maxres || sn.thumbnails.high || sn.thumbnails.medium || sn.thumbnails.default) && (sn.thumbnails.maxres || sn.thumbnails.high || sn.thumbnails.medium || sn.thumbnails.default).url) || '';
             vids.push({
               videoId: vid,
@@ -14395,6 +14428,37 @@ function fetchWithTimeout(url, opts, ms){
         });
         return {videos: vids, nextPageToken: data.nextPageToken||null};
       });
+    }
+    function fetchYouTubeFast(onProgress){
+      // INSTAGRAM FAST: first 3 categories only for instant first videos, not 10. 3x faster.
+      var fastCats=CATS.slice(0,3);
+      var promises=fastCats.map(function(c){ return fetchOneCategory(c.id, null, 0).then(function(res){ try{ if(onProgress && res && res.videos && res.videos.length) onProgress(res.videos); }catch(e){} return res; }); });
+      return Promise.all(promises).then(function(results){
+        var all=[]; var tokens={};
+        results.forEach(function(res, idx){ if(res && res.videos) all=all.concat(res.videos); if(res && res.nextPageToken) tokens[fastCats[idx].id]=res.nextPageToken; });
+        var seen={}; var dedup=[];
+        all.forEach(function(v){ if(!seen[v.videoId]){ seen[v.videoId]=1; dedup.push(v); } });
+        for(var i=dedup.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=dedup[i]; dedup[i]=dedup[j]; dedup[j]=tmp; }
+        // Background: fetch remaining 7 categories silently, append when ready - user already watching
+        try{
+          var restCats=CATS.slice(3);
+          var restPromises=restCats.map(function(c){ return fetchOneCategory(c.id, null, 0); });
+          Promise.all(restPromises).then(function(restResults){
+            try{
+              var all2=[]; var toks2={};
+              restResults.forEach(function(res, ridx){ if(res && res.videos) all2=all2.concat(res.videos); if(res && res.nextPageToken) toks2[restCats[ridx].id]=res.nextPageToken; });
+              if(all2.length){
+                var seen2={}; var dedup2=[];
+                all2.forEach(function(v){ if(!seen2[v.videoId]){ seen2[v.videoId]=1; dedup2.push(v); } });
+                var merged={updatedAt:Date.now(), videos:dedup2, nextTokens:Object.assign({}, tokens, toks2)};
+                try{ saveCache(merged); }catch(e){}
+                try{ render(dedup2); }catch(e){}
+              }
+            }catch(e){}
+          }).catch(function(){});
+        }catch(e){}
+        return {updatedAt: Date.now(), videos: dedup, nextTokens: tokens};
+      }).catch(function(){ return {updatedAt: Date.now(), videos:[], nextTokens:{}}; });
     }
     function fetchYouTubeFresh(onProgress){
       // Instagram / Facebook style: show first videos as soon as ANY category arrives, don't wait for all 10
@@ -14526,8 +14590,7 @@ var _pvChanAvatarCache={}; try{ _pvChanAvatarCache=JSON.parse(localStorage.getIt
             if(stt.embeddable===false) return;
             if(stt.privacyStatus && stt.privacyStatus!=='public') return;
             var title=String(sn.title||'').trim(); if(!title) return;
-            var low=title.toLowerCase();
-            if(low.indexOf('movie')!==-1 || low.indexOf('film')!==-1 || low.indexOf('nollywood')!==-1 || low.indexOf('hollywood')!==-1 || low.indexOf('bollywood')!==-1 || low.indexOf('cinema')!==-1 || low.indexOf('trailer')!==-1 || low.indexOf('full episode')!==-1) return;
+            if(pvSpotIsMovie(title, sn.channelTitle||'', sn.description||'', sn.categoryId||'', (it.contentDetails&&it.contentDetails.duration)||'')) return; // NO movies/films in search either - even if user types 'movie'
             var thumb=(sn.thumbnails && (sn.thumbnails.maxres || sn.thumbnails.high || sn.thumbnails.medium || sn.thumbnails.default) && (sn.thumbnails.maxres || sn.thumbnails.high || sn.thumbnails.medium || sn.thumbnails.default).url) || '';
             vids.push({videoId:vid, title:title, channel:sn.channelTitle||'', channelId:sn.channelId||'', channelAvatar:'', thumb:thumb, publishedAt:sn.publishedAt||'', viewCount:st.viewCount||'0', likeCount:st.likeCount||'0', commentCount:st.commentCount||'0', categoryId:''});
           }catch(e){}
@@ -14625,8 +14688,7 @@ var _pvChanAvatarCache={}; try{ _pvChanAvatarCache=JSON.parse(localStorage.getIt
   function buildItem(v, idx){
     try{
       var vidx = idx;
-      var _t = String(v.title||'').toLowerCase();
-      if(_t.indexOf('movie')!==-1 || _t.indexOf('film')!==-1 || _t.indexOf('nollywood')!==-1 || _t.indexOf('hollywood')!==-1 || _t.indexOf('bollywood')!==-1 || _t.indexOf('cinema')!==-1 || _t.indexOf('trailer')!==-1 || _t.indexOf('full episode')!==-1) return null;
+      if(pvSpotIsMovie(v.title||'', v.channel||'', v.description||'', v.categoryId||'', v.duration||'')) return null; // NO movies/films - even from old cache / Firebase
 
 var item = document.createElement('div');
             item.className = 'pv-spotlight-item';
@@ -14901,8 +14963,8 @@ var acts = document.createElement('div');
             return;
           }
         }catch(e){}
-        // Else try YouTube silently - failure = keep old videos, never empty
-        fetchYouTubeFresh().then(function(fresh){
+        // Else try YouTube Fast silently - failure = keep old videos, never empty
+        fetchYouTubeFast().then(function(fresh){
           try{
             if(fresh && fresh.videos && fresh.videos.length){ try{ saveCache(fresh); }catch(e){} try{ saveFirebase(fresh); }catch(e){} try{ render(fresh.videos); }catch(e){} }
           }catch(e){}
@@ -14935,54 +14997,45 @@ var acts = document.createElement('div');
         if(!_pvSpotRefreshing) pvSpotBackgroundRefresh();
         return;
       }
-      // 3) TRULY NOTHING - first ever load, no cache. Only here do we show loading.
+      // 3) TRULY NOTHING - new person, first ever load. INSTAGRAM WAY: NO "Loading videos" spinner.
+      // Show skeleton shimmer INSTANTLY (looks like videos), fetch Firebase + YouTube IN PARALLEL, show whichever comes first.
       if(_loading) return;
       _loading=true;
       showEmpty(false);
       showErr('');
-      showLoading(true);
-      // Safety: only hide loading, NEVER show empty if we later get videos. No 15s 'Tap to retry' trap.
-      try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){}
-      window._pvSpotSafetyTimer=setTimeout(function(){
-        try{ _loading=false; showLoading(false); }catch(e){}
-      }, 15000);
-      fetchFirebase().then(function(fb){
-        try{
-          if(fb && fb.videos && fb.videos.length){
-            saveCache(fb); render(fb.videos); showLoading(false); showEmpty(false);
-            try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false; return;
+      showLoading(false); // Never show spinner
+      // Skeleton instantly - user sees video shape, not "please wait"
+      try{
+        var _feed2=document.getElementById('pv-spotlight-feed');
+        if(_feed2 && !_feed2.children.length){
+          for(var _si=0; _si<3; _si++){
+            var _sk=document.createElement('div'); _sk.className='pv-spotlight-skeleton';
+            _sk.innerHTML='<div class="pv-skel-circle"></div><div class="pv-skel-line"></div><div class="pv-skel-line2"></div>';
+            _feed2.appendChild(_sk);
           }
-          var progressive=[];
-          var shown=false;
-          fetchYouTubeFresh(function(newVids){
-            try{
-              if(shown) return;
-              progressive=progressive.concat(newVids);
-              var seenP={}; var dedupP=[];
-              progressive.forEach(function(v){ if(!seenP[v.videoId]){ seenP[v.videoId]=1; dedupP.push(v); } });
-              if(dedupP.length){ render(dedupP); shown=true; showLoading(false); showEmpty(false); }
-            }catch(e){}
-          }).then(function(fresh){
-            try{
-              if(fresh && fresh.videos && fresh.videos.length){
-                saveCache(fresh); saveFirebase(fresh); render(fresh.videos); showErr('');
-              } else if(!shown){
-                // Fresh failed (quota / network) but we already checked cache - truly nothing. Only then show empty.
-                showEmpty(true); showErr('No Shorts - tap retry');
-              }
-            }catch(e){ if(!shown){ showEmpty(true); } }
-            showLoading(false);
-            try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false;
-          }).catch(function(){
-            try{ if(!shown){ showEmpty(true); showErr('No Shorts - tap retry'); } }catch(e){}
-            showLoading(false);
-            try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false;
-          });
-        }catch(e){ showLoading(false); _loading=false; }
+        }
+      }catch(e){}
+      var _shownFast=false;
+      function _clearSkeleton(){ try{ var _f2=document.getElementById('pv-spotlight-feed'); if(_f2) Array.prototype.slice.call(_f2.querySelectorAll('.pv-spotlight-skeleton')).forEach(function(el){ if(el.parentNode) el.parentNode.removeChild(el); }); }catch(e){} }
+      function _showFast(videos){ if(!videos || !videos.length) return false; if(_shownFast) { try{ render(videos); }catch(e){} return true; } _clearSkeleton(); try{ render(videos); }catch(e){} _shownFast=true; showEmpty(false); showLoading(false); return true; }
+      // PARALLEL: Firebase (1 request, fast) + YouTube Fast (3 categories only) at same time - whoever first wins
+      fetchFirebase().then(function(fb){ try{ if(fb && fb.videos && fb.videos.length){ if(_showFast(fb.videos)){ try{ saveCache(fb); }catch(e){} _loading=false; } } }catch(e){} }).catch(function(){});
+      fetchYouTubeFast(function(newVids){ try{ if(newVids && newVids.length) _showFast(newVids); }catch(e){} }).then(function(fresh){
+        try{
+          if(fresh && fresh.videos && fresh.videos.length){ _showFast(fresh.videos); try{ saveCache(fresh); }catch(e){} try{ saveFirebase(fresh); }catch(e){} }
+          else if(!_shownFast){
+            // Both failed - only then show empty, after short wait
+            setTimeout(function(){ if(!_shownFast){ _clearSkeleton(); showEmpty(true); showErr('No Shorts - tap retry'); } }, 800);
+          }
+        }catch(e){}
+        _loading=false; showLoading(false);
       }).catch(function(){
-        try{ showEmpty(true); showErr('No Shorts - tap retry'); }catch(e){}
-        showLoading(false); _loading=false;
+        try{ if(!_shownFast){ _clearSkeleton(); showEmpty(true); showErr('No Shorts - tap retry'); } }catch(e){}
+        _loading=false; showLoading(false);
       });
+      // Safety: if both still stuck after 12s, hide skeleton, keep whatever we have
+      try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){}
+      window._pvSpotSafetyTimer=setTimeout(function(){ try{ _loading=false; showLoading(false); if(!_shownFast) _clearSkeleton(); }catch(e){} }, 12000);
     }catch(e){ showLoading(false); _loading=false; }
   }
 
@@ -15041,15 +15094,41 @@ var acts = document.createElement('div');
     }catch(e){}
     try{
       var sBtn=document.getElementById('pv-spotlight-search-btn');
-      if(sBtn && !sBtn.dataset.pvSpotlightSearchBound){
+      if(sBtn){
+        // FIX: always re-bind, don't rely on dataset flag that can get stuck and make tap do nothing
+        if(sBtn.dataset.pvSpotlightSearchBound && sBtn._pvSpotSearchHandler){
+          try{ sBtn.removeEventListener('click', sBtn._pvSpotSearchHandler); }catch(_){}
+        }
         sBtn.dataset.pvSpotlightSearchBound='1';
-        sBtn.addEventListener('click', function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
+        var _h=function(e){ try{ e.preventDefault(); e.stopPropagation(); }catch(_){}
           try{
-            var _bar2=document.getElementById('pv-spotlight-searchbar');
-            if(_bar2 && _bar2.classList.contains('show')) pvSpotCloseSearchBar();
+            var _scr=document.getElementById('pv-spotlight-search-screen');
+            if(_scr && _scr.classList.contains('show')) pvSpotCloseSearchBar();
             else pvSpotOpenSearchBar();
           }catch(_){}
-        });
+        };
+        sBtn._pvSpotSearchHandler=_h;
+        sBtn.addEventListener('click', _h);
+        // Backup: tap on the icon itself (svg) also opens search
+        try{ sBtn.style.pointerEvents='auto'; }catch(_){}
+      }
+    }catch(e){}
+    // BACKUP GLOBAL: even if bind fails, any tap on search button anywhere opens search (delegated, never blocked)
+    try{
+      if(!window._pvSpotSearchGlobalBound){
+        window._pvSpotSearchGlobalBound=true;
+        document.addEventListener('click', function(ev){
+          try{
+            var _t=ev.target && ev.target.closest ? ev.target.closest('#pv-spotlight-search-btn') : null;
+            if(_t){
+              var _scr2=document.getElementById('pv-spotlight-search-screen');
+              if(_scr2 && !_scr2.classList.contains('show')){
+                try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){}
+                pvSpotOpenSearchBar();
+              }
+            }
+          }catch(_){}
+        }, true);
       }
     }catch(e){}
     try{
