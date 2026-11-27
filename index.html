@@ -1672,7 +1672,7 @@ body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
 #pv-spotlight-search-cancel{background:#333;color:#fff;border:none;border-radius:50%;width:24px;height:24px;min-width:24px;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;cursor:pointer;flex-shrink:0;padding:0}
 #pv-spotlight-search-go{background:linear-gradient(90deg,#0084ff,#00bfa5);color:#fff;border:none;border-radius:999px;height:44px;padding:0 16px;font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .pv-spotlight-search-hint{padding:18px 16px 0;color:#888;font-size:14px;line-height:1.5}
-#pv-spotlight-clear-search-btn{display:none;background:none;border:none;color:#fff;font-size:13px;font-weight:800;cursor:pointer;padding:8px;text-shadow:0 2px 8px rgba(0,0,0,.95);white-space:nowrap}
+#pv-spotlight-clear-search-btn{display:none;background:none;border:none;color:#fff;font-size:20px;font-weight:400;line-height:1;cursor:pointer;padding:8px 4px;flex-shrink:0;margin-left:2px;text-shadow:0 2px 8px rgba(0,0,0,.95)}
 #pv-spotlight-clear-search-btn.show{display:block}
 #pv-spotlight-back-btn{background:none;color:#fff;border:none;width:36px;height:42px;min-width:36px;display:flex;align-items:center;justify-content:center;padding:4px 0 4px 4px;border-radius:50%;-webkit-tap-highlight-color:transparent;cursor:pointer}
 #pv-spotlight-back-btn:active{background:#1a1a1a}
@@ -1691,8 +1691,11 @@ body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
 .pv-spotlight-yt-mask-top{display:none !important;background:transparent !important;height:0 !important}
 .pv-spotlight-yt-mask-bottom{display:none !important;background:transparent !important;height:0 !important}
 /* FULL COVER - ONLY WHEN PAUSED - hides YouTube pause overlay incl. prev/next, suggested, Watch on YouTube */
-.pv-spotlight-yt-top-cover{display:none !important;background:transparent !important}
-.pv-spotlight-item.pv-is-paused .pv-spotlight-yt-top-cover{display:block}
+.pv-spotlight-yt-top-cover{display:none !important;position:absolute;inset:0;width:100%;height:100%;background:#000 !important;z-index:3;pointer-events:none}
+.pv-spotlight-item.pv-is-paused .pv-spotlight-yt-top-cover{display:block !important}
+/* PAUSED = hide YouTube iframe itself, so its prev/next can never show. Thumb (same frame) stays on top, our own pause/play stays on top. Nothing else changes. */
+.pv-spotlight-item.pv-is-paused iframe{visibility:hidden !important;opacity:0 !important}
+.pv-spotlight-item.pv-is-paused .pv-spotlight-thumb{display:block !important;visibility:visible !important;opacity:1 !important}
 .pv-spotlight-item.pv-is-paused .pv-spotlight-thumb{display:block !important}
 .pv-spotlight-tap{position:absolute;inset:0;z-index:5;background:transparent;cursor:pointer}
 /* CENTER - ONLY pause/play, NEVER prev/next */
@@ -1906,14 +1909,14 @@ setTimeout(function(){
 <div id="pv-home-feed" aria-live="polite"></div>
 </section>
 <section id="pv-spotlight-screen" role="dialog" aria-label="Spotlight">
-  <div class="pv-spotlight-top"><button id="pv-spotlight-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-spotlight-title" id="pv-spotlight-title">Spotlight</div><div class="pv-spotlight-top-spacer"></div><button id="pv-spotlight-clear-search-btn" type="button">Clear ✕</button><button id="pv-spotlight-search-btn" type="button" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button></div>
+  <div class="pv-spotlight-top"><button id="pv-spotlight-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-spotlight-title" id="pv-spotlight-title">Spotlight</div><button id="pv-spotlight-clear-search-btn" type="button" aria-label="Cancel search">✕</button><div class="pv-spotlight-top-spacer"></div><button id="pv-spotlight-search-btn" type="button" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button></div>
   <div class="pv-spotlight-blank"><div id="pv-spotlight-feed" class="pv-spotlight-feed"></div><div id="pv-spotlight-empty" class="pv-spotlight-empty" hidden><h3>No Shorts yet</h3><p>Tap retry to load fresh Shorts.</p><button id="pv-spotlight-retry" type="button" style="background:#22c55e;color:#fff;border:none;border-radius:999px;padding:12px 22px;font-size:15px;font-weight:800;cursor:pointer">Tap to retry</button><p id="pv-spotlight-err" style="font-size:12px;color:#888;margin-top:8px"></p></div><div id="pv-spotlight-loading" class="pv-spotlight-loading" hidden><div class="pv-spotlight-spinner"></div><span>Loading Videos please wait...</span></div></div>
 </section>
 
 <section id="pv-spotlight-search-screen" role="dialog" aria-label="Search Spotlight">
   <div class="pv-spotlight-search-screen-top"><button id="pv-spotlight-search-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-spotlight-search-screen-row"><div class="pv-spotlight-search-screen-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg><input id="pv-spotlight-search-input" type="text" placeholder="Search Spotlight..." autocomplete="off" enterkeyhint="search"><button id="pv-spotlight-search-cancel" type="button" aria-label="Cancel">✕</button></div><button id="pv-spotlight-search-go" type="button">Search</button></div></div>
   <div class="pv-spotlight-search-hint">Search Spotlight videos. Results will open in Spotlight — tap Back to go back to your videos.</div>
-  <div id="pv-spotlight-search-status" class="pv-spotlight-search-status" hidden><span>Results for&nbsp;<b id="pv-spotlight-search-status-text"></b></span><button id="pv-spotlight-search-status-clear" type="button">Clear ✕</button></div>
+  <div id="pv-spotlight-search-status" class="pv-spotlight-search-status" hidden><span>Results for&nbsp;<b id="pv-spotlight-search-status-text"></b></span><button id="pv-spotlight-search-status-clear" type="button" aria-label="Cancel search">✕</button></div>
 </section>
 
 <section id="pv-home-post-screen" class="hidden" hidden>
@@ -14484,8 +14487,10 @@ var _pvChanAvatarCache={}; try{ _pvChanAvatarCache=JSON.parse(localStorage.getIt
   function pvSpotShowSearchStatus(q){
     try{
       var title=document.getElementById('pv-spotlight-title'); var clr=document.getElementById('pv-spotlight-clear-search-btn');
-      if(q){ if(title) title.textContent='Results: '+q; if(clr) clr.classList.add('show'); }
-      else { if(title) title.textContent='Spotlight'; if(clr) clr.classList.remove('show'); }
+      // LOCKED: header never changes - always Spotlight. Only sleek ❌ beside it shows/hides.
+      if(title) title.textContent='Spotlight';
+      if(q){ if(clr) clr.classList.add('show'); }
+      else { if(clr) clr.classList.remove('show'); }
     }catch(e){}
   }
   function pvSpotSearchYouTube(q, pageToken, keyIdx){
@@ -14815,9 +14820,10 @@ var acts = document.createElement('div');
   function pauseItem(it){
     try{
       it.dataset.pvCurrent='0';
+      // Cover FIRST, then pause - so YouTube prev/next never flashes
+      try{ it.classList.add('pv-is-paused'); }catch(_){}
       var ifr=it.querySelector('iframe');
       if(ifr){ try{ ifr.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*'); }catch(_){} }
-      try{ it.classList.add('pv-is-paused'); }catch(_){}
       var th=it.querySelector('.pv-spotlight-thumb'); if(th) th.style.display='block';
       var pl=it.querySelector('.pv-spotlight-center-play'); if(pl){ clearTimeout(pl._pvHide); pl.classList.remove('is-playing'); pl.style.display='flex'; }
     }catch(e){}
@@ -14877,51 +14883,77 @@ var acts = document.createElement('div');
   }
 
   /* ---------- LOAD - picture first, loading only if truly no picture ---------- */
+  /* FIX: Never start afresh. Like Reels: show what you already have INSTANTLY, refresh silently in background. Never show 'Tap to retry' if you already have videos. */
   var _loading=false;
+  var _pvSpotRefreshing=false;
+  var _pvSpotLastScroll=0;
+  function pvSpotBackgroundRefresh(){
+    if(_pvSpotRefreshing) return;
+    _pvSpotRefreshing=true;
+    try{
+      fetchFirebase().then(function(fb){
+        try{
+          // Firebase fresh? Use it, no loading shown
+          if(fb && fb.videos && fb.videos.length){
+            try{ saveCache(fb); }catch(e){}
+            try{ render(fb.videos); }catch(e){}
+            _pvSpotRefreshing=false;
+            return;
+          }
+        }catch(e){}
+        // Else try YouTube silently - failure = keep old videos, never empty
+        fetchYouTubeFresh().then(function(fresh){
+          try{
+            if(fresh && fresh.videos && fresh.videos.length){ try{ saveCache(fresh); }catch(e){} try{ saveFirebase(fresh); }catch(e){} try{ render(fresh.videos); }catch(e){} }
+          }catch(e){}
+          _pvSpotRefreshing=false;
+        }).catch(function(){ _pvSpotRefreshing=false; });
+      }).catch(function(){ _pvSpotRefreshing=false; });
+    }catch(e){ _pvSpotRefreshing=false; }
+  }
   function load(force){
     try{
       if(_pvSpotIsSearching && !force) return;
-      if(_loading && !force) return;
+      var feed=document.getElementById('pv-spotlight-feed');
+      var hasFeed=!!(feed && feed.children.length);
+      // 1) ALREADY HAVE VIDEOS ON SCREEN -> show them instantly, NEVER reload, NEVER show loading/empty. This is the go-and-come-back fix.
+      if(hasFeed && !force){
+        showLoading(false); showEmpty(false); showErr('');
+        try{ if(_pvSpotLastScroll && feed) feed.scrollTop=_pvSpotLastScroll; }catch(e){}
+        try{ setupObserver(); }catch(e){}
+        if(!_pvSpotRefreshing) pvSpotBackgroundRefresh();
+        return;
+      }
+      // 2) NO FEED BUT HAVE CACHE (even old) -> show cache INSTANTLY, no loading. Cache never expires for display.
+      var cached=readCache();
+      if(cached && cached.videos && cached.videos.length){
+        // If force (retry) we still show cache first, then refresh silently - never blank screen
+        try{ render(cached.videos); }catch(e){}
+        showLoading(false); showEmpty(false); showErr('');
+        try{ if(_pvSpotLastScroll && feed) feed.scrollTop=_pvSpotLastScroll; }catch(e){}
+        if(force) _loading=false;
+        if(!_pvSpotRefreshing) pvSpotBackgroundRefresh();
+        return;
+      }
+      // 3) TRULY NOTHING - first ever load, no cache. Only here do we show loading.
+      if(_loading) return;
       _loading=true;
       showEmpty(false);
       showErr('');
-      var feed=document.getElementById('pv-spotlight-feed');
-      var hasFeed=!!(feed && feed.children.length);
-      if(hasFeed && !force){
-        showLoading(false); showEmpty(false);
-        try{ setupObserver(); }catch(e){}
-        try{ var _c0=readCache(); if(_c0 && _c0.videos && _c0.videos.length && (Date.now()-(_c0.updatedAt||0) < SIX_HOURS)){ _loading=false; return; } }catch(e){}
-      }
-      var cached=readCache();
-      var shown=hasFeed;
-      if(cached && cached.videos && cached.videos.length){
-        render(cached.videos);
-        shown=true;
-        showLoading(false);
-        if(!force && (Date.now()-(cached.updatedAt||0) < SIX_HOURS)){ _loading=false; return; }
-      } else if(!hasFeed){
-        showLoading(true);
-      }
+      showLoading(true);
+      // Safety: only hide loading, NEVER show empty if we later get videos. No 15s 'Tap to retry' trap.
       try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){}
       window._pvSpotSafetyTimer=setTimeout(function(){
-        try{
-          if(_loading){
-            _loading=false; showLoading(false);
-            var f2=document.getElementById('pv-spotlight-feed');
-            if(!f2 || !f2.children.length){ showEmpty(true); showErr('Loading took too long - check internet, tap retry'); }
-          }
-        }catch(e){}
+        try{ _loading=false; showLoading(false); }catch(e){}
       }, 15000);
       fetchFirebase().then(function(fb){
         try{
-          if(!force && fb && fb.videos && fb.videos.length && (Date.now()-(fb.updatedAt||0) < SIX_HOURS)){
-            saveCache(fb); render(fb.videos); showLoading(false);
+          if(fb && fb.videos && fb.videos.length){
+            saveCache(fb); render(fb.videos); showLoading(false); showEmpty(false);
             try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false; return;
           }
-          if(fb && fb.videos && fb.videos.length && !shown){
-            render(fb.videos); shown=true; showLoading(false);
-          }
           var progressive=[];
+          var shown=false;
           fetchYouTubeFresh(function(newVids){
             try{
               if(shown) return;
@@ -14935,35 +14967,23 @@ var acts = document.createElement('div');
               if(fresh && fresh.videos && fresh.videos.length){
                 saveCache(fresh); saveFirebase(fresh); render(fresh.videos); showErr('');
               } else if(!shown){
-                if(fb && fb.videos && fb.videos.length) render(fb.videos);
-                else if(cached && cached.videos && cached.videos.length) render(cached.videos);
-                else { showEmpty(true); showErr('No Shorts - tap retry'); }
+                // Fresh failed (quota / network) but we already checked cache - truly nothing. Only then show empty.
+                showEmpty(true); showErr('No Shorts - tap retry');
               }
             }catch(e){ if(!shown){ showEmpty(true); } }
             showLoading(false);
             try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false;
           }).catch(function(){
-            try{
-              if(!shown){
-                if(fb && fb.videos && fb.videos.length) render(fb.videos);
-                else if(cached && cached.videos && cached.videos.length) render(cached.videos);
-                else { showEmpty(true); showErr('No Shorts - tap retry'); }
-              }
-            }catch(e){ if(!shown) showEmpty(true); }
+            try{ if(!shown){ showEmpty(true); showErr('No Shorts - tap retry'); } }catch(e){}
             showLoading(false);
             try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false;
           });
-        }catch(e){ if(!shown) showEmpty(true); showLoading(false); _loading=false; }
+        }catch(e){ showLoading(false); _loading=false; }
       }).catch(function(){
-        try{
-          if(!shown){
-            if(cached && cached.videos && cached.videos.length) render(cached.videos);
-            else showEmpty(true);
-          }
-        }catch(e){ if(!shown) showEmpty(true); }
+        try{ showEmpty(true); showErr('No Shorts - tap retry'); }catch(e){}
         showLoading(false); _loading=false;
       });
-    }catch(e){ showEmpty(true); _loading=false; }
+    }catch(e){ showLoading(false); _loading=false; }
   }
 
   /* ---------- OPEN / CLOSE - single definitions, no wrapping ---------- */
@@ -14973,10 +14993,14 @@ var acts = document.createElement('div');
       var s=document.getElementById('pv-spotlight-screen');
       if(!s) return;
       s.classList.remove('hidden'); s.removeAttribute('hidden'); s.classList.add('show');
+      // Restore where you stopped, don't start from top
+      try{ var _f=document.getElementById('pv-spotlight-feed'); if(_f && _pvSpotLastScroll) _f.scrollTop=_pvSpotLastScroll; }catch(e){}
     }catch(e){}
     try{ load(); }catch(e){}
   }
   function close(){
+    // Save where you stopped before pausing, so coming back resumes same video
+    try{ var _f2=document.getElementById('pv-spotlight-feed'); if(_f2) _pvSpotLastScroll=_f2.scrollTop||0; }catch(e){}
     try{ pauseAll(); }catch(e){}
     try{
       var s=document.getElementById('pv-spotlight-screen');
