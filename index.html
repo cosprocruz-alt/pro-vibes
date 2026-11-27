@@ -1719,13 +1719,7 @@ body:has(#pv-spotlight-screen.show) .bottom-nav .pv-nav-plus{display:none;}
 .pv-spotlight-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 18px;color:#fff;gap:8px}
 .pv-spotlight-empty h3{margin:0;font-size:20px;font-weight:800}
 .pv-spotlight-empty p{margin:0;color:#aaa;font-size:14px}
-.pv-spotlight-loading{display:none !important}
-.pv-spotlight-skeleton{position:relative;width:100%;height:100%;min-height:100%;background:#111;overflow:hidden;flex-shrink:0;scroll-snap-align:start}
-.pv-spotlight-skeleton::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,.02) 40%,rgba(255,255,255,.06) 100%);animation:pvSpotShimmer 1.4s infinite}
-@keyframes pvSpotShimmer{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
-.pv-spotlight-skeleton .pv-skel-circle{position:absolute;left:14px;top:16px;width:36px;height:36px;border-radius:50%;background:#222}
-.pv-spotlight-skeleton .pv-skel-line{position:absolute;left:58px;top:22px;width:120px;height:12px;border-radius:6px;background:#222}
-.pv-spotlight-skeleton .pv-skel-line2{position:absolute;left:58px;top:40px;width:80px;height:10px;border-radius:5px;background:#1c1c1c}
+.pv-spotlight-loading{position:absolute;left:0;right:0;top:56px;display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;color:#fff;font-size:14px;font-weight:700;background:rgba(0,0,0,.6);z-index:5}
 .pv-spotlight-spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:pvSpotSpin .8s linear infinite}
 @keyframes pvSpotSpin{to{transform:rotate(360deg)}}
 .pv-spotlight-comment-box{position:absolute;left:12px;right:66px;bottom:78px;z-index:5;display:flex;gap:8px;background:rgba(0,0,0,.75);border:1px solid #333;border-radius:20px;padding:6px 6px 6px 12px;align-items:center}
@@ -1915,7 +1909,7 @@ setTimeout(function(){
 </section>
 <section id="pv-spotlight-screen" role="dialog" aria-label="Spotlight">
   <div class="pv-spotlight-top"><button id="pv-spotlight-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-spotlight-title" id="pv-spotlight-title">Spotlight</div><button id="pv-spotlight-clear-search-btn" type="button" aria-label="Cancel search">✕</button><div class="pv-spotlight-top-spacer"></div><button id="pv-spotlight-search-btn" type="button" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 L21 21"/></svg></button></div>
-  <div class="pv-spotlight-blank"><div id="pv-spotlight-feed" class="pv-spotlight-feed"></div><div id="pv-spotlight-empty" class="pv-spotlight-empty" hidden><h3>No Shorts yet</h3><p>Tap retry to load fresh Shorts.</p><button id="pv-spotlight-retry" type="button" style="background:#22c55e;color:#fff;border:none;border-radius:999px;padding:12px 22px;font-size:15px;font-weight:800;cursor:pointer">Tap to retry</button><p id="pv-spotlight-err" style="font-size:12px;color:#888;margin-top:8px"></p></div><div id="pv-spotlight-loading" class="pv-spotlight-loading" hidden style="display:none !important"></div></div>
+  <div class="pv-spotlight-blank"><div id="pv-spotlight-feed" class="pv-spotlight-feed"></div><div id="pv-spotlight-empty" class="pv-spotlight-empty" hidden><h3>No Shorts yet</h3><p>Tap retry to load fresh Shorts.</p><button id="pv-spotlight-retry" type="button" style="background:#22c55e;color:#fff;border:none;border-radius:999px;padding:12px 22px;font-size:15px;font-weight:800;cursor:pointer">Tap to retry</button><p id="pv-spotlight-err" style="font-size:12px;color:#888;margin-top:8px"></p></div><div id="pv-spotlight-loading" class="pv-spotlight-loading" hidden><div class="pv-spotlight-spinner"></div><span>Loading Videos please wait...</span></div></div>
 </section>
 
 <section id="pv-spotlight-search-screen" role="dialog" aria-label="Search Spotlight">
@@ -14429,37 +14423,6 @@ function fetchWithTimeout(url, opts, ms){
         return {videos: vids, nextPageToken: data.nextPageToken||null};
       });
     }
-    function fetchYouTubeFast(onProgress){
-      // INSTAGRAM FAST: first 3 categories only for instant first videos, not 10. 3x faster.
-      var fastCats=CATS.slice(0,3);
-      var promises=fastCats.map(function(c){ return fetchOneCategory(c.id, null, 0).then(function(res){ try{ if(onProgress && res && res.videos && res.videos.length) onProgress(res.videos); }catch(e){} return res; }); });
-      return Promise.all(promises).then(function(results){
-        var all=[]; var tokens={};
-        results.forEach(function(res, idx){ if(res && res.videos) all=all.concat(res.videos); if(res && res.nextPageToken) tokens[fastCats[idx].id]=res.nextPageToken; });
-        var seen={}; var dedup=[];
-        all.forEach(function(v){ if(!seen[v.videoId]){ seen[v.videoId]=1; dedup.push(v); } });
-        for(var i=dedup.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=dedup[i]; dedup[i]=dedup[j]; dedup[j]=tmp; }
-        // Background: fetch remaining 7 categories silently, append when ready - user already watching
-        try{
-          var restCats=CATS.slice(3);
-          var restPromises=restCats.map(function(c){ return fetchOneCategory(c.id, null, 0); });
-          Promise.all(restPromises).then(function(restResults){
-            try{
-              var all2=[]; var toks2={};
-              restResults.forEach(function(res, ridx){ if(res && res.videos) all2=all2.concat(res.videos); if(res && res.nextPageToken) toks2[restCats[ridx].id]=res.nextPageToken; });
-              if(all2.length){
-                var seen2={}; var dedup2=[];
-                all2.forEach(function(v){ if(!seen2[v.videoId]){ seen2[v.videoId]=1; dedup2.push(v); } });
-                var merged={updatedAt:Date.now(), videos:dedup2, nextTokens:Object.assign({}, tokens, toks2)};
-                try{ saveCache(merged); }catch(e){}
-                try{ render(dedup2); }catch(e){}
-              }
-            }catch(e){}
-          }).catch(function(){});
-        }catch(e){}
-        return {updatedAt: Date.now(), videos: dedup, nextTokens: tokens};
-      }).catch(function(){ return {updatedAt: Date.now(), videos:[], nextTokens:{}}; });
-    }
     function fetchYouTubeFresh(onProgress){
       // Instagram / Facebook style: show first videos as soon as ANY category arrives, don't wait for all 10
       var promises = CATS.map(function(c){ return fetchOneCategory(c.id, null, 0).then(function(res){ try{ if(onProgress && res && res.videos && res.videos.length) onProgress(res.videos); }catch(e){} return res; }); });
@@ -14963,8 +14926,8 @@ var acts = document.createElement('div');
             return;
           }
         }catch(e){}
-        // Else try YouTube Fast silently - failure = keep old videos, never empty
-        fetchYouTubeFast().then(function(fresh){
+        // Else try YouTube silently - failure = keep old videos, never empty
+        fetchYouTubeFresh().then(function(fresh){
           try{
             if(fresh && fresh.videos && fresh.videos.length){ try{ saveCache(fresh); }catch(e){} try{ saveFirebase(fresh); }catch(e){} try{ render(fresh.videos); }catch(e){} }
           }catch(e){}
@@ -14997,45 +14960,54 @@ var acts = document.createElement('div');
         if(!_pvSpotRefreshing) pvSpotBackgroundRefresh();
         return;
       }
-      // 3) TRULY NOTHING - new person, first ever load. INSTAGRAM WAY: NO "Loading videos" spinner.
-      // Show skeleton shimmer INSTANTLY (looks like videos), fetch Firebase + YouTube IN PARALLEL, show whichever comes first.
+      // 3) TRULY NOTHING - first ever load, no cache. Only here do we show loading.
       if(_loading) return;
       _loading=true;
       showEmpty(false);
       showErr('');
-      showLoading(false); // Never show spinner
-      // Skeleton instantly - user sees video shape, not "please wait"
-      try{
-        var _feed2=document.getElementById('pv-spotlight-feed');
-        if(_feed2 && !_feed2.children.length){
-          for(var _si=0; _si<3; _si++){
-            var _sk=document.createElement('div'); _sk.className='pv-spotlight-skeleton';
-            _sk.innerHTML='<div class="pv-skel-circle"></div><div class="pv-skel-line"></div><div class="pv-skel-line2"></div>';
-            _feed2.appendChild(_sk);
-          }
-        }
-      }catch(e){}
-      var _shownFast=false;
-      function _clearSkeleton(){ try{ var _f2=document.getElementById('pv-spotlight-feed'); if(_f2) Array.prototype.slice.call(_f2.querySelectorAll('.pv-spotlight-skeleton')).forEach(function(el){ if(el.parentNode) el.parentNode.removeChild(el); }); }catch(e){} }
-      function _showFast(videos){ if(!videos || !videos.length) return false; if(_shownFast) { try{ render(videos); }catch(e){} return true; } _clearSkeleton(); try{ render(videos); }catch(e){} _shownFast=true; showEmpty(false); showLoading(false); return true; }
-      // PARALLEL: Firebase (1 request, fast) + YouTube Fast (3 categories only) at same time - whoever first wins
-      fetchFirebase().then(function(fb){ try{ if(fb && fb.videos && fb.videos.length){ if(_showFast(fb.videos)){ try{ saveCache(fb); }catch(e){} _loading=false; } } }catch(e){} }).catch(function(){});
-      fetchYouTubeFast(function(newVids){ try{ if(newVids && newVids.length) _showFast(newVids); }catch(e){} }).then(function(fresh){
-        try{
-          if(fresh && fresh.videos && fresh.videos.length){ _showFast(fresh.videos); try{ saveCache(fresh); }catch(e){} try{ saveFirebase(fresh); }catch(e){} }
-          else if(!_shownFast){
-            // Both failed - only then show empty, after short wait
-            setTimeout(function(){ if(!_shownFast){ _clearSkeleton(); showEmpty(true); showErr('No Shorts - tap retry'); } }, 800);
-          }
-        }catch(e){}
-        _loading=false; showLoading(false);
-      }).catch(function(){
-        try{ if(!_shownFast){ _clearSkeleton(); showEmpty(true); showErr('No Shorts - tap retry'); } }catch(e){}
-        _loading=false; showLoading(false);
-      });
-      // Safety: if both still stuck after 12s, hide skeleton, keep whatever we have
+      showLoading(true);
+      // Safety: only hide loading, NEVER show empty if we later get videos. No 15s 'Tap to retry' trap.
       try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){}
-      window._pvSpotSafetyTimer=setTimeout(function(){ try{ _loading=false; showLoading(false); if(!_shownFast) _clearSkeleton(); }catch(e){} }, 12000);
+      window._pvSpotSafetyTimer=setTimeout(function(){
+        try{ _loading=false; showLoading(false); }catch(e){}
+      }, 15000);
+      fetchFirebase().then(function(fb){
+        try{
+          if(fb && fb.videos && fb.videos.length){
+            saveCache(fb); render(fb.videos); showLoading(false); showEmpty(false);
+            try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false; return;
+          }
+          var progressive=[];
+          var shown=false;
+          fetchYouTubeFresh(function(newVids){
+            try{
+              if(shown) return;
+              progressive=progressive.concat(newVids);
+              var seenP={}; var dedupP=[];
+              progressive.forEach(function(v){ if(!seenP[v.videoId]){ seenP[v.videoId]=1; dedupP.push(v); } });
+              if(dedupP.length){ render(dedupP); shown=true; showLoading(false); showEmpty(false); }
+            }catch(e){}
+          }).then(function(fresh){
+            try{
+              if(fresh && fresh.videos && fresh.videos.length){
+                saveCache(fresh); saveFirebase(fresh); render(fresh.videos); showErr('');
+              } else if(!shown){
+                // Fresh failed (quota / network) but we already checked cache - truly nothing. Only then show empty.
+                showEmpty(true); showErr('No Shorts - tap retry');
+              }
+            }catch(e){ if(!shown){ showEmpty(true); } }
+            showLoading(false);
+            try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false;
+          }).catch(function(){
+            try{ if(!shown){ showEmpty(true); showErr('No Shorts - tap retry'); } }catch(e){}
+            showLoading(false);
+            try{ clearTimeout(window._pvSpotSafetyTimer); }catch(e){} _loading=false;
+          });
+        }catch(e){ showLoading(false); _loading=false; }
+      }).catch(function(){
+        try{ showEmpty(true); showErr('No Shorts - tap retry'); }catch(e){}
+        showLoading(false); _loading=false;
+      });
     }catch(e){ showLoading(false); _loading=false; }
   }
 
