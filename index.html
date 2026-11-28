@@ -132,7 +132,7 @@ button{cursor:pointer}
 .login-box{width:100%;max-width:420px;text-align:center;display:flex;flex-direction:column;flex:none;margin:auto 0;justify-content:center}.login-form-middle{position:static;top:auto;left:auto;right:auto;transform:none;width:100%;max-width:420px;padding:0;box-sizing:border-box;display:flex;flex-direction:column;margin:0}.pv-login-footer{width:100%;max-width:420px;text-align:center;pointer-events:none;padding-top:32px;flex-shrink:0}.pv-login-footer span{color:#22c55e;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 @media (max-height:520px){#login-screen{padding-top:28px}.login-logo{margin-bottom:16px !important}.pv-login-footer{padding-top:16px}}
 .login-logo{font-size:44px;font-weight:800;letter-spacing:2px;line-height:1;margin:0 0 8px;transform:translateY(-72px)}.login-subtitle{margin:0 0 28px;color:#a0a0a0;font-size:16px;font-weight:500;letter-spacing:.2px;text-align:center;line-height:1.4;transform:translateY(-72px)}
-.login-name-input{width:100%;background:#121212;border:1px solid #2a2a2a;border-radius:18px;padding:16px 18px;color:#fff;font-size:16px;outline:none;box-sizing:border-box;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.35)}
+.login-name-input{width:100%;background:#121212;border:1px solid #2a2a2a;border-radius:18px;padding:16px 18px;color:#fff;font-size:16px;outline:none;box-sizing:border-box;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.35)}#pv-phone-input{color:#fff !important;font-weight:600;letter-spacing:.3px}#pv-migrate-send-btn.pv-locked{opacity:.45 !important;box-shadow:none !important}#pv-phone-input:focus{border-color:#25D366}
 .login-name-input::placeholder{color:#888}
 .login-name-input:focus{border-color:#666}
 .login-char-warning{text-align:right;color:#ff5252;font-size:12px;font-weight:600;min-height:16px;margin:-8px 4px 8px;opacity:0;transition:opacity .15s}
@@ -1821,20 +1821,440 @@ setTimeout(function(){
 </script>
 
 <!-- Anti-flash: ONLY this one stays inline at top of body, on purpose. E must run BEFORE first paint. -->
-<style id="pv-no-login-flash-style">@scope { #login-screen{display:none !important;} }</style>
+<style id="pv-no-login-flash-style">@scope { #login-screen{display:none !important;} #pv-login-screen{display:none !important;} }</style>
 <script>try{var _pvS=localStorage.getItem('pro_vibes_user_name');var _pvO=localStorage.getItem('pro_vibes_logged_out')==='1';if(!_pvS||_pvO){var _pvSt=document.getElementById('pv-no-login-flash-style');if(_pvSt)_pvSt.remove();}}catch(e){var _pvSt2=document.getElementById('pv-no-login-flash-style');if(_pvSt2)_pvSt2.remove();}</script>
 <!-- ===== FILE: index.html — HTML only (screens, sheets, overlays) ===== -->
-<section id="login-screen" style="position:relative">
+<style id="pv-terms-agree-style">
+.pv-terms-agree{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:0 2px;text-align:left}
+.pv-terms-tick{width:28px;height:28px;min-width:28px;min-height:28px;border-radius:50%;border:1.5px solid #3a3a3a;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;margin-top:0;flex-shrink:0;transition:background .18s ease,border-color .18s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent;position:relative;z-index:5;pointer-events:auto}.pv-terms-agree{position:relative;z-index:5}
+.pv-terms-tick svg{width:13px;height:13px;opacity:0;transform:scale(.5);transition:opacity .18s ease,transform .18s ease}
+.pv-terms-tick[aria-checked="true"]{background:#22c55e;border-color:#22c55e;box-shadow:0 4px 14px rgba(34,197,94,.35)}
+.pv-terms-tick[aria-checked="true"] svg{opacity:1;transform:scale(1)}
+.pv-terms-text{font-size:12.5px;line-height:1.45;color:#9a9a9a;margin:0;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+#login-btn.pv-locked{opacity:.45;box-shadow:none !important;cursor:pointer}#login-btn:disabled{opacity:.45;box-shadow:none;cursor:not-allowed}
+.pv-terms-agree.pv-shake{animation:pvTermsShake .38s ease}
+@keyframes pvTermsShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.pv-terms-agree.pv-need-agree .pv-terms-tick{border-color:#ff5252}
+.pv-terms-agree.pv-need-agree .pv-terms-text{color:#9a9a9a}
+
+#login-btn.pv-shake{animation:pvBtnShake .4s ease}
+#login-btn.pv-show-accept #login-btn-text{font-size:15px;line-height:1.25;letter-spacing:.1px}#login-btn.pv-locked.pv-show-accept{opacity:.45}
+@keyframes pvBtnShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.pv-terms-tick.pv-pulse{animation:pvTickPulse .5s ease}
+@keyframes pvTickPulse{0%{box-shadow:0 0 0 0 rgba(255,82,82,.55)}100%{box-shadow:0 0 0 10px rgba(255,82,82,0)}}
+</style>
+
+<style id="pv-login-first-clean-style">
+#pv-login-screen{min-height:100vh;min-height:100dvh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;padding:20px 20px calc(24px + env(safe-area-inset-bottom));box-sizing:border-box;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#pv-login-screen.hidden{display:none !important}
+#pv-login-btn{width:100%;background:#22c55e;color:#fff;border:none;padding:16px;border-radius:18px;font-size:18px;font-weight:800;box-shadow:0 10px 28px rgba(34,197,94,.35);letter-spacing:.2px;display:flex;align-items:center;justify-content:center;gap:10px}
+#pv-login-btn.pv-locked{opacity:.45;box-shadow:none !important;cursor:pointer}
+#pv-login-btn.pv-shake{animation:pvBtnShake .4s ease}
+.pv-login-error{margin:10px 2px 0;color:#ff5252;font-size:14.5px;font-weight:600;line-height:1.5;text-align:center;min-height:20px}
+.pv-login-error:empty{display:none}
+.pv-login-to-signup{margin-top:18px;text-align:center}
+#pv-goto-signup-btn{background:none;border:none;color:#22c55e;font-size:14px;font-weight:700;padding:8px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.pv-back-to-login-wrap{margin-top:16px;text-align:center}
+#pv-back-to-login-btn{background:none;border:none;color:#22c55e;font-size:14px;font-weight:700;padding:8px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.pv-e2e-line{display:flex;align-items:center;justify-content:center;gap:6px;color:#25D366;font-size:12.5px;font-weight:600;line-height:1.4;letter-spacing:.1px;transform:translateY(-72px);margin:-6px 0 22px;text-align:center}
+.pv-e2e-line svg{width:14px;height:14px;flex-shrink:0;display:block}
+</style>
+
+<section id="pv-login-screen" style="position:relative">
 <div class="login-box">
-<h1 class="login-logo">PRO VIBES</h1><p class="login-subtitle">Welcome to Pro Vibes</p>
+<h1 class="login-logo">PRO VIBES</h1><p class="login-subtitle">Welcome to Pro Vibes</p><div class="pv-e2e-line"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#25D366" stroke-width="2"/><path d="M8 11 V7 a4 4 0 0 1 8 0 V11" stroke="#25D366" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1.4" fill="#25D366"/></svg><span>Your Account is End To End Encrypted</span></div>
 <div class="login-form-middle">
-<input class="login-name-input" id="login-name" type="text" placeholder="Your name..." autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="done">
+<div style="margin-bottom:12px"><div style="display:flex;align-items:center;background:#121212;border:1px solid #2a2a2a;border-radius:18px;box-shadow:0 2px 12px rgba(0,0,0,.35);overflow:hidden;box-sizing:border-box"><span style="background:transparent;border:none;border-right:1px solid #2a2a2a;padding:16px 14px 16px 18px;color:#25D366;font-size:17px;font-weight:800;box-sizing:border-box;white-space:nowrap;display:flex;align-items:center">+234</span><input class="login-name-input" id="pv-login-phone" type="tel" maxlength="10" placeholder="Phone number" autocomplete="tel" inputmode="tel" enterkeyhint="next" style="margin-bottom:0;flex:1;color:#fff;background:transparent;border:none;border-radius:0;box-shadow:none;padding:16px 18px 16px 14px"></div></div><input class="login-name-input" id="pv-login-name" type="text" placeholder="Your name..." autocomplete="name" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="done">
+<button id="pv-login-btn" type="button" class="pv-locked"><span id="pv-login-btn-text">Login</span></button>
+<p id="pv-login-error" class="pv-login-error"></p>
+</div>
+<div class="pv-login-to-signup"><button id="pv-goto-signup-btn" type="button">Don&apos;t have an account? Sign Up</button></div>
+</div>
+<div class="pv-login-footer" style="white-space:nowrap !important;"><span>FROM PROTIA</span><span class="pv-creator-badge pv-login-footer-badge" title="Creator of PRO VIBES" aria-label="Creator of PRO VIBES" style="display:inline-flex !important;align-items:center !important;justify-content:center !important;width:17px !important;height:17px !important;min-width:17px !important;min-height:17px !important;max-width:17px !important;max-height:17px !important;margin-left:6px !important;vertical-align:middle !important;flex-shrink:0 !important;line-height:0 !important;letter-spacing:0 !important;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="width:17px !important;height:17px !important;min-width:17px !important;min-height:17px !important;max-width:17px !important;max-height:17px !important;display:block !important;"><circle cx="12" cy="12" r="10" fill="#FFC93C" stroke="#A67C00" stroke-width="1"/><path d="M7.2 12.4 L10.4 15.6 L16.8 8.6" stroke="#171200" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span></div>
+</section>
+<style id="pv-signup-slide">
+@keyframes pvSignupSlideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes pvSignupSlideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+#login-screen.pv-slide-in{animation:pvSignupSlideIn .38s cubic-bezier(.32,.72,0,1) both}
+#login-screen.pv-slide-out{animation:pvSignupSlideOut .32s ease-in both}
+</style>
+<section id="login-screen"  style="position:relative">
+<div class="login-box">
+<h1 class="login-logo">PRO VIBES</h1><p class="login-subtitle">Welcome to Pro Vibes</p><div class="pv-e2e-line"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#25D366" stroke-width="2"/><path d="M8 11 V7 a4 4 0 0 1 8 0 V11" stroke="#25D366" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1.4" fill="#25D366"/></svg><span>Your Account is End To End Encrypted</span></div>
+<div class="login-form-middle">
+<div style="margin-bottom:12px"><div style="display:flex;align-items:center;background:#121212;border:1px solid #2a2a2a;border-radius:18px;box-shadow:0 2px 12px rgba(0,0,0,.35);overflow:hidden;box-sizing:border-box"><span style="background:transparent;border:none;border-right:1px solid #2a2a2a;padding:16px 14px 16px 18px;color:#25D366;font-size:17px;font-weight:800;box-sizing:border-box;white-space:nowrap;display:flex;align-items:center">+234</span><input class="login-name-input" id="pv-phone-input" type="tel" maxlength="10" placeholder="Phone number" autocomplete="tel" inputmode="tel" enterkeyhint="next" style="margin-bottom:0;flex:1;color:#fff;background:transparent;border:none;border-radius:0;box-shadow:none;padding:16px 18px 16px 14px"></div><div style="color:#888;font-size:12px;line-height:1.4;margin:6px 2px 0">PRO VIBES will need to verify this number.</div></div><input class="login-name-input" id="login-name" type="text" placeholder="Your name..." autocomplete="new-password" name="pv-login-name-no-autofill" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="done">
 <button id="login-btn"><span id="login-btn-text">Join Community</span></button>
 </div>
+<div class="pv-terms-agree" id="pv-terms-agree"><button type="button" id="pv-terms-tick" class="pv-terms-tick" role="checkbox" aria-checked="false" aria-label="Agree to terms and privacy policy of Pro Vibes"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.5 12.5 L10.5 16.5 L17.5 7.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button><p class="pv-terms-text" id="pv-terms-text">By tapping Agree, you accept the new terms and privacy policy of Pro Vibes</p></div>
+<div class="pv-back-to-login-wrap"><button id="pv-back-to-login-btn" type="button">Already have an account? Login</button></div>
 </div>
-<div class="pv-login-footer"><span>FROM PROTIA</span></div>
+<div class="pv-login-footer" style="white-space:nowrap !important;"><span>FROM PROTIA</span><span class="pv-creator-badge pv-login-footer-badge" title="Creator of PRO VIBES" aria-label="Creator of PRO VIBES" style="display:inline-flex !important;align-items:center !important;justify-content:center !important;width:17px !important;height:17px !important;min-width:17px !important;min-height:17px !important;max-width:17px !important;max-height:17px !important;margin-left:6px !important;vertical-align:middle !important;flex-shrink:0 !important;line-height:0 !important;letter-spacing:0 !important;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="width:17px !important;height:17px !important;min-width:17px !important;min-height:17px !important;max-width:17px !important;max-height:17px !important;display:block !important;"><circle cx="12" cy="12" r="10" fill="#FFC93C" stroke="#A67C00" stroke-width="1"/><path d="M7.2 12.4 L10.4 15.6 L16.8 8.6" stroke="#171200" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span></div>
 </section>
-<div id="pv-account-popup" class="pv-account-popup hidden" hidden><div class="pv-account-backdrop"></div><div class="pv-account-card"><div class="pv-account-title">Are you sure?</div><div class="pv-account-msg" id="pv-account-msg">This will create a new account for you.</div><div class="pv-account-current">Current account: <b id="pv-account-current-name"></b></div><div class="pv-account-new">New account: <b id="pv-account-new-name"></b></div><div class="pv-account-btns"><button class="pv-account-no" id="pv-account-no-btn">No</button><button class="pv-account-yes" id="pv-account-yes-btn">Yes</button></div><div class="pv-account-note">You must tap Yes or No to continue.</div></div></div><div id="app-inside" class="hidden" hidden>
+
+<script id="pv-login-first-clean">
+(function(){
+  function isSignedIn(){ try{ var s=localStorage.getItem('pro_vibes_user_name'); var o=localStorage.getItem('pro_vibes_logged_out')==='1'; return !!(s && !o); }catch(e){ return false; } }
+  function pvSlug(s){ return String(s||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,''); }
+  function pvGetAccounts(){ try{ var a=JSON.parse(localStorage.getItem('pro_vibes_accounts_list')||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+  // Careful: Account is tied to PHONE, not name. Name is only display.
+  // New mapping: pv_phone_to_name__<10 digits> = display name. Legacy fallback: pv_account_phone__<slug(name)>.
+  function pvCleanPhone10(d){ d=String(d||'').replace(/\D/g,''); if(d.charAt(0)==='0') d=d.slice(1); return d.slice(0,10); }
+  function pvGetPhoneToName(phoneDigits){
+    try{ var v=localStorage.getItem('pv_phone_to_name__'+phoneDigits); if(v) return v; }catch(e){}
+    return '';
+  }
+  function pvSavePhoneToName(phoneDigits, name){
+    try{
+      phoneDigits=pvCleanPhone10(phoneDigits); name=String(name||'').trim(); if(!phoneDigits || !name) return;
+      localStorage.setItem('pv_phone_to_name__'+phoneDigits, name);
+      var list=[]; try{ list=JSON.parse(localStorage.getItem('pv_phone_accounts_list')||'[]'); if(!Array.isArray(list)) list=[]; }catch(e){ list=[]; }
+      if(list.indexOf(phoneDigits)===-1){ list.push(phoneDigits); localStorage.setItem('pv_phone_accounts_list', JSON.stringify(list)); }
+    }catch(e){}
+  }
+  function pvFindNameByPhone(phoneDigits){
+    try{
+      phoneDigits=pvCleanPhone10(phoneDigits); if(!phoneDigits) return '';
+      var mapped=pvGetPhoneToName(phoneDigits); if(mapped) return mapped;
+      // Legacy: look through names list and their stored phone
+      var list=pvGetAccounts();
+      for(var i=0;i<list.length;i++){
+        var nm=String(list[i]||'').trim(); if(!nm) continue;
+        var slug=pvSlug(nm); var stored=''; try{ stored=localStorage.getItem('pv_account_phone__'+slug)||''; }catch(e){}
+        if(pvCleanPhone10(stored)===phoneDigits){ pvSavePhoneToName(phoneDigits, nm); return nm; }
+      }
+      // Last verified phone on this device, with current user name
+      try{
+        var verified=pvCleanPhone10(localStorage.getItem('pv_phone_verified')||'');
+        var cur=String(localStorage.getItem('pro_vibes_user_name')||'').trim();
+        if(verified===phoneDigits && cur){ pvSavePhoneToName(phoneDigits, cur); return cur; }
+      }catch(e){}
+      return '';
+    }catch(e){ return ''; }
+  }
+  function pvAccountExistsByPhone(phoneDigits){ return !!pvFindNameByPhone(phoneDigits); }
+  function pvAccountExists(name){
+    try{
+      var list=pvGetAccounts();
+      for(var i=0;i<list.length;i++){ if(String(list[i]||'').trim().toLowerCase()===String(name||'').trim().toLowerCase()) return true; }
+      var slug=pvSlug(name); if(!slug) return false;
+      var checks=['pro_vibes_followers__for_'+slug,'pro_vibes_following__u_'+slug,'pro_vibes_avatar__for_'+slug,'pro_vibes_bio__'+slug,'pro_vibes_user_posts__'+slug,'pro_vibes_profile_views__for_'+slug,'pro_vibes_account_record__'+slug,'pv_account_phone__'+slug];
+      for(var j=0;j<checks.length;j++){ var v=localStorage.getItem(checks[j]); if(v!==null && v!=='' && v!=='[]') return true; }
+      return false;
+    }catch(e){ return false; }
+  }
+  function showLogin(){
+    try{
+      var l=document.getElementById('pv-login-screen');
+      var s=document.getElementById('login-screen');
+      var app=document.getElementById('app-inside');
+      var nav=document.querySelector('.bottom-nav');
+      // Only Sign Up slides left/right - like notification: slide out to right, then show Login
+      if(s && !s.classList.contains('hidden')){
+        s.classList.remove('pv-slide-in');
+        s.classList.add('pv-slide-out');
+        setTimeout(function(){
+          try{
+            s.classList.add('hidden'); s.setAttribute('hidden','');
+            s.classList.remove('pv-slide-out');
+            if(l){ l.classList.remove('hidden'); l.removeAttribute('hidden'); l.style.display=''; }
+            if(app){ app.classList.add('hidden'); app.setAttribute('hidden',''); }
+            if(nav) nav.style.display='none';
+            window.scrollTo(0,0);
+            pvUpdateLoginLocked();
+          }catch(e){}
+        }, 320);
+        return;
+      }
+      if(l){ l.classList.remove('hidden'); l.removeAttribute('hidden'); l.style.display=''; }
+      if(s){ s.classList.add('hidden'); s.setAttribute('hidden',''); }
+      if(app){ app.classList.add('hidden'); app.setAttribute('hidden',''); }
+      if(nav) nav.style.display='none';
+      window.scrollTo(0,0);
+      pvUpdateLoginLocked();
+    }catch(e){}
+  }
+  function showSignup(){
+    try{
+      try{
+        var lp=document.getElementById('pv-login-phone'); var ln=document.getElementById('pv-login-name');
+        var sp=document.getElementById('pv-phone-input'); var sn=document.getElementById('login-name');
+        if(lp && sp && lp.value) sp.value=lp.value;
+        if(ln && sn && ln.value) sn.value=ln.value;
+      }catch(e){}
+      var l=document.getElementById('pv-login-screen'); if(l){ l.classList.add('hidden'); l.setAttribute('hidden',''); }
+      var s=document.getElementById('login-screen'); if(s){ s.classList.remove('hidden'); s.removeAttribute('hidden'); s.style.display=''; s.classList.remove('pv-slide-out'); void s.offsetWidth; s.classList.add('pv-slide-in'); }
+      var nav=document.querySelector('.bottom-nav'); if(nav) nav.style.display='none';
+      if(window.pvUpdateJoinLocked) window.pvUpdateJoinLocked();
+      window.scrollTo(0,0);
+    }catch(e){}
+  }
+  function showErr(msg){
+    try{
+      var el=document.getElementById('pv-login-error'); if(el) el.textContent=msg;
+      var btn=document.getElementById('pv-login-btn'); if(btn){ btn.classList.remove('pv-shake'); void btn.offsetWidth; btn.classList.add('pv-shake'); }
+    }catch(e){}
+  }
+  function clearErr(){ try{ var el=document.getElementById('pv-login-error'); if(el) el.textContent=''; }catch(e){} }
+  function norm10(d){ d=String(d||'').replace(/\D/g,''); if(d.charAt(0)==='0') d=d.slice(1); return d.slice(0,10); }
+  function pvIsLoginReady(){
+    try{
+      var ph=document.getElementById('pv-login-phone');
+      var digits=ph?String(ph.value||'').replace(/\D/g,''):'';
+      if(norm10(digits).length!==10) return false;
+      return true;
+    }catch(e){ return false; }
+  }
+  function pvUpdateLoginLocked(){
+    try{
+      var btn=document.getElementById('pv-login-btn'); if(!btn) return;
+      btn.classList.toggle('pv-locked', !pvIsLoginReady());
+    }catch(e){}
+  }
+  window.pvUpdateLoginLocked=pvUpdateLoginLocked;
+  function onLoginClick(e){
+    if(e) e.preventDefault();
+    clearErr();
+    var phoneEl=document.getElementById('pv-login-phone');
+    var phone=phoneEl?String(phoneEl.value||'').trim():'';
+    if(!phone || norm10(phone).length!==10){ showErr('Please enter your 10-digit phone number.'); try{ phoneEl.focus(); }catch(err){} return; }
+    if(window.pvIsValidPhone && !window.pvIsValidPhone(phone)){ showErr('That phone number is not correct. Please check it.'); return; }
+    var phoneDigits=norm10(phone);
+    var storedName=pvFindNameByPhone(phoneDigits);
+    var typedName=document.getElementById('pv-login-name')?String(document.getElementById('pv-login-name').value||'').trim():'';
+    // Login: even if they type name + phone, if phone has no account -> show red, dem must Sign Up. Account tied to phone - stored name wins.
+    // Fallback for OLD accounts: if phone has no account yet, but typed name is an old name-only account, let them enter with that name so they can add their phone in Secure Your Account. They will NOT lose their account.
+    if(!storedName){
+      if(typedName && pvAccountExists(typedName)){
+        storedName=typedName;
+      } else {
+        showErr('This number has not signed up yet. Please tap Sign Up to create an account.'); return;
+      }
+    }
+    var name=storedName;
+    if(window.pvBlockCreatorNameIfNeeded && window.pvBlockCreatorNameIfNeeded(name)){ return; }
+    try{
+      var sp=document.getElementById('pv-phone-input'); if(sp) sp.value=phone;
+      var sn=document.getElementById('login-name'); if(sn) sn.value=name;
+      try{ localStorage.setItem('pv_terms_agreed__v1','1'); }catch(err){}
+      try{ var tick=document.getElementById('pv-terms-tick'); if(tick) tick.setAttribute('aria-checked','true'); }catch(err){}
+      try{ if(window.pvTermsApplyFn) window.pvTermsApplyFn(true); }catch(err){}
+      try{ if(window.pvUpdateJoinLocked) window.pvUpdateJoinLocked(); }catch(err){}
+      var signupBtn=document.getElementById('login-btn'); if(signupBtn) signupBtn.click();
+    }catch(err){}
+  }
+  function init(){ if(isSignedIn()) return; showLogin(); pvUpdateLoginLocked(); }
+  window.pvShowLoginScreen=showLogin;
+  window.pvShowSignupScreen=showSignup;
+  var loginBtn=document.getElementById('pv-login-btn');
+  if(loginBtn && !loginBtn.dataset.pvBound){ loginBtn.dataset.pvBound='1'; loginBtn.addEventListener('click', onLoginClick); }
+  var gotoBtn=document.getElementById('pv-goto-signup-btn');
+  if(gotoBtn && !gotoBtn.dataset.pvBound){ gotoBtn.dataset.pvBound='1'; gotoBtn.addEventListener('click', function(e){ e.preventDefault(); clearErr(); showSignup(); }); }
+  var backBtn=document.getElementById('pv-back-to-login-btn');
+  if(backBtn && !backBtn.dataset.pvBound){ backBtn.dataset.pvBound='1'; backBtn.addEventListener('click', function(e){ e.preventDefault(); try{ var sp=document.getElementById('pv-phone-input'); var sn=document.getElementById('login-name'); var lp=document.getElementById('pv-login-phone'); var ln=document.getElementById('pv-login-name'); if(sp && lp && sp.value) lp.value=sp.value; if(sn && ln && sn.value) ln.value=sn.value; }catch(err){} showLogin(); }); }
+  var lp2=document.getElementById('pv-login-phone');
+  if(lp2 && !lp2.dataset.pvBound){
+    lp2.dataset.pvBound='1';
+    lp2.addEventListener('input', function(){ try{ var v=String(lp2.value||'').replace(/\D/g,''); if(v.charAt(0)==='0') v=v.slice(1); v=v.slice(0,10); if(lp2.value!==v) lp2.value=v; }catch(e){} clearErr(); pvUpdateLoginLocked(); });
+  }
+  var ln2=document.getElementById('pv-login-name');
+  if(ln2 && !ln2.dataset.pvBound){ ln2.dataset.pvBound='1'; ln2.addEventListener('input', function(){ clearErr(); pvUpdateLoginLocked(); }); ln2.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); onLoginClick(); } }); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { setTimeout(init, 0); }
+  setTimeout(init, 300);
+  document.addEventListener('provibes:entered', function(){
+    try{ var l=document.getElementById('pv-login-screen'); if(l){ l.classList.add('hidden'); l.setAttribute('hidden',''); } }catch(e){}
+    try{
+      var curName=String(localStorage.getItem('pro_vibes_user_name')||'').trim();
+      var ph=String(localStorage.getItem('pv_phone_verified')||localStorage.getItem('pv_phone_number')||'').trim();
+      if(!ph){ try{ var pe=document.getElementById('pv-phone-input'); if(pe) ph=String(pe.value||'').trim(); }catch(e){} }
+      if(curName && ph){ pvSavePhoneToName(ph, curName); }
+    }catch(e){}
+  });
+})();
+</script>
+<script id="pv-terms-agree-gate">
+(function(){
+  function pvTermsAgreed(){ try{ return localStorage.getItem('pv_terms_agreed__v1')==='1'; }catch(e){ return false; } }
+  function pvSetTermsAgreed(v){ try{ if(v) localStorage.setItem('pv_terms_agreed__v1','1'); else localStorage.removeItem('pv_terms_agreed__v1'); }catch(e){} }
+  function pvInitTermsGate(){
+    var tick=document.getElementById('pv-terms-tick');
+    var txt=document.getElementById('pv-terms-text');
+    var wrap=document.getElementById('pv-terms-agree');
+    var btn=document.getElementById('login-btn');
+    if(!tick||!btn||!wrap) return;
+    if(tick.dataset.pvBound==='1') return;
+    tick.dataset.pvBound='1';
+    function pvNorm10(d){ d=String(d||'').replace(/\D/g,''); if(d.charAt(0)==='0') d=d.slice(1); return d.slice(0,10); }
+    window.pvNorm10=pvNorm10;
+    function pvIsJoinReady(){
+      try{
+        var agreed=tick.getAttribute('aria-checked')==='true';
+        if(!agreed) return false;
+        var phoneEl=document.getElementById('pv-phone-input');
+        var digits=phoneEl?String(phoneEl.value||'').replace(/\D/g,''):'';
+        if(pvNorm10(digits).length!==10) return false;
+        var nameEl=document.getElementById('login-name');
+        var nm=nameEl?String(nameEl.value||'').trim():'';
+        if(!nm) return false;
+        return true;
+      }catch(e){ return false; }
+    }
+    function pvUpdateJoinLocked(){
+      try{
+        var ready=pvIsJoinReady();
+        btn.classList.toggle('pv-locked', !ready);
+        btn.setAttribute('aria-disabled', !ready?'true':'false');
+      }catch(e){}
+    }
+    window.pvIsJoinReady=pvIsJoinReady;
+    window.pvUpdateJoinLocked=pvUpdateJoinLocked;
+    function apply(v){
+      tick.setAttribute('aria-checked', v?'true':'false');
+      // FIX: never use btn.disabled for terms - a disabled button fires NO click, so shake/hint never shows.
+      // Use pv-locked class instead: looks dull but stays clickable, so tap can shake + show hint.
+      // Join stays dull dark-green until ALL complete: tick + phone 10/11 + name
+      pvUpdateJoinLocked();
+      try{
+        var _pop=document.getElementById('pv-account-popup');
+        var _popOpen=_pop && !_pop.classList.contains('hidden');
+        if(!_popOpen) btn.disabled=false;
+      }catch(e){ try{ btn.disabled=false; }catch(err){} }
+      if(v){ wrap.classList.remove('pv-need-agree'); try{ var _bt2=document.getElementById('login-btn-text'); if(_bt2) _bt2.textContent='Join Community'; }catch(e){} try{ btn.classList.remove('pv-show-accept'); }catch(e){} }
+    }
+    var btnText=document.getElementById('login-btn-text');
+    var origBtnText='Join Community';
+    function showBlocked(){
+      // 1) Text goes INSIDE Join Community button, not under
+      if(btnText) btnText.textContent='Accept our policies first to join';
+      btn.classList.add('pv-show-accept');
+      // 2) Join Community button shakes
+      btn.classList.remove('pv-shake'); void btn.offsetWidth; btn.classList.add('pv-shake');
+      // 3) ONLY circle turns red + shakes - terms text stays exactly as it is
+      wrap.classList.remove('pv-shake'); void wrap.offsetWidth; wrap.classList.add('pv-shake'); wrap.classList.add('pv-need-agree');
+      tick.classList.remove('pv-pulse'); void tick.offsetWidth; tick.classList.add('pv-pulse');
+      setTimeout(function(){
+        try{ btn.classList.remove('pv-shake'); }catch(e){}
+        try{ wrap.classList.remove('pv-shake'); }catch(e){}
+        try{ tick.classList.remove('pv-pulse'); }catch(e){}
+        // Circle stays red + button text stays "Accept..." until dem tick
+      }, 450);
+    }
+    function shake(){ showBlocked(); }
+    window.pvTermsShowBlocked=showBlocked;
+    window.pvTermsAgreedFn=pvTermsAgreed;
+    window.pvTermsShakeFn=shake;
+    window.pvTermsApplyFn=apply;
+    // FIX: login must start UNTICKED - no auto-fill from previous session
+    try{ localStorage.removeItem('pv_terms_agreed__v1'); }catch(e){}
+    apply(false);
+    // FIX: clear name + phone on load - no auto-fill
+    try{
+      var _ln0=document.getElementById('login-name'); if(_ln0){ _ln0.value=''; _ln0.setAttribute('autocomplete','new-password'); }
+      var _ph0=document.getElementById('pv-phone-input'); if(_ph0){ _ph0.value=''; _ph0.setAttribute('autocomplete','new-password'); _ph0.setAttribute('name','pv-phone-no-autofill'); }
+    }catch(e){}
+    // Also clear after a tick - browser autofill can run late
+    setTimeout(function(){
+      try{
+        var _ln1=document.getElementById('login-name'); if(_ln1 && document.activeElement!==_ln1) _ln1.value='';
+        var _ph1=document.getElementById('pv-phone-input'); if(_ph1 && document.activeElement!==_ph1) _ph1.value='';
+      }catch(e){}
+      pvUpdateJoinLocked();
+    }, 300);
+    function toggle(){
+      var next=tick.getAttribute('aria-checked')!=='true';
+      pvSetTermsAgreed(next);
+      apply(next);
+      if(next){
+        // Ticked: button goes back to Join Community, circle goes green, terms stays same
+        if(btnText) btnText.textContent=origBtnText;
+        btn.classList.remove('pv-show-accept');
+        wrap.classList.remove('pv-need-agree');
+      }
+    }
+    tick.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); toggle(); setTimeout(pvUpdateJoinLocked, 0); });
+    try{
+      var _phoneInp=document.getElementById('pv-phone-input');
+      if(_phoneInp) _phoneInp.addEventListener('input', function(){
+        try{
+          var _v=String(_phoneInp.value||'').replace(/\D/g,'');
+          if(_v.charAt(0)==='0') _v=_v.slice(1);
+          _v=_v.slice(0,10);
+          if(_phoneInp.value!==_v) _phoneInp.value=_v;
+        }catch(e){}
+        pvUpdateJoinLocked();
+      });
+      var _nameInp=document.getElementById('login-name');
+      if(_nameInp) _nameInp.addEventListener('input', function(){ pvUpdateJoinLocked(); });
+    }catch(e){}
+    // Initial check - button stays dull until all complete
+    setTimeout(pvUpdateJoinLocked, 100);
+    if(txt) txt.addEventListener('click', function(e){ e.preventDefault(); toggle(); });
+    // Block Join Community if not ticked - capture phase, runs before login()
+    btn.addEventListener('click', function(e){
+      if(tick.getAttribute('aria-checked')!=='true'){
+        e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        shake();
+        try{ tick.focus(); }catch(err){}
+        return;
+      }
+      // Terms ticked but phone/name not complete - stay dull, shake, focus missing field
+      try{
+        var _pe=document.getElementById('pv-phone-input');
+        var _dg=_pe?String(_pe.value||'').replace(/\D/g,''):'';
+        var _ne=document.getElementById('login-name');
+        var _nm=_ne?String(_ne.value||'').trim():'';
+        if(pvNorm10(_dg).length!==10 || !_nm){
+          e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+          btn.classList.remove('pv-shake'); void btn.offsetWidth; btn.classList.add('pv-shake');
+          pvUpdateJoinLocked();
+          try{
+            if(pvNorm10(_dg).length!==10 && _pe) _pe.focus();
+            else if(!_nm && _ne) _ne.focus();
+          }catch(err){}
+          return;
+        }
+      }catch(err2){}
+    }, true);
+  }
+  pvInitTermsGate();
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', pvInitTermsGate); }
+  // Watchdog: keep Join Community clickable so tap always shakes + shows hint, even if other code set disabled
+  try{
+    setInterval(function(){
+      try{
+        var _b=document.getElementById('login-btn'); if(!_b) return;
+        var _pop=document.getElementById('pv-account-popup');
+        var _popOpen=_pop && !_pop.classList.contains('hidden');
+        if(_popOpen) return;
+        var _agreed=false; try{ _agreed=localStorage.getItem('pv_terms_agreed__v1')==='1'; }catch(e){}
+        var _ready=_agreed;
+        try{
+          var _pe2=document.getElementById('pv-phone-input');
+          var _dg2=_pe2?String(_pe2.value||'').replace(/\D/g,''):'';
+          var _ne2=document.getElementById('login-name');
+          var _nm2=_ne2?String(_ne2.value||'').trim():'';
+          if(pvNorm10(_dg2).length!==10 || !_nm2) _ready=false;
+        }catch(e2){}
+        if(_b.disabled) _b.disabled=false;
+        _b.classList.toggle('pv-locked', !_ready);
+      }catch(e){}
+    }, 500);
+  }catch(e){}
+})();
+</script>
+<div id="pv-account-popup" class="pv-account-popup hidden" hidden><div class="pv-account-backdrop"></div><div class="pv-account-card"><div class="pv-account-title">Are you sure?</div><div class="pv-account-msg" id="pv-account-msg">This will create a new account for you.</div><div class="pv-account-current">Current account: <b id="pv-account-current-name"></b></div><div class="pv-account-new">New account: <b id="pv-account-new-name"></b></div><div class="pv-account-btns"><button class="pv-account-no" id="pv-account-no-btn">No</button><button class="pv-account-yes" id="pv-account-yes-btn">Yes</button></div><div class="pv-account-note">You must tap Yes or No to continue.</div></div></div><div id="pv-creator-code-popup" class="pv-account-popup hidden" hidden><div class="pv-account-backdrop"></div><div class="pv-account-card"><div class="pv-account-title" id="pv-creator-code-title">Creator Code</div><div class="pv-account-msg" id="pv-creator-code-msg">Cospro is reserved. If you are the creator, enter your 6-character Creator Code.</div><input id="pv-creator-code-input" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" maxlength="6" placeholder="Enter 6-character code" style="width:100%;background:#121212;border:1px solid #2a2a2a;border-radius:14px;padding:14px 16px;color:#fff;font-size:18px;font-weight:800;letter-spacing:4px;text-align:center;outline:none;box-sizing:border-box;margin-bottom:8px;text-transform:uppercase"><div id="pv-creator-code-error" style="display:none;color:#ff8a8a;font-size:13px;line-height:1.4;margin-bottom:10px"></div><div class="pv-account-btns"><button class="pv-account-no" id="pv-creator-code-cancel-btn">Cancel</button><button class="pv-account-yes" id="pv-creator-code-ok-btn">Verify</button></div><div class="pv-account-note" id="pv-creator-code-note">Only the creator knows this code. 6 characters.</div></div></div><style id="pv-otp-sleek">
+#pv-otp-popup .pv-account-card{max-width:300px !important;padding:16px 16px 12px !important;border-radius:20px !important}
+#pv-otp-popup .pv-account-title{font-size:19px !important;margin-bottom:6px !important}
+#pv-otp-popup .pv-account-msg{font-size:14px !important;line-height:1.35 !important;margin-bottom:10px !important}
+#pv-otp-popup #pv-otp-input{padding:10px 12px !important;font-size:18px !important;letter-spacing:4px !important;border-radius:12px !important;margin-bottom:6px !important;caret-color:#fff}
+#pv-otp-popup .pv-account-btns{gap:8px !important}
+#pv-otp-popup .pv-account-btns button{padding:10px 8px !important;font-size:15px !important;white-space:nowrap}
+#pv-otp-popup .pv-account-note{margin-top:8px !important}
+#pv-otp-popup #pv-otp-verify-btn{background:#25D366 !important;background-image:none !important;box-shadow:0 4px 14px rgba(37,211,102,.35) !important}
+#pv-otp-popup #pv-otp-verify-btn:active{background:#1fb857 !important}
+#pv-otp-popup #pv-otp-demo{font-size:12px !important;margin-bottom:6px !important}
+#pv-otp-popup #pv-otp-resend{margin-top:28px !important;font-size:14px !important;font-weight:700 !important;cursor:pointer;text-align:center}#pv-otp-popup #pv-otp-resend.pv-counting{color:#888 !important}
+</style>
+<div id="pv-otp-popup"  class="pv-account-popup hidden" hidden><div class="pv-account-backdrop" style="background:rgba(0,0,0,.82);backdrop-filter:blur(6px)"></div><div class="pv-otp-wrap" style="position:relative;z-index:1;width:100%;max-width:300px;display:flex;flex-direction:column;align-items:center"><div class="pv-account-card" style="background:#141414;border:1px solid #222;border-radius:20px;padding:16px 16px 12px;box-shadow:0 16px 40px rgba(0,0,0,.6);max-width:300px;width:100%;box-sizing:border-box"><div class="pv-account-title" style="font-size:19px;margin-bottom:6px">Verify Number</div><div class="pv-account-msg" id="pv-otp-msg" style="font-size:14px;line-height:1.35;margin-bottom:10px">We sent a 6-digit code to your number.</div><input id="pv-otp-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter 6-digit code" style="width:100%;background:#121212;border:1px solid #2a2a2a;border-radius:12px;padding:10px 12px;color:#fff;font-size:18px;font-weight:800;letter-spacing:4px;text-align:center;outline:none;box-sizing:border-box;margin-bottom:6px;caret-color:#fff"><div id="pv-otp-demo" style="color:#FFC93C;font-size:12px;line-height:1.35;margin-bottom:6px"></div><div id="pv-otp-error" style="display:none;color:#ff8a8a;font-size:12px;line-height:1.35;margin-bottom:8px"></div><div class="pv-account-btns"><button class="pv-account-no" id="pv-otp-change-btn">Edit</button><button class="pv-account-yes" id="pv-otp-verify-btn" style="background:#25D366 !important;background-image:none !important;box-shadow:0 4px 14px rgba(37,211,102,.35)">Verify</button></div></div><div id="pv-otp-resend" style="margin-top:28px;color:#25D366;font-size:14px;font-weight:700;cursor:pointer;text-align:center">Resend code</div></div></div><div id="pv-migrate-popup" class="pv-account-popup hidden" hidden><div class="pv-account-backdrop" style="background:rgba(0,0,0,.82);backdrop-filter:blur(6px)"></div><div class="pv-account-card" style="background:#141414;border:1px solid #222;border-radius:26px;padding:26px 22px 20px;box-shadow:0 24px 60px rgba(0,0,0,.65)"><div style="width:52px;height:52px;margin:0 auto 14px;border-radius:50%;background:rgba(37,211,102,.14);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:28px;height:28px;display:block"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><div class="pv-account-title" style="font-size:21px;letter-spacing:-.2px">Secure Your Account</div><div class="pv-account-msg" id="pv-migrate-msg" style="color:#b8b8b8;font-size:14.5px;line-height:1.5;margin-bottom:18px">You joined before with only name. Add your phone number once to keep your account.</div><div style="display:flex;align-items:center;background:#0f0f0f;border:1px solid #262626;border-radius:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);overflow:hidden;box-sizing:border-box;margin-bottom:12px;transition:border-color .2s"><span style="background:transparent;border:none;border-right:1px solid #262626;padding:16px 12px 16px 18px;color:#25D366;font-size:17px;font-weight:800;box-sizing:border-box;white-space:nowrap;display:flex;align-items:center;letter-spacing:.2px">+234</span><input id="pv-migrate-phone" type="tel" maxlength="10" placeholder="Phone number" autocomplete="tel" inputmode="tel" style="flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16.5px;font-weight:600;padding:16px 18px 16px 14px;box-sizing:border-box;letter-spacing:.4px"></div><div id="pv-migrate-otp-wrap" style="display:none"><input id="pv-migrate-otp" type="text" inputmode="numeric" maxlength="6" placeholder="• • • • • •" style="width:100%;background:#0f0f0f;border:1px solid #262626;border-radius:16px;padding:15px 16px;color:#25D366;font-size:22px;font-weight:800;letter-spacing:10px;text-align:center;outline:none;box-sizing:border-box;margin-bottom:8px"><div id="pv-migrate-demo" style="color:#FFC93C;font-size:12.5px;line-height:1.4;margin-bottom:8px"></div></div><div id="pv-migrate-error" style="display:none;color:#ff8a8a;font-size:13px;line-height:1.4;margin-bottom:10px"></div><div class="pv-account-btns" style="gap:10px"><button class="pv-account-no" id="pv-migrate-later-btn" style="background:#1e1e1e;color:#aaa;border-radius:16px;padding:14px 8px;font-size:15px;font-weight:700">Later</button><button class="pv-account-yes" id="pv-migrate-send-btn" style="background:linear-gradient(90deg,#25D366,#1eb856);border-radius:16px;padding:14px 8px;font-size:15px;font-weight:800;box-shadow:0 8px 20px rgba(37,211,102,.28)">Send Code</button></div><div class="pv-account-note" style="color:#777;font-size:12px;margin-top:12px">PRO VIBES will need to verify this number.</div></div></div><div id="pv-number-confirm-popup" class="pv-account-popup hidden" hidden><div class="pv-account-backdrop" style="background:rgba(0,0,0,.82);backdrop-filter:blur(6px)"></div><div class="pv-account-card" style="background:#141414;border:1px solid #222;border-radius:26px;padding:26px 22px 20px;box-shadow:0 24px 60px rgba(0,0,0,.65)"><div class="pv-account-title" style="font-size:21px">Is this your number?</div><div class="pv-account-msg" id="pv-number-confirm-text" style="color:#fff;font-size:17px;font-weight:700;margin-bottom:8px">+234 801 234 5678</div><div class="pv-account-msg" style="color:#b8b8b8;font-size:14.5px;line-height:1.5;margin-bottom:18px">We will send you a code to this number to verify it.</div><div class="pv-account-btns" style="gap:10px"><button class="pv-account-no" id="pv-number-confirm-edit-btn" style="background:#1e1e1e;color:#aaa;border-radius:16px;padding:14px 8px;font-size:15px;font-weight:700">Edit</button><button class="pv-account-yes" id="pv-number-confirm-yes-btn" style="background:linear-gradient(90deg,#25D366,#1eb856);border-radius:16px;padding:14px 6px;font-size:14px;font-weight:800;white-space:nowrap;box-shadow:0 8px 20px rgba(37,211,102,.28)">Yes, send code</button></div></div></div><div id="app-inside" class="hidden" hidden>
 <main>
 <section id="home-screen">
 <!-- HOME FEED: posts + videos + text posts ONLY. Avatar / profile pics stay in Profile only, NOT Home, for now. Avatar stays PUBLIC. Bring profile pics back to Home only when user says so. Tap opens just that post in Home. Text posts never show in Profile. -->
@@ -1847,7 +2267,7 @@ setTimeout(function(){
 </section>
 
 <!-- HOME ONLY: Task Center - empty blank black, only back arrow + Task Center header -->
-<section id="pv-home-chart-screen" aria-label="Task Center" hidden><button id="pv-home-chart-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-task-center-header"><h2>Task Center</h2><button class="pv-task-menu-btn" type="button" aria-label="Menu"><span></span><span></span><span></span></button></div><div class="pv-task-profile-wrap"><div class="pv-task-profile"><div class="pv-task-profile-avatar" id="pv-task-profile-avatar"><span id="pv-task-profile-letter">U</span><img id="pv-task-profile-img" alt="" hidden></div><div class="pv-task-profile-info"><b id="pv-task-profile-name">Your Name</b></div></div></div><div class="pv-task-coin-wrap"><div class="pv-task-coin-count"><svg class="pv-task-coin-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" fill="url(#pvTaskCoinGrad)" stroke="#fff" stroke-width="1.5"/><circle cx="16" cy="16" r="10" stroke="#fff" stroke-width="1.2" stroke-opacity="0.95"/><text x="16" y="21" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="inherit">₦</text><defs><linearGradient id="pvTaskCoinGrad" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE066"/><stop offset="1" stop-color="#FFB800"/></linearGradient></defs></svg><b>0.00</b><span class="pv-count-beside" id="pv-count-num">01</span><span class="pv-coins-label" id="pv-coins-label">Coins</span></div><div class="pv-task-total-balance">Total Balance&nbsp;<b id="pv-task-total-balance-value">0.00</b></div><div class="pv-count-1520" id="pv-count-1520"><span id="pv-count-done-num">0</span><span class="pv-count-1520-total"> / 20</span></div><div class="pv-coin-float-layer" id="pv-coin-float-layer"></div></div><div class="pv-task-list"><div class="pv-task-item"><div class="pv-task-item-left"><span class="pv-task-item-text">Watch Ads and get rewards</span><span class="pv-task-item-sub">30 Coins</span></div><button id="pv-task-ads-btn" class="pv-task-go-btn pv-task-claimed" type="button" disabled>Coming Soon</button></div><div class="pv-task-item"><div class="pv-task-item-left"><span class="pv-task-item-text">Claim daily reward</span><span class="pv-task-item-sub">15 Coins</span></div><button id="pv-task-daily-btn" class="pv-task-go-btn" type="button">Claim</button></div><div class="pv-task-item"><span class="pv-task-item-text">Invite someone</span><button id="pv-task-invite-btn" class="pv-task-go-btn" type="button">50 Coins</button></div><div class="pv-task-item"><div class="pv-task-item-left"><span class="pv-task-item-text">Post a video or photo in Home</span><span class="pv-task-item-sub">25 Coins</span></div><button id="pv-task-post-btn" class="pv-task-go-btn pv-task-claimed" type="button" disabled>Coming Soon</button></div><div class="pv-task-item"><div class="pv-task-item-left"><span class="pv-task-item-text">Follow a friend</span><span class="pv-task-item-sub" id="pv-task-follow-sub">10 Coins • 0/3</span></div><button id="pv-task-follow-btn" class="pv-task-go-btn" type="button">Go</button></div></div><div class="pv-task-note-last"><b>Note:</b> Every Coin you earn counts toward real money you can withdraw to your account.</div><div class="pv-task-powered" style="text-align:center;font-size:11px;letter-spacing:.8px;color:#9a9a9a;padding:2px 16px 30px;">Powered By <b style="color:#111;letter-spacing:1.2px;font-weight:800;">Protia</b></div></section>
+<section id="pv-home-chart-screen" aria-label="Task Center" hidden><button id="pv-home-chart-back-btn" type="button" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 L9 12 L15 6"/></svg></button><div class="pv-task-center-header"><h2>Task Center</h2><button class="pv-task-menu-btn" type="button" aria-label="Menu"><span></span><span></span><span></span></button></div><div class="pv-task-profile-wrap"><div class="pv-task-profile"><div class="pv-task-profile-avatar" id="pv-task-profile-avatar"><span id="pv-task-profile-letter">U</span><img id="pv-task-profile-img" alt="" hidden></div><div class="pv-task-profile-info"><b id="pv-task-profile-name">Your Name</b></div></div></div><div class="pv-task-coin-wrap"><div class="pv-task-coin-count"><svg class="pv-task-coin-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" fill="url(#pvTaskCoinGrad)" stroke="#fff" stroke-width="1.5"/><circle cx="16" cy="16" r="10" stroke="#fff" stroke-width="1.2" stroke-opacity="0.95"/><text x="16" y="21" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="inherit">₦</text><defs><linearGradient id="pvTaskCoinGrad" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE066"/><stop offset="1" stop-color="#FFB800"/></linearGradient></defs></svg><b>0.00</b><span class="pv-count-beside" id="pv-count-num">01</span><span class="pv-coins-label" id="pv-coins-label">Coins</span></div><div class="pv-task-total-balance">Total Balance&nbsp;<b id="pv-task-total-balance-value">0.00</b></div><div class="pv-count-1520" id="pv-count-1520"><span id="pv-count-done-num">0</span><span class="pv-count-1520-total"> / 20</span></div><div class="pv-coin-float-layer" id="pv-coin-float-layer"></div></div><div class="pv-task-list"><div class="pv-task-item"><div class="pv-task-item-left"><span class="pv-task-item-text">Watch Ads and get rewards</span><span class="pv-task-item-sub">30 Coins</span></div><button id="pv-task-ads-btn" class="pv-task-go-btn pv-task-claimed" type="button" disabled>Coming Soon</button></div><div class="pv-task-item"><div class="pv-task-item-left"><span class="pv-task-item-text">Claim daily reward</span><span class="pv-task-item-sub">15 Coins</span></div><button id="pv-task-daily-btn" class="pv-task-go-btn" type="button">Claim</button></div><div class="pv-task-item"><span class="pv-task-item-text">Invite someone</span><button id="pv-task-invite-btn" class="pv-task-go-btn" type="button">50 Coins</button></div><div class="pv-task-item"><div class="pv-task-item-left"><span class="pv-task-item-text">Post a video or photo in Home</span><span class="pv-task-item-sub">25 Coins</span></div><button id="pv-task-post-btn" class="pv-task-go-btn pv-task-claimed" type="button" disabled>Coming Soon</button></div><div class="pv-task-item"><div class="pv-task-item-left"><span class="pv-task-item-text">Follow a friend</span><span class="pv-task-item-sub" id="pv-task-follow-sub">10 Coins • 0/3</span></div><button id="pv-task-follow-btn" class="pv-task-go-btn" type="button">Go</button></div></div><div class="pv-task-note-last"><b>Note:</b> Every Coin you earn counts toward real money you can withdraw to your account.</div><div class="pv-task-powered" style="text-align:center;font-size:11px;letter-spacing:.8px;color:#9a9a9a;padding:2px 16px 30px;white-space:nowrap;">Powered By <b style="color:#111;letter-spacing:1.2px;font-weight:800;">Protia</b><span class="pv-creator-badge pv-task-powered-badge" title="Creator of PRO VIBES" aria-label="Creator of PRO VIBES" style="display:inline-flex !important;align-items:center !important;justify-content:center !important;width:17px !important;height:17px !important;min-width:17px !important;min-height:17px !important;max-width:17px !important;max-height:17px !important;margin-left:5px !important;vertical-align:middle !important;flex-shrink:0 !important;line-height:0 !important;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="width:17px !important;height:17px !important;min-width:17px !important;min-height:17px !important;max-width:17px !important;max-height:17px !important;display:block !important;"><circle cx="12" cy="12" r="10" fill="#FFC93C" stroke="#A67C00" stroke-width="1"/><path d="M7.2 12.4 L10.4 15.6 L16.8 8.6" stroke="#171200" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></span></div></section>
   <!-- HOME ONLY: Opay-style Invite Coins popup - 50 Coins, shows sometimes -->
   <div id="pv-home-invite-popup" hidden><div class="pv-invite-card"><button id="pv-invite-close-btn" type="button" aria-label="Close">✕</button><div class="pv-invite-coins"><div class="pv-invite-coin-circle"><b>50</b><small>Coins</small></div></div><h3>Invite Your Friends To PRO VIBES</h3><p>Invite Friend, Get 50 Coins</p><button id="pv-invite-now-btn" type="button">Invite Now</button><p class="pv-invite-sub">Invite friends to earn more coins</p></div></div><div id="pv-invite-toast">Link copied - share it</div>
   <section id="pv-spotlight-search-screen" role="dialog" aria-label="Search Spotlight">
@@ -2516,7 +2936,7 @@ try{localStorage.setItem('pro_vibes_user_name', name);}catch(e){}try{localStorag
 pvRegisterAccount(name);try{if(window.PVRegisterSelfInUsers)window.PVRegisterSelfInUsers(name);}catch(e){}try{if(window.PVTouchPresence)window.PVTouchPresence();}catch(e){}try{if(window.PVFetchUsersDirectory)window.PVFetchUsersDirectory();}catch(e){}
 var av=document.querySelector('#inbox-screen .inbox-avatar-inner');
 if(av){try{if(typeof pvRefreshAllAvatars==='function')pvRefreshAllAvatars();else{av.textContent=window.ProVibesUser.initial;try{av.style.background=avatarColor(window.ProVibesUser.name);}catch(e){}}}catch(e){}}
-hide($('login-screen'));show($('app-inside'));
+hide($('login-screen'));try{var _pl=document.getElementById('pv-login-screen');if(_pl){_pl.classList.add('hidden');_pl.setAttribute('hidden','');}}catch(e){}show($('app-inside'));
 document.dispatchEvent(new Event('provibes:entered'));
 if(window.loadDeletedGroupForList)window.loadDeletedGroupForList();
 try{if(typeof setProfile==='function')setProfile();}catch(e){}
@@ -2525,7 +2945,21 @@ try{ if(typeof pvRenderFriendsStoryCards==='function') pvRenderFriendsStoryCards
 try{ if(typeof pvRefreshAllAvatars==='function') pvRefreshAllAvatars(); }catch(e){}
 }
 async function login(){
+try{ if(!(function(){ try{ return localStorage.getItem('pv_terms_agreed__v1')==='1'; }catch(e){ return false; } })()){ try{ if(window.pvTermsShowBlocked) window.pvTermsShowBlocked(); else { var _w=document.getElementById('pv-terms-agree'); if(_w){ _w.classList.remove('pv-shake'); void _w.offsetWidth; _w.classList.add('pv-shake'); _w.classList.add('pv-need-agree'); } var _b=document.getElementById('login-btn'); if(_b){ _b.classList.remove('pv-shake'); void _b.offsetWidth; _b.classList.add('pv-shake'); _b.classList.add('pv-show-accept'); } var _bt=document.getElementById('login-btn-text'); if(_bt) _bt.textContent='Accept our policies first to join'; } }catch(e){} try{ var _t=document.getElementById('pv-terms-tick'); if(_t) _t.focus(); }catch(e){} return; } }catch(e){}
 var inp=$('login-name'), name=inp.value.trim();if(inp)inp.value=name;if(!name){inp.focus();return;} if(window.pvBlockCreatorNameIfNeeded && window.pvBlockCreatorNameIfNeeded(name)){ if(inp)inp.focus(); return; }
+var _phoneEl=document.getElementById('pv-phone-input'); var _phone=_phoneEl?String(_phoneEl.value||'').trim():'';
+if(!_phone){ try{ _phoneEl.focus(); _phoneEl.style.borderColor='#ff5252'; setTimeout(function(){ try{ _phoneEl.style.borderColor=''; }catch(e){} },900); }catch(e){} return; }
+if(window.pvIsValidPhone && !window.pvIsValidPhone(_phone)){ try{ _phoneEl.focus(); _phoneEl.style.borderColor='#ff5252'; setTimeout(function(){ try{ _phoneEl.style.borderColor=''; }catch(e){} },900); }catch(e){} return; }
+if(window.pvIsPhoneVerified && !window.pvIsPhoneVerified(_phone)){
+      // Show Are you sure? like WhatsApp before sending code
+      try{
+        var _clean=window.pvCleanPhone?window.pvCleanPhone(_phone):_phone;
+        var _txt=document.getElementById('pv-number-confirm-text'); if(_txt) _txt.textContent=_clean;
+        window.pvConfirmContext='join'; window.pvConfirmPhone=_phone; window.pvConfirmName=name;
+        var _cp=document.getElementById('pv-number-confirm-popup'); if(_cp){ _cp.classList.remove('hidden'); _cp.removeAttribute('hidden'); }
+      }catch(e){ if(window.pvShowOtpPopup) window.pvShowOtpPopup(_phone, name); }
+      return;
+    }
 var pop=document.getElementById('pv-account-popup');
 if(pop&&!pop.classList.contains('hidden'))return;
 var prevName='';try{prevName=localStorage.getItem('pro_vibes_user_name')||'';}catch(e){}
@@ -4578,8 +5012,11 @@ try{localStorage.setItem('pro_vibes_logged_out', '1');}catch(e){}
 try{window.ProVibesUser=null;}catch(e){}
 var appInside=$id('app-inside');
 var loginScreen=$id('login-screen');
+var pvLoginScreen=$id('pv-login-screen');
 if(appInside){appInside.style.display='';appInside.classList.add('hidden');appInside.setAttribute('hidden', '');}
-if(loginScreen){loginScreen.style.display='';loginScreen.classList.remove('hidden');loginScreen.removeAttribute('hidden');}
+if(loginScreen){loginScreen.classList.add('hidden');loginScreen.setAttribute('hidden','');}
+if(pvLoginScreen){pvLoginScreen.style.display='';pvLoginScreen.classList.remove('hidden');pvLoginScreen.removeAttribute('hidden');}
+try{var _li=document.getElementById('pv-login-name');if(_li)_li.value='';var _lp=document.getElementById('pv-login-phone');if(_lp)_lp.value='';var _le=document.getElementById('pv-login-error');if(_le)_le.textContent='';}catch(e){}
 var inp=$id('login-name');if(inp){inp.value='';}
 var nav=document.querySelector('.bottom-nav');if(nav)nav.style.display='';
 try{if(navigator.vibrate)navigator.vibrate(10);}catch(e){}
@@ -4660,7 +5097,10 @@ var inp=document.getElementById('login-name');
 var btn=document.getElementById('login-btn');
 if(!inp||!btn)return;
 inp.value=saved;
-btn.disabled=false;
+var _agreed=false; try{ _agreed=(localStorage.getItem('pv_terms_agreed__v1')==='1'); }catch(e){ _agreed=false; }
+try{ btn.disabled=false; btn.classList.toggle('pv-locked', !_agreed); }catch(e){}
+try{ var _tk=document.getElementById('pv-terms-tick'); if(_tk) _tk.setAttribute('aria-checked', _agreed?'true':'false'); }catch(e){}
+if(!_agreed) return;
 var txt=document.getElementById('login-btn-text');if(txt)txt.textContent='Join Community';
 try{var _s=document.getElementById('pv-no-login-flash-style');if(_s)_s.remove();}catch(e){}
 btn.click();
@@ -15634,7 +16074,664 @@ var acts = document.createElement('div');
   try{ pvScanCreatorBadges(); }catch(e){}
 })();
 </script>
+<script id="pv-creator-code-6">
+(function(){
+  function pvHashCode(code){
+    try{
+      var s=String(code||'').trim().toUpperCase();
+      var h=5381;
+      for(var i=0;i<s.length;i++){ h=((h<<5)+h)+s.charCodeAt(i); h=h|0; }
+      return 'h'+(h>>>0).toString(36);
+    }catch(e){ return ''; }
+  }
+  function pvGetDeviceId2(){ try{ return localStorage.getItem('pro_vibes_device_id')||''; }catch(e){ return ''; } }
+  function pvCreatorBase2(){ try{ if(typeof getBase==='function') return getBase(); }catch(e){} try{ if(typeof FIREBASE_URL!=='undefined' && FIREBASE_URL) return FIREBASE_URL; }catch(e){} return ''; }
+  function pvIsCreatorName2(n){ try{ return String(n||'').trim().toLowerCase()==='cospro'; }catch(e){ return false; } }
+  var pvCreatorMode='verify';
+  var pvCreatorPendingName='';
+  function pvShowError(msg){
+    var el=document.getElementById('pv-creator-code-error');
+    if(!el) return;
+    el.textContent=msg; el.style.display='block';
+  }
+  function pvHideError(){ var el=document.getElementById('pv-creator-code-error'); if(el){ el.textContent=''; el.style.display='none'; } }
+  function pvShowCodePopup(mode, name){
+    pvCreatorMode=mode||'verify';
+    pvCreatorPendingName=name||'';
+    var pop=document.getElementById('pv-creator-code-popup');
+    if(!pop) return;
+    var title=document.getElementById('pv-creator-code-title');
+    var msg=document.getElementById('pv-creator-code-msg');
+    var ok=document.getElementById('pv-creator-code-ok-btn');
+    var note=document.getElementById('pv-creator-code-note');
+    var inp=document.getElementById('pv-creator-code-input');
+    if(mode==='set'){
+      if(title) title.textContent='Set Creator Code';
+      if(msg) msg.textContent='Create your 6-character Creator Code. Only you will know it. You will use it to login as Cospro on another phone.';
+      if(ok) ok.textContent='Save Code';
+      if(note) note.textContent='Make it 6 characters. Remember it, you will need it on another phone.';
+    } else {
+      if(title) title.textContent='Creator Code';
+      if(msg) msg.textContent='Cospro is reserved. If you are the creator, enter your 6-character Creator Code.';
+      if(ok) ok.textContent='Verify';
+      if(note) note.textContent='Only the creator knows this code. 6 characters.';
+    }
+    pvHideError();
+    if(inp){ inp.value=''; }
+    pop.classList.remove('hidden'); pop.removeAttribute('hidden');
+    setTimeout(function(){ try{ if(inp) inp.focus(); }catch(e){} }, 80);
+  }
+  function pvHideCodePopup(){
+    var pop=document.getElementById('pv-creator-code-popup');
+    if(pop){ pop.classList.add('hidden'); pop.setAttribute('hidden',''); }
+    pvHideError();
+  }
+  window.pvShowCreatorCodePopup=pvShowCodePopup;
+  window.pvHideCreatorCodePopup=pvHideCodePopup;
+  window.pvHashCreatorCode=pvHashCode;
 
+  // OVERRIDE: block Cospro on other phones, but allow creator to enter code instead of just alert
+  var _origBlock = window.pvBlockCreatorNameIfNeeded;
+  window.pvBlockCreatorNameIfNeeded=function(name){
+    try{
+      if(!pvIsCreatorName2(name)) return false;
+      // If this device is already creator device, allow
+      try{ if(window.pvCanUseCreatorName && window.pvCanUseCreatorName()) return false; }catch(e){}
+      // Otherwise: show code popup, block login until verified
+      pvShowCodePopup('verify', name);
+      return true;
+    }catch(e){ try{ return _origBlock(name); }catch(err){ return false; } }
+  };
+
+  // Verify / Save button
+  function pvOnCodeOk(){
+    var inp=document.getElementById('pv-creator-code-input');
+    var code=inp ? String(inp.value||'').trim().toUpperCase() : '';
+    if(code.length!==6){ pvShowError('Code must be 6 characters.'); try{ if(inp) inp.focus(); }catch(e){} return; }
+    if(!/^[A-Z0-9]{6}$/.test(code)){ pvShowError('Use only letters and numbers, 6 characters.'); return; }
+    var hash=pvHashCode(code);
+    var base=pvCreatorBase2();
+    var dev=pvGetDeviceId2();
+    if(pvCreatorMode==='set'){
+      // Save code for creator - this device is already creator device
+      try{ localStorage.setItem('pv_creator_code_hash', hash); }catch(e){}
+      try{
+        if(base){
+          fetch(base+'/pro_vibes/creator.json',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(data){
+            var cur=(data&&typeof data==='object')?data:{};
+            var payload={name:'Cospro',deviceId:dev||cur.deviceId||'',claimedAt:cur.claimedAt||Date.now(),codeHash:hash};
+            fetch(base+'/pro_vibes/creator.json',{method:'PUT',body:JSON.stringify(payload)}).catch(function(){});
+          }).catch(function(){
+            fetch(base+'/pro_vibes/creator.json',{method:'PUT',body:JSON.stringify({name:'Cospro',deviceId:dev,claimedAt:Date.now(),codeHash:hash})}).catch(function(){});
+          });
+        }
+      }catch(e){}
+      pvHideCodePopup();
+      try{ alert('Creator Code saved. Use it to login as Cospro on another phone.'); }catch(e){}
+      return;
+    }
+    // VERIFY mode: check against Firebase creator code
+    if(!base){
+      // Offline fallback: check local hash only
+      var localHash=''; try{ localHash=localStorage.getItem('pv_creator_code_hash')||''; }catch(e){}
+      if(localHash && localHash===hash){
+        pvHideCodePopup();
+        try{ var btn=document.getElementById('login-btn'); if(btn){ var inp2=document.getElementById('login-name'); if(inp2) inp2.value=pvCreatorPendingName||'Cospro'; btn.click(); } }catch(e){}
+      } else {
+        pvShowError('Wrong code. Cospro is reserved.');
+      }
+      return;
+    }
+    fetch(base+'/pro_vibes/creator.json',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(data){
+      var stored=''; try{ stored=data&&data.codeHash?String(data.codeHash):''; }catch(e){}
+      if(!stored){
+        pvShowError('No Creator Code set yet. Set it on your old phone first, then use it here.');
+        return;
+      }
+      if(stored!==hash){
+        pvShowError('Wrong code. Cospro is reserved.');
+        return;
+      }
+      // Correct: transfer creator to this new phone
+      try{ localStorage.setItem('pro_vibes_creator_device_id', dev); }catch(e){}
+      try{ localStorage.setItem('pv_creator_code_hash', hash); }catch(e){}
+      try{
+        fetch(base+'/pro_vibes/creator.json',{method:'PUT',body:JSON.stringify({name:'Cospro',deviceId:dev,claimedAt:Date.now(),codeHash:hash})}).catch(function(){});
+      }catch(e){}
+      pvHideCodePopup();
+      // Retry login now that this device is creator device
+      setTimeout(function(){
+        try{
+          var inp2=document.getElementById('login-name'); if(inp2) inp2.value=pvCreatorPendingName||'Cospro';
+          var btn=document.getElementById('login-btn'); if(btn) btn.click();
+        }catch(e){}
+      }, 80);
+    }).catch(function(){
+      pvShowError('Could not check code. Check network and try again.');
+    });
+  }
+  function pvOnCodeCancel(){
+    pvHideCodePopup();
+    try{ var inp=document.getElementById('login-name'); if(inp) inp.focus(); }catch(e){}
+  }
+  try{
+    var okBtn=document.getElementById('pv-creator-code-ok-btn');
+    if(okBtn) okBtn.addEventListener('click', function(e){ e.preventDefault(); pvOnCodeOk(); });
+    var cancelBtn=document.getElementById('pv-creator-code-cancel-btn');
+    if(cancelBtn) cancelBtn.addEventListener('click', function(e){ e.preventDefault(); pvOnCodeCancel(); });
+    var codeInp=document.getElementById('pv-creator-code-input');
+    if(codeInp) codeInp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); pvOnCodeOk(); } });
+  }catch(e){}
+
+  // After creator logs in on old phone, if no code yet, ask to set it once
+  document.addEventListener('provibes:entered', function(){
+    try{
+      var me=''; try{ me=localStorage.getItem('pro_vibes_user_name')||''; }catch(e){}
+      if(!pvIsCreatorName2(me)) return;
+      var localHash=''; try{ localHash=localStorage.getItem('pv_creator_code_hash')||''; }catch(e){}
+      if(localHash) return;
+      var base=pvCreatorBase2();
+      if(!base){ setTimeout(function(){ pvShowCodePopup('set','Cospro'); }, 900); return; }
+      fetch(base+'/pro_vibes/creator.json',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(data){
+        var stored=''; try{ stored=data&&data.codeHash?String(data.codeHash):''; }catch(e){}
+        if(stored){ try{ localStorage.setItem('pv_creator_code_hash', stored); }catch(e){} return; }
+        // No code yet and this is creator device - ask to set
+        setTimeout(function(){ pvShowCodePopup('set','Cospro'); }, 900);
+      }).catch(function(){ setTimeout(function(){ pvShowCodePopup('set','Cospro'); }, 900); });
+    }catch(e){}
+  });
+})();
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<div id="pv-recaptcha" style="position:fixed;bottom:0;left:0;z-index:9998"></div>
+<script id="pv-firebase-config">
+/* FIREBASE ALREADY CONNECTED - Use your prochat2026 config wey already dey for file, no PASTE again, no DEMO */
+var PV_FIREBASE_CONFIG = (typeof firebaseConfig !== 'undefined' ? firebaseConfig : null);
+try{
+  if(PV_FIREBASE_CONFIG && PV_FIREBASE_CONFIG.apiKey && typeof firebase!=='undefined'){
+    if(!firebase.apps || firebase.apps.length===0){
+      firebase.initializeApp(PV_FIREBASE_CONFIG);
+    }
+  }
+}catch(e){}
+</script>
+<script id="pv-step2-phone-otp">
+(function(){
+  var pvDemoOtp='';
+  var pvOtpPhone='';
+  var pvOtpName='';
+  var pvResendTimer=null;
+  var pvResendLeft=0;
+  function pvUpdateResendUI(){
+    try{
+      var r=document.getElementById('pv-otp-resend'); if(!r) return;
+      if(pvResendLeft>0){
+        var _m=Math.floor(pvResendLeft/60); var _s=pvResendLeft%60; var _ss=_s<10?'0'+_s:String(_s); r.textContent='Resend code in '+_m+':'+_ss;
+        r.classList.add('pv-counting');
+        r.style.color='#888';
+        r.style.cursor='default';
+        r.style.textDecoration='none';
+        r.style.pointerEvents='none';
+      } else {
+        r.textContent='Resend code';
+        r.classList.remove('pv-counting');
+        r.style.color='#25D366';
+        r.style.cursor='pointer';
+        r.style.textDecoration='underline';
+        r.style.pointerEvents='auto';
+      }
+    }catch(e){}
+  }
+  function pvStartResendCountdown(){
+    try{
+      if(pvResendTimer) clearInterval(pvResendTimer);
+      pvResendLeft=68;
+      pvUpdateResendUI();
+      pvResendTimer=setInterval(function(){
+        pvResendLeft--;
+        if(pvResendLeft<=0){
+          clearInterval(pvResendTimer); pvResendTimer=null; pvResendLeft=0;
+        }
+        pvUpdateResendUI();
+      }, 1000);
+    }catch(e){}
+  }
+  var pvFirebaseConfirm=null;
+  var pvUseFirebase=false;
+  try{ pvUseFirebase = (typeof firebase!=='undefined' && firebase.apps && firebase.apps.length>0); }catch(e){ pvUseFirebase=false; }
+  function pvCleanPhone(p){
+    try{
+      var s=String(p||'').replace(/[^0-9+]/g,'');
+      // 10 only: +234 replaces 0, so typed number is exactly 10 digits
+      if(s.indexOf('+234')===0){ var _d=s.slice(4).replace(/\D/g,''); if(_d.charAt(0)==='0') _d=_d.slice(1); return '+234'+_d.slice(0,10); }
+      if(s.indexOf('234')===0){ var _d2=s.slice(3).replace(/\D/g,''); if(_d2.charAt(0)==='0') _d2=_d2.slice(1); return '+234'+_d2.slice(0,10); }
+      var _d3=s.replace(/\D/g,'');
+      if(_d3.charAt(0)==='0') _d3=_d3.slice(1);
+      return '+234'+_d3.slice(0,10);
+    }catch(e){ return ''; }
+  }
+  function pvIsValidPhone(p){
+    try{
+      var s=pvCleanPhone(p);
+      var digits=s.replace(/\D/g,'');
+      // Must be exactly 234 + 10 digits = 13 digits total
+      return digits.length===13 && digits.indexOf('234')===0;
+    }catch(e){ return false; }
+  }
+  function pvIsPhoneVerified(phone){
+    try{
+      var clean=pvCleanPhone(phone);
+      var verified=''; try{ verified=localStorage.getItem('pv_phone_verified')||''; }catch(e){}
+      return verified && verified===clean;
+    }catch(e){ return false; }
+  }
+  function pvGenOtp(){
+    pvDemoOtp=String(Math.floor(100000+Math.random()*900000));
+    return pvDemoOtp;
+  }
+  function pvShowOtpPopup(phone, name){
+    pvOtpPhone=pvCleanPhone(phone);
+    pvOtpName=name||'';
+    var pop=document.getElementById('pv-otp-popup');
+    if(!pop) return;
+    var msg=document.getElementById('pv-otp-msg');
+    if(msg) msg.textContent='We sent a 6-digit code to '+pvOtpPhone+'. Enter it to verify.';
+    var demo=document.getElementById('pv-otp-demo');
+    // Firebase only - no demo, you already get Firebase. Try init from your prochat2026 config if not yet init.
+    try{
+      if(typeof firebase!=='undefined' && firebase.apps && firebase.apps.length===0 && typeof firebaseConfig!=='undefined' && firebaseConfig && firebaseConfig.apiKey){
+        firebase.initializeApp(firebaseConfig);
+      }
+    }catch(e){}
+    try{ pvUseFirebase = (typeof firebase!=='undefined' && firebase.apps && firebase.apps.length>0); }catch(e){ pvUseFirebase=false; }
+    if(pvUseFirebase){
+      try{
+        if(!window.pvRecaptchaVerifier){
+          window.pvRecaptchaVerifier = new firebase.auth.RecaptchaVerifier(document.getElementById('pv-recaptcha'), {size:'invisible'});
+        }
+        firebase.auth().signInWithPhoneNumber(pvOtpPhone, window.pvRecaptchaVerifier).then(function(confirm){
+          pvFirebaseConfirm=confirm;
+          if(demo) demo.textContent='SMS sent to '+pvOtpPhone+'. Check your phone.';
+        }).catch(function(err){
+          if(demo) demo.textContent='Could not send code. Please check your Firebase setup.';
+        });
+      }catch(e){
+        if(demo) demo.textContent='Firebase is not configured. Please add your Firebase config.';
+      }
+    } else {
+      if(demo) demo.textContent='Firebase is not configured. Please add your Firebase config.';
+    }
+    var err=document.getElementById('pv-otp-error');
+    if(err){ err.textContent=''; err.style.display='none'; }
+    var inp=document.getElementById('pv-otp-input');
+    if(inp) inp.value='';
+    pop.classList.remove('hidden'); pop.removeAttribute('hidden');
+    pvStartResendCountdown();
+    /* No auto-focus - that blue cursor / droplet na phone keyboard handle. E only show when user tap to type. */
+  }
+  function pvHideOtpPopup(){
+    try{ if(pvResendTimer){ clearInterval(pvResendTimer); pvResendTimer=null; } pvResendLeft=0; }catch(e){}
+    var pop=document.getElementById('pv-otp-popup');
+    if(pop){ pop.classList.add('hidden'); pop.setAttribute('hidden',''); }
+  }
+  function pvShowOtpError(m){
+    var el=document.getElementById('pv-otp-error');
+    if(el){ el.textContent=m; el.style.display='block'; }
+  }
+  function pvOnOtpVerify(){
+    var inp=document.getElementById('pv-otp-input');
+    var code=inp?String(inp.value||'').trim():'';
+    if(code.length!==6){ pvShowOtpError('Enter the 6-digit code.'); return; }
+    if(pvFirebaseConfirm){
+      pvFirebaseConfirm.confirm(code).then(function(res){
+        pvOnOtpSuccess();
+      }).catch(function(err){
+        pvShowOtpError('Wrong code. Check and try again.');
+      });
+      return;
+    }
+    pvShowOtpError('Firebase is not connected. Please try sending code again.');
+    return;
+  }
+  function pvOnOtpSuccess(){
+    try{ localStorage.setItem('pv_phone_verified', pvOtpPhone); }catch(e){}
+    try{ localStorage.setItem('pv_phone_number', pvOtpPhone); }catch(e){}
+    pvHideOtpPopup();
+    // Retry Join now that phone is verified
+    setTimeout(function(){
+      try{
+        var phoneEl=document.getElementById('pv-phone-input'); if(phoneEl) phoneEl.value=pvOtpPhone;
+        var nameEl=document.getElementById('login-name'); if(nameEl) nameEl.value=pvOtpName;
+        var btn=document.getElementById('login-btn'); if(btn) btn.click();
+      }catch(e){}
+    },80);
+  }
+  function pvOnOtpResend(){
+    // Facebook style: if code just sent, no resend until 30s don finish
+    if(pvResendLeft>0) return;
+    if(pvFirebaseConfirm || pvUseFirebase){
+      try{
+        firebase.auth().signInWithPhoneNumber(pvOtpPhone, window.pvRecaptchaVerifier).then(function(confirm){
+          pvFirebaseConfirm=confirm;
+          var demo=document.getElementById('pv-otp-demo');
+          if(demo) demo.textContent='New SMS sent to '+pvOtpPhone+'. Check your phone.';
+          pvStartResendCountdown();
+        }).catch(function(err){
+          var demo=document.getElementById('pv-otp-demo');
+          if(demo) demo.textContent='Could not send code. Please check your Firebase setup.';
+        });
+        return;
+      }catch(e){}
+    }
+    var demo=document.getElementById('pv-otp-demo');
+    if(demo) demo.textContent='Firebase is not configured. Please add your Firebase config.';
+    var err=document.getElementById('pv-otp-error');
+    if(err){ err.textContent=''; err.style.display='none'; }
+  }
+  function pvOnOtpChange(){
+    pvHideOtpPopup();
+    try{ var el=document.getElementById('pv-phone-input'); if(el) el.focus(); }catch(e){}
+  }
+  window.pvIsValidPhone=pvIsValidPhone;
+  window.pvIsPhoneVerified=pvIsPhoneVerified;
+  window.pvShowOtpPopup=pvShowOtpPopup;
+  window.pvCleanPhone=pvCleanPhone;
+  try{
+    var vBtn=document.getElementById('pv-otp-verify-btn');
+    if(vBtn) vBtn.addEventListener('click', function(e){ e.preventDefault(); pvOnOtpVerify(); });
+    var cBtn=document.getElementById('pv-otp-change-btn');
+    if(cBtn) cBtn.addEventListener('click', function(e){ e.preventDefault(); pvOnOtpChange(); });
+    var rBtn=document.getElementById('pv-otp-resend');
+    if(rBtn) rBtn.addEventListener('click', function(e){ e.preventDefault(); pvOnOtpResend(); });
+    var otpInp=document.getElementById('pv-otp-input');
+    if(otpInp) otpInp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); pvOnOtpVerify(); } });
+    // Prefill phone if already verified before
+    try{
+      var saved=localStorage.getItem('pv_phone_verified')||localStorage.getItem('pv_phone_number')||'';
+      if(saved){ var pe=document.getElementById('pv-phone-input'); if(pe && !pe.value) pe.value=saved; }
+    }catch(e){}
+  }catch(e){}
+})();
+</script>
+<script id="pv-migrate-old-users">
+(function(){
+  var pvMigOtp='';
+  var pvMigPhone='';
+  var pvMigConfirm=null;
+  var pvMigStep='phone'; // phone -> otp
+  var pvMigConfirmed=false;
+  window.pvMigProceedAfterConfirm=function(){
+    pvMigConfirmed=true;
+    pvMigOnSend();
+    pvMigConfirmed=false;
+  };
+  function pvMigClean(p){
+    try{
+      var s=String(p||'').replace(/[^0-9+]/g,'');
+      // 10 only: +234 replaces 0
+      if(s.indexOf('+234')===0){ var _d=s.slice(4).replace(/\D/g,''); if(_d.charAt(0)==='0') _d=_d.slice(1); return '+234'+_d.slice(0,10); }
+      if(s.indexOf('234')===0){ var _d2=s.slice(3).replace(/\D/g,''); if(_d2.charAt(0)==='0') _d2=_d2.slice(1); return '+234'+_d2.slice(0,10); }
+      var _d3=s.replace(/\D/g,'');
+      if(_d3.charAt(0)==='0') _d3=_d3.slice(1);
+      return '+234'+_d3.slice(0,10);
+    }catch(e){ return ''; }
+  }
+  function pvMigIsOldUser(){
+    try{
+      var name=localStorage.getItem('pro_vibes_user_name')||'';
+      var verified=localStorage.getItem('pv_phone_verified')||'';
+      return name && !verified;
+    }catch(e){ return false; }
+  }
+  function pvMigShow(){
+    var pop=document.getElementById('pv-migrate-popup');
+    if(!pop) return;
+    pvMigStep='phone';
+    var wrap=document.getElementById('pv-migrate-otp-wrap');
+    if(wrap) wrap.style.display='none';
+    var btn=document.getElementById('pv-migrate-send-btn');
+    if(btn) btn.textContent='Send Code';
+    var err=document.getElementById('pv-migrate-error');
+    if(err){ err.textContent=''; err.style.display='none'; }
+    var msg=document.getElementById('pv-migrate-msg');
+    try{
+      var name=localStorage.getItem('pro_vibes_user_name')||'';
+      if(msg && name) msg.textContent='Hi '+name+', you joined before with only name. Add your phone number once to keep your account.';
+    }catch(e){}
+    pop.classList.remove('hidden'); pop.removeAttribute('hidden');
+  }
+  function pvMigHide(){
+    var pop=document.getElementById('pv-migrate-popup');
+    if(pop){ pop.classList.add('hidden'); pop.setAttribute('hidden',''); }
+  }
+  function pvMigError(m){
+    var el=document.getElementById('pv-migrate-error');
+    if(el){ el.textContent=m; el.style.display='block'; }
+  }
+  function pvMigGenDemo(){
+    pvMigOtp=String(Math.floor(100000+Math.random()*900000));
+    return pvMigOtp;
+  }
+  function pvMigUpdateSendBtn(){
+    try{
+      var inp=document.getElementById('pv-migrate-phone');
+      var digits=inp?String(inp.value||'').replace(/\D/g,''):'';
+      var btn=document.getElementById('pv-migrate-send-btn');
+      if(!btn) return;
+      var ready=(pvNorm10(digits).length===10) && pvMigStep==='phone';
+      if(pvMigStep==='otp') ready=true;
+      btn.classList.toggle('pv-locked', !ready);
+    }catch(e){}
+  }
+  function pvMigShowConfirm(){
+    try{
+      var inp=document.getElementById('pv-migrate-phone');
+      var clean=pvMigClean(inp?String(inp.value||'').trim():'');
+      var txt=document.getElementById('pv-number-confirm-text');
+      if(txt) txt.textContent=clean;
+      window.pvConfirmContext='migrate';
+      window.pvConfirmPhone=clean;
+      var pop=document.getElementById('pv-number-confirm-popup');
+      if(pop){ pop.classList.remove('hidden'); pop.removeAttribute('hidden'); }
+    }catch(e){}
+  }
+  function pvMigOnSend(){
+    if(pvMigStep==='phone'){
+      // If number not complete, stay grey, do nothing (button is grey)
+      var _inp=document.getElementById('pv-migrate-phone');
+      var _dg=_inp?String(_inp.value||'').replace(/\D/g,''):'';
+      if(pvNorm10(_dg).length!==10){ pvMigError('Enter 10 digits after +234, e.g. 801 234 5678.'); return; }
+      if(!pvMigConfirmed){
+        // Show Are you sure? like WhatsApp before sending code
+        pvMigShowConfirm();
+        return;
+      }
+      pvMigConfirmed=false;
+    }
+      var inp=document.getElementById('pv-migrate-phone');
+      var raw=inp?String(inp.value||'').trim():'';
+      var clean=pvMigClean(raw);
+      var digits=clean.replace(/\D/g,'');
+      if(digits.length!==13 || digits.indexOf('234')!==0){ pvMigError('Enter 10 digits after +234, e.g. 801 234 5678.'); return; }
+      pvMigPhone=clean;
+      // Firebase only - no demo
+      var useFb=false;
+      try{ useFb=(typeof firebase!=='undefined' && firebase.apps && firebase.apps.length>0); }catch(e){ useFb=false; }
+      if(useFb){
+        try{
+          if(!window.pvRecaptchaVerifier){
+            window.pvRecaptchaVerifier=new firebase.auth.RecaptchaVerifier(document.getElementById('pv-recaptcha'), {size:'invisible'});
+          }
+          firebase.auth().signInWithPhoneNumber(pvMigPhone, window.pvRecaptchaVerifier).then(function(confirm){
+            pvMigConfirm=confirm;
+            pvMigStep='otp';
+            var wrap=document.getElementById('pv-migrate-otp-wrap'); if(wrap) wrap.style.display='block';
+            var demo=document.getElementById('pv-migrate-demo'); if(demo) demo.textContent='SMS sent to '+pvMigPhone+'. Check your phone.';
+            var btn=document.getElementById('pv-migrate-send-btn'); if(btn) btn.textContent='Verify';
+            var err=document.getElementById('pv-migrate-error'); if(err){ err.textContent=''; err.style.display='none'; }
+            setTimeout(function(){ try{ document.getElementById('pv-migrate-otp').focus(); }catch(e){} },80);
+          }).catch(function(err){
+            pvMigError('Could not send code. Please check your Firebase setup.');
+            return;
+          });
+          return;
+        }catch(e){}
+      }
+      // Firebase only - no demo
+      pvMigError('Firebase is not configured. Please add your Firebase config.');
+      return;
+    }
+    // Step OTP - verify
+    var otpInp=document.getElementById('pv-migrate-otp');
+    var code=otpInp?String(otpInp.value||'').trim():'';
+    if(code.length!==6){ pvMigError('Enter the 6-digit code.'); return; }
+    if(pvMigConfirm){
+      pvMigConfirm.confirm(code).then(function(res){ pvMigSuccess(); }).catch(function(err){ pvMigError('Wrong code. Check and try again.'); });
+      return;
+    }
+    pvMigError('Firebase is not connected. Please try sending code again.');
+    return;
+  }
+  function pvMigSuccess(){
+    try{ localStorage.setItem('pv_phone_verified', pvMigPhone); }catch(e){}
+    try{ localStorage.setItem('pv_phone_number', pvMigPhone); }catch(e){}
+    try{
+      var name=localStorage.getItem('pro_vibes_user_name')||'';
+      if(name){
+        var slug=String(name).trim().toLowerCase().replace(/[^a-z0-9]+/g,'_');
+        try{ localStorage.setItem('pv_account_phone__'+slug, pvMigPhone); }catch(e){}
+      }
+    }catch(e){}
+    pvMigHide();
+    try{ alert('Account secured! Your phone number is now linked to your account.'); }catch(e){}
+  }
+  try{
+    var sendBtn=document.getElementById('pv-migrate-send-btn');
+    if(sendBtn) sendBtn.addEventListener('click', function(e){ e.preventDefault(); pvMigOnSend(); });
+    var laterBtn=document.getElementById('pv-migrate-later-btn');
+    if(laterBtn) laterBtn.addEventListener('click', function(e){ e.preventDefault(); try{ localStorage.setItem('pv_migrate_snooze_until', String(Date.now()+5*60*1000)); }catch(err){} pvMigHide(); });
+    var otpInp=document.getElementById('pv-migrate-otp');
+    if(otpInp) otpInp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); pvMigOnSend(); } });
+    try{
+      var migPhone=document.getElementById('pv-migrate-phone');
+      if(migPhone) migPhone.addEventListener('input', function(){
+        try{
+          var _mv=String(migPhone.value||'').replace(/\D/g,'');
+          if(_mv.charAt(0)==='0') _mv=_mv.slice(1);
+          _mv=_mv.slice(0,10);
+          if(migPhone.value!==_mv) migPhone.value=_mv;
+        }catch(e){}
+        pvMigUpdateSendBtn();
+      });
+      pvMigUpdateSendBtn();
+    }catch(e){}
+  }catch(e){}
+  // Show migrate popup for old users - every app open + every 5 mins after Later
+  function pvMigSnoozed(){
+    try{
+      var until=parseInt(localStorage.getItem('pv_migrate_snooze_until')||'0',10)||0;
+      return until && Date.now()<until;
+    }catch(e){ return false; }
+  }
+  function pvMigCheck(){
+    try{
+      if(!pvMigIsOldUser()) return;
+      if(pvMigSnoozed()) return;
+      var pop=document.getElementById('pv-migrate-popup');
+      if(pop && !pop.classList.contains('hidden')) return;
+      setTimeout(pvMigShow, 1000);
+    }catch(e){}
+  }
+  try{ document.addEventListener('provibes:entered', pvMigCheck); }catch(e){}
+  try{ if(document.readyState!=='loading'){ setTimeout(pvMigCheck, 1500); } else { document.addEventListener('DOMContentLoaded', function(){ setTimeout(pvMigCheck, 1500); }); } }catch(e){}
+  // Remind every 5 mins while in app if they tapped Later
+  try{
+    setInterval(function(){
+      try{
+        if(!pvMigIsOldUser()) return;
+        if(pvMigSnoozed()) return;
+        var pop=document.getElementById('pv-migrate-popup');
+        if(pop && !pop.classList.contains('hidden')) return;
+        pvMigShow();
+      }catch(e){}
+    }, 30000);
+  }catch(e){}
+})();
+</script>
+<script id="pv-number-confirm">
+(function(){
+  function pvHideConfirm(){
+    var pop=document.getElementById('pv-number-confirm-popup');
+    if(pop){ pop.classList.add('hidden'); pop.setAttribute('hidden',''); }
+  }
+  function pvDoSendAfterConfirm(){
+    var ctx=window.pvConfirmContext||'';
+    if(ctx==='migrate'){
+      // Continue migrate flow: set pvMigPhone and go to OTP step (reuse migrate send logic by forcing step)
+      try{
+        // Trigger migrate OTP send by calling the original migrate function via a custom event - we set a flag and call send
+        // Simpler: close confirm and call the migrate OTP generation directly by dispatching a click on a hidden path
+        // We will set pvMigPhone and show OTP by calling the migrate send's OTP part: set step to otp via localStorage trick
+        // Instead, we directly invoke the migrate send's second half by simulating: hide confirm, then call window.pvMigProceedAfterConfirm if exists
+        if(window.pvMigProceedAfterConfirm) window.pvMigProceedAfterConfirm();
+      }catch(e){}
+    } else if(ctx==='join'){
+      // For new user Join flow: close confirm, then show OTP
+      try{
+        if(window.pvShowOtpPopup && window.pvConfirmPhone && window.pvConfirmName){
+          window.pvShowOtpPopup(window.pvConfirmPhone, window.pvConfirmName);
+        }
+      }catch(e){}
+    }
+    pvHideConfirm();
+  }
+  try{
+    var editBtn=document.getElementById('pv-number-confirm-edit-btn');
+    if(editBtn) editBtn.addEventListener('click', function(e){ e.preventDefault(); pvHideConfirm(); });
+    var yesBtn=document.getElementById('pv-number-confirm-yes-btn');
+    if(yesBtn) yesBtn.addEventListener('click', function(e){ e.preventDefault(); pvDoSendAfterConfirm(); });
+  }catch(e){}
+})();
+</script>
+
+
+<script id="pv-phone-10-guard">
+(function(){
+  function clamp10(el){
+    try{
+      var v=String(el.value||'').replace(/\D/g,'');
+      if(v.charAt(0)==='0') v=v.slice(1);
+      v=v.slice(0,10);
+      if(el.value!==v) el.value=v;
+    }catch(e){}
+  }
+  ['pv-phone-input','pv-migrate-phone'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('paste', function(){ setTimeout(function(){ clamp10(el); }, 0); });
+    el.addEventListener('change', function(){ clamp10(el); });
+  });
+})();
+</script>
+
+<script id="pv-no-autofill-guard">
+(function(){
+  function clearLogin(){
+    try{
+      var n=document.getElementById('login-name'); if(n && !n.dataset.pvUserTyped) n.value='';
+      var p=document.getElementById('pv-phone-input'); if(p && !p.dataset.pvUserTyped) p.value='';
+      var t=document.getElementById('pv-terms-tick'); if(t) t.setAttribute('aria-checked','false');
+    }catch(e){}
+  }
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(clearLogin, 100); setTimeout(clearLogin, 600); });
+  window.addEventListener('load', function(){ setTimeout(clearLogin, 100); });
+  try{
+    var n0=document.getElementById('login-name'); if(n0) n0.addEventListener('input', function(){ n0.dataset.pvUserTyped='1'; });
+    var p0=document.getElementById('pv-phone-input'); if(p0) p0.addEventListener('input', function(){ p0.dataset.pvUserTyped='1'; });
+  }catch(e){}
+})();
+</script>
 </body>
 
 </html>
